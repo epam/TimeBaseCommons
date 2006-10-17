@@ -146,6 +146,12 @@ public abstract class TreeEditorNode {
     }
     
     /**
+     *  Called after the node is succesfully edited NOT in creation mode.
+     */
+    public void                 updated () {    
+    }
+    
+    /**
      *  Called after the user fails to complete the creation process.
      */
     public void                 creationCanceled () {    

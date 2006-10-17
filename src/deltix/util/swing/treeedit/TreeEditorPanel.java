@@ -114,7 +114,9 @@ public class TreeEditorPanel extends JSplitPane {
                 node.created ();
                 node.select ();
             }
-        
+            else
+                node.updated ();
+            
             setFormFromNode (mSelectedNode);
             
             fireNodeChanged (node);                        

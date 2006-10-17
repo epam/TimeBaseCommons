@@ -38,6 +38,15 @@ public class JDBCUtils {
         }
     }
     
+    public static void              rollbackNoExceptions (Connection conn) {
+        if (conn != null)
+            try {
+                conn.rollback ();
+            } catch (Throwable x) {
+                Common.LOGGER.log (Level.SEVERE, "Error while rolling back a transaction", x);
+            }
+    }
+    
     public static void              close (Connection conn) {
         if (conn != null)
             try {
