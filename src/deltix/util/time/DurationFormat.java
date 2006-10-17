@@ -1,0 +1,37 @@
+package deltix.util.time;
+
+/**
+ *
+ */
+public class DurationFormat {
+    private void        f2 (StringBuffer sb, int value) {
+        if (value < 10)
+            sb.append ("0");
+        
+        sb.append (value);
+    }
+    
+    public String       format (double seconds) {
+        int         isec = (int) seconds;
+        
+        int         secComp = isec % 60;
+        
+        isec /= 60;
+        
+        int         minComp = isec % 60;
+        
+        isec /= 60;
+        
+        int         hourComp = isec;
+        
+        StringBuffer    sb = new StringBuffer ();
+        
+        sb.append (hourComp);
+        sb.append (":");
+        f2 (sb, minComp);
+        sb.append (":");
+        f2 (sb, secComp);
+        
+        return (sb.toString ());
+    }
+}

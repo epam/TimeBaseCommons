@@ -1,0 +1,145 @@
+package deltix.util.swing;
+
+import java.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class VerticalForm extends JPanel {
+    private GridBagConstraints      mC = new GridBagConstraints ();
+    private Set <Component>         mSwitchComponents = new HashSet <Component> ();
+    
+    public VerticalForm () {
+        super (new GridBagLayout ());
+        
+        mC.gridy = 0;
+        mC.insets.left = 4;
+        mC.insets.right = 4;
+        mC.insets.top = 4;
+        mC.insets.bottom = 4;
+        
+        addContainerListener (
+            new ContainerListener () {
+                public void    componentAdded (ContainerEvent e) {  
+                    Component   c = e.getChild ();
+                    
+                    if (mSwitchComponents.contains (c))
+                        c.setEnabled (isEnabled ());
+                }
+                
+                public void    componentRemoved (ContainerEvent e) {
+                    mSwitchComponents.remove (e.getChild ());
+                }
+            }
+        );
+    }
+    
+    /**
+     *  Adds a spring with a 1.0 weight
+     */
+    public void         addSpring () {
+        addSpring (1.0);
+    }
+    
+    /**
+     *  Adds a spring, i.e. expandable space. This is useful if the form
+     *  consists of vertically non-expandable rows, which is the most
+     *  frequent situation. The spring is where the space will be filled.
+     */
+    public void         addSpring (double weighty) {
+        mC.gridwidth = 2;
+        mC.gridx = 0;
+        mC.fill = GridBagConstraints.VERTICAL;
+        mC.weighty = weighty;
+        add (new JLabel (), mC);
+        mC.gridy++;
+    }
+    
+    private void        setWeightAndFill (JComponent comp) {
+        if (comp instanceof JTextArea ||
+            comp instanceof JScrollPane) 
+        {
+            mC.weightx = 1;
+            mC.weighty = 1;
+            mC.fill = GridBagConstraints.BOTH;
+        }
+        else if (comp instanceof AbstractButton || comp instanceof JSpinner) {
+            mC.weightx = 0;
+            mC.weighty = 0;
+            mC.fill = GridBagConstraints.NONE;
+            mC.anchor = GridBagConstraints.WEST;
+        }       
+        else {
+            mC.weightx = 1;
+            mC.weighty = 0;
+            mC.fill = GridBagConstraints.HORIZONTAL;
+        }        
+    }
+    
+    public void         addRow (JComponent comp) {
+        addRow (comp, true);
+    }
+    
+    public void         addRow (JComponent comp, boolean disableWithForm) {
+        if (disableWithForm)
+            mSwitchComponents.add (comp);
+        
+        mC.gridx = 0;
+        mC.gridwidth = 2;
+        
+        setWeightAndFill (comp);
+        add (comp, mC);
+        
+        mC.gridy++;
+    }
+    
+    public void         addLine () {
+        addRow (new Line (Line.HORIZONTAL));
+    }
+    
+    public void         addField (String label, JComponent comp) {
+        addField (label, comp, !(comp instanceof JLabel));        
+    }
+    
+    public void         addField (String label, JComponent comp, boolean disableWithForm) {
+        addField (new JLabel (label), comp, disableWithForm);
+    }
+    
+    public void         addField (JLabel jl, JComponent comp) {
+        addField (jl, comp, !(comp instanceof JLabel));
+    }
+    
+    public void         addField (JLabel jl, JComponent comp, boolean disableWithForm) {
+        if (disableWithForm)
+            mSwitchComponents.add (comp);
+        
+        mC.gridwidth = 1;
+        mC.gridx = 0;
+        mC.weightx = 0;
+        mC.weighty = 0;
+        mC.anchor = GridBagConstraints.WEST;
+        
+        add (jl, mC);
+        
+        mC.gridx = 1;
+        
+        setWeightAndFill (comp);
+        
+        add (comp, mC);
+        
+        mC.gridy++;
+    }
+    
+    public void         setEnabled (boolean flag) {
+        super.setEnabled (flag);
+        
+        int             numComps = getComponentCount ();
+        
+        for (int ii = 0; ii < numComps; ii++) {
+            Component   c = getComponent (ii);
+            
+            if (mSwitchComponents.contains (c))
+                c.setEnabled (flag);
+        }
+    }
+}
