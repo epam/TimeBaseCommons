@@ -1,6 +1,6 @@
 package deltix.custom.statestreet.fxa.load;
 
-import deltix.custom.statestreet.fxa.utils.JDBCUtils;
+import deltix.util.jdbc.JDBCUtils;
 import java.sql.*;
 
 /**
