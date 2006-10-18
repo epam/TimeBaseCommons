@@ -447,7 +447,7 @@ public class Util {
     /**
      * Method identical to "obj1.compareTo(obj2)==0", it also handles <code>null</code> values.
      */
-    public static boolean xcompare(Comparable obj1, Comparable obj2)
+    public static <T> boolean xcompare(Comparable<T> obj1, T obj2)
     {
         return obj1 == obj2 || // shortcut
             (obj1 != null ? obj1.compareTo (obj2)==0 : obj2 == null);
@@ -680,7 +680,7 @@ public class Util {
 
     /** @return Array of all interfaces implemented by given class (calls cls.getInterfaces() recursively), never null */
     public static Class [] getClassInterfaces (Class cls) {
-        List result = new ArrayList ();
+        List <Class> result = new ArrayList<Class> ();
 
         if (cls.isInterface())
             result.add (cls);
@@ -696,7 +696,7 @@ public class Util {
             }
             c = c.getSuperclass();
         }
-        return (Class []) result.toArray(new Class [result.size()]);
+        return result.toArray(new Class [result.size()]);
     }
 
     /** @return true if given cls is instanceof interface specified by className */

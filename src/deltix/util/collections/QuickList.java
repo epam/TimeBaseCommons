@@ -9,7 +9,7 @@ import java.util.Enumeration;
  *	to java.util.LinkedList. Entries cannot be shared between two or more
  *	QuickLists. This class is not synchronized.
  */
-public final class QuickList implements java.io.Serializable {
+public final class QuickList <T extends QuickList.Entry> implements java.io.Serializable {
     /**
      *  Turn this on if problems are suspected in the use of this class
      */
@@ -24,7 +24,7 @@ public final class QuickList implements java.io.Serializable {
 		}
 	}
 	
-	public static final class EntryEnumeration implements Enumeration {
+	public static final class EntryEnumeration <T extends QuickList.Entry <T>> implements Enumeration <T> {
 		private Entry		mCur;
 		
 		public EntryEnumeration (Entry entry) {
@@ -35,14 +35,14 @@ public final class QuickList implements java.io.Serializable {
 			return (!(mCur instanceof BoundaryEntry));
 		}
 		
-		public Object		nextElement () {
-			Entry				e = mCur;
+		@SuppressWarnings("unchecked") public T		nextElement () {
+			T				e = (T) mCur;
 			mCur = mCur.next ();
 			return (e);
 		}
 	}
 	
-	public static abstract class Entry implements java.io.Serializable {
+	public static abstract class Entry <T extends Entry <T>> implements java.io.Serializable {
     	protected Entry       mPrevious = null;
     	protected Entry       mNext = null;
     	
@@ -94,7 +94,7 @@ public final class QuickList implements java.io.Serializable {
     	 *	Returns the next entry in the list, or <code>null</code> 
     	 *	if this is the last one.
     	 */
-    	public final Entry		next () {
+    	@SuppressWarnings("unchecked") public final T		next () {
             if (DO_ASSERTIONS) {
                 if (mNext == this)
                     throw new RuntimeException (this + ": mNext == this");
@@ -106,14 +106,14 @@ public final class QuickList implements java.io.Serializable {
     		if (mNext instanceof BoundaryEntry)
     			return (null);
     		else
-    			return (mNext);
+    			return ((T) mNext);
     	}
     	
     	/** 
     	 *	Returns the previous entry in the list, or <code>null</code> 
     	 *	if this is the first one.
     	 */
-    	public final Entry		previous () {
+    	@SuppressWarnings("unchecked") public final T		previous () {
             if (DO_ASSERTIONS) {
                 if (mNext == this)
                     throw new RuntimeException (this + ": mNext == this");
@@ -125,7 +125,7 @@ public final class QuickList implements java.io.Serializable {
     		if (mPrevious instanceof BoundaryEntry)
     			return (null);
     		else
-    			return (mPrevious);
+    			return ((T) mPrevious);
     	}
     	
     	/** 
@@ -166,7 +166,7 @@ public final class QuickList implements java.io.Serializable {
 	 *	BoundaryEntry in the beginning, and one BoundaryEntry in the end
 	 *	of the chain.
 	 */
-	public static class BoundaryEntry extends Entry {
+	public static final class BoundaryEntry extends Entry {
     	public boolean		safeUnlink () {
     		throw new IllegalArgumentException (
     			"Cannot unlink a BoundaryEntry."
@@ -210,10 +210,10 @@ public final class QuickList implements java.io.Serializable {
 	 *	Returns the first entry without unlinking it
 	 *	from the list, or <code>null</code> if the list is empty.
 	 */
-	public Entry	getFirst () {
+	@SuppressWarnings("unchecked") public T        getFirst () {
 		Entry			first = mHead.mNext;
 		
-		return (first == mTail ? null : first);
+		return (first == mTail ? null : (T) first);
 	}
 	
 	/**
@@ -228,10 +228,10 @@ public final class QuickList implements java.io.Serializable {
 	 *	Returns the last entry without unlinking it
 	 *	from the list, or <code>null</code> if the list is empty.
 	 */
-	public Entry	getLast () {
+	@SuppressWarnings("unchecked") public T        getLast () {
 		Entry			last = mTail.mPrevious;
 		
-		return (last == mHead ? null : last);
+		return (last == mHead ? null : (T) last);
 	}
 	
 	/**
@@ -368,14 +368,14 @@ public final class QuickList implements java.io.Serializable {
 	/**
 	 *	Links the entry at the head of the list.
 	 */
-	public void		linkFirst (Entry e) {
+	public void		linkFirst (T e) {
 		linkChainFirst (e, e);
 	}
 	
 	/**
 	 *	Links the entry at the tail of the list.
 	 */
-	public void		linkLast (Entry e) {
+	public void		linkLast (T e) {
 		linkChainLast (e, e);
 	}
 	
@@ -438,7 +438,7 @@ public final class QuickList implements java.io.Serializable {
 	/**
 	 *	Returns an enumeration of all entries.
 	 */
-	public Enumeration		entries () {
+	@SuppressWarnings("unchecked") public Enumeration <T>		entries () {
 		return (new EntryEnumeration (mHead.mNext));
 	}
 }
