@@ -20,7 +20,7 @@ import deltix.util.swing.*;
 public class Test extends TreeEditorNode {
     private String      mLabel;
     private int         mLevel;
-    private ArrayList   mChildren = new ArrayList ();
+    private ArrayList <Test>   mChildren = new ArrayList <Test> ();
     
     public Test (int level) {
         mLevel = level;

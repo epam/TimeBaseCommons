@@ -65,6 +65,15 @@ public class JDBCUtils {
             }
     }
     
+    public static void              close (ResultSet rs) {
+        if (rs != null)
+            try {
+                rs.close ();
+            } catch (Throwable x) {
+                Common.LOGGER.log (Level.SEVERE, "Error while closing a result set", x);
+            }
+    }
+    
     public static void              truncateTable (Connection conn, String tname) 
         throws SQLException
     {

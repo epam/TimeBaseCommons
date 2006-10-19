@@ -254,7 +254,7 @@ public abstract class TreeEditorNode {
         return (null);
     }
     
-    public final TreeEditorNode findNodeByType (final Class type) {
+    public final TreeEditorNode findNodeByType (final Class <TreeEditorNode> type) {
         return (
             find (
                 new Filter () {

@@ -35,6 +35,15 @@ public class Util {
     }
 
     /**
+     *  Loads and instantiates the specified class using the no-argument constructor
+     */
+    public static Object    newInstance (String className) 
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+        return (Class.forName (className).newInstance ());
+    }
+    
+    /**
      *  Call a static method of the specified class. Figure out the method
      *  signature from the types of the supplied arguments (which must not contain
      *  null elements).
