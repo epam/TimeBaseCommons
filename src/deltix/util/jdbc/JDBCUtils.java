@@ -20,6 +20,18 @@ public class JDBCUtils {
             ps.setDouble (idx, v);
     }
     
+    /**
+     *  Converts NaN to NULL
+     */
+    public static void              updateDouble (ResultSet rs, int idx, double v) 
+        throws SQLException
+    {
+        if (Double.isNaN (v))
+            rs.updateNull (idx);
+        else
+            rs.updateDouble (idx, v);
+    }
+    
     public static int               queryInt (PreparedStatement ps) throws SQLException {
         ResultSet               rs = ps.executeQuery ();
         
@@ -34,7 +46,7 @@ public class JDBCUtils {
             
             return (ret);
         } finally {
-            rs.close ();
+            close (rs);
         }
     }
     
