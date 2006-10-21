@@ -3,6 +3,7 @@ package deltix.util.jdbc;
 import deltix.custom.statestreet.fxa.utils.*;
 import java.sql.*;
 import java.util.logging.*;
+import java.util.*;
 
 /**
  *
@@ -50,6 +51,45 @@ public class JDBCUtils {
         }
     }
     
+    public static int               queryInt (Connection conn, String query)
+        throws SQLException
+    {
+        PreparedStatement       ps = conn.prepareStatement (query);
+
+        try {           
+            return (queryInt (ps));
+        } finally {
+            close (ps);
+        }
+    }
+    
+    public static List <String>     queryStrings (PreparedStatement ps)
+        throws SQLException
+    {
+        ResultSet               rs = ps.executeQuery ();
+        ArrayList <String>      ret = new ArrayList <String> ();
+        try {           
+            while (rs.next ())
+                ret.add (rs.getString (1));
+
+            return (ret);
+        } finally {
+            close (rs);
+        }
+    }
+    
+    public static List <String>     queryStrings (Connection conn, String query)
+        throws SQLException
+    {
+        PreparedStatement       ps = conn.prepareStatement (query);
+
+        try {           
+            return (queryStrings (ps));
+        } finally {
+            close (ps);
+        }
+    }
+
     public static void              rollbackNoExceptions (Connection conn) {
         if (conn != null)
             try {
@@ -121,5 +161,20 @@ public class JDBCUtils {
             close (stmt);
         }
     }
+    
+    public static void				exec (Connection conn, List <String> sqlList)
+        throws SQLException
+    {
+        Statement	stmt = conn.createStatement ();
 
+        try {
+            for (String sql : sqlList)
+                stmt.execute (sql);
+            
+            stmt.close ();
+            stmt = null;
+        } finally {
+            close (stmt);
+        }
+    }
 }
