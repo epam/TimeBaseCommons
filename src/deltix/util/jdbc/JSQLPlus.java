@@ -1,9 +1,11 @@
 package deltix.util.jdbc;
 
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+
 import deltix.util.io.NonCachingSearchPathResolver;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
+
 
 /**
  *  Provides functionality to ORACLE's SQL*Plus interpreter, with many restrictions and
@@ -13,7 +15,11 @@ public class JSQLPlus {
     private static ScriptExecutionLogger   LOGGER = 
         new ScriptExecutionLogger () {
             public void logCommand (String cmd) {
+                System.out.println ("=========================");
+                System.out.println (new java.util.Date () + ":");
                 System.out.println (cmd);
+                System.out.println ("=========================");
+                System.out.println ();
             }        
         };
         

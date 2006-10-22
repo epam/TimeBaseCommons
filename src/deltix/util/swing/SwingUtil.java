@@ -152,11 +152,24 @@ public abstract class SwingUtil {
         staticHandle (null, x);
     }
 
-    public static void                 asyncInvoke (Runnable r) {
+    public static void          asyncInvoke (Runnable r) {
         if (SwingUtilities.isEventDispatchThread())
             r.run();
         else
             SwingUtilities.invokeLater (r);
+    }
+
+    public static void          asyncHandle (final Component parent, final Throwable x) {
+        if (SwingUtilities.isEventDispatchThread())
+            staticHandle (parent, x);
+        else
+            SwingUtilities.invokeLater (
+                new Runnable () {
+                    public void     run () {
+                        staticHandle (parent, x);
+                    }
+                }
+            );
     }
 
     public static void          setWindowsLookAndFeel () {
