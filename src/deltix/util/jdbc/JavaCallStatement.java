@@ -16,7 +16,7 @@ class JavaCallStatement implements ScriptStatement {
     public void execute (ScriptExecutionEnvironment env)
         throws SQLException, IOException, InterruptedException
     {
-        env.getLogger ().println ("CALL new " + mClassName + " ().run (connection)");
+        env.getLogger ().logCommand ("CALL new " + mClassName + " ().run (env)");
         
         DatabaseOperation   op;
         

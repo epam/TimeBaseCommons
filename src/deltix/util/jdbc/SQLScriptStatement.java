@@ -1,8 +1,6 @@
 package deltix.util.jdbc;
 
-import deltix.util.lang.StringUtils;
-import java.sql.SQLException;
-
+import java.sql.*;
 
 class SQLScriptStatement implements ScriptStatement {
     private String  mSQL;
@@ -53,12 +51,17 @@ class SQLScriptStatement implements ScriptStatement {
             exeSQL = mSQL;
         
         if (env.getLogger () != null)
-            env.getLogger ().println (exeSQL);
+            env.getLogger ().logCommand (exeSQL);
 
-        try {
-            env.getStockStatement ().execute (exeSQL);
-        }  catch (SQLException ex) {
-            throw ex;
+        if (env.getConnection () != null) {
+            Statement   stmt = env.getConnection ().createStatement ();
+
+            try {
+                stmt.execute (exeSQL);
+                stmt.close ();
+            } finally {
+                JDBCUtils.close (stmt);
+            }
         }
     }
 }

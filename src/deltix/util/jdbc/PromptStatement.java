@@ -13,6 +13,6 @@ class PromptStatement implements ScriptStatement {
     public void execute (ScriptExecutionEnvironment env)
         throws SQLException, InterruptedException
     {
-        env.getLogger ().println (mPrompt);
+        env.getLogger ().logCommand (mPrompt);
     }
 }

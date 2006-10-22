@@ -18,124 +18,15 @@ public class Script {
     private static final int	PLSQL = 2;
     private static final int	DDL = 3;
 
-    private List <ScriptStatement>          mStatements = new ArrayList <ScriptStatement> ();
-    private Connection                      mConnection = null;
-    private Statement						mStockStatement = null;
-    private String []                       mParamValues = null;
-    private PrintWriter                     mLogger = null;
-    private FilenameResolver                mScriptFinder = null;
-    private ScriptExecutionEnvironment      mEnv = 
-        new ScriptExecutionEnvironment () {
-            public Statement        getStockStatement () {
-                return (mStockStatement);
-            }
-
-            public String[]         getParameterValues () {
-                return (mParamValues);
-            }
-
-            public PrintWriter      getLogger () {
-                return (mLogger);
-            }
-
-            public Connection       getConnection () {
-                return (mConnection);
-            }            
-        };
+    private List <ScriptStatement>          mStatements = 
+        new ArrayList <ScriptStatement> ();
+    private ScriptExecutionEnvironment      mEnv;
         
     /**
      *	Constructs an empty script.
      */
-    public Script () {
-    }
-
-    /**
-     *  Returns the <i>connection</i> property.
-     */
-    public Connection                       getConnection () {
-        return (mConnection);
-    }
-
-    /**
-     *  Assigns the <i>connection</i> property.
-     */
-    public void                             setConnection (Connection value)
-        throws SQLException
-    {
-        mConnection = value;
-    }
-
-    /**
-     *  Returns the <i>paramValues</i> property.
-     *	Occurrences of <b>&amp;1</b> in the script
-     *	are substituted with <code>paramValues [0]</code>,
-     *	etc. If the script does not use parameters,
-     *	this argument can be null. Parameters with numbers
-     *	greater than <code>paramValues.length + 1</code>
-     *	will not be replaced at all, and will most
-     *	likely cause a SQL error.
-     */
-    public String []                        getParameterValues () {
-        return (mParamValues);
-    }
-
-    /**
-     *  Assigns the <i>paramValues</i> property.
-     *	Occurrences of <b>&amp;1</b> in the script
-     *	are substituted with <code>paramValues [0]</code>,
-     *	etc. If the script does not use parameters,
-     *	this argument can be null. Parameters with numbers
-     *	greater than <code>paramValues.length + 1</code>
-     *	will not be replaced at all, and will most
-     *	likely cause a SQL error.
-     *
-     *	@exception IllegalArgumentException
-     *						When more than 9 parameters are specified.
-     */
-    public void                             setParameterValues (String [] value) {
-        int             num = value.length;
-
-        if (num > 9)
-            throw new IllegalArgumentException (
-                "Only &1 .. &9 (nine parameters) are supported."
-            );
-        
-        mParamValues = value;
-    }
-
-    /**
-     *  Returns the <i>logger</i> property. If not null,
-     *	each statement is logged to this logger before execution.
-     */
-    public PrintWriter                      getLogger () {
-        return (mLogger);
-    }
-
-    /**
-     *  Assigns the <i>logger</i> property. If not null,
-     *	each statement is logged to this logger before execution.
-     */
-    public void                             setLogger (PrintWriter value) {
-        mLogger = value;
-    }
-
-    /**
-     *  Returns the <i>scriptFinder</i> property, used to resolve
-     *	script inclusion.
-     */
-    public FilenameResolver                 getScriptFinder () {
-        return (mScriptFinder);
-    }
-
-    /**
-     *  Assigns the <i>scriptFinder</i> property, used to resolve
-     *	script inclusion.
-     */
-    public void                             setScriptFinder (
-        FilenameResolver						value
-    )
-    {
-        mScriptFinder = value;
+    public Script (ScriptExecutionEnvironment env) {
+        mEnv = env;
     }
 
     /**
@@ -194,12 +85,11 @@ public class Script {
                         test.charAt (testLength - 1) == ';' ?
                             testLength - 1 : testLength;
 
-                    mStatements.add (
-                        new AtStatement (
-                            test.substring (first, last).trim (),
-                            mScriptFinder
-                        )
-                    );
+                    Script      subScript = new Script (mEnv);
+                    
+                    subScript.read (test.substring (first, last).trim ());
+        
+                    mStatements.add (new AtStatement (subScript));
 
                     continue;
                 }
@@ -353,7 +243,7 @@ public class Script {
         if (relPath.lastIndexOf (".") == -1)
             relPath += ".sql";
 
-        InputStream		is = mScriptFinder.open (relPath);
+        InputStream		is = mEnv.getScriptFinder ().open (relPath);
 
         if (is == null)
             throw new FileNotFoundException (relPath);
@@ -371,50 +261,9 @@ public class Script {
     public void				execute ()
         throws SQLException, InterruptedException, IOException
     {
-        mStockStatement = mConnection.createStatement ();
-
-        try {
-            for (ScriptStatement s : mStatements)
-                s.execute (mEnv);
-        } finally {
-            JDBCUtils.close (mStockStatement);
-        }
+        for (ScriptStatement s : mStatements)
+            s.execute (mEnv);
     }
 
-    /**
-     *	Usage: &lt;user&gt; &lt;password&gt; &lt;connectString&gt;
-     *			&lt;script&gt; [ &lt;param1&gt; ... ]
-     */
-    public static void main (String [] args) throws Exception {
-        String		user = args [0];
-        String		pwd = args [1];
-        String		connect = args [2];
-        File		file = new File (args [3]);
 
-        oracle.jdbc.driver.OracleDriver.class.getName ();
-
-        Connection  conn =
-            DriverManager.getConnection (connect, user, pwd);
-
-        Script		script = new Script ();
-
-        script.setConnection (conn);
-        script.setLogger (new PrintWriter (System.out));
-        script.setScriptFinder (
-            new NonCachingSearchPathResolver (
-                new File [] {
-                    file.getParentFile ()
-                }
-            )
-        );
-        script.read (file);
-
-        String []	paramValues = new String [args.length - 4];
-        System.arraycopy (args, 4, paramValues, 0, paramValues.length);
-
-        script.setParameterValues (paramValues);
-
-        script.execute ();
-        conn.close ();
-    }
 }
