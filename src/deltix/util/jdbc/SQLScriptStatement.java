@@ -12,53 +12,18 @@ class SQLScriptStatement implements ScriptStatement {
     public void execute (ScriptExecutionEnvironment env) 
         throws SQLException, InterruptedException
     {
-        String      exeSQL;
-        String []   paramValues = env.getParameterValues ();
-        
-        if (paramValues != null) {
-            StringBuffer    sb = new StringBuffer ();
-            int             pos = 0;
-            int             len = mSQL.length ();
-            
-            for (;;) {
-                int         idx = mSQL.indexOf ("&", pos);
-                
-                if (idx == -1)
-                    break;
-                
-                int         idx1 = idx + 1;
-                
-                if (idx1 == len)
-                    break;
-                
-                char        ch = mSQL.charAt (idx1);
-                int         pidx = ch - '1';
-                
-                if (pidx > 0 && pidx < paramValues.length) {
-                    sb.append (mSQL, pos, idx);
-                    sb.append (paramValues [pidx]);
-                    pos = idx + 2;
-                }
-            }
-            
-            sb.append (mSQL, pos, len);
-            exeSQL = sb.toString ();
-        }
-        else
-            exeSQL = mSQL;
-        
+        String                  exeSQL = env.substituteParameters (mSQL);
         ScriptExecutionLogger   logger = env.getLogger ();
         
         if (logger != null)
             logger.logCommand (exeSQL);
 
         if (env.getConnection () != null) {
-            PreparedStatement   stmt = 
-                env.getConnection ().prepareStatement (exeSQL);
+            Statement   stmt = env.getConnection ().createStatement ();
 
             try {
                 if (logger != null && exeSQL.toLowerCase ().trim ().startsWith ("select")) {
-                    ResultSet       rs = stmt.executeQuery ();
+                    ResultSet       rs = stmt.executeQuery (exeSQL);
                     StringBuffer    sb = new StringBuffer ();
                     
                     JDBCUtils.formatResultSet (
@@ -66,9 +31,9 @@ class SQLScriptStatement implements ScriptStatement {
                         rs,
                         logger.getWidth (),
                         true,
-                        "| ",
+                        "",
                         " | ",
-                        " |",
+                        "",
                         '-',
                         "...",
                         null
@@ -77,7 +42,7 @@ class SQLScriptStatement implements ScriptStatement {
                     logger.logResults (sb.toString ());
                 }
                 else
-                    stmt.execute ();
+                    stmt.execute (exeSQL);
                 
                 stmt.close ();
             } finally {

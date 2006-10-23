@@ -63,6 +63,12 @@ public class Script {
 
             if (state == OUTSIDE) {
                 //
+                //	Test for exit statement. 
+                //
+                if (test.startsWith ("exit")) {
+                    break;
+                }
+                //
                 //	Test for prompt statement
                 //
                 if (test.startsWith ("prompt")) {

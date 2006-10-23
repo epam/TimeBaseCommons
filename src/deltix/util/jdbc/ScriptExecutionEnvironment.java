@@ -99,5 +99,43 @@ public class ScriptExecutionEnvironment {
         mScriptFinder = value;
     }
 
+    public String                               substituteParameters (
+        String                                      in
+    )
+    {
+        if (mParameterValues == null) 
+            return (in);
+        
+        StringBuffer    sb = new StringBuffer ();
+        int             pos = 0;
+        int             len = in.length ();
 
+        for (;;) {
+            int         idx = in.indexOf ("&", pos);
+
+            if (idx == -1)
+                break;
+
+            int         idx1 = idx + 1;
+
+            if (idx1 == len)
+                break;
+
+            char        ch = in.charAt (idx1);
+            int         pidx = ch - '1';
+
+            if (pidx >= 0 && pidx < mParameterValues.length) {
+                sb.append (in, pos, idx);
+                sb.append (mParameterValues [pidx]);
+                pos = idx + 2;
+            }
+            else {
+                sb.append (in, pos, idx1);
+                pos = idx1;
+            }
+        }
+
+        sb.append (in, pos, len);
+        return (sb.toString ());
+    }
 }
