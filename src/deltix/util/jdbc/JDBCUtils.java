@@ -1,9 +1,11 @@
 package deltix.util.jdbc;
 
-import deltix.custom.statestreet.fxa.utils.*;
 import java.sql.*;
 import java.util.logging.*;
 import java.util.*;
+import java.io.*;
+
+import deltix.util.*;
 
 /**
  *
@@ -95,7 +97,7 @@ public class JDBCUtils {
             try {
                 conn.rollback ();
             } catch (Throwable x) {
-                Common.LOGGER.log (Level.SEVERE, "Error while rolling back a transaction", x);
+                Util.LOGGER.log (Level.SEVERE, "Error while rolling back a transaction", x);
             }
     }
     
@@ -104,7 +106,7 @@ public class JDBCUtils {
             try {
                 conn.close ();
             } catch (Throwable x) {
-                Common.LOGGER.log (Level.SEVERE, "Error while closing a connection", x);
+                Util.LOGGER.log (Level.SEVERE, "Error while closing a connection", x);
             }
     }
     
@@ -113,7 +115,7 @@ public class JDBCUtils {
             try {
                 stmt.close ();
             } catch (Throwable x) {
-                Common.LOGGER.log (Level.SEVERE, "Error while closing a statement", x);
+                Util.LOGGER.log (Level.SEVERE, "Error while closing a statement", x);
             }
     }
     
@@ -122,7 +124,7 @@ public class JDBCUtils {
             try {
                 rs.close ();
             } catch (Throwable x) {
-                Common.LOGGER.log (Level.SEVERE, "Error while closing a result set", x);
+                Util.LOGGER.log (Level.SEVERE, "Error while closing a result set", x);
             }
     }
     
@@ -177,4 +179,148 @@ public class JDBCUtils {
             close (stmt);
         }
     }
+    
+    public static void              formatResultSet (
+        StringBuffer                    out,
+        ResultSet                       rs,
+        int                             maxLineWidth, 
+        boolean                         printHeaders,
+        String                          left,
+        String                          columnSeparator,
+        String                          right,
+        char                            headerUnderscore,
+        String                          clip,
+        Justification []                columnJustification
+    ) 
+        throws SQLException
+    {
+        if (left == null)
+            left = "";
+        
+        if (right == null)
+            right = "";
+        
+        if (columnSeparator == null)
+            columnSeparator = "|";
+        
+        ResultSetMetaData   rsmd = rs.getMetaData ();
+        int                 numColumns = rsmd.getColumnCount ();
+        List <Object []>    rows = new ArrayList <Object []> ();
+        String []           headers = null;
+        int []              widths = new int [numColumns];
+        
+        if (printHeaders) {
+            headers = new String [numColumns];
+            
+            for (int ii = 0; ii < numColumns; ii++) {
+                String      label = rsmd.getColumnLabel (ii + 1);
+                headers [ii] = label;
+                widths [ii] = label.length ();
+            }
+        }
+        
+        while (rs.next ()) {
+            Object []       row = new Object [numColumns];
+            
+            for (int ii = 0; ii < numColumns; ii++) {
+                String      value = rs.getString (ii + 1);
+                row [ii] = value;
+                widths [ii] = value.length ();
+            }
+            
+            rows.add (row);
+        }
+        
+        int                 formatOverhead = 
+            left.length () + right.length () +
+            columnSeparator.length () * (numColumns - 1);
+        
+        int                 availWidth = maxLineWidth - formatOverhead;        
+        int                 avgWidth = availWidth / numColumns;        
+        int                 totalWidth = 0;
+        int                 totalWidthOfColsLEAvg = 0;
+        
+        for (int w : widths) {
+            totalWidth += w;
+            
+            if (w <= avgWidth)
+                totalWidthOfColsLEAvg += w;
+        }
+        
+        /*
+         *  If we exceed the width quota, shrink columns that are 
+         *  larger than average
+         */
+        if (totalWidth > availWidth) {
+            double          totalWidthOfColsGrAvg = totalWidth - totalWidthOfColsLEAvg;
+            double          widthAvailForLargeCols = availWidth - totalWidthOfColsLEAvg;
+            
+            double          k = widthAvailForLargeCols / totalWidthOfColsGrAvg;
+            
+            if (k >= 1)
+                throw new RuntimeException ("logic error");
+            
+            for (int ii = 0; ii < numColumns; ii++) {
+                int         w = widths [ii];
+                
+                if (w > avgWidth)
+                    w = (int) (w * k);
+                
+                /*
+                 *  Even maxLineWidth will be overridden to show at least one char per column.
+                 */
+                if (w == 0)     
+                    w = 1;
+                
+                widths [ii] = w;
+            }
+        }
+        
+        int                 lineWidth = formatOverhead;
+        
+        for (int w : widths)
+            lineWidth += w;
+        
+        if (printHeaders) {
+            out.append (left);
+            
+            for (int ii = 0; ii < numColumns; ii++) {
+                if (ii > 0)
+                    out.append (columnSeparator);
+                
+                String      header = headers [ii];
+                
+                Util.format (out, header, Justification.CENTER, widths [ii],  clip);
+            }
+            
+            out.append (right);
+            out.append ("\n");
+            
+            for (int ii = 0; ii < lineWidth; ii++)                 
+                out.append (headerUnderscore);     
+            
+            out.append ("\n");
+        }
+        
+        for (Object [] row : rows) {
+            out.append (left);
+            
+            for (int ii = 0; ii < numColumns; ii++) {
+                if (ii > 0)
+                    out.append (columnSeparator);
+                
+                Object              cell = row [ii];
+                Justification       j =
+                    columnJustification == null || columnJustification.length <= ii ?
+                        Justification.RIGHT :
+                        columnJustification [ii];
+                
+                Util.format (out, cell, j, widths [ii],  clip);
+            }
+            
+            out.append (right);
+            out.append ("\n");
+        }
+    }
+    
 }

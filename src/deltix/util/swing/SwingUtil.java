@@ -144,12 +144,17 @@ public abstract class SwingUtil {
     	);
     }
         
-    public static void		    staticHandle (Component parent, Throwable x) {
-        staticHandle (parent, x, Util.LOGGER, Level.WARNING);
+    public static void		    staticHandle (
+        Component                   parent, 
+        Throwable                   x,
+        Level                       logLevel        
+    )
+    {
+        staticHandle (parent, x, Util.LOGGER, logLevel);
     }
     
     public static void		    staticHandle (Throwable x) {
-        staticHandle (null, x);
+        staticHandle (null, x, Level.SEVERE);
     }
 
     public static void          asyncInvoke (Runnable r) {
@@ -159,14 +164,29 @@ public abstract class SwingUtil {
             SwingUtilities.invokeLater (r);
     }
 
-    public static void          asyncHandle (final Component parent, final Throwable x) {
+    public static void          asyncHandle (
+        final Component             parent, 
+        final Throwable             x,
+        final Level                 level
+    ) 
+    {
+        asyncHandle (parent, x, Util.LOGGER, level);
+    }
+    
+    public static void          asyncHandle (
+        final Component             parent, 
+        final Throwable             x,
+        final Logger                logger,
+        final Level                 level
+    ) 
+    {
         if (SwingUtilities.isEventDispatchThread())
-            staticHandle (parent, x);
+            staticHandle (parent, x, logger, level);
         else
             SwingUtilities.invokeLater (
                 new Runnable () {
                     public void     run () {
-                        staticHandle (parent, x);
+                        staticHandle (parent, x, logger, level);
                     }
                 }
             );

@@ -15,13 +15,13 @@ public class NonCachingSearchPathResolver implements FilenameResolver {
 	 *	@param roots	A set of directories that are sequentially
 	 *					searched for the specified files.
 	 */
-	public NonCachingSearchPathResolver (File [] roots) {
+	public NonCachingSearchPathResolver (File ... roots) {
 		mRoots = roots;
 	}
 	
     public File         find (String relPath) throws IOException {
-    	for (int ii = 0; ii < mRoots.length; ii++) {
-    		File			test = new File (mRoots [ii], relPath);
+    	for (File root : mRoots) {
+    		File			test = new File (root, relPath);
     		
     		if (test.exists ())
     			return (test);

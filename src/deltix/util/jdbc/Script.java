@@ -47,8 +47,8 @@ public class Script {
             if (l == null)
                 break;
 
-            String		test =
-                l.trim ().toLowerCase ().replace ('\t', ' ');
+            String      lineLower = l.toLowerCase ();
+            String		test = lineLower.trim ().replace ('\t', ' ');
             //
             //	Test for empty line.
             //
@@ -66,8 +66,10 @@ public class Script {
                 //	Test for prompt statement
                 //
                 if (test.startsWith ("prompt")) {
+                    int     pos = lineLower.indexOf ("prompt");
+                    
                     mStatements.add (
-                        new PromptStatement (test.substring (6).trim ())
+                        new PromptStatement (l.substring (pos + 6).trim ())
                     );
 
                     continue;
@@ -259,10 +261,14 @@ public class Script {
      *	Executes the script.
      */
     public void				execute ()
-        throws SQLException, InterruptedException, IOException
+        throws SQLException, InterruptedException
     {
-        for (ScriptStatement s : mStatements)
+        for (ScriptStatement s : mStatements) {
+            if (Thread.interrupted ())
+                throw new InterruptedException ();
+            
             s.execute (mEnv);
+        }
     }
 
 

@@ -7,11 +7,28 @@ import java.sql.*;
  *
  */
 public class ScriptExecutionEnvironment {
-    private Connection                          mConnection = null;
-    private String []                           mParameterValues = null;
-    private ScriptExecutionLogger               mLogger = null;
+    private Connection                          mConnection;
+    private String []                           mParameterValues;
+    private ScriptExecutionLogger               mLogger;
     private FilenameResolver                    mScriptFinder;
-        
+    
+    public ScriptExecutionEnvironment (
+        Connection                              conn,
+        ScriptExecutionLogger                   logger,
+        FilenameResolver                        scriptFinder,
+        String ...                              params
+    ) 
+    {
+        mConnection = conn;
+        mLogger = logger;
+        mScriptFinder = scriptFinder;
+        mParameterValues = params;
+    }
+    
+    public ScriptExecutionEnvironment () {
+        this (null, null, ClassLoaderFilenameResolver.STD_CLASSPATH_RESOLVER);
+    }
+    
     /**
      *  Returns the DB connection, or null
      */

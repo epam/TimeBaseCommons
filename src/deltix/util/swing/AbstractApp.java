@@ -1,18 +1,43 @@
 package deltix.util.swing;
 
+import java.awt.event.*;
 import java.util.logging.*;
 import java.io.*;
 import javax.swing.*;
 
+import deltix.util.*;
 import deltix.util.io.*;
 
 public abstract class AbstractApp extends JFrame {    
     protected AbstractApp () {
-        setDefaultCloseOperation (EXIT_ON_CLOSE);        
+        this (EXIT_ON_CLOSE);        
+    }
+    
+    protected AbstractApp (int defaultCloseOperation) {
+        setDefaultCloseOperation (defaultCloseOperation);     
+        
+        addWindowListener (
+            new WindowAdapter () {
+                public void windowClosing (WindowEvent e) {
+                    AbstractApp.this.windowClosing (e);
+                }
+            }
+        );
+    }
+    
+    protected void          windowClosing (WindowEvent e) {        
     }
     
     public void		        handle (Throwable x) {
-        SwingUtil.staticHandle (this, x);
+        handle (x, Level.SEVERE);
+    }
+    
+    public void		        handle (
+        Throwable                   x,
+        Level                       logLevel        
+    ) 
+    {
+        handle (x, Util.LOGGER, logLevel);
     }
     
     public void		        handle (
@@ -22,6 +47,27 @@ public abstract class AbstractApp extends JFrame {
     ) 
     {
         SwingUtil.staticHandle (this, x, logger, logLevel);
+    }
+    
+    public void		        asyncHandle (Throwable x) {
+        asyncHandle (x, Level.SEVERE);
+    }
+    
+    public void		        asyncHandle (
+        Throwable                   x,
+        Level                       logLevel        
+    ) 
+    {
+        asyncHandle (x, Util.LOGGER, logLevel);
+    }
+    
+    public void		        asyncHandle (
+        Throwable                   x,
+        Logger                      logger,
+        Level                       logLevel
+    ) 
+    {
+        SwingUtil.asyncHandle (this, x, logger, logLevel);
     }
     
     public void                 syncInvoke (Runnable r)
@@ -35,18 +81,6 @@ public abstract class AbstractApp extends JFrame {
         } catch (java.lang.reflect.InvocationTargetException x) {
             handle (x);
         }
-    }
-    
-    public void		            syncHandle (final Throwable x)
-        throws InterruptedException 
-    {
-        syncInvoke (
-            new Runnable () {
-                public void run () {
-                    handle (x);
-                }
-            }
-        );
     }
     
     public void                     printUsage () throws IOException, InterruptedException  {

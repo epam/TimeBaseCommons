@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class VerticalForm extends JPanel {
+public class VerticalForm extends EnablingPanel {
     private GridBagConstraints      mC = new GridBagConstraints ();
     private Set <Component>         mSwitchComponents = new HashSet <Component> ();
     

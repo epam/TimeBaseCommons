@@ -14,6 +14,14 @@ import deltix.util.io.NonCachingSearchPathResolver;
 public class JSQLPlus {
     private static ScriptExecutionLogger   LOGGER = 
         new ScriptExecutionLogger () {
+            public int  getWidth () {
+                return (80);
+            }
+            
+            public void logResults (String text) {
+                System.out.println (text);
+            }
+            
             public void logCommand (String cmd) {
                 System.out.println ("=========================");
                 System.out.println (new java.util.Date () + ":");

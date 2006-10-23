@@ -13,5 +13,5 @@ public interface DatabaseOperation {
      *  @param env     The execution environment.
      */
     public void     run (ScriptExecutionEnvironment env) 
-        throws SQLException, InterruptedException, IOException;
+        throws SQLException, InterruptedException;
 }

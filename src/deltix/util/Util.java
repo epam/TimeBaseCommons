@@ -14,7 +14,8 @@ import java.lang.reflect.Array;
 
 /** Set of usefull methods */
 public class Util {
-    public static final Logger  LOGGER = Logger.getLogger ("deltix.util");
+    public static final String  LOGGER_NAME = "deltix.util";
+    public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
 
     public static void      writeNullableString (String s, ObjectOutput os)
         throws IOException
@@ -878,5 +879,48 @@ public class Util {
                 return (ii);
 
         return (-1);
+    }
+    
+    public static void          format (
+        StringBuffer                out,
+        Object                      obj, 
+        Justification               j,
+        int                         width,
+        String                      clip
+    )
+    {
+        String                      s = obj.toString ();
+        int                         length = s.length ();
+        int                         diff = width - length;
+        
+        if (diff < 0) {
+            int                     clipLength = clip.length ();
+            int                     showLength = width - clipLength;
+            
+            if (showLength > 0) {
+                out.append (s, 0, showLength);
+                showLength = 0;
+            }
+            
+            out.append (clip, 0, clipLength + showLength);
+        }
+        else {
+            int                     lpad, rpad;
+            
+            switch (j) {
+                case LEFT:      lpad = diff;    rpad = 0;   break;
+                case RIGHT:     rpad = diff;    lpad = 0;   break;
+                case CENTER:    lpad = diff / 2;    rpad = diff - lpad; break;
+                default:    throw new RuntimeException ("Unrecognized: " + j);
+            }
+            
+            for (int ii = 0; ii < lpad; ii++)
+                out.append (" ");
+            
+            out.append (s);
+            
+            for (int ii = 0; ii < rpad; ii++)
+                out.append (" ");
+        }        
     }
 }

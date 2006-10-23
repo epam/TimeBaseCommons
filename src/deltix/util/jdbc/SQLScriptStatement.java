@@ -12,9 +12,6 @@ class SQLScriptStatement implements ScriptStatement {
     public void execute (ScriptExecutionEnvironment env) 
         throws SQLException, InterruptedException
     {
-        if (Thread.interrupted ())
-            throw new InterruptedException ();
-
         String      exeSQL;
         String []   paramValues = env.getParameterValues ();
         
@@ -50,14 +47,38 @@ class SQLScriptStatement implements ScriptStatement {
         else
             exeSQL = mSQL;
         
-        if (env.getLogger () != null)
-            env.getLogger ().logCommand (exeSQL);
+        ScriptExecutionLogger   logger = env.getLogger ();
+        
+        if (logger != null)
+            logger.logCommand (exeSQL);
 
         if (env.getConnection () != null) {
-            Statement   stmt = env.getConnection ().createStatement ();
+            PreparedStatement   stmt = 
+                env.getConnection ().prepareStatement (exeSQL);
 
             try {
-                stmt.execute (exeSQL);
+                if (logger != null && exeSQL.toLowerCase ().trim ().startsWith ("select")) {
+                    ResultSet       rs = stmt.executeQuery ();
+                    StringBuffer    sb = new StringBuffer ();
+                    
+                    JDBCUtils.formatResultSet (
+                        sb,
+                        rs,
+                        logger.getWidth (),
+                        true,
+                        "| ",
+                        " | ",
+                        " |",
+                        '-',
+                        "...",
+                        null
+                    );      
+                    
+                    logger.logResults (sb.toString ());
+                }
+                else
+                    stmt.execute ();
+                
                 stmt.close ();
             } finally {
                 JDBCUtils.close (stmt);
