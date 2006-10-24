@@ -85,17 +85,24 @@ public class Script {
                 //	that lie entirely on one line.
                 //
                 if (test.charAt (0) == '@') {
-                    int		testLength = test.length ();
+                    String  lineTrimmed = l.trim ();
+                    int		lineLength = lineTrimmed.length ();
+                    
                     int		first =
-                        test.charAt (1) == '@' ? 2 : 1;
+                        lineTrimmed.charAt (1) == '@' ? 2 : 1;
 
                     int		last =
-                        test.charAt (testLength - 1) == ';' ?
-                            testLength - 1 : testLength;
+                        lineTrimmed.charAt (lineLength - 1) == ';' ?
+                            lineLength - 1 : lineLength;
 
                     Script      subScript = new Script (mEnv);
                     
-                    subScript.read (test.substring (first, last).trim ());
+                    // Hack : discard parameters
+                    String          s = lineTrimmed.substring (first, last).trim ();
+                    StringTokenizer stk = new StringTokenizer (s);
+                    String          fname = stk.nextToken ();
+                    
+                    subScript.read (fname);
         
                     mStatements.add (new AtStatement (subScript));
 
