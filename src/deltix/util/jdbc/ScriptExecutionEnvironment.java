@@ -25,6 +25,15 @@ public class ScriptExecutionEnvironment {
         mParameterValues = params;
     }
     
+    public ScriptExecutionEnvironment (ScriptExecutionEnvironment copy) {
+        this (
+            copy.getConnection (),
+            copy.getLogger (),
+            copy.getScriptFinder (),
+            copy.getParameterValues ()
+        );
+    }
+    
     public ScriptExecutionEnvironment () {
         this (null, null, ClassLoaderFilenameResolver.STD_CLASSPATH_RESOLVER);
     }
