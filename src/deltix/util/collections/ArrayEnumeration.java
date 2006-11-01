@@ -1,33 +1,33 @@
 package deltix.util.collections;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 public class ArrayEnumeration implements Enumeration {
-    
-    private Object [] mArray;
+
+    private Object[] mArray;
     private int mIdx;
     private boolean mHasNext;
-    
-    public ArrayEnumeration (Object [] array){
+
+    public ArrayEnumeration(Object[] array) {
         mArray = array;
         mIdx = 0;
-        mHasNext =(array != null && array.length > 0);
+        mHasNext = (array != null && array.length > 0);
     }
-    
-    public boolean hasMoreElements(){
+
+    public boolean hasMoreElements() {
         return mHasNext;
     }
-    
-    public Object nextElement(){
-        
-        if (mHasNext){
+
+    public Object nextElement() {
+
+        if (mHasNext) {
             Object o = mArray[mIdx];
             mIdx++;
-            mHasNext =(mIdx < mArray.length);
+            mHasNext = (mIdx < mArray.length);
             return o;
-        }
-        else throw new NoSuchElementException("No Elements left in Enumeration");
-            
+        } else throw new NoSuchElementException("No Elements left in Enumeration");
+
     }
 
 }
