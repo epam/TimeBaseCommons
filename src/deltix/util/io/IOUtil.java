@@ -13,6 +13,23 @@ import deltix.util.Util;
  */
 public class IOUtil {
     /**
+     *  Output character <code>ch</code> <code>n</code> times to Writer
+     *  <code>wr</code>.
+     */
+    public static void      pad (char ch, int n, Writer wr) throws IOException {
+        for (int ii = 0; ii < n; ii++)
+            wr.write (ch);
+    }
+    
+    /**
+     *  Output character <code>ch</code> <code>n</code> times to PrintStream
+     *  <code>ps</code>.
+     */
+    public static void      pad (char ch, int n, PrintStream ps) throws IOException {
+        for (int ii = 0; ii < n; ii++)
+            ps.print (ch);
+    }
+    /**
      *  Return the short name of teh file without the extension.
      */
     public static String    getNameNoExt (File f) {

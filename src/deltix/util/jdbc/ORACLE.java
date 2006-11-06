@@ -8,7 +8,6 @@ import java.io.*;
 
 import deltix.util.Util;
 
-/** @deprecated */
 public class ORACLE {
     public static void          loadDriver () throws ClassNotFoundException {
         Class.forName ("oracle.jdbc.driver.OracleDriver");
@@ -22,6 +21,24 @@ public class ORACLE {
         }
     }
 
+    public static Connection            openThinConnection (
+        String                              host,
+        int                                 port,
+        String                              sid,
+        String                              user,
+        String                              password
+    )
+        throws SQLException
+    {
+        return (
+            DriverManager.getConnection (
+                "jdbc:oracle:thin:@" + host + ":" + port + ":" + sid,
+                user,
+                password
+            )
+        );
+    }
+    
     public static void			test (Connection conn) throws SQLException {
         Statement	stmt = conn.createStatement ();
 
