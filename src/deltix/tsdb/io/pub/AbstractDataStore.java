@@ -10,12 +10,12 @@ public interface AbstractDataStore {
      *  Create a new object on disk and format internally. The data store is
      *  left open for read-write at the end of this method.
      */
-    public void         format () throws IOException;
+    public void         format ();
     
     /**
      *  Close the store and delete all underlying files from disk.
      */
-    public void         delete () throws IOException;
+    public void         delete ();
     
     /**
      *  Determines whether the store is open.
@@ -25,17 +25,17 @@ public interface AbstractDataStore {
     /**
      *  Open the data store.
      */
-    public void         open (boolean readOnly) throws IOException;
+    public void         open (boolean readOnly);
     
     /**
      *  Flush all data to disk. The disk data store is guaranteed to be consistent
      *  at the end of this method, if it succesfully completes.
      */
-    public void         flush () throws IOException;
+    public void         flush ();
     
     /**
      *  Close the data store and release all resources, such as caches and
      *  file descriptors.
      */
-    public void         close () throws IOException;
+    public void         close ();
 }
