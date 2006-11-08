@@ -5,21 +5,21 @@ package deltix.util.memory;
  *	in <b>precisely</b> the same format as DataInput/DataOutput.
  */
 public class DataExchangeUtils {
-	private static int		b (byte [] bytes, int offset) {
-		return (((int) bytes [offset]) & 0xFF);
-	}
-	
-	private static void		b (byte [] bytes, int offset, int byt) {
-		bytes [offset] = (byte) (byt & 0xFF);
-	}
-	
-	private static void		b (byte [] bytes, int offset, long byt) {
-		bytes [offset] = (byte) (byt & 0xFF);
-	}
-	
-	private static long		lb (byte [] bytes, int offset) {
-		return (((long) bytes [offset]) & 0xFF);
-	}
+    private static int		b (byte [] bytes, int offset) {
+            return (((int) bytes [offset]) & 0xFF);
+    }
+
+    private static void		b (byte [] bytes, int offset, int byt) {
+            bytes [offset] = (byte) (byt & 0xFF);
+    }
+
+    private static void		b (byte [] bytes, int offset, long byt) {
+            bytes [offset] = (byte) (byt & 0xFF);
+    }
+
+    private static long		lb (byte [] bytes, int offset) {
+            return (((long) bytes [offset]) & 0xFF);
+    }
 	
     public static short   	readShort (byte [] bytes, int offset) {
         return ((short)
@@ -28,7 +28,19 @@ public class DataExchangeUtils {
 		);
     }
     
+    public static int   	readUnsignedShort (byte [] bytes, int offset) {
+        return (
+			(b (bytes, offset) << 8 |
+			 b (bytes, offset + 1))
+		);
+    }
+    
     public static void   	writeShort (byte [] bytes, int offset, short s) {
+		b (bytes, offset, s >>> 8);
+		b (bytes, offset + 1, s);
+    }
+    
+    public static void   	writeUnsignedShort (byte [] bytes, int offset, int s) {
 		b (bytes, offset, s >>> 8);
 		b (bytes, offset + 1, s);
     }
