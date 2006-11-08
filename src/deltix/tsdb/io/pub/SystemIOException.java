@@ -12,7 +12,7 @@ public class SystemIOException extends RuntimeException {
     }
     
     public SystemIOException (IOException iox) {
-        super ("System IO error", iox);
+        super ("System IO error: " + iox, iox);
     }
     
     public SystemIOException (String msg) {
