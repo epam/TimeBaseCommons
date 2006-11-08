@@ -33,12 +33,24 @@ public class DataExchangeUtils {
 		b (bytes, offset + 1, s);
     }
     
+    public static char   	readChar (byte [] bytes, int offset) {
+        return ((char)
+			(b (bytes, offset) << 8 |
+			 b (bytes, offset + 1))
+		);
+    }
+    
+    public static void   	writeChar (byte [] bytes, int offset, char s) {
+		b (bytes, offset, s >>> 8);
+		b (bytes, offset + 1, s);
+    }
+    
     public static int   	readInt (byte [] bytes, int offset) {
         return (
-			b (bytes, offset) << 24 |
-			b (bytes, offset + 1) << 16 |
-			b (bytes, offset + 2) << 8 |
-			b (bytes, offset + 3)
+                b (bytes, offset) << 24 |
+                b (bytes, offset + 1) << 16 |
+                b (bytes, offset + 2) << 8 |
+                b (bytes, offset + 3)
 		);
     }
     
