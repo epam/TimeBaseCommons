@@ -1,4 +1,4 @@
-package deltix.tsdb.io.pub;
+package deltix.util.io;
 
 import java.io.*;
 
@@ -26,12 +26,6 @@ public interface AbstractDataStore {
      *  Open the data store.
      */
     public void         open (boolean readOnly);
-    
-    /**
-     *  Flush all data to disk. The disk data store is guaranteed to be consistent
-     *  at the end of this method, if it succesfully completes.
-     */
-    public void         flush ();
     
     /**
      *  Close the data store and release all resources, such as caches and

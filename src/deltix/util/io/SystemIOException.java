@@ -1,4 +1,4 @@
-package deltix.tsdb.io.pub;
+package deltix.util.io;
 
 import java.io.IOException;
 
