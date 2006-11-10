@@ -15,6 +15,22 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
     private byte            mDay;       //  1-based!
     
     public AbsoluteDate (int year, int month, int day) {
+        set (year, month, day);
+    }
+    
+    public AbsoluteDate (Calendar cal) {
+        set (cal);
+    }
+    
+    public AbsoluteDate (int num) {
+        set (num);           
+    }
+    
+    public AbsoluteDate (String s) {
+        set (s);
+    }
+        
+    public void         set (int year, int month, int day) {
         if (year < 0 || year > Short.MAX_VALUE)
             throw new IllegalArgumentException ("Illegal year value: " + year);
 
@@ -29,13 +45,13 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
         mDay = (byte) day;
     }
     
-    public AbsoluteDate (Calendar cal) {
+    public void         set (Calendar cal) {
         mYear = (short) cal.get (Calendar.YEAR);
         mMonth = (byte) (1 + cal.get (Calendar.MONTH));
         mDay = (byte) cal.get (Calendar.DAY_OF_MONTH);
     }
     
-    public AbsoluteDate (int num) {
+    public void         set (int num) {
         mDay = (byte) (num % 100);
         
         num = num / 100;
@@ -45,7 +61,7 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
         mYear = (short) (num / 100);                
     }
     
-    public AbsoluteDate (String s) {
+    public void         set (String s) {
         StringTokenizer     stk = new StringTokenizer (s, "-");
         
         if (stk.countTokens () == 3) {
