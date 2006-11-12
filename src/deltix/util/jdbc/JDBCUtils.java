@@ -53,12 +53,15 @@ public class JDBCUtils {
         }
     }
     
-    public static int               queryInt (Connection conn, String query)
+    public static int               queryInt (Connection conn, String query, Object ... params)
         throws SQLException
     {
         PreparedStatement       ps = conn.prepareStatement (query);
 
         try {           
+            for (int ii = 0; ii < params.length; ii++)
+                ps.setObject (ii + 1, params [ii]);
+        
             return (queryInt (ps));
         } finally {
             close (ps);
@@ -80,12 +83,15 @@ public class JDBCUtils {
         }
     }
     
-    public static List <String>     queryStrings (Connection conn, String query)
+    public static List <String>     queryStrings (Connection conn, String query, Object ... params)
         throws SQLException
     {
         PreparedStatement       ps = conn.prepareStatement (query);
 
         try {           
+            for (int ii = 0; ii < params.length; ii++)
+                ps.setObject (ii + 1, params [ii]);
+        
             return (queryStrings (ps));
         } finally {
             close (ps);
@@ -149,7 +155,7 @@ public class JDBCUtils {
             case TRUNCATE:      truncateTable (conn, tname);    break;
         }  
     }
-    
+    /*
     public static void             exec (Connection conn, String sql) 
         throws SQLException
     {
@@ -161,6 +167,23 @@ public class JDBCUtils {
             stmt = null;
         } finally {
             close (stmt);
+        }
+    }
+    */
+    public static void             exec (Connection conn, String sql, Object ... params) 
+        throws SQLException
+    {
+        PreparedStatement           ps = conn.prepareStatement (sql);
+
+        try {
+            for (int ii = 0; ii < params.length; ii++)
+                ps.setObject (ii + 1, params [ii]);
+        
+            ps.execute ();        
+            ps.close ();
+            ps = null;
+        } finally {
+            close (ps);
         }
     }
     

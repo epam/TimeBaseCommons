@@ -14,6 +14,9 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
     private byte            mMonth;     //  1-based!
     private byte            mDay;       //  1-based!
     
+    public AbsoluteDate () {
+    }
+    
     public AbsoluteDate (int year, int month, int day) {
         set (year, month, day);
     }
