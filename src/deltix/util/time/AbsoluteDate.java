@@ -15,6 +15,11 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
     private byte            mDay;       //  1-based!
     
     public AbsoluteDate () {
+        mMonth = 0;
+    }
+    
+    public AbsoluteDate (AbsoluteDate copy) {
+        set (copy);
     }
     
     public AbsoluteDate (int year, int month, int day) {
@@ -33,6 +38,20 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
         set (s);
     }
         
+    public boolean      isInitialized () {
+        return (mMonth != 0);
+    }
+    
+    public void         setUninitialized () {
+        mMonth = 0;
+    }
+    
+    public void         set (AbsoluteDate copy) {
+        mYear = copy.mYear;
+        mMonth = copy.mMonth;
+        mDay = copy.mDay;
+    }
+    
     public void         set (int year, int month, int day) {
         if (year < 0 || year > Short.MAX_VALUE)
             throw new IllegalArgumentException ("Illegal year value: " + year);
