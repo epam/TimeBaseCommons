@@ -7,6 +7,9 @@ import java.io.*;
  *  A bean holding an absolute (time- and time zone-unrelated) date.
  */
 public class AbsoluteDate implements Comparable <AbsoluteDate> {
+    public static final AbsoluteDate        MIN_VALUE = new AbsoluteDate (0, 1, 1);
+    public static final AbsoluteDate        MAX_VALUE = new AbsoluteDate (Short.MAX_VALUE, 12, 31);
+    
     static final long           serialVersionUID = 1L;
     private static final short  EXTERNAL_VERSION = 1;
 

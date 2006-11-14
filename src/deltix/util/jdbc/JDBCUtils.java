@@ -40,12 +40,12 @@ public class JDBCUtils {
         
         try {
             if (!rs.next ())
-                throw new SQLException ("No rows returned");
+                throw new NoRowsReturnedException ();
             
             int                 ret = rs.getInt (1);
             
             if (rs.next ())
-                throw new SQLException ("Multiple rows returned");
+                throw new MultipleRowsReturnedException ();
             
             return (ret);
         } finally {
@@ -68,6 +68,39 @@ public class JDBCUtils {
         }
     }
     
+    public static String            queryString (PreparedStatement ps) throws SQLException {
+        ResultSet               rs = ps.executeQuery ();
+        
+        try {
+            if (!rs.next ())
+                throw new NoRowsReturnedException ();
+            
+            String              ret = rs.getString (1);
+            
+            if (rs.next ())
+                throw new MultipleRowsReturnedException ();
+            
+            return (ret);
+        } finally {
+            close (rs);
+        }
+    }
+    
+    public static String            queryString (Connection conn, String query, Object ... params)
+        throws SQLException
+    {
+        PreparedStatement       ps = conn.prepareStatement (query);
+
+        try {           
+            for (int ii = 0; ii < params.length; ii++)
+                ps.setObject (ii + 1, params [ii]);
+        
+            return (queryString (ps));
+        } finally {
+            close (ps);
+        }
+    }
+        
     public static List <String>     queryStrings (PreparedStatement ps)
         throws SQLException
     {
