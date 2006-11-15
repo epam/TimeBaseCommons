@@ -17,6 +17,26 @@ public class Util {
     public static final String  LOGGER_NAME = "deltix.util";
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
 
+    public static <T extends Comparable <T>> T  max (T a, T b) {
+        if (a == null)
+            return (b);
+        
+        if (b == null)
+            return (a);
+        
+        return (a.compareTo (b) > 0 ? a : b);
+    }
+        
+    public static <T extends Comparable <T>> T  min (T a, T b) {
+        if (a == null)
+            return (b);
+        
+        if (b == null)
+            return (a);
+        
+        return (a.compareTo (b) < 0 ? a : b);
+    }
+        
     public static void      writeNullableString (String s, ObjectOutput os)
         throws IOException
     {
