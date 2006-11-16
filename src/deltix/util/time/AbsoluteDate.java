@@ -41,6 +41,48 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
         set (s);
     }
         
+    /**
+     *  Returns whether the year is a leap year according to the Gregorian calendar
+     */
+    public static boolean   isLeapYear (int year) {
+        if (year % 400 == 0)
+            return (true);
+        
+        if (year % 100 == 0)
+            return (false);
+        
+        return (year % 4 == 0);
+    }
+    
+    private static final int[]  DAYS_IN_MONTH = { 0, 31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    
+    public int              getNumberOfDaysInMonth () {
+        if (mMonth == 2)
+            return (isLeapYear (mYear) ? 29 : 28);
+        else
+            return (DAYS_IN_MONTH [mMonth]);
+    }
+    
+    /**
+     *  Increments the date by 1 day, according to the Gregorian calendar. 
+     *  @return     this
+     */
+    public AbsoluteDate inc () {
+        mDay++;
+        
+        if (mDay > getNumberOfDaysInMonth ()) {
+            mDay = 1;
+            mMonth++;
+        }
+        
+        if (mMonth == 13) {
+            mMonth = 1;
+            mYear++;
+        }
+        
+        return (this);
+    }
+    
     public boolean      isInitialized () {
         return (mMonth != 0);
     }
