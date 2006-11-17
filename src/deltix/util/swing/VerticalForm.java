@@ -91,6 +91,9 @@ public class VerticalForm extends EnablingPanel {
         add (comp, mC);
         
         mC.gridy++;
+        
+        if (disableWithForm)
+            enableComponentRec (isEnabled (), comp);
     }
     
     public void         addLine () {
@@ -128,8 +131,11 @@ public class VerticalForm extends EnablingPanel {
         add (comp, mC);
         
         mC.gridy++;
+        
+        if (disableWithForm)
+            enableComponentRec (isEnabled (), comp);
     }
-    
+    /*
     public void         setEnabled (boolean flag) {
         super.setEnabled (flag);
         
@@ -142,4 +148,5 @@ public class VerticalForm extends EnablingPanel {
                 c.setEnabled (flag);
         }
     }
+     */
 }
