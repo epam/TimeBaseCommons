@@ -60,7 +60,7 @@ public final class ${name}ArrayList
             throw new IllegalArgumentException("Illegal Capacity: "+
                                                initialCapacity);
 #if( $name == "Object" )
-        this.elementData = Arrays.initializeArray(initialCapacity);
+        this.elementData = Arrays.<${type}>initializeArray(initialCapacity);
 #else
 		this.elementData = new ${type} [initialCapacity];
 #end
@@ -84,7 +84,7 @@ public final class ${name}ArrayList
     public ${name}ArrayList(Collection<? extends ${type_Object}> c) {
         size = c.size ();
 #if( $name == "Object" )
-        this.elementData = Arrays.initializeArray(size);
+        this.elementData = Arrays.<${type}>initializeArray(size);
 #else
 		elementData = new ${type} [(size*110) / 100];
 #end
@@ -99,7 +99,7 @@ public final class ${name}ArrayList
     public ${name}ArrayList (${type} [] arr) {
     	size = arr.length;
 #if( $name == "Object" )
-        elementData = Arrays.initializeArray((size*110) / 100);
+        elementData = Arrays.<${type}>initializeArray((size*110) / 100);
 #else
     	elementData = new ${type} [(size*110) / 100];
 #end
@@ -117,7 +117,7 @@ public final class ${name}ArrayList
 		if (size < oldCapacity) {
 	    	${type} oldData [] = elementData;
 #if( $name == "Object" )
-        elementData = Arrays.initializeArray(size);
+        elementData = Arrays.<${type}>initializeArray(size);
 #else
     	elementData = new ${type} [size];
 #end
@@ -141,7 +141,7 @@ public final class ${name}ArrayList
     	    if (newCapacity < minCapacity)
 				newCapacity = minCapacity;
 #if( $name == "Object" )
-        elementData = Arrays.initializeArray(newCapacity);
+        elementData = Arrays.<${type}>initializeArray(newCapacity);
 #else
     	elementData = new ${type} [newCapacity];
 #end
@@ -199,7 +199,7 @@ public final class ${name}ArrayList
      */
     public <T> T [] toArray(T a[]) {
         if (a.length < size)
-            a = Arrays.instantiate(size);
+            a = Arrays.<T>initializeArray(size);
 
         Arrays.safeArrayCopy (elementData, 0, a, 0, size);
 
@@ -256,7 +256,7 @@ public final class ${name}ArrayList
     @SuppressWarnings("unchecked")
     public <T> T [] toArray(T a[]) {
         if (a.length < size)
-            a = Arrays.initializeArray(size);
+            a = Arrays.<T>initializeArray(size);
 
         for (int i = 0; i < size; i++)
         {
@@ -390,7 +390,7 @@ public final class ${name}ArrayList
 		try {
 	    	${name}ArrayList v = (${name}ArrayList) super.clone();
 #if( ${name} == "Object" )
-	    	v.elementData = Arrays.initializeArray(size);
+	    	v.elementData = Arrays.<${type}>initializeArray(size);
 #else
             v.elementData = new ${type} [size];
 #end
@@ -424,7 +424,7 @@ public final class ${name}ArrayList
      */
     public ${type} [] to${name_abbr}Array () {
 #if($name == "Object")
-    	${type} []		ret = Arrays.initializeArray(size);
+    	${type} []		ret = Arrays.<${type}>initializeArray(size);
 #else
     	${type} []		ret = new ${type} [size];
 #end
@@ -681,7 +681,7 @@ public final class ${name}ArrayList
         // Read in array length and allocate array
         size = s.readInt();
 #if( $name == "Object" )
-        elementData = Arrays.initializeArray(size);
+        elementData = Arrays.<${type}>initializeArray(size);
 #else
         elementData = new ${type} [size];
 #end
@@ -703,8 +703,8 @@ public final class ${name}ArrayList
     		return (false);
 
     	return (java.util.Arrays.equals (
-    					to${name}Array (),
-    					((${name}ArrayList) otherObj).to${name}Array ()
+    					to${name_abbr}Array (),
+    					((${name}ArrayList) otherObj).to${name_abbr}Array ()
     			)
 
     	);
