@@ -1,16 +1,30 @@
 package deltix.util.collections.generated;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
+#if($name == "Object")
+import java.util.Enumeration;
+#end
+
+import deltix.util.collections.Arrays;
 
 import deltix.util.memory.*;
 
 /**
- * Resizable array of primitive ${prim}s. Much more efficient than
- *	keeping a <code>java.util.ArrayList</code> of <code>${wrap}</code>.
+ * Resizable array of primitive ${type}s. Much more efficient than
+ *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
  */
-public final class ${wrap}ArrayList
-	extends AbstractList
-	implements List, Cloneable, java.io.Serializable, MemorySizeEstimator
+
+#if($name == "Object")
+public final class ${name}ArrayList<${type}>
+#else
+public final class ${name}ArrayList
+#end
+    extends AbstractList<${type_Object}>
+	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator
+
 {
     static final long  serialVersionUID = 1L;
 
@@ -20,7 +34,7 @@ public final class ${wrap}ArrayList
      *
      * @serial
      */
-    private ${prim} elementData[];
+    private ${type} elementData[];
 
     /**
      * The size of the ArrayList (the number of elements it contains).
@@ -40,18 +54,22 @@ public final class ${wrap}ArrayList
      * @exception IllegalArgumentException if the specified initial capacity
      *            is negative
      */
-    public ${wrap}ArrayList(int initialCapacity) {
+    public ${name}ArrayList(int initialCapacity) {
 		super();
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal Capacity: "+
                                                initialCapacity);
-		this.elementData = new ${prim} [initialCapacity];
+#if( $name == "Object" )
+        this.elementData = Arrays.initializeArray(initialCapacity);
+#else
+		this.elementData = new ${type} [initialCapacity];
+#end
     }
 
     /**
      * Constructs an empty list.
      */
-    public ${wrap}ArrayList() {
+    public ${name}ArrayList() {
 		this(10);
     }
 
@@ -63,27 +81,29 @@ public final class ${wrap}ArrayList
      *
      * @param c the collection whose elements are to be placed into this list.
      */
-    public ${wrap}ArrayList(Collection c) {
+    public ${name}ArrayList(Collection<? extends ${type_Object}> c) {
         size = c.size ();
-		elementData = new ${prim} [(size*110) / 100];
+#if( $name == "Object" )
+        this.elementData = Arrays.initializeArray(size);
+#else
+		elementData = new ${type} [(size*110) / 100];
+#end
 			// Allow 10% room for growth
-        Iterator	iter = c.iterator ();
+        Iterator<? extends ${type_Object}> iter = c.iterator ();
         int			idx = 0;
 
         while (iter.hasNext ())
-        	elementData [idx] = 
-#if( $wrap == "Object" )
-                iter.next ();
-#else
-                ((${wrap}) iter.next ()).${prim}Value ();
-#end
+        	elementData [idx++] = iter.next ();
     }
 
-    public ${wrap}ArrayList (${prim} [] arr) {
+    public ${name}ArrayList (${type} [] arr) {
     	size = arr.length;
-    	elementData = new ${prim} [(size*110) / 100];
-    	for (int idx = 0; idx < size; idx++)
-    		elementData[idx] = arr[idx];
+#if( $name == "Object" )
+        elementData = Arrays.initializeArray((size*110) / 100);
+#else
+    	elementData = new ${type} [(size*110) / 100];
+#end
+    	Arrays.safeArrayCopy(arr, 0, elementData, 0, size);
     }
 
     /**
@@ -95,9 +115,13 @@ public final class ${wrap}ArrayList
 		modCount++;
 		int oldCapacity = elementData.length;
 		if (size < oldCapacity) {
-	    	${prim} oldData [] = elementData;
-	    	elementData = new ${prim} [size];
-	    	System.arraycopy (oldData, 0, elementData, 0, size);
+	    	${type} oldData [] = elementData;
+#if( $name == "Object" )
+        elementData = Arrays.initializeArray(size);
+#else
+    	elementData = new ${type} [size];
+#end
+	    	Arrays.safeArrayCopy (oldData, 0, elementData, 0, size);
 		}
     }
 
@@ -112,12 +136,16 @@ public final class ${wrap}ArrayList
 		modCount++;
 		int oldCapacity = elementData.length;
 		if (minCapacity > oldCapacity) {
-	    	${prim} oldData [] = elementData;
+	    	${type} oldData [] = elementData;
 	    	int newCapacity = (oldCapacity * 3)/2 + 1;
     	    if (newCapacity < minCapacity)
 				newCapacity = minCapacity;
-	    	elementData = new ${prim} [newCapacity];
-	    	System.arraycopy (oldData, 0, elementData, 0, size);
+#if( $name == "Object" )
+        elementData = Arrays.initializeArray(newCapacity);
+#else
+    	elementData = new ${type} [newCapacity];
+#end
+	    	Arrays.safeArrayCopy (oldData, 0, elementData, 0, size);
 		}
     }
 
@@ -140,7 +168,16 @@ public final class ${wrap}ArrayList
 		return size == 0;
     }
 
-#if( $wrap == "Object" )
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element.
+     *
+     * @param elem element whose presence in this List is to be tested.
+     */
+    public boolean contains (Object elem) {
+		return indexOf (elem) >= 0;
+    }
+
+#if( $name == "Object" )
     /**
      * Returns an array containing all of the elements in this list in the
      * correct order.  The runtime type of the returned array is that of the
@@ -158,17 +195,13 @@ public final class ${wrap}ArrayList
      * 		same runtime type is allocated for this purpose.
      * @return an array containing the elements of the list.
      * @throws ArrayStoreException if the runtime type of a is not a supertype
-     *         of <code>${wrap}</code>.
+     *         of <code>${type_Object}</code>.
      */
-    public Object [] toArray(Object a[]) {
+    public <T> T [] toArray(T a[]) {
         if (a.length < size)
-            a = (Object[])
-            	java.lang.reflect.Array.newInstance (
-                	a.getClass ().getComponentType (),
-                	size
-            	);
+            a = Arrays.instantiate(size);
 
-        System.arraycopy (elementData, 0, a, 0, size);
+        Arrays.safeArrayCopy (elementData, 0, a, 0, size);
 
         if (a.length > size)
             a [size] = null;
@@ -184,8 +217,8 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
-    public Object get (int index) {
-		return (get${wrap} (index));
+    public ${type} get (int index) {
+		return (get${name} (index));
     }
 
 #else
@@ -197,8 +230,8 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
-    public Object get (int index) {
-		return new ${wrap} (get${wrap} (index));
+    public ${type_Object} get (int index) {
+		return get${name} (index);
     }
 
     /**
@@ -218,14 +251,17 @@ public final class ${wrap}ArrayList
      * 		same runtime type is allocated for this purpose.
      * @return an array containing the elements of the list.
      * @throws ArrayStoreException if the runtime type of a is not a supertype
-     *         of <code>${wrap}</code>.
+     *         of <code>${type_Object}</code>.
      */
-    public Object [] toArray(Object a[]) {
+    @SuppressWarnings("unchecked")
+    public <T> T [] toArray(T a[]) {
         if (a.length < size)
-            a = new ${wrap} [size];
+            a = Arrays.initializeArray(size);
 
-		for (int ii = 0; ii < size; ii++)
-            a [ii] = new ${wrap} (elementData [ii]);
+        for (int i = 0; i < size; i++)
+        {
+            a[i] = (T) new ${type_Object}(elementData[i]);
+        }
 
         if (a.length > size)
             a [size] = null;
@@ -238,7 +274,7 @@ public final class ${wrap}ArrayList
      *
      * @param elem element whose presence in this List is to be tested.
      */
-    public boolean contains (Object elem) {
+    public boolean contains (${type} elem) {
 		return indexOf (elem) >= 0;
     }
 
@@ -251,19 +287,19 @@ public final class ${wrap}ArrayList
      *          list; returns <tt>-1</tt> if the object is not found.
      */
     public int indexOf(Object elem) {
-    	return (indexOf (((${wrap}) elem).${prim}Value ()));
+    	return (indexOf (((${type_Object}) elem).${type}Value ()));
     }
 
     /**
-     * Returns the index of the last occurrence of the specified ${prim} in
+     * Returns the index of the last occurrence of the specified ${type} in
      * this list.
      *
      * @param   elem   the desired element.
-     * @return  the index of the last occurrence of the specified ${prim} in
+     * @return  the index of the last occurrence of the specified ${type} in
      *          this list; returns -1 if the object is not found.
      */
     public int lastIndexOf (Object elem) {
-    	return (lastIndexOf (((${wrap}) elem).${prim}Value ()));
+    	return (lastIndexOf (((${type_Object}) elem).${type}Value ()));
     }
 
     /**
@@ -276,8 +312,8 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range
      *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
      */
-    public Object set (int index, Object element) {
-		return (new ${wrap} (set (index, ((${wrap}) element).${prim}Value ())));
+    public ${type_Object} set (int index, ${type_Object} element) {
+		return set(index, element.${type}Value());
     }
 
     /**
@@ -286,8 +322,8 @@ public final class ${wrap}ArrayList
      * @param o element to be appended to this list.
      * @return <tt>true</tt> (as per the general contract of Collection.add).
      */
-    public boolean add (Object o) {
-    	return (add (((${wrap}) o).${prim}Value ()));
+    public boolean add (${type_Object} o) {
+    	return (add (o.${type}Value ()));
     }
 
     /**
@@ -300,19 +336,12 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index is out of range
      *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
      */
-    public void add (int index, Object element) {
-    	add (index, ((${wrap}) element).${prim}Value ());
+    public void add (int index, ${type_Object} element) {
+    	add (index, element.${type}Value ());
     }
 #end
 
-    /**
-     * Returns <tt>true</tt> if this list contains the specified element.
-     *
-     * @param elem element whose presence in this List is to be tested.
-     */
-    public boolean contains (${prim} elem) {
-		return indexOf (elem) >= 0;
-    }
+
 
     /**
      * Searches for the first occurence of the given argument, testing
@@ -322,7 +351,11 @@ public final class ${wrap}ArrayList
      * @return  the index of the first occurrence of the argument in this
      *          list; returns <tt>-1</tt> if the object is not found.
      */
-    public int indexOf (${prim} elem) {
+#if ($name == "Object")
+    public int indexOf (Object elem) {
+#else
+    public int indexOf (${type} elem) {
+#end
 	    for (int i = 0; i < size; i++)
 			if (elem == elementData[i])
 		    	return i;
@@ -330,14 +363,18 @@ public final class ${wrap}ArrayList
     }
 
     /**
-     * Returns the index of the last occurrence of the specified ${prim} in
+     * Returns the index of the last occurrence of the specified ${type} in
      * this list.
      *
      * @param   elem   the desired element.
-     * @return  the index of the last occurrence of the specified ${prim} in
+     * @return  the index of the last occurrence of the specified ${type} in
      *          this list; returns -1 if the object is not found.
      */
-    public int lastIndexOf (${prim} elem) {
+#if ($name == "Object")
+    public int lastIndexOf (Object elem) {
+#else
+    public int lastIndexOf (${type} elem) {
+#end
 	    for (int i = size-1; i >= 0; i--)
 			if (elem == elementData [i])
 		    	return i;
@@ -345,15 +382,19 @@ public final class ${wrap}ArrayList
     }
 
     /**
-     * Returns a copy of this <tt>${wrap}ArrayList</tt> instance.
+     * Returns a copy of this <tt>${name}ArrayList</tt> instance.
      *
-     * @return  a clone of this <tt>${wrap}ArrayList</tt> instance.
+     * @return  a clone of this <tt>${name}ArrayList</tt> instance.
      */
     public Object clone () {
 		try {
-	    	${wrap}ArrayList v = (${wrap}ArrayList) super.clone();
-	    	v.elementData = new ${prim} [size];
-	    	System.arraycopy (elementData, 0, v.elementData, 0, size);
+	    	${name}ArrayList v = (${name}ArrayList) super.clone();
+#if( ${name} == "Object" )
+	    	v.elementData = Arrays.initializeArray(size);
+#else
+            v.elementData = new ${type} [size];
+#end
+	    	Arrays.safeArrayCopy (elementData, 0, v.elementData, 0, size);
 	    	v.modCount = 0;
 	    	return v;
 		} catch (CloneNotSupportedException e) {
@@ -375,15 +416,19 @@ public final class ${wrap}ArrayList
     }
 
     /**
-     * Returns a ${prim} array containing all of the elements in this list
+     * Returns a ${type} array containing all of the elements in this list
      * in the correct order.
      *
      * @return an array containing all of the elements in this list
      * 	       in the correct order.
      */
-    public ${prim} [] to${wrap}Array () {
-    	${prim} []		ret = new ${prim} [size];
-    	System.arraycopy (elementData, 0, ret, 0, size);
+    public ${type} [] to${name_abbr}Array () {
+#if($name == "Object")
+    	${type} []		ret = Arrays.initializeArray(size);
+#else
+    	${type} []		ret = new ${type} [size];
+#end
+    	Arrays.safeArrayCopy (elementData, 0, ret, 0, size);
 		return (ret);
     }
 
@@ -398,7 +443,7 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
-    public ${prim} get${wrap} (int index) {
+    public ${type} get${name} (int index) {
 		RangeCheck(index);
 		return elementData[index];
     }
@@ -409,7 +454,7 @@ public final class ${wrap}ArrayList
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
      */
-    public ${prim} get${wrap}NoRangeCheck (int index) {
+    public ${type} get${name}NoRangeCheck (int index) {
 		return elementData [index];
     }
     
@@ -423,9 +468,9 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range
      *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
      */
-    public ${prim} set (int index, ${prim} element) {
+    public ${type} set (int index, ${type} element) {
 		RangeCheck(index);
-		${prim} oldValue = elementData[index];
+		${type} oldValue = elementData[index];
 		elementData[index] = element;
 		return oldValue;
     }
@@ -436,7 +481,7 @@ public final class ${wrap}ArrayList
      * @param d element to be appended to this list.
      * @return <tt>true</tt> (as per the general contract of Collection.add).
      */
-    public boolean add (${prim} d) {
+    public boolean add (${type} d) {
 		ensureCapacity(size + 1);  // Increments modCount!!
 		elementData[size++] = d;
 		return true;
@@ -452,13 +497,13 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index is out of range
      *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
      */
-    public void add (int index, ${prim} element) {
+    public void add (int index, ${type} element) {
 		if (index > size || index < 0)
 	    	throw new IndexOutOfBoundsException(
 			"Index: "+index+", Size: "+size);
 
 		ensureCapacity (size+1);  // Increments modCount!!
-		System.arraycopy(elementData, index, elementData, index + 1,
+		Arrays.safeArrayCopy(elementData, index, elementData, index + 1,
 				size - index);
 		elementData[index] = element;
 		size++;
@@ -474,12 +519,8 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
-    public Object remove (int index) {
-#if( $wrap == "Object" )
-    	return (removeObject (index));
-#else
-    	return (new ${wrap} (remove${wrap} (index)));
-#end
+    public ${type_Object} remove (int index) {
+        return (remove${name} (index));
     }
 
     /**
@@ -492,15 +533,15 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
-    public ${prim} remove${wrap} (int index) {
+    public ${type} remove${name} (int index) {
 		RangeCheck(index);
 
 		modCount++;
-		${prim} oldValue = elementData[index];
+		${type} oldValue = elementData[index];
 
 		int numMoved = size - index - 1;
 		if (numMoved > 0)
-	    	System.arraycopy(elementData, index+1, elementData, index,
+	    	Arrays.safeArrayCopy(elementData, index+1, elementData, index,
 			    	numMoved);
 
 		size--;
@@ -529,18 +570,18 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range <tt>(index
      *		  &lt; 0 || index &gt; size())</tt>.
      */
-    public boolean addAll (Collection c) {
+    public boolean addAll (Collection<? extends ${type_Object}> c) {
 		modCount++;
 		int numNew = c.size();
 		ensureCapacity(size + numNew);
 
-		Iterator e = c.iterator();
+        Iterator<? extends ${type_Object}> iter = c.iterator ();
 		for (int i=0; i<numNew; i++)
 	    	elementData[size++] = 
-#if( $wrap == "Object" )
-                e.next ();
+#if( $name == "Object" )
+                iter.next ();
 #else
-                ((${wrap}) e.next ()).${prim}Value ();
+                (iter.next ()).${type}Value ();
 #end
 
 		return numNew != 0;
@@ -560,7 +601,7 @@ public final class ${wrap}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range <tt>(index
      *		  &lt; 0 || index &gt; size())</tt>.
      */
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll (Collection<? extends ${type_Object}> c, int index) {
 		if (index > size || index < 0)
 	    	throw new IndexOutOfBoundsException(
 			"Index: "+index+", Size: "+size);
@@ -570,17 +611,12 @@ public final class ${wrap}ArrayList
 
 		int numMoved = size - index;
 		if (numMoved > 0)
-	    	System.arraycopy(elementData, index, elementData, index + numNew,
+	    	Arrays.safeArrayCopy(elementData, index, elementData, index + numNew,
 			    	numMoved);
 
-		Iterator e = c.iterator();
+        Iterator<? extends ${type_Object}> iter = c.iterator ();
 		for (int i=0; i<numNew; i++)
-	    	elementData[index++] = 
-#if( $wrap == "Object" )
-                e.next ();
-#else
-                ((${wrap}) e.next ()).${prim}Value ();
-#end
+	    	elementData[index++] = iter.next ();
 
 		size += numNew;
 		return numNew != 0;
@@ -599,7 +635,7 @@ public final class ${wrap}ArrayList
     public void removeRange (int fromIndex, int toIndex) {
 		modCount++;
 		int numMoved = size - toIndex;
-        System.arraycopy (
+        Arrays.safeArrayCopy (
         	elementData, toIndex, elementData, fromIndex, numMoved
         );
         size -= (toIndex - fromIndex);
@@ -631,35 +667,44 @@ public final class ${wrap}ArrayList
 
 		// Write out all elements in the proper order.
 		for (int i=0; i<size; i++)
-        	s.write${abbr} (elementData[i]);
+        	s.write${name_abbr} (elementData[i]);
     }
 
     /**
      * Reconstitute the <tt>ArrayList</tt> instance from a stream (that is,
      * deserialize it).
      */
+    @SuppressWarnings("unchecked")
     private synchronized void readObject (java.io.ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException
     {
         // Read in array length and allocate array
         size = s.readInt();
-        elementData = new ${prim} [size];
+#if( $name == "Object" )
+        elementData = Arrays.initializeArray(size);
+#else
+        elementData = new ${type} [size];
+#end
 
 		// Read in all elements in the proper order.
 		for (int i=0; i<size; i++)
-        	elementData [i] = s.read${abbr} ();
+#if( $name == "Object" )
+            elementData [i] = (${type})s.read${name_abbr} ();
+#else
+        	elementData [i] = s.read${name_abbr} ();
+#end
     }
 
     public boolean		equals (Object otherObj) {
     	if (otherObj == null)
     		return (size <= 0);
 
-    	if (! (otherObj instanceof ${wrap}ArrayList))
+    	if (! (otherObj instanceof ${name}ArrayList))
     		return (false);
 
-    	return (Arrays.equals (
-    					to${wrap}Array (),
-    					((${wrap}ArrayList) otherObj).to${wrap}Array ()
+    	return (java.util.Arrays.equals (
+    					to${name}Array (),
+    					((${name}ArrayList) otherObj).to${name}Array ()
     			)
 
     	);
@@ -668,7 +713,7 @@ public final class ${wrap}ArrayList
     public void		swap (int idx1, int idx2) {
 		RangeCheck (idx1);
 		RangeCheck (idx2);
-    	${prim}		buf = elementData [idx1];
+    	${type}		buf = elementData [idx1];
     	elementData [idx1] = elementData [idx2];
     	elementData [idx2] = buf;
     }
@@ -678,23 +723,23 @@ public final class ${wrap}ArrayList
     public void     reverse () {
         final int length = size();
         for (int i = 0, j = length - 1; i < j; i++, j--) {
-            final ${prim} tmp = elementData[i];
+            final ${type} tmp = elementData[i];
             elementData[i] = elementData[j];
             elementData[j] = tmp;
         }
     }
     
-#if( $prim != "boolean" )
+#if( $type != "boolean" )
     public void		sort () {
     	sort (0, size ());
     }
 
     public void		sort (int offset, int len) {
-    	Arrays.sort (elementData, offset, len);
+    	java.util.Arrays.sort (elementData, offset, len);
     }
 
 #end
-    public ${prim} []	getInternalBuffer () {
+    public ${type} []	getInternalBuffer () {
     	return (elementData);
     }
 
@@ -721,46 +766,46 @@ public final class ${wrap}ArrayList
 		return (buf.toString ());
     }
     
-#if( $prim == "Object" )
-	private class ElemEnumeration implements Enumeration {
-    	private int			mIndex = 0;
+#if( $name == "Object" )
+	private class ElemEnumeration implements Enumeration<$type> {
+    	private int	mIndex = 0;
 
     	public ElemEnumeration () {
     	}
 
-    	public boolean		hasMoreElements () {
+    	public boolean hasMoreElements () {
     		return (mIndex < size);
     	}
 
-    	public Object		nextElement () {
+    	public ${type} nextElement () {
     		return (elementData [mIndex++]);
     	}
     }
 
-    public Enumeration      elements () {
+    public Enumeration elements () {
     	return (new ElemEnumeration ());
     }    
 #else
-	private class ElemEnumeration implements ${wrap}Enumeration {
-    	private int			mIndex = 0;
+	private class ElemEnumeration implements ${name}Enumeration {
+    	private int mIndex = 0;
 
     	public ElemEnumeration () {
     	}
 
-    	public boolean		hasMoreElements () {
+    	public boolean hasMoreElements () {
     		return (mIndex < size);
     	}
 
-    	public Object		nextElement () {
-    		return (new ${wrap} (next${abbr}Element ()));
+    	public ${type_Object} nextElement () {
+    		return (new ${type_Object} (next${name_abbr}Element ()));
     	}
 
-    	public ${prim}      next${abbr}Element () {
+    	public ${type} next${name_abbr}Element () {
     		return (elementData [mIndex++]);
     	}
     }
 
-    public ${wrap}Enumeration	${prim}Elements () {
+    public ${name}Enumeration ${type}Elements () {
     	return (new ElemEnumeration ());
     }    
 #end
