@@ -386,6 +386,7 @@ public final class ${name}ArrayList
      *
      * @return  a clone of this <tt>${name}ArrayList</tt> instance.
      */
+    @SuppressWarnings("unchecked")
     public Object clone () {
 		try {
 	    	${name}ArrayList v = (${name}ArrayList) super.clone();
