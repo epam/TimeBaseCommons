@@ -23,6 +23,11 @@ public interface AbstractDataStore {
     public boolean      isOpen ();
     
     /**
+     *  Determines whether the store is open as read-only.
+     */
+    public boolean      isReadOnly ();
+    
+    /**
      *  Open the data store.
      */
     public void         open (boolean readOnly);
