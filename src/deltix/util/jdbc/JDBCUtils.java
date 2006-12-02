@@ -41,8 +41,11 @@ public class JDBCUtils {
         try {
             if (!rs.next ())
                 throw new NoRowsReturnedException ();
-            
+                        
             int                 ret = rs.getInt (1);
+            
+            if (rs.wasNull ())
+                throw new NullValueException ();
             
             if (rs.next ())
                 throw new MultipleRowsReturnedException ();
