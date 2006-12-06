@@ -35,6 +35,18 @@ public class JDBCUtils {
             rs.updateDouble (idx, v);
     }
     
+    /**
+     *  Converts null to SQL NULL
+     */
+    public static void              setString (PreparedStatement ps, int idx, String v) 
+        throws SQLException
+    {
+        if (v == null)
+            ps.setNull (idx, Types.VARCHAR);
+        else
+            ps.setString (idx, v);
+    }
+    
     public static int               queryInt (PreparedStatement ps) throws SQLException {
         ResultSet               rs = ps.executeQuery ();
         
