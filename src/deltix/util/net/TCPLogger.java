@@ -47,6 +47,11 @@ public class TCPLogger {
     }
 
     public static void main (String [] args) throws Exception {
+        if (args.length == 0) {
+            System.out.println ("tcplog <remote host> <local port> <remote port>");
+            return;
+        }
+        
         String              delegateHost = args [0];
         int                 localPort = Integer.parseInt (args [1]);
         int                 delegatePort = Integer.parseInt (args [2]);
