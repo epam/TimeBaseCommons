@@ -1,5 +1,6 @@
-package deltix.custom.statestreet.fxa.utils;
+package deltix.util.jdbc;
 
+import deltix.util.Util;
 import java.sql.*;
 import java.io.*;
 import java.util.logging.*;
@@ -12,7 +13,7 @@ public class AccessConnectionFactory {
         try {
             Class.forName ("sun.jdbc.odbc.JdbcOdbcDriver");
         } catch (Throwable x) {
-            Common.LOGGER.log (Level.SEVERE, "Failed to load the ODBC/JDBC driver", x);
+            Util.LOGGER.log (Level.SEVERE, "Failed to load the ODBC/JDBC driver", x);
             System.exit (1);
         }
     }
