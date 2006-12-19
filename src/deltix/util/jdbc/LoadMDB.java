@@ -44,6 +44,9 @@ public class LoadMDB {
             ResultSet                   rs = stmt.executeQuery ("SELECT * FROM [" + tableName + "]");
             ResultSetMetaData           md = rs.getMetaData ();
             int                         numColumns = md.getColumnCount ();
+            
+            System.out.println (numColumns + " Columns");
+            
             boolean []                  okObjectTrf = new boolean [numColumns + 1];
             StringBuilder               createSql = new StringBuilder ();
             StringBuilder               insertSql = new StringBuilder ();
@@ -63,7 +66,7 @@ public class LoadMDB {
 
                 //System.out.println (col + ", " + typename + ", " + prec + ", " + cname);
 
-                if (ii > 0) {
+                if (ii > 1) {
                     createSql.append (", ");
                     insertSql.append (",");
                 }
@@ -71,9 +74,7 @@ public class LoadMDB {
                 createSql.append ("\"");
                 createSql.append (col);
                 createSql.append ("\" ");
-
-                
-                
+                                
                 if (cname.equals ("java.lang.String")) {
                     createSql.append ("VARCHAR (" + prec + ")");
                     okObjectTrf [ii] = true;
@@ -114,6 +115,12 @@ public class LoadMDB {
 
             System.out.println (createSqlStr);
 
+            try {
+                JDBCUtils.exec (mOutputConnection, "DROP TABLE \"" + tableName + "\" CASCADE CONSTRAINTS");
+            } catch (SQLException x) {
+                // ignore
+            }
+            
             JDBCUtils.exec (mOutputConnection, createSqlStr);
 
             ps = mOutputConnection.prepareStatement (insertSql.toString ());
@@ -122,11 +129,13 @@ public class LoadMDB {
             String []           line;
             
             while (rs.next ()) {                
-                for (int ii = 1; ii < numColumns; ii++) {
+                for (int ii = 1; ii <= numColumns; ii++) {
                     String      cname = md.getColumnClassName (ii);
                     Object      val = rs.getObject (ii);
                         
-                    if (val == null || okObjectTrf [ii])
+                    if (val == null)
+                        ps.setNull (ii, okObjectTrf [ii] ? md.getColumnType (ii) : Types.VARCHAR);
+                    else if (okObjectTrf [ii])
                         ps.setObject (ii, val);
                     else
                         ps.setString (ii, val.toString ());
