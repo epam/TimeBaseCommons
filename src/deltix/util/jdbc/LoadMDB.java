@@ -36,70 +36,101 @@ public class LoadMDB {
     )
         throws SQLException
     {
-        Statement                   stmt = mInputConnection.createStatement ();
-        ResultSet                   rs = stmt.executeQuery ("SELECT * FROM [" + tableName + "]");
-        ResultSetMetaData           md = rs.getMetaData ();
-        
-        StringBuilder               createSql = new StringBuilder ();
-        StringBuilder               insertSql = new StringBuilder ();
-        
-        createSql.append ("CREATE TABLE \"");
-        createSql.append (tableName);
-        createSql.append ("\" (");        
-        
-        insertSql.append ("INSERT INTO \"");
-        insertSql.append (tableName);
-        insertSql.append ("\" (");
-        
-        for (int ii = 1; ii <= md.getColumnCount (); ii++) {
-            String      col = md.getColumnName (ii);
-            String      typename = md.getColumnTypeName (ii);
-            int         prec = md.getPrecision (ii);
-            String      cname = md.getColumnClassName (ii);
-            
-            System.out.println (col + ", " + typename + ", " + prec + ", " + cname);
-            /*
-            if (ii > 0) {
-                createSql.append (", ");
-                insertSql.append (",");
-            }
-            
-            createSql.append ("\"");
-            createSql.append (col);
-            createSql.append ("\" VARCHAR2 (2000)");
-            
-            insertSql.append ("\"");
-            insertSql.append (col);
-            insertSql.append ("\"");
-             */
-        }
-        
-        createSql.append (")");
-        
-        insertSql.append (") VALUES (");
-        
-        for (int ii = 1; ii <= md.getColumnCount (); ii++) {
-            if (ii > 0)
-                insertSql.append (",");
-            
-            insertSql.append ("?");
-        }
-        
-        insertSql.append (")");
-        
-        /*
-        JDBCUtils.exec (mOutputConnection, createSql.toString ());
-               
-        PreparedStatement       ps = 
-            mOutputConnection.prepareStatement (insertSql.toString ());
+        Statement                   stmt = null;
+        PreparedStatement           ps = null;
         
         try {
+            stmt = mInputConnection.createStatement ();
+            ResultSet                   rs = stmt.executeQuery ("SELECT * FROM [" + tableName + "]");
+            ResultSetMetaData           md = rs.getMetaData ();
+            int                         numColumns = md.getColumnCount ();
+            boolean []                  okObjectTrf = new boolean [numColumns + 1];
+            StringBuilder               createSql = new StringBuilder ();
+            StringBuilder               insertSql = new StringBuilder ();
+
+            createSql.append ("CREATE TABLE \"");
+            createSql.append (tableName);
+            createSql.append ("\" (");        
+
+            insertSql.append ("INSERT INTO \"");
+            insertSql.append (tableName);
+            insertSql.append ("\" (");
+
+            for (int ii = 1; ii <= numColumns; ii++) {
+                String      col = md.getColumnName (ii);
+                int         prec = md.getPrecision (ii);
+                String      cname = md.getColumnClassName (ii);
+
+                //System.out.println (col + ", " + typename + ", " + prec + ", " + cname);
+
+                if (ii > 0) {
+                    createSql.append (", ");
+                    insertSql.append (",");
+                }
+
+                createSql.append ("\"");
+                createSql.append (col);
+                createSql.append ("\" ");
+
+                
+                
+                if (cname.equals ("java.lang.String")) {
+                    createSql.append ("VARCHAR (" + prec + ")");
+                    okObjectTrf [ii] = true;
+                }
+                else if (cname.equals ("java.lang.Float") || cname.equals ("java.lang.Double")) {
+                    createSql.append ("FLOAT");
+                    okObjectTrf [ii] = true;
+                }
+                else if (cname.equals ("java.sql.Timestamp")) {
+                    createSql.append ("VARCHAR (32)");  // do not mess with time conversion now
+                    okObjectTrf [ii] = false;
+                }
+                else {
+                    System.out.println ("Defaulting " + col + " type for class " + cname);
+                    createSql.append ("VARCHAR (2000)");
+                    okObjectTrf [ii] = false;
+                }              
+
+                insertSql.append ("\"");
+                insertSql.append (col);
+                insertSql.append ("\"");           
+            }
+
+            createSql.append (")");
+
+            insertSql.append (") VALUES (");
+
+            for (int ii = 1; ii <= numColumns; ii++) {
+                if (ii > 0)
+                    insertSql.append (",");
+
+                insertSql.append ("?");
+            }
+
+            insertSql.append (")");
+
+            String              createSqlStr = createSql.toString ();
+
+            System.out.println (createSqlStr);
+
+            JDBCUtils.exec (mOutputConnection, createSqlStr);
+
+            ps = mOutputConnection.prepareStatement (insertSql.toString ());
+
             int                 batchCount = 0;
             String []           line;
             
-            while ((line = csv.readNext ()) != null) {
-                for (int col = 0; col < headers.length; col++)
-                    ps.setString (col + 1, line [col]);
+            while (rs.next ()) {                
+                for (int ii = 1; ii < numColumns; ii++) {
+                    String      cname = md.getColumnClassName (ii);
+                    Object      val = rs.getObject (ii);
+                        
+                    if (val == null || okObjectTrf [ii])
+                        ps.setObject (ii, val);
+                    else
+                        ps.setString (ii, val.toString ());
+                }
                 
                 ps.addBatch ();
                 batchCount++;
@@ -122,7 +153,6 @@ public class LoadMDB {
         } finally {
             JDBCUtils.close (ps);
         }
-         */
     }
     
     public static void main (String [] args) throws Exception {
