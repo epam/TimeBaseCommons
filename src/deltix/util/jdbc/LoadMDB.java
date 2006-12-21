@@ -103,7 +103,7 @@ public class LoadMDB {
             insertSql.append (") VALUES (");
 
             for (int ii = 1; ii <= numColumns; ii++) {
-                if (ii > 0)
+                if (ii > 1)
                     insertSql.append (",");
 
                 insertSql.append ("?");
@@ -113,8 +113,6 @@ public class LoadMDB {
 
             String              createSqlStr = createSql.toString ();
 
-            System.out.println (createSqlStr);
-
             try {
                 JDBCUtils.exec (mOutputConnection, "DROP TABLE \"" + tableName + "\" CASCADE CONSTRAINTS");
             } catch (SQLException x) {
@@ -123,6 +121,8 @@ public class LoadMDB {
             
             JDBCUtils.exec (mOutputConnection, createSqlStr);
 
+            System.out.println (insertSql.toString ());
+            
             ps = mOutputConnection.prepareStatement (insertSql.toString ());
 
             int                 batchCount = 0;
