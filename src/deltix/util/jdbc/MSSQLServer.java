@@ -8,6 +8,35 @@ import java.sql.*;
  *
  */
 public class MSSQLServer {
+    public static void          loadMS2005Driver () throws ClassNotFoundException {
+        Class.forName ("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    }
+    
+    public static Connection            openMS2005Connection (
+        String                              host,
+        int                                 port,
+        String                              dbname,
+        String                              user,
+        String                              password
+    )
+        throws SQLException
+    {
+        try {
+            loadMSDriver ();
+        } catch (ClassNotFoundException cnfx) {
+            Util.LOGGER.log (Level.SEVERE, "Failed to load the MS SQL Server driver", cnfx);
+        }
+        
+        return (
+            DriverManager.getConnection (
+                "jdbc:microsoft:sqlserver://" + host + ":" + port + ";DatabaseName=" + dbname +
+                ";SelectMethod=cursor",
+                user,
+                password
+            )
+        );
+    }
+    
     public static void          loadMSDriver () throws ClassNotFoundException {
         Class.forName ("com.microsoft.jdbc.sqlserver.SQLServerDriver");
     }
