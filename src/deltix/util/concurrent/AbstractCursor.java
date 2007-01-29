@@ -1,4 +1,6 @@
-package deltix.qsrv.pub;
+package deltix.util.concurrent;
+
+import deltix.util.Disposable;
 
 /**
  *  An abstract cursor for iterating over arbitrary sequences of data.
@@ -14,18 +16,14 @@ package deltix.qsrv.pub;
  *  All implementations of this interface are designed to be used from a single
  *  thread and must be externally protected against concurrent calls.
  */
-public interface AbstractCursor {
+public interface AbstractCursor extends Disposable {
     /**
-     *  Moves on to the next data element.
+     *  Moves on to the next data element. This method blocks until 
+     *  the next element becomes available, or until the cursor is
+     *  determined to be at the end of the sequence.
      *  
      *  @return     <code>false</code> if at the end of the cursor.
      */
-    public boolean                  next ();
-    
-    /**
-     *  Closes the cursor and releases any associated resources. This method is
-     *  guaranteed not to throw exceptions; therefore, it is safe to use in a
-     *  <tt>finally</tt> clause directly.
-     */
-    public void                     close ();
+    public boolean                  next ()
+        throws InterruptedException;
 }

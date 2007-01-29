@@ -16,7 +16,7 @@ public class NonEmptyTextField extends ParsingTextField {
     /**
      *	Constructs a NonEmptyTextField with the specified value and size.
      *
-     *	@trim		Whether to automatically trim the value.
+     *	@param trim		Whether to automatically trim the value.
      */
     public NonEmptyTextField (String value, int columns, boolean trim) {
         super (value, columns);
@@ -26,7 +26,7 @@ public class NonEmptyTextField extends ParsingTextField {
     /**
      *	Constructs a NonEmptyTextField with the specified value.
      *
-     *	@trim		Whether to automatically trim the value.
+     *	@param trim		Whether to automatically trim the value.
      */
     public NonEmptyTextField (String value, boolean trim) {
         super (value);
@@ -36,7 +36,7 @@ public class NonEmptyTextField extends ParsingTextField {
     /**
      *	Constructs a NonEmptyTextField with the specified size.
      *
-     *	@trim		Whether to automatically trim the value.
+     *	@param trim		Whether to automatically trim the value.
      */
     public NonEmptyTextField (int columns, boolean trim) {
         super (columns);
@@ -46,7 +46,7 @@ public class NonEmptyTextField extends ParsingTextField {
     /**
      *	Constructs a NonEmptyTextField.
      *
-     *	@trim		Whether to automatically trim the value.
+     *	@param trim		Whether to automatically trim the value.
      */
     public NonEmptyTextField (boolean trim) {
         super ();
