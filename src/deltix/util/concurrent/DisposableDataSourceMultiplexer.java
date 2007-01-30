@@ -7,8 +7,8 @@ import deltix.util.*;
 /**
  *
  */
-public class DisposableDataSourceDemultiplexer <T extends AsynchronousDisposableDataSource> 
-    extends DataSourceDemultiplexer <T>
+public class DisposableDataSourceMultiplexer <T extends AsynchronousDisposableDataSource> 
+    extends DataSourceMultiplexer<T>
     implements Disposable
 {
     /**

@@ -11,14 +11,14 @@ import deltix.util.Util;
  *  be called concurrently, although the object itself is designed to manage
  *  concurrent processes.
  */
-public class DataSourceDemultiplexer <T extends AsynchronousDataSource> {
+public class DataSourceMultiplexer <T extends AsynchronousDataSource> {
     private Runnable            mLock = 
         new NotifyingRunnable ();
         
     private Set <T>             mDataSources =
         new HashSet <T> ();
     
-    public DataSourceDemultiplexer () {        
+    public DataSourceMultiplexer () {        
     }
     
     public void                 add (T ds) {
