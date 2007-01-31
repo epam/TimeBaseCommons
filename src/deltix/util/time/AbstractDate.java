@@ -1,4 +1,4 @@
-package deltix.qsrv.pub;
+package deltix.util.time;
 
 /**
  *  A simple record containing a year, a month and a day of month.

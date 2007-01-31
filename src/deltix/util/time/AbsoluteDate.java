@@ -6,7 +6,7 @@ import java.io.*;
 /**
  *  A bean holding an absolute (time- and time zone-unrelated) date.
  */
-public class AbsoluteDate implements Comparable <AbsoluteDate> {
+public class AbsoluteDate implements AbstractDate, Comparable <AbstractDate> {
     public static final AbsoluteDate        MIN_VALUE = new AbsoluteDate (0, 1, 1);
     public static final AbsoluteDate        MAX_VALUE = new AbsoluteDate (Short.MAX_VALUE, 12, 31);
     
@@ -132,9 +132,11 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
         StringTokenizer     stk = new StringTokenizer (s, "-");
         
         if (stk.countTokens () == 3) {
-            mYear = Short.parseShort (stk.nextToken ());
-            mMonth = Byte.parseByte (stk.nextToken ());
-            mDay = Byte.parseByte (stk.nextToken ());
+            set (
+                Short.parseShort (stk.nextToken ()),
+                Byte.parseByte (stk.nextToken ()),
+                Byte.parseByte (stk.nextToken ())
+            );
         }
         else
             throw new NumberFormatException ("Illegal AbsoluteDate: " + s);
@@ -183,7 +185,7 @@ public class AbsoluteDate implements Comparable <AbsoluteDate> {
         );        
     }
 
-    public int          compareTo (AbsoluteDate o) {
+    public int          compareTo (AbstractDate o) {
         int                 dif;
         
         dif = mYear - o.getYear ();
