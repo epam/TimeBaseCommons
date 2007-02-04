@@ -317,10 +317,20 @@ public class IOUtil {
     public static void		writeTextFile (String filepath, String content)
         throws IOException
     {
-        FileWriter fw = new FileWriter (filepath);
+        writeTextFile (new File (filepath), content);
+    }
 
-        fw.write(content);
-        fw.close ();
+    public static void		writeTextFile (File f, String content)
+        throws IOException
+    {
+        FileWriter fw = new FileWriter (f);
+
+        try {
+            fw.write (content);
+            fw.close ();
+        } finally {
+            Util.close (fw);
+        }
     }
 
     public static void		writeBytes (
