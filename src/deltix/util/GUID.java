@@ -16,22 +16,24 @@ public abstract class GUID {
      *  Creates a string consisting of digits and underscore characters, suitable for
      *  use in language identifiers. This method does not throw checked exceptons.
      */
-    public static String        createNoX () {
+    public static String        createNoX (boolean includeIPAddress) {
         try {
-            return (create ());            
+            return (create (includeIPAddress));            
         } catch (InterruptedException ix) {
             throw new RuntimeException ("Unexpected " + ix, ix);
         } catch (IOException iox) {
             throw new RuntimeException ("Unexpected " + iox, iox);
         }
     }
+    
     /**
      *  Creates a string consisting of digits and underscore characters, suitable for
      *  use in language identifiers.
      */
-    public static String        create () throws IOException, InterruptedException {
+    public static String        create (boolean includeIPAddress)
+        throws IOException, InterruptedException 
+    {
         ServerSocket        socket = new ServerSocket ();
-        InetAddress         addr = InetAddress.getLocalHost ();
         int                 port;
         long                time;
         
@@ -52,11 +54,14 @@ public abstract class GUID {
         
         StringBuilder       s = new StringBuilder ();
         
-        byte []             addressBytes = addr.getAddress ();
-        
-        for (byte b : addressBytes) {
-            s.append (((int) b) & 0xFF);
-            s.append ('_');
+        if (includeIPAddress) {
+            InetAddress         addr = InetAddress.getLocalHost ();
+            byte []             addressBytes = addr.getAddress ();
+
+            for (byte b : addressBytes) {
+                s.append (((int) b) & 0xFF);
+                s.append ('_');
+            }
         }
         
         s.append (port);
@@ -67,6 +72,6 @@ public abstract class GUID {
     }
     
     public static void main (String [] args) throws Exception {
-        System.out.println (create ());
+        System.out.println (create (true));
     }
 }
