@@ -28,6 +28,22 @@ public abstract class AbstractApp extends JFrame {
     protected void          windowClosing (WindowEvent e) {        
     }
     
+    /**
+     *  Ask the user if he wants to exit, and call System.exit (0) if so.
+     */
+    public void             confirmSystemExit (String title, String msg) {
+        int     ret =
+            JOptionPane.showConfirmDialog (
+                this,
+                msg,
+                title,
+                JOptionPane.YES_NO_OPTION
+            );
+        
+        if (ret == JOptionPane.YES_OPTION)
+            System.exit (0); 
+    }    
+
     public void		        handle (Throwable x) {
         handle (x, Level.SEVERE);
     }
