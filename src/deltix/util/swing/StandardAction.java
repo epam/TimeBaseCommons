@@ -25,15 +25,17 @@ public abstract class StandardAction extends AbstractAction {
      *
      *  <ol>
      *      <li>Figures out the package name of the specified class.
-     *      <li>Loads the icon image from this package's resource path,
-     *          where the icon name is same as the <i>nameKey</i> argument;
-     *          extension <tt>imageType</tt>.
      *      <li>The action name is retrieved from the resource bundle
      *          called <tt>actions</tt>, under the same package, under the key of
      *          <tt><i>nameKey</i></tt>.
      *      <li>The tooltip text is retrieved from the resource bundle
      *          called <tt>actions</tt>, under the same package, under the key of
      *          <tt><i>nameKey</i>.tt</tt>.
+     *      <li>Loads the icon image from this package's resource path,
+     *          where the icon name is same as the <i>nameKey</i> argument;
+     *          extension <tt>imageType</tt>, unless the <tt>actions</tt>
+     *          resource bundle contains a key called <tt><i>nameKey</i>.tt</tt>,
+     *          in which case the value of that key is used as the icon resource path.
      *  </ol>
      *
      *  @param nameKey  Used to look up the action properties.
@@ -57,11 +59,17 @@ public abstract class StandardAction extends AbstractAction {
         
         putValue (SHORT_DESCRIPTION, rb.getString (nameKey + ".tt"));
         
+        String          imageResourcePath = null;
+        
+        try {
+            imageResourcePath = rb.getString (nameKey + ".img");
+        } catch (MissingResourceException x) {
+            imageResourcePath = packPath + "/" + nameKey + "." + imageType;
+        }
+        
         putValue (
             SMALL_ICON,
-            SwingUtil.loadIcon (
-                packPath + "/" + nameKey + "." + imageType
-            )
+            SwingUtil.loadIcon (imageResourcePath)
         );
 
         // kbd accelerator (hot key)

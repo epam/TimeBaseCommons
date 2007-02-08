@@ -27,4 +27,10 @@ public class Icons {
     
     public static final Icon    NEW =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/new.gif");
+    
+    public static final Icon    TRASH =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/trash.gif");
+    
+    public static final Icon    PLUS =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus.gif");
 }

@@ -57,7 +57,8 @@ public class VerticalForm extends EnablingPanel {
     
     private void        setWeightAndFill (JComponent comp) {
         if (comp instanceof JTextArea ||
-            comp instanceof JScrollPane) 
+            comp instanceof JScrollPane ||
+            comp instanceof JTabbedPane) 
         {
             mC.weightx = 1;
             mC.weighty = 1;

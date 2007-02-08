@@ -198,4 +198,12 @@ public abstract class SwingUtil {
         } catch (Throwable e) {
         } 
     }
+            
+    public static JButton       newZeroMarginButton (Action action) {
+        JButton btn = new JButton (action);
+        
+        btn.setMargin (new Insets (0, 0, 0, 0));
+        
+        return (btn);
+    }
 }
