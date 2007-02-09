@@ -17,6 +17,43 @@ public class Util {
     public static final String  LOGGER_NAME = "deltix.util";
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
 
+    /**
+     *  Compare two CharSequences. A null argument is always less than a non-null argument
+     *  and is equal to another null argument.
+     *
+     *  @param fast     When true, use a fast algorithm, which makes a
+     *                  char sequence greater than another if it is longer.
+     *                  When false, performs lexicographic comparison.
+     */
+    public static int           compare (CharSequence s1, CharSequence s2, boolean fast) {
+        if (s1 == null)
+            if (s2 == null)
+                return (0);
+            else
+                return (-1);
+        else if (s2 == null)
+            return (1);
+        else {
+            int         len1 = s1.length ();
+            int         len2 = s2.length ();
+            int         diff = len1 - len2;
+            
+            if (fast && diff != 0)
+                return (diff);
+            
+            int         minLength = diff > 0 ? len2 : len1;
+            
+            for (int ii = 0; ii < minLength; ii++) {
+                int     cdiff = s1.charAt (ii) - s2.charAt (ii);
+                
+                if (cdiff != 0)
+                    return (cdiff);
+            }
+            
+            return (diff);
+        }
+    }
+    
     public static <T extends Comparable <T>> T  max (T a, T b) {
         if (a == null)
             return (b);
