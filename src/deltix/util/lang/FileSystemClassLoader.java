@@ -16,6 +16,8 @@ public class FileSystemClassLoader extends AbstractClassLoader {
     protected byte []       loadClassBytes (String name)
         throws ClassNotFoundException 
     {
+        System.out.println ("loadClassBytes " + name);
+        
         File        classFile = new File (mClassDir, name.replace (".", "/") + ".class");
         
         if (!classFile.exists ())
