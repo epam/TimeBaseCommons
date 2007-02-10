@@ -18,6 +18,35 @@ public class Util {
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
 
     /**
+     *  Returns the sign of a - b
+     */
+    public static int           compare (long a, long b) {
+        long        diff = a - b;
+        
+        if (diff < 0)
+            return (-1);
+        
+        if (diff > 0)
+            return (1);
+        
+        return (0);
+    }
+    
+    /**
+     *  Returns the sign of a - b
+     */
+    public static int           compare (double a, double b) {
+        double        diff = a - b;
+        
+        if (diff < 0)
+            return (-1);
+        
+        if (diff > 0)
+            return (1);
+        
+        return (0);
+    }
+    /**
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
      *
