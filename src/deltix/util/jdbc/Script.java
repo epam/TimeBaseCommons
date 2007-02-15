@@ -17,6 +17,7 @@ public class Script {
     private static final int	OUTSIDE = 1;
     private static final int	PLSQL = 2;
     private static final int	DDL = 3;
+    private static final int	COMMENT = 4;
 
     private List <ScriptStatement>          mStatements = 
         new ArrayList <ScriptStatement> ();
@@ -61,7 +62,25 @@ public class Script {
             if (test.startsWith ("--"))
                 continue;
 
-            if (state == OUTSIDE) {
+            if (state == OUTSIDE && test.startsWith ("/*")) 
+                state = COMMENT;
+            
+            if (state == COMMENT) {
+                int     end = test.indexOf ("*/");
+                    
+                if (end != -1) {
+                    state = OUTSIDE;
+                    
+                    test = test.substring (end + 2).trim ();
+                    
+                    if (test.length () == 0)
+                        continue;
+                }
+                else
+                    continue;
+            }
+            
+            if (state == OUTSIDE) {                
                 //
                 //	Test for exit statement. 
                 //
