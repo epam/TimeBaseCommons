@@ -22,13 +22,11 @@ public class DataSourceMultiplexer <T extends AsynchronousDataSource> {
     }
     
     public void                 add (T ds) {
-        if (mDataSources.add (ds))
-            ds.addNotificationListener (mLock);
+        mDataSources.add (ds);
     }
     
     public void                 remove (T ds) {
-        if (mDataSources.remove (ds))
-            ds.removeNotificationListener (mLock);
+        mDataSources.remove (ds);
     }
 
     /**
@@ -47,7 +45,7 @@ public class DataSourceMultiplexer <T extends AsynchronousDataSource> {
      */
     public T                    getSourceWithAvailableDataNoBlocking () {
         for (T ds : mDataSources)
-            if (ds.isDataAvailable ())
+            if (ds.isDataAvailable (mLock))
                 return (ds);
         
         return (null);

@@ -1,7 +1,9 @@
 package deltix.util.concurrent;
 
 /**
- *  An abstract source of data.
+ *  An abstract source of data, allowing a single consumer to
+ *  perform work while the data is not available, or to multiplex
+ *  multiple data sources.
  */
 public interface AsynchronousDataSource {
     /**
@@ -10,26 +12,23 @@ public interface AsynchronousDataSource {
      *  @param timeout      Maximum time to wait until data is available, 
      *                      in milliseconds. The value of 0 causes a non-blocking
      *                      check to be performed.
+     *  @param listener     If specified, and if this method returned false, then
+     *                      the listener will be notified (once) when data becomes available.
+     *                      Implementations of this class only support
+     *                      a single listener.
      *  @return             True if data is available, false if timeout has expired.
      */
-    public boolean      isDataAvailable (long timeout)
+    public boolean      isDataAvailable (long timeout, Runnable listener)
         throws InterruptedException;
     
     /**
-     *  Performs a <i>non-blocking</i> check for data availability.
+     *  Performs a non-blocking check for data availability.
      *
-     *  @return             True if data is available, false if not.
+     *  @param listener     If specified, and if this method returned false, then
+     *                      the listener will be notified (once) when data becomes available.
+     *                      Implementations of this class only support
+     *                      a single listener.
+     *  @return             If data is available.
      */
-    public boolean      isDataAvailable ();
-    
-    /**
-     *  Adds Runnable to be notified of data availability
-     */
-    public void         addNotificationListener (Runnable l);
-    
-    /**
-     *  Removes a Runnable previously registered with {@link #addNotificationListener}
-     */
-    public void         removeNotificationListener (Runnable l);
-    
+    public boolean      isDataAvailable (Runnable listener);    
 }
