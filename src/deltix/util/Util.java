@@ -967,6 +967,54 @@ public class Util {
         return (-1);
     }
     
+    /**
+     *  Find the index of the minimum element. Returns -1 if array is empty.
+     */
+    public static <T> int           indexOfMinMax (T [] array, Comparator <T> comp, int order) {
+        int                             len = arraylen (array);
+
+        if (len == 0)
+            return (-1);
+        
+        int                             idx = 0;
+        T                               minmax = array [0];
+        
+        for (int ii = 1; ii < len; ii++) {
+            T                           cur = array [ii];
+            
+            if (comp.compare (cur, minmax) * order > 0) {
+                minmax = cur;
+                idx = ii;
+            }
+        }
+
+        return (idx);
+    }
+    
+    /**
+     *  Find the index of the minimum element. Returns -1 if array is empty.
+     */
+    public static <T extends Comparable <T>> int indexOfMinMax (T [] array, int order) {
+        int                             len = arraylen (array);
+
+        if (len == 0)
+            return (-1);
+        
+        int                             idx = 0;
+        T                               minmax = array [0];
+        
+        for (int ii = 1; ii < len; ii++) {
+            T                           cur = array [ii];
+            
+            if (cur.compareTo (minmax) * order > 0) {
+                minmax = cur;
+                idx = ii;
+            }
+        }
+
+        return (idx);
+    }
+    
     public static void          format (
         StringBuffer                out,
         Object                      obj, 
