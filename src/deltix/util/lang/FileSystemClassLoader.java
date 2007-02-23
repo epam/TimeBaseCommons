@@ -1,7 +1,8 @@
 package deltix.util.lang;
 
-import deltix.util.io.IOUtil;
 import java.io.*;
+
+import deltix.util.io.IOUtil;
 
 /**
  *  UNTESTED
@@ -13,11 +14,17 @@ public class FileSystemClassLoader extends AbstractClassLoader {
         mClassDir = rootDir;
     }
 
+    public InputStream      getResourceAsStream (String name) {
+        try {
+            return (new FileInputStream (new File (mClassDir, name)));
+        } catch (IOException iox) {
+            return (null);
+        }
+    }
+    
     protected byte []       loadClassBytes (String name)
         throws ClassNotFoundException 
     {
-        System.out.println ("loadClassBytes " + name);
-        
         File        classFile = new File (mClassDir, name.replace (".", "/") + ".class");
         
         if (!classFile.exists ())

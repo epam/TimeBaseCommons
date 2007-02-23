@@ -9,7 +9,7 @@ import java.io.*;
 public abstract class AbstractClassLoader extends ClassLoader {
     protected abstract byte []      loadClassBytes (String name)
         throws ClassNotFoundException;
-    
+
     protected Class <?>             findClass (String name)
         throws ClassNotFoundException
     {
