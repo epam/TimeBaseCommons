@@ -60,9 +60,7 @@ public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseM
     }
 
 
-    /**
-     * from javax.swing.plaf.basic.BasicDragGestureRecognizer
-     */
+    //from javax.swing.plaf.basic.BasicDragGestureRecognizer
     protected int mapDragOperationFromModifiers(MouseEvent e) {
         int mods = e.getModifiersEx();
 
@@ -78,8 +76,7 @@ public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseM
     protected JComponent getComponent(MouseEvent e) {
         Object src = e.getSource();
         if (src instanceof JComponent) {
-            JComponent c = (JComponent) src;
-            return c;
+            return (JComponent) src;
         }
         return null;
     }
