@@ -18,6 +18,7 @@ public class LocalObjectTransferable<T> implements Transferable, Serializable {
 	private T object;
 	private DataFlavor dataFlavor;
 
+    @SuppressWarnings ("unchecked")
 	public LocalObjectTransferable(T object) {
 		this(object, (Class<? extends T>)object.getClass());
 	}
