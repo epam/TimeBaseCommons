@@ -46,6 +46,14 @@ public class Util {
         
         return (0);
     }
+    
+    /**
+     *  Compare two CharSequences for equality. A null equals null.
+     */
+    public static boolean       equals (CharSequence s1, CharSequence s2) {
+        return (compare (s1, s2, true) == 0);
+    }
+    
     /**
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
@@ -62,6 +70,8 @@ public class Util {
                 return (-1);
         else if (s2 == null)
             return (1);
+        else if (s1 == s2)
+            return (0);
         else {
             int         len1 = s1.length ();
             int         len2 = s2.length ();
@@ -1057,4 +1067,19 @@ public class Util {
                 out.append (" ");
         }        
     }
+    
+    /**
+     *  Replicates the String.hasCode () logic for arbitrary CharSequence instances
+     */
+    public static int               hashCode (CharSequence cs) {        
+        int         len = cs.length ();
+        int         hc = 0;
+        
+        for (int i = 0; i < len; i++) 
+            hc = 31 * hc + cs.charAt (i);        
+        
+        return (hc);
+    }
+    
+    
 }
