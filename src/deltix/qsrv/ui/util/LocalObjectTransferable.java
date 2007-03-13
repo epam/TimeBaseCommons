@@ -3,6 +3,8 @@ package deltix.qsrv.ui.util;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Clipboard;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -11,9 +13,8 @@ import java.io.Serializable;
  * User: PaharelauK
  * Date: Feb 27, 2007
  * Time: 11:30:34 AM
- * To change this template use File | Settings | File Templates.
  */
-public class LocalObjectTransferable<T> implements Transferable, Serializable {
+public class LocalObjectTransferable<T> implements Transferable, ClipboardOwner, Serializable {
 
 	private T object;
 	private DataFlavor dataFlavor;
@@ -55,10 +56,12 @@ public class LocalObjectTransferable<T> implements Transferable, Serializable {
 		catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-	}
+    }
 
-
-
-
+    // This method is called when this object is no longer
+    // the owner of the item on the system clipboard.
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+        //to do nothing
+    }
 }
 
