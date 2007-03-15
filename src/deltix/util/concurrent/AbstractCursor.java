@@ -25,8 +25,7 @@ public interface AbstractCursor extends Disposable {
      *  
      *  @return     <code>false</code> if at the end of the cursor.
      */
-    public boolean                  next ()
-        throws InterruptedException;
+    public boolean                  next ();
     
     /**
      *  Returns <code>true</code> if <code>next ()</code> has not yet been called

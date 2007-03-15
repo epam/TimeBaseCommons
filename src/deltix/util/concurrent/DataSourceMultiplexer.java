@@ -125,6 +125,21 @@ public class DataSourceMultiplexer <T extends AsynchronousDataSource>
         }
     }
     
+    public T                    getSourceWithAvailableData () 
+        throws InterruptedException
+    {
+        synchronized (mLock) {
+            for (;;) {               
+                T           ds = getSourceWithAvailableDataNoBlocking ();
+
+                if (ds != null)
+                    return (ds);
+
+                mLock.wait ();
+            }
+        }
+    }
+
     public T                    getSourceWithAvailableData (long timeout) 
         throws InterruptedException
     {
