@@ -1,6 +1,9 @@
 package deltix.util.swing;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -206,4 +209,18 @@ public abstract class SwingUtil {
         
         return (btn);
     }
+
+    public static void setEscapeHandler(JDialog dlg, Action escapeAction) {
+	  KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+	  dlg.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
+	  dlg.getRootPane().getActionMap().put("ESCAPE", escapeAction);
+	}
+
+	public static void setEscapeHandler(JDialog dialog, final ActionListener escapeAction) {
+	  setEscapeHandler(dialog, new AbstractAction() {
+		 public void actionPerformed(ActionEvent e) {
+			escapeAction.actionPerformed(e);
+		 }
+	  });
+	}
 }
