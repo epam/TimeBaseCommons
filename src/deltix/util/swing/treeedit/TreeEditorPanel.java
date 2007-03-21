@@ -32,7 +32,7 @@ public class TreeEditorPanel extends JSplitPane {
     private JLabel              mStockHeader = new JLabel (" ");
     private JPanel              mFormPanel = new JPanel (new BorderLayout ());
     private JPanel              mBottom = new JPanel (new FlowLayout ());
-    private VerticalForm        mForm;
+    private JComponent          mCurrentForm = null;
     private JComponent          mFormHeader = null;
     private TreeEditorNode      mSelectedNode;
     private TreeEditorNode      mEditedNode;
@@ -76,15 +76,21 @@ public class TreeEditorPanel extends JSplitPane {
         
         setLeftComponent (new JScrollPane (mTree));
         
-        mForm = new VerticalForm ();
-        JScrollPane     scroller = new JScrollPane (mForm);
-        
-        mFormPanel.add (scroller, BorderLayout.CENTER);
         mFormPanel.add (mBottom, BorderLayout.SOUTH);
         
         setRightComponent (mFormPanel);
         setEditing (null);
         EDIT_ACTION.setEnabled (false);
+    }
+    
+    private void        setFormComponent (JComponent form) {
+        if (mCurrentForm != null)
+            mFormPanel.remove (mCurrentForm);
+        
+        mCurrentForm = form;
+        
+        if (mCurrentForm != null)
+            mFormPanel.add (form, BorderLayout.CENTER);
     }
     
     DefaultTreeModel    getTreeModel () {
@@ -126,34 +132,31 @@ public class TreeEditorPanel extends JSplitPane {
     public void         cancel () {
         if (mCreationMode)
             mEditedNode.creationCanceled ();
-       
-        mForm.removeAll ();
-        mEditedNode.configureForm (mForm);
-        mForm.revalidate ();
-        setEditing (null); 
-        
-        if (mCreationMode)
-            setFormFromNode (mSelectedNode);
+      
+        setEditing (null);        
+        setFormFromNode (mSelectedNode);
     }
     
     public void         edit () {
         mCreationMode = false;
         setEditing (mSelectedNode);
-        mSelectedNode.beginEdit (mForm);
+        mSelectedNode.beginEdit ();
     }
     
     public void         editInCreationMode (TreeEditorNode node) {
         mCreationMode = true;
         setFormFromNode (node);
         setEditing (node);
-        node.beginEdit (mForm);
+        node.beginEdit ();
     }
     
     private void        setEditing (TreeEditorNode node) {
         mEditedNode = node;
         mTree.setBackground (node == null ? mEnabledColor : mDisabledColor);
         mTree.setEnabled (node == null);
-        mForm.setEnabled (node != null);
+        
+        if (mCurrentForm != null)
+            SwingUtil.setDeepEnabled (mCurrentForm, node != null);
         
         mBottom.removeAll ();
         
@@ -197,11 +200,11 @@ public class TreeEditorPanel extends JSplitPane {
     }
     
     private void        setFormFromNode (TreeEditorNode userNode) {
-        mForm.removeAll ();
-        
-        if (userNode != null) {
+        if (userNode == null) 
+            setFormComponent (null);
+        else {
             setFormHeader (userNode);
-            userNode.configureForm (mForm);
+            setFormComponent (userNode.getUI ());
         }
         
         mFormPanel.revalidate ();
@@ -219,6 +222,9 @@ public class TreeEditorPanel extends JSplitPane {
         }
         
         setFormFromNode (mSelectedNode);
+        
+        if (mCurrentForm != null)
+            SwingUtil.setDeepEnabled (mCurrentForm, false);
     }
     
     private void        popup (int x, int y) {

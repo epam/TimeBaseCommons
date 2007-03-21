@@ -17,6 +17,8 @@ public abstract class TreeEditorNode {
     }
     
     private NodeAdapter         mCallback;
+    private JScrollPane         mScroller = null;
+    private VerticalForm        mForm = null;  // For the default implementation of getUI
     
     void                        setCallback (NodeAdapter a) {
         mCallback = a;
@@ -133,10 +135,20 @@ public abstract class TreeEditorNode {
     public void                 configureForm (VerticalForm form) {        
     }
     
+    public JComponent           getUI () {
+        if (mForm == null) {
+            mForm = new VerticalForm ();
+            mScroller = new JScrollPane (mForm);
+        }
+        
+        configureForm (mForm);
+        return (mScroller);
+    }
+    
     /**
      *  Called after the form becomes editable.
      */
-    public void                 beginEdit (VerticalForm form) {    
+    public void                 beginEdit () {    
     }
     
     /**

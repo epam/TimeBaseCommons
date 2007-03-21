@@ -94,7 +94,7 @@ public class VerticalForm extends EnablingPanel {
         mC.gridy++;
         
         if (disableWithForm)
-            enableComponentRec (isEnabled (), comp);
+            SwingUtil.setDeepEnabled (comp, isEnabled ());
     }
     
     public void         addLine () {
@@ -134,7 +134,7 @@ public class VerticalForm extends EnablingPanel {
         mC.gridy++;
         
         if (disableWithForm)
-            enableComponentRec (isEnabled (), comp);
+            SwingUtil.setDeepEnabled (comp, isEnabled ());
     }
     /*
     public void         setEnabled (boolean flag) {

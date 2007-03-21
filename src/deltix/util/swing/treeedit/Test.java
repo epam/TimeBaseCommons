@@ -1,9 +1,3 @@
-/*
- * Test.java
- *
- * Created on July 13, 2004, 11:07 AM
- */
-
 package deltix.util.swing.treeedit;
 
 import java.util.*;

@@ -15,7 +15,12 @@ import deltix.util.io.StreamPump;
 /**
  *  Colleciton of static utilities
  */
-public abstract class SwingUtil {    
+public abstract class SwingUtil { 
+    /**
+     *  Marks components that call setDeepEnabled from their own setEnabled method
+     */
+    public interface DeepEnabler { };
+    
     static final ResourceBundle     RB = ResourceBundle.getBundle ("deltix/util/swing/ui");
     
     public static final String  ERROR_TITLE =
@@ -225,4 +230,30 @@ public abstract class SwingUtil {
 		 }
 	  });
 	}
+    
+    public static void          setChildrenDeepEnabled (Container c, boolean b) {
+        Component []    comps = c.getComponents();
+        
+        if (comps != null)
+            for (Component comp : comps) 
+                setDeepEnabled (comp, b);
+    }
+    
+    public static void          setDeepEnabled (Component c, boolean b) {
+        if (c instanceof DeepEnabler) {
+            c.setEnabled (b);
+            return;
+        }
+        
+        if ((c instanceof JLabel || 
+              c instanceof JToolBar ||
+              c instanceof JTabbedPane ||
+              c instanceof JScrollBar))
+            c.setEnabled (true);
+        else
+            c.setEnabled (b);
+
+        if (c instanceof Container)
+            setChildrenDeepEnabled ((Container) c, b);
+    }    
 }
