@@ -11,6 +11,9 @@ import deltix.util.*;
  *
  */
 public class JDBCUtils {
+    static ResourceBundle           RB = 
+        ResourceBundle.getBundle ("deltix.util.jdbc.ui");
+    
     /**
      *  Converts NaN to NULL
      */
@@ -68,15 +71,30 @@ public class JDBCUtils {
         }
     }
     
-    public static int               queryInt (Connection conn, String query, Object ... params)
+    public static PreparedStatement prepareStatement (Connection conn, String query, Object ... params)
         throws SQLException
     {
         PreparedStatement       ps = conn.prepareStatement (query);
-
+        boolean                 ok = false;
+        
         try {           
             for (int ii = 0; ii < params.length; ii++)
                 ps.setObject (ii + 1, params [ii]);
         
+            ok = true;
+            return (ps);
+        } finally {
+            if (!ok)
+                close (ps);
+        }
+    }
+    
+    public static int               queryInt (Connection conn, String query, Object ... params)
+        throws SQLException
+    {
+        PreparedStatement       ps = prepareStatement (conn, query, params);
+
+        try {           
             return (queryInt (ps));
         } finally {
             close (ps);
@@ -104,12 +122,9 @@ public class JDBCUtils {
     public static String            queryString (Connection conn, String query, Object ... params)
         throws SQLException
     {
-        PreparedStatement       ps = conn.prepareStatement (query);
+        PreparedStatement       ps = prepareStatement (conn, query, params);
 
         try {           
-            for (int ii = 0; ii < params.length; ii++)
-                ps.setObject (ii + 1, params [ii]);
-        
             return (queryString (ps));
         } finally {
             close (ps);
@@ -134,12 +149,9 @@ public class JDBCUtils {
     public static List <String>     queryStrings (Connection conn, String query, Object ... params)
         throws SQLException
     {
-        PreparedStatement       ps = conn.prepareStatement (query);
+        PreparedStatement       ps = prepareStatement (conn, query, params);
 
         try {           
-            for (int ii = 0; ii < params.length; ii++)
-                ps.setObject (ii + 1, params [ii]);
-        
             return (queryStrings (ps));
         } finally {
             close (ps);
@@ -221,12 +233,9 @@ public class JDBCUtils {
     public static void             exec (Connection conn, String sql, Object ... params) 
         throws SQLException
     {
-        PreparedStatement           ps = conn.prepareStatement (sql);
+        PreparedStatement           ps = prepareStatement (conn, sql, params);
 
         try {
-            for (int ii = 0; ii < params.length; ii++)
-                ps.setObject (ii + 1, params [ii]);
-        
             ps.execute ();        
             ps.close ();
             ps = null;

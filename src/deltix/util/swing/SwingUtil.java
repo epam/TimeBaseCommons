@@ -16,6 +16,8 @@ import deltix.util.io.StreamPump;
  *  Colleciton of static utilities
  */
 public abstract class SwingUtil {    
+    static final ResourceBundle     RB = ResourceBundle.getBundle ("deltix/util/swing/ui");
+    
     public static final String  ERROR_TITLE =
         ResourceBundle.getBundle ("deltix/util/swing/exceptions").getString ("errorTitle");
     
@@ -45,21 +47,21 @@ public abstract class SwingUtil {
         InputStream			is =
                 Util.class.getClassLoader ().getResourceAsStream (relPath);
 
-    if (is == null)
-        return (null);
+        if (is == null)
+            return (null);
 
-            try {
-                    return (loadImage (is));
-            } catch (Throwable x) {
-                    Util.LOGGER.log (
-            Level.WARNING, 
-            "Failed to read image from relative path " + relPath,
-            x
-        );
-                    return (null);
-            } finally {
-                    Util.close (is);
-            }        
+        try {
+            return (loadImage (is));
+        } catch (Throwable x) {
+            Util.LOGGER.log (
+                Level.WARNING, 
+                "Failed to read image from relative path " + relPath,
+                x
+            );
+            return (null);
+        } finally {
+            Util.close (is);
+        }        
     }
     
 	public static Image			loadImage (File file) throws IOException {

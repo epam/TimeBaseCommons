@@ -9,7 +9,7 @@ import deltix.util.Util;
 /**
  *
  */
-public class LoadMDB {
+public class MDB2ORACLE {
     private int                     mBatchSize = 1000;
     private boolean                 mAutoCommit = true;
     private Connection              mOutputConnection;
@@ -167,7 +167,7 @@ public class LoadMDB {
     public static void main (String [] args) throws Exception {
         if (args.length < 6) {
             System.out.println (
-                "Usage: mdbload <host> <port> <sid> <user> <password> <mdb file> <table> ..."
+                "Usage: mdb2oracle <host> <port> <sid> <user> <password> <mdb file> <table> ..."
             );
             return;
         }
@@ -187,7 +187,7 @@ public class LoadMDB {
             
             inConn = AccessConnectionFactory.open (new File (args [5]));
             
-            LoadMDB        loader = new LoadMDB ();
+            MDB2ORACLE        loader = new MDB2ORACLE ();
             
             loader.setOutputConnection (outConn);
             loader.setInputConnection (inConn);

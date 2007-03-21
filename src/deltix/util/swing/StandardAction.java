@@ -1,10 +1,10 @@
 package deltix.util.swing;
 
-import javax.swing.AbstractAction;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-import javax.swing.KeyStroke;
+import javax.swing.*;
+import java.util.*;
+import java.util.logging.Level;
 
+import deltix.util.Util;
 
 /**
  *  Base class for Action implementations. Action properties
@@ -49,7 +49,8 @@ public abstract class StandardAction extends AbstractAction {
         
         String          packName = className.substring (0, dot);
         String          packPath = packName.replace ('.', '/');        
-        ResourceBundle  rb = ResourceBundle.getBundle (packPath + "/actions");
+        String          packFull = packPath + ".actions";
+        ResourceBundle  rb = ResourceBundle.getBundle (packFull);
         
         try {
             putValue (NAME, rb.getString (nameKey));
@@ -57,7 +58,15 @@ public abstract class StandardAction extends AbstractAction {
             //  Ignore the name
         }
         
-        putValue (SHORT_DESCRIPTION, rb.getString (nameKey + ".tt"));
+        try {
+            putValue (SHORT_DESCRIPTION, rb.getString (nameKey + ".tt"));
+        } catch (MissingResourceException mrx) {
+            Util.LOGGER.log (
+                Level.WARNING, 
+                "Missing tooltip for " + nameKey + " in " + packFull,
+                mrx
+            );            
+        }
         
         String          imageResourcePath = null;
         

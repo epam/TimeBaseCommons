@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import static deltix.util.swing.SwingUtil.RB;
+
 /**
  *  A combination of text field and a button. The button opens
  *  a file selector. User can see and type in the path into
@@ -20,9 +22,6 @@ public class FileField extends JPanel {
     public static final int VALID_EXISTING_OR_NEW_DIR = 3;
     
     public static final int VALID_ALLOW_NULL = 0x100;
-    
-    private static final ResourceBundle RB = 
-        ResourceBundle.getBundle ("deltix.util.swing.ui");
     
     private JFileChooser        mFileChooser = new JFileChooser ();
     private NonEmptyTextField   mPathField = new NonEmptyTextField (true);
