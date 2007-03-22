@@ -1,4 +1,4 @@
-package deltix.qsrv.ui.util;
+package deltix.util.swing;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.datatransfer.DataFlavor;
