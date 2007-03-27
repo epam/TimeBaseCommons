@@ -4,7 +4,6 @@ import java.io.*;
 import java.sql.*;
 
 import au.com.bytecode.opencsv.CSVReader;
-import deltix.custom.statestreet.fxa.utils.Common;
 import deltix.util.Util;
 
 /**

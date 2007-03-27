@@ -1,13 +1,10 @@
-package deltix.custom.statestreet.fxa.load;
+package deltix.util.jdbc;
 
-import deltix.util.jdbc.AccessConnectionFactory;
 import java.io.*;
 import java.sql.*;
 
-import deltix.custom.statestreet.fxa.utils.*;
-
 /**
- *  Usage: java deltix.custom.statestreet.fxa.load.MDDump &lt;mdb file&gt; &lt;table name&gt;
+ *  Usage: deltix.util.jdbc.MDDump &lt;mdb file&gt; &lt;table name&gt;
  */
 public class MDDump {
     public static void main (String [] args) throws Exception {
