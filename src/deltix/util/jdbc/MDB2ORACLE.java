@@ -33,12 +33,21 @@ public class MDB2ORACLE {
     )
         throws SQLException
     {
+        loadTable (tableName, tableName);
+    }
+    
+    public void                 loadTable (
+        String                      accessName,
+        String                      oracleName
+    )
+        throws SQLException
+    {
         Statement                   stmt = null;
         PreparedStatement           ps = null;
         
         try {
             stmt = mInputConnection.createStatement ();
-            ResultSet                   rs = stmt.executeQuery ("SELECT * FROM [" + tableName + "]");
+            ResultSet                   rs = stmt.executeQuery ("SELECT * FROM [" + accessName + "]");
             ResultSetMetaData           md = rs.getMetaData ();
             int                         numColumns = md.getColumnCount ();
             
@@ -49,11 +58,11 @@ public class MDB2ORACLE {
             StringBuilder               insertSql = new StringBuilder ();
 
             createSql.append ("CREATE TABLE \"");
-            createSql.append (tableName);
+            createSql.append (oracleName);
             createSql.append ("\" (");        
 
             insertSql.append ("INSERT INTO \"");
-            insertSql.append (tableName);
+            insertSql.append (oracleName);
             insertSql.append ("\" (");
 
             for (int ii = 1; ii <= numColumns; ii++) {
@@ -111,7 +120,7 @@ public class MDB2ORACLE {
             String              createSqlStr = createSql.toString ();
 
             try {
-                JDBCUtils.exec (mOutputConnection, "DROP TABLE \"" + tableName + "\" CASCADE CONSTRAINTS");
+                JDBCUtils.exec (mOutputConnection, "DROP TABLE \"" + oracleName + "\" CASCADE CONSTRAINTS");
             } catch (SQLException x) {
                 // ignore
             }
@@ -189,8 +198,14 @@ public class MDB2ORACLE {
             loader.setOutputConnection (outConn);
             loader.setInputConnection (inConn);
             
-            for (int ii = 6; ii < args.length; ii++)
-                loader.loadTable (args [ii]);
+            for (int ii = 6; ii < args.length; ii++) {
+                String          arg = args [ii];
+                int             idx = arg.indexOf (':');
+                String          accessName = idx == -1 ? arg : arg.substring (0, idx);
+                String          oracleName = idx == -1 ? arg : arg.substring (idx + 1);
+                                
+                loader.loadTable (accessName, oracleName);
+            }
             
             outConn.close ();
             inConn.close ();
