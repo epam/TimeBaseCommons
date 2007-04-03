@@ -1,9 +1,10 @@
 package deltix.util.jdbc;
 
+import deltix.util.progress.*;
 import java.sql.*;
 
 /**
- *
+ *  Caller must eventually call {@link #close} to free resources.
  */
 public class DataTransformer {
     private Connection              mOutputConnection;
@@ -15,6 +16,7 @@ public class DataTransformer {
     private int                     mBufferCount;
     private PreparedStatement       mStatement;
     private int                     mNumProcessed;
+    private ProgressIndicator       mProgress = null;
     
     public static FieldTrf []       buildDirectMapping (ResultSetMetaData md) 
         throws SQLException
@@ -203,6 +205,21 @@ public class DataTransformer {
         mStatement = mOutputConnection.prepareStatement (sql.toString ());
     }
     
+    public void             setProgressIndicator (ProgressIndicator p) {
+        mProgress = p;
+    }
+    
+    public void             close () throws SQLException {
+        if (mStatement != null) {
+            mStatement.close ();
+            mStatement = null;
+        }
+        mProgress = null;
+        mOutputConnection = null;
+        mBuffer = null;
+        mFieldTrfs = null;
+    }
+    
     private void            flush () 
         throws SQLException
     {
@@ -223,8 +240,9 @@ public class DataTransformer {
             mStatement.executeBatch ();        
         
         mBufferCount = 0;
-        
-        System.out.print ("    " + mNumProcessed + " processed                  \r");
+                
+        if (mProgress != null)
+            mProgress.incrementWorkDone (numInBatch);        
     }
     
     public void             transformAll (ResultSet in) 
@@ -254,7 +272,5 @@ public class DataTransformer {
         
         if (mBufferCount != 0) 
             flush ();        
-        
-        System.out.println ();
     }
 }

@@ -194,6 +194,15 @@ public class JDBCUtils {
             }
     }
     
+    public static void              close (DataTransformer xf) {
+        if (xf != null)
+            try {
+                xf.close ();
+            } catch (Throwable x) {
+                Util.LOGGER.log (Level.SEVERE, "Error while closing a DataTransformer", x);
+            }
+    }
+    
     public static void              truncateTable (Connection conn, String tname) 
         throws SQLException
     {
