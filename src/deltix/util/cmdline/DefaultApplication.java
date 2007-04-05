@@ -1,7 +1,12 @@
 package deltix.util.cmdline;
 
-import deltix.util.Util;
+import deltix.util.io.StreamPump;
+import deltix.util.io.SystemIOException;
 import java.util.*;
+import java.io.*;
+
+import deltix.util.Util;
+import deltix.util.io.IOUtil;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -36,6 +41,10 @@ public abstract class DefaultApplication {
     	for (int ii = 0; ii < mArgs.length; ii++)
     		mMap.put (mArgs [ii], ii);
     	
+        if (isArgSpecified ("-?") || isArgSpecified ("-help")) {
+            printUsageAndExit ();
+        }
+
     	mDebugMode = getArgValue ("-debug");
     	mVerbose = isArgSpecified ("-verbose");
     }
@@ -279,5 +288,33 @@ public abstract class DefaultApplication {
     		handleException (x);
     		System.exit (1);
     	}
+    }
+    
+    public void                     printUsageAndExit () {
+        try {
+            printUsage ();
+        } catch (Throwable x) {
+            x.printStackTrace ();
+        }
+        
+        System.exit (0);
+    }
+    
+    public void                     printUsage () 
+        throws IOException, InterruptedException
+    {
+        Class           myClass = getClass ();        
+        String          path = myClass.getName ().replace ('.', '/') + "-usage.txt";
+        
+        InputStream     is = myClass.getClassLoader ().getResourceAsStream (path);
+        
+        if (is == null)
+            throw new FileNotFoundException ("Cannot open resource " + path);
+
+        try {
+            StreamPump.pump (is, System.out);
+        } finally {
+            Util.close (is);
+        }
     }
 }
