@@ -36,7 +36,7 @@ public final class SimpleAction extends StandardAction {
         super (delegate.getClass (), nameKey, imageType);
         mObject = delegate;
 
-        Class       c = mObject.getClass ();
+        Class<?>       c = mObject.getClass ();
 
         while (c != Object.class) {
             try {
@@ -68,7 +68,7 @@ public final class SimpleAction extends StandardAction {
      *
      *  @exception RuntimeException     If such a method was not found.
      */
-    public SimpleAction (Class delegateClass, Object delegate, String nameKey, String imageType) {
+    public SimpleAction (Class<?> delegateClass, Object delegate, String nameKey, String imageType) {
         super (delegateClass, nameKey, imageType);
         mObject = delegate;
 

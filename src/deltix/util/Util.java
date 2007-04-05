@@ -156,7 +156,7 @@ public class Util {
             InvocationTargetException,
             IllegalAccessException
     {
-        Class       c = Class.forName (className);
+        Class<?>    c = Class.forName (className);
         Class []    paramTypes = new Class [args.length];
         for (int ii = 0; ii < args.length; ii++)
             paramTypes [ii] = args [ii].getClass ();
