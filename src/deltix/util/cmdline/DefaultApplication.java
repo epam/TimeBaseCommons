@@ -32,48 +32,51 @@ import org.xml.sax.SAXParseException;
 public abstract class DefaultApplication {
     private String []                   mArgs;
     private Map <String, Integer>       mMap = new HashMap <String, Integer> ();
-    private String						mDebugMode;
-    private boolean						mVerbose;
     
     protected DefaultApplication (String [] args) {
-    	mArgs = args;
+        ArrayList <String>      expArgs = new ArrayList <String> ();
+        
+        for (int ii = 0; ii < args.length; ii++) {
+            String              arg = args [ii];
+            String              fpath = arg.substring (1);
+            
+            if (arg.startsWith ("@")) {
+                String      line;
+            
+                try {
+                    line = IOUtil.readTextFile (fpath);
+                } catch (Exception x) {
+                    throw new RuntimeException ("Cannot read file: " + fpath);
+                }
+                
+                StringTokenizer     stk = new StringTokenizer (line);
+                
+                while (stk.hasMoreTokens ())
+                    expArgs.add (stk.nextToken ());
+            }
+            else
+                expArgs.add (arg);
+        }
+            
+    	mArgs = expArgs.toArray (new String [expArgs.size ()]);
     	
     	for (int ii = 0; ii < mArgs.length; ii++)
     		mMap.put (mArgs [ii], ii);
     	
+        if (isArgSpecified ("-showargs")) {
+            for (int ii = 0; ii < mArgs.length; ii++) {
+                if (ii > 0)
+                    System.out.print (" ");
+                
+                System.out.print (mArgs [ii]);
+            }
+            
+            System.out.println ();
+        }
+        
         if (isArgSpecified ("-?") || isArgSpecified ("-help")) {
             printUsageAndExit ();
         }
-
-    	mDebugMode = getArgValue ("-debug");
-    	mVerbose = isArgSpecified ("-verbose");
-    }
-    
-    /**
-     *	Returns whether the application should give verbose
-     *	information about the progress. This is controlled by
-     *	passing the <tt>-verbose</tt> argument on the command
-     *	line.
-     */
-    public boolean						isVerboseMode () {
-    	return (mVerbose);
-    }
-    
-    /**
-     *	Returns whether the application should give debug
-     *	information about the specified area. This is controlled by
-     *	passing the <tt>-debug &lt;value&gt;</tt> arguments on 
-     *	the command line. The &lt;value&gt; is checked for containing
-     *	the string passed as parameter to this method.
-     *
-     *	@param mode		The symbolic name of a debuggable functional area.
-     *	@return 		If the <tt>-debug &lt;value&gt;</tt> 
-     *					command argument sequence was
-     *					specified, and the &lt;value&gt; argument
-     *					contains the specified symbolic name.
-     */
-    public boolean						isDebugMode (String mode) {
-    	return (mDebugMode != null && mDebugMode.indexOf (mode) != -1);
     }
     
     /**
@@ -273,7 +276,7 @@ public abstract class DefaultApplication {
      *	<b>trace</b>, the stack trace is printed out.
      */
     public void						handleException (Throwable x) {
-		printException (x, isDebugMode ("trace"));
+		printException (x, isArgSpecified ("-trace"));
     }
     
     /**
