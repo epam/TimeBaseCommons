@@ -16,7 +16,7 @@ import java.lang.reflect.Array;
 public class Util {
     public static final String  LOGGER_NAME = "deltix.util";
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
-
+    public static final Timer   GLOBAL_TIMER = new Timer ("Global Timer", true);
     /**
      *  Returns the sign of a - b
      */
