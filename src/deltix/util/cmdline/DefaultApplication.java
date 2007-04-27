@@ -36,27 +36,28 @@ public abstract class DefaultApplication {
     protected DefaultApplication (String [] args) {
         ArrayList <String>      expArgs = new ArrayList <String> ();
         
-        for (int ii = 0; ii < args.length; ii++) {
-            String              arg = args [ii];
-            String              fpath = arg.substring (1);
-            
-            if (arg.startsWith ("@")) {
-                String      line;
-            
-                try {
-                    line = IOUtil.readTextFile (fpath);
-                } catch (Exception x) {
-                    throw new RuntimeException ("Cannot read file: " + fpath);
+        if (args != null)
+            for (int ii = 0; ii < args.length; ii++) {
+                String              arg = args [ii];
+                String              fpath = arg.substring (1);
+
+                if (arg.startsWith ("@")) {
+                    String      line;
+
+                    try {
+                        line = IOUtil.readTextFile (fpath);
+                    } catch (Exception x) {
+                        throw new RuntimeException ("Cannot read file: " + fpath);
+                    }
+
+                    StringTokenizer     stk = new StringTokenizer (line);
+
+                    while (stk.hasMoreTokens ())
+                        expArgs.add (stk.nextToken ());
                 }
-                
-                StringTokenizer     stk = new StringTokenizer (line);
-                
-                while (stk.hasMoreTokens ())
-                    expArgs.add (stk.nextToken ());
+                else
+                    expArgs.add (arg);
             }
-            else
-                expArgs.add (arg);
-        }
             
     	mArgs = expArgs.toArray (new String [expArgs.size ()]);
     	
