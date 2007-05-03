@@ -64,6 +64,9 @@ public abstract class DefaultApplication {
     	for (int ii = 0; ii < mArgs.length; ii++)
     		mMap.put (mArgs [ii], ii);
     	
+        //
+        //  Do some default argument processing
+        //
         if (isArgSpecified ("-showargs")) {
             for (int ii = 0; ii < mArgs.length; ii++) {
                 if (ii > 0)
@@ -77,7 +80,7 @@ public abstract class DefaultApplication {
         
         if (isArgSpecified ("-?") || isArgSpecified ("-help")) {
             printUsageAndExit ();
-        }
+        }        
     }
     
     /**
