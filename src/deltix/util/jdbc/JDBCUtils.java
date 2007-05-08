@@ -71,6 +71,27 @@ public class JDBCUtils {
         }
     }
     
+    public static long              queryLong (PreparedStatement ps) throws SQLException {
+        ResultSet               rs = ps.executeQuery ();
+        
+        try {
+            if (!rs.next ())
+                throw new NoRowsReturnedException ();
+                        
+            long                ret = rs.getLong (1);
+            
+            if (rs.wasNull ())
+                throw new NullValueException ();
+            
+            if (rs.next ())
+                throw new MultipleRowsReturnedException ();
+            
+            return (ret);
+        } finally {
+            close (rs);
+        }
+    }
+    
     public static PreparedStatement prepareStatement (Connection conn, String query, Object ... params)
         throws SQLException
     {
@@ -101,6 +122,18 @@ public class JDBCUtils {
         }
     }
     
+    public static long              queryLong (Connection conn, String query, Object ... params)
+        throws SQLException
+    {
+        PreparedStatement       ps = prepareStatement (conn, query, params);
+
+        try {           
+            return (queryLong (ps));
+        } finally {
+            close (ps);
+        }
+    }
+    
     public static String            queryString (PreparedStatement ps) throws SQLException {
         ResultSet               rs = ps.executeQuery ();
         
@@ -126,6 +159,36 @@ public class JDBCUtils {
 
         try {           
             return (queryString (ps));
+        } finally {
+            close (ps);
+        }
+    }
+        
+    public static Object            queryObject (PreparedStatement ps) throws SQLException {
+        ResultSet               rs = ps.executeQuery ();
+        
+        try {
+            if (!rs.next ())
+                throw new NoRowsReturnedException ();
+            
+            Object              ret = rs.getObject (1);
+            
+            if (rs.next ())
+                throw new MultipleRowsReturnedException ();
+            
+            return (ret);
+        } finally {
+            close (rs);
+        }
+    }
+    
+    public static Object            queryObject (Connection conn, String query, Object ... params)
+        throws SQLException
+    {
+        PreparedStatement       ps = prepareStatement (conn, query, params);
+
+        try {           
+            return (queryObject (ps));
         } finally {
             close (ps);
         }

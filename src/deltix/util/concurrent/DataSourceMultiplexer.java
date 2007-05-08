@@ -34,12 +34,20 @@ public class DataSourceMultiplexer <T extends AsynchronousDataSource>
     }
     
     public void                 add (T ds) {
-        mDataSources.add (ds);
+        boolean     ok = mDataSources.add (ds);
+        
+        if (!ok)
+            throw new RuntimeException ("Failed to add " + ds);
+        
         ds.addAvailabilityListener (mLock);
     }
     
     public void                 remove (T ds) {
-        mDataSources.remove (ds);
+        boolean     ok = mDataSources.remove (ds);
+        
+        if (!ok)
+            throw new RuntimeException ("Failed to remove " + ds);
+        
         ds.removeAvailabilityListener (mLock);
     }
 
