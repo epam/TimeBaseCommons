@@ -4,11 +4,10 @@ import java.io.OutputStream;
 
 /**
  * Null output.
- *
- * Example of use: code that uses Java serialization only to traverse object graph.
  */
 public class NullOutputStream extends OutputStream {
-
+    private NullOutputStream () { }
+    
     public void write(int b) {}
 
     public void write(byte b[]) {}
@@ -18,4 +17,6 @@ public class NullOutputStream extends OutputStream {
     public void flush() {}
 
     public void close()  {}
+    
+    public static final OutputStream    INSTANCE = new NullOutputStream ();
 }

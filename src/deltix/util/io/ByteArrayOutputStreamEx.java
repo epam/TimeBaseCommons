@@ -41,4 +41,8 @@ public class ByteArrayOutputStreamEx extends ByteArrayOutputStream {
         
         count = position;
     }
+    
+    public InputStream      openInput () {
+        return (new ByteArrayInputStreamEx (buf, 0, count));
+    }
 }

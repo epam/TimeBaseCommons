@@ -1,7 +1,7 @@
 package deltix.util.cmdline;
 
 import deltix.util.io.StreamPump;
-import deltix.util.io.SystemIOException;
+import deltix.util.io.UncheckedIOException;
 import java.util.*;
 import java.io.*;
 

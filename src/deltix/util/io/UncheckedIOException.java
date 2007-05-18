@@ -6,16 +6,16 @@ import java.io.IOException;
  *  Unchecked exception, used to wrap the checked java.io.IOException 
  *  occurring because of system problems. 
  */
-public class SystemIOException extends RuntimeException {
-    public SystemIOException (String msg, IOException iox) {
+public class UncheckedIOException extends RuntimeException {
+    public UncheckedIOException (String msg, Exception iox) {
         super (msg, iox);
     }
     
-    public SystemIOException (IOException iox) {
+    public UncheckedIOException (Exception iox) {
         super ("System IO error: " + iox, iox);
     }
     
-    public SystemIOException (String msg) {
+    public UncheckedIOException (String msg) {
         super (msg);
     }
 }
