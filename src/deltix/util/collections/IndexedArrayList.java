@@ -5,7 +5,17 @@ import java.util.*;
 import deltix.util.collections.generated.*;
 
 /**
- *
+ *  <p>A special implementation of List which provides very fast indexOf and 
+ *  contains operations.</p>
+ *  <p>Notes:
+ *  <ul>
+ *      <li>Null elements can be added, but are not indexed, 
+ *          therefore indexOf (null) is not allowed.
+ *      <li>Duplicate elements are not allowed. Therefore, indexOf () 
+ *          and lastIndexOf () always return identical results.
+ *      <li>Removal of elements is not allowed.
+ *      <li>Insertion into the middle is not allowed.
+ *  </ul></p>
  */
 public class IndexedArrayList <E> implements List <E> {
     private ObjectToIntegerHashMap <Object> mElemToIdxMap;
@@ -45,36 +55,12 @@ public class IndexedArrayList <E> implements List <E> {
     }
 
     private void        map (E e, int idx) {
-        if (e == null)
-            throw new IllegalArgumentException ("Cannot add null");
-        
         if (!mElemToIdxMap.put (e, idx))
             throw new IllegalArgumentException (
                 "Duplicate element: " + e + " at index " + idx
             );
     }
     
-    public boolean      remove (Object o) {  
-        try {
-            mElemList.remove (mElemToIdxMap.remove (o));
-            return (true);
-        } catch (ObjectToIntegerHashMap.KeyNotFoundException x) {
-            return (false);
-        }
-    }
-
-    public boolean      contains (Object o) {
-        return (mElemToIdxMap.containsKey (o));
-    }
-
-    public int          indexOf (Object o) {
-        return (mElemToIdxMap.get (o, -1));
-    }
-
-    public int          lastIndexOf (Object o) {
-        return (indexOf (o));
-    }
-
     private void        unmap (E e) {
         try {
             mElemToIdxMap.remove (e);
@@ -83,8 +69,43 @@ public class IndexedArrayList <E> implements List <E> {
         }
     }
     
-    public E            remove (int index) {
+    public boolean      remove (Object o) {  
         throw new UnsupportedOperationException ("Removal is not supported");
+    }
+
+    public boolean      contains (Object o) {
+        if (o == null)
+            throw new UnsupportedOperationException ("contains (null)");
+        
+        return (mElemToIdxMap.containsKey (o));
+    }
+
+    public int          indexOf (Object o) {
+        if (o == null)
+            throw new UnsupportedOperationException ("indexOf (null)");
+        
+        return (mElemToIdxMap.get (o, -1));
+    }
+
+    public int          lastIndexOf (Object o) {
+        if (o == null)
+            throw new UnsupportedOperationException ("lastIndexOf (null)");
+        
+        return (mElemToIdxMap.get (o, -1));
+    }
+
+    public E            remove (int index) {
+        if (index != size () - 1)
+            throw new UnsupportedOperationException (
+                "Removal from the middle is not supported"
+            );
+        
+        E       e = mElemList.remove (index);
+        
+        if (e != null)
+            unmap (e);
+        
+        return (e);
     }
 
     public ListIterator <E> listIterator (int index) {
@@ -107,22 +128,27 @@ public class IndexedArrayList <E> implements List <E> {
     }
 
     public E            set (int index, E element) {
-        int     existIdx = mElemToIdxMap.get (element, -1);
+        if (element != null) {
+            int     existIdx = mElemToIdxMap.get (element, -1);
+
+            //  Still call set () to ensure correct identities
+            if (existIdx == index)
+                return (mElemList.set (index, element));
+
+            if (existIdx >= 0)
+                throw new IllegalArgumentException (
+                    "Element " + element + " being set at index " + index + 
+                    " already exists at index " + existIdx
+                );
+            
+            map (element, index);
+        }
         
-        if (existIdx == index)
-            return (element);
+        E       prev = mElemList.set (index, element);
         
-        if (existIdx >= 0)
-            throw new IllegalArgumentException (
-                "Element " + element + " being set at index " + index + 
-                " already exists at index " + existIdx
-            );
+        if (prev != null)
+            unmap (prev);        
         
-        E       prev = mElemList.get (index);
-        
-        unmap (prev);        
-        mElemList.set (index, element);
-        map (element, index);
         return (prev);
     }
 
@@ -169,18 +195,18 @@ public class IndexedArrayList <E> implements List <E> {
     }
 
     public boolean      add (E o) {
-        if (o == null)
-            throw new IllegalArgumentException ("null element");
-        
-        int     existIdx = mElemToIdxMap.get (o, -1);
-        
-        if (existIdx >= 0)
-            throw new IllegalArgumentException (
-                "Element " + o + 
-                " already exists at index " + existIdx
-            );
-        
-        map (o, mElemList.size ());
+        if (o != null) {
+            int     existIdx = mElemToIdxMap.get (o, -1);
+
+            if (existIdx >= 0)
+                throw new IllegalArgumentException (
+                    "Element " + o + 
+                    " already exists at index " + existIdx
+                );
+            
+            map (o, mElemList.size ());
+        }
+                
         mElemList.add (o);
         return (true);
     }
