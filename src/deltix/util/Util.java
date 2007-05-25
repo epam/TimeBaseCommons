@@ -540,94 +540,38 @@ public class Util {
 
         return (ret);
     }
+    
+    public static boolean                           eq (Object o1, Object o2) {
+        if (o1 == null)
+            return (o2 == null);
+        else if (o2 == null)
+            return (false);
+        else
+            return (o1.equals (o2));        
+    }
+    
+    public static <T extends Comparable <T>> int    xcompare (T o1, T o2) {
+        if (o1 == null)
+            if (o2 == null)
+                return (0);
+            else
+                return (-1);
+        else if (o2 == null)
+            return (1);
+        else
+            return (o1.compareTo (o2));
+    }
 
+    
     /**
      * Method identical to "obj1.equals(obj2)", it also handles <code>null</code> values.
      */
     public static boolean xequals(Object obj1, Object obj2)
     {
-        return obj1 == obj2 || // shortcut
-            ((obj1 != null) ? (obj2 != null) && obj1.equals (obj2) : obj2 == null);
-    }
-
-    /**
-     * Method identical to "obj1.compareTo(obj2)==0", it also handles <code>null</code> values.
-     */
-    public static <T> boolean xcompare(Comparable<T> obj1, T obj2)
-    {
-        return obj1 == obj2 || // shortcut
-            (obj1 != null ? obj1.compareTo (obj2)==0 : obj2 == null);
-    }
-
-
-    /**
-     * Identical to equals() but handles Number.equals() problem:
-     *
-     * ( new Integer (1).equals (new Long (1)) != true )
-     *
-     * This method allows to compare different Number types by actual value.
-     */
-    public static boolean xequals2(Object o1, Object o2)
-    {
-        if (o1 == o2)
-            return true;
-
-        if (o1 == null || o2 == null)
-            return o1 == o2;
-
-        if (o1 instanceof Number && o2 instanceof Number) {
-            Class c1 = o1.getClass ();
-            Class c2 = o2.getClass ();
-
-            if (c1 == c2)
-                return o1.equals (o2);
-
-            if (c1 != Double.class && c1 != Float.class && c2 != Double.class && c2 != Float.class) {
-                return ((Number) o1).longValue () == ((Number) o2).longValue ();
-            } else {
-                return ((Number) o1).doubleValue () == ((Number) o2).doubleValue ();
-            }
-        } else {
-            return o1.equals (o2);
-        }
+        return (obj1 == obj2 || obj1 != null && obj2 != null && obj1.equals (obj2));
     }
 
     public static final double SMALL_NUMBER = 0.0000000000000001;
-
-    /**
-     * Identical to equals() but handles Number.equals() problem:
-     *
-     * ( new Integer (1).equals (new Long (1)) != true )
-     *
-     * This method allows to compare different Number types by actual value.
-     */
-    public static boolean equalsEpsilon(Object o1, Object o2)
-    {
-        if (o1 == o2) {
-            return true;
-        }
-
-        if (o1 == null || o2 == null) {
-            return o1 == o2;
-        }
-
-        if (o1 instanceof Number && o2 instanceof Number) {
-            Class c1 = o1.getClass ();
-            Class c2 = o2.getClass ();
-
-            if (c1 == c2) {
-                return o1.equals (o2);
-            }
-
-            if (c1 != Double.class && c1 != Float.class && c2 != Double.class && c2 != Float.class) {
-                return ((Number) o1).longValue () == ((Number) o2).longValue ();
-            } else {
-                return Math.abs (((Number) o1).doubleValue () - ((Number) o2).doubleValue ()) < SMALL_NUMBER;
-            }
-        } else {
-            return o1.equals (o2);
-        }
-    }
 
     /**
      * Given a Class object, attempts to find its .class location [returns null
