@@ -1024,6 +1024,4 @@ public class Util {
         
         return (hc);
     }
-    
-    
 }
