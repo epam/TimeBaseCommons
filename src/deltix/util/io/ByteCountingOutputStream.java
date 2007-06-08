@@ -12,6 +12,14 @@ public class ByteCountingOutputStream extends FilterOutputStream {
         super (os);
     }
     
+    public void             reset () {
+        mNumBytesWritten = 0;
+    }
+    
+    public void             setNumBytesWritten (long n) {
+        mNumBytesWritten = n;
+    }
+    
     public long             getNumBytesWritten () {
         return (mNumBytesWritten);
     }
