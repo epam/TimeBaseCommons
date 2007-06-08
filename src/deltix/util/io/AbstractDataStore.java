@@ -1,11 +1,12 @@
 package deltix.util.io;
 
+import deltix.util.Disposable;
 import java.io.*;
 
 /**
  *  A persistent object used to store structured data of some sort.
  */
-public interface AbstractDataStore {
+public interface AbstractDataStore extends Disposable {
     /**
      *  Create a new object on disk and format internally. The data store is
      *  left open for read-write at the end of this method.
@@ -31,10 +32,4 @@ public interface AbstractDataStore {
      *  Open the data store.
      */
     public void         open (boolean readOnly);
-    
-    /**
-     *  Close the data store and release all resources, such as caches and
-     *  file descriptors.
-     */
-    public void         close ();
 }
