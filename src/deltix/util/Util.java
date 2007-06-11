@@ -113,7 +113,7 @@ public class Util {
         return (a.compareTo (b) < 0 ? a : b);
     }
         
-    public static void      writeNullableString (String s, ObjectOutput os)
+    public static void      writeNullableString (String s, DataOutput os)
         throws IOException
     {
         os.writeBoolean (s == null);
@@ -122,7 +122,7 @@ public class Util {
             os.writeUTF (s);
     }
 
-    public static String    readNullableString (ObjectInput is)
+    public static String    readNullableString (DataInput is)
         throws IOException
     {
         if (is.readBoolean ())
