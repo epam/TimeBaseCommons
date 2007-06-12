@@ -59,10 +59,11 @@ public class CSVXReader {
         return (cd.getValue (mCSVRecord));
     }
     
-    public void             setIndexFromHeaders (ColumnDescriptor cd) {
-        if (!cd.findIndexFromHeaders (mHeaders))
-            throw new RuntimeException (
-                mDiagPrefix + "1: Header '" + cd.getHeader () + "' was not found"
-            );
+    public void             setIndexFromHeaders (ColumnDescriptor ... cds) {
+        for (ColumnDescriptor cd : cds)
+            if (!cd.findIndexFromHeaders (mHeaders))
+                throw new RuntimeException (
+                    mDiagPrefix + "1: Header '" + cd.getHeader () + "' was not found"
+                );
     }
 }
