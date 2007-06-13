@@ -310,6 +310,12 @@ public abstract class DefaultApplication {
     public void                     printUsage () 
         throws IOException, InterruptedException
     {
+        printUsage (System.out);
+    }
+    
+    public void                     printUsage (OutputStream os) 
+        throws IOException, InterruptedException
+    {
         Class           myClass = getClass ();        
         String          path = myClass.getName ().replace ('.', '/') + "-usage.txt";
         
@@ -319,7 +325,7 @@ public abstract class DefaultApplication {
             throw new FileNotFoundException ("Cannot open resource " + path);
 
         try {
-            StreamPump.pump (is, System.out);
+            StreamPump.pump (is, os);
         } finally {
             Util.close (is);
         }
