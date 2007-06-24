@@ -800,63 +800,6 @@ public class IOUtil {
         return (value);
     }
 
-    /**
-     * Method attempts to obtian exclusive lock on given file.
-     * Can be used e.g. to prevent two instances of application from running at the same time.
-     * Example:
-     * <pre>
-     * FileLock lock = null;
-     * try {
-     *    lock = IOUtil.lock ("fleet.client.lock", true);
-     *    runApplication (...);
-     * } finally {
-     *       IOUtil.unlock (lock);
-     * }
-     * </pre>
-     *
-     *
-     *
-     * @param fileLockName - name of the log file to be created in user home directory
-     * @param exitProcessOnFail - specify true to exit the process on lock failure or any other error
-     * @return non-null FileLock if given file can be locked
-     */
-    public static final FileLock lock (String fileLockName, boolean exitProcessOnFail) {
-
-        File lockFile = new File (System.getProperty ("user.home"), fileLockName);
-        FileLock result = null;
-        try {
-            result = new RandomAccessFile (lockFile, "rw").getChannel().tryLock();
-        } catch (IOException xcp) {
-            xcp.printStackTrace();
-        }
-
-        if (result == null) {
-            System.err.println("Looks like application is already running (cannot create file lock " +
-                lockFile.getAbsolutePath() + ")");
-
-            if (exitProcessOnFail)
-                System.exit (1);
-        }
-
-
-        return result;
-    }
-
-    /**
-     * @param lock - lock obtained by lock()
-     */
-    public static final void unlock (FileLock lock) {
-        if (lock != null) {
-            try {
-                lock.release ();
-            } catch (IOException ignore) {
-                ignore.printStackTrace();
-            }
-        }
-    }
-
-
-
     public static final class FileOnlyFilter implements FileFilter {
 
         public boolean accept(File pathname)

@@ -44,15 +44,59 @@ public class MemoryDataOutput {
         return (mPos);
     }
     
-    public final void           writeString (String str) {
-        boolean         isNotNull = str != null;
-        writeBoolean (isNotNull);
-        if (isNotNull)
-            writeUTF (str);
-    }
+    public final void           writeString (CharSequence str) {
+        if (str == null) {
+            writeUnsignedShort (0xFFFF);        
+            return;
+        }
+        
+        int     strlen = str.length();
+        int     utflen = 0;
+        int     c, count = 0;
 
-    public final void           writeUTF (String str) {
-        throw new RuntimeException ();
+        /* use charAt instead of copying String to char array */
+        for (int i = 0; i < strlen; i++) {
+            c = str.charAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) 
+                utflen++;
+            else if (c > 0x07FF) 
+                utflen += 3;
+            else 
+                utflen += 2;
+        }
+
+        if (utflen >= 0xFFFF)
+            throw new RuntimeException ("Encoded string too long: " + utflen + " bytes");
+
+        makeRoom (utflen + 2);
+        writeUnsignedShort (utflen);
+	        
+        int i=0;
+        
+        for (i=0; i<strlen; i++) {
+           c = str.charAt (i);
+           
+           if (!((c >= 0x0001) && (c <= 0x007F))) 
+               break;
+           
+           mBuffer [mPos++] = (byte) c;
+        }
+	
+        for (; i < strlen; i++) {
+            c = str.charAt(i);
+            
+            if ((c >= 0x0001) && (c <= 0x007F)) 
+                mBuffer [mPos++] = (byte) c;
+            else if (c > 0x07FF) {
+                mBuffer [mPos++] = (byte) (0xE0 | ((c >> 12) & 0x0F));
+                mBuffer [mPos++] = (byte) (0x80 | ((c >>  6) & 0x3F));
+                mBuffer [mPos++] = (byte) (0x80 | ((c >>  0) & 0x3F));
+            }
+            else {
+                mBuffer [mPos++] = (byte) (0xC0 | ((c >>  6) & 0x1F));
+                mBuffer [mPos++] = (byte) (0x80 | ((c >>  0) & 0x3F));
+            }
+        }
     }
 
     public final void           write (byte[] b, int off, int len) {
@@ -68,6 +112,12 @@ public class MemoryDataOutput {
     public final void           writeByte (byte v) {
         makeRoom (1);
         mBuffer [mPos] = v;
+        mPos++;
+    }
+
+    public final void           writeUnsignedByte (int v) {
+        makeRoom (1);
+        mBuffer [mPos] = (byte) v;
         mPos++;
     }
 
@@ -107,9 +157,24 @@ public class MemoryDataOutput {
         mPos += 8;
     }
 
-    public final void           writePackedLong (long v) {
-        makeRoom (8);
-        throw new RuntimeException ();
+    public final void           writePackedUnsignedLong (long v) {
+        if ((v & 0xE000000000000000L) != 0)
+            throw new IllegalArgumentException ("High 3 bits must be 0; v=" + v);
+        
+        makeRoom (8);   
+        
+        int         pos = mPos++;
+        int         addlPos = mPos;
+        int         low5bits = ((int) v) & 0x1F;
+        
+        v = v >>> 5; 
+        
+        while (v != 0) {   
+            mBuffer [mPos++] = (byte) (v & 0xFF);
+            v = v >>> 8;
+        }
+        
+        mBuffer [pos] = (byte) (low5bits | ((mPos - addlPos) << 5));
     }
 
     public final void           writeDouble (double v) {
