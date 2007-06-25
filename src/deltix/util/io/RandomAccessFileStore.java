@@ -9,6 +9,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
     protected final File            file;
     protected RandomAccessFile      raf;
     private boolean                 mIsReadOnly;
+    private long                    mMinSize = 0;
     
     public RandomAccessFileStore (File f) {
         file = f;
@@ -18,11 +19,30 @@ public class RandomAccessFileStore implements AbstractDataStore {
         raf.getChannel ().force (metaData);
     }
     
+    private void            setMinimumSizeNOW () throws IOException {
+        if (mMinSize > 0 && mMinSize > raf.length ())
+            raf.setLength (mMinSize);
+    }
+    
+    public void             setMinimumSize (long size) {
+        mMinSize = size;
+        
+        if (isOpen ()) {
+            try {
+                setMinimumSizeNOW ();
+            } catch (IOException iox) {
+                throw new UncheckedIOException (iox);
+            }            
+        }
+    }
+    
     public void             open (boolean readOnly) {
         mIsReadOnly = readOnly;
         
         try {
             raf = new RandomAccessFile (file, readOnly ? "r" : "rw");
+            
+            setMinimumSizeNOW ();
         } catch (IOException iox) {
             throw new UncheckedIOException (iox);
         }
@@ -41,9 +61,11 @@ public class RandomAccessFileStore implements AbstractDataStore {
         
         try {
             raf = new RandomAccessFile (file, "rw");
+            
+            setMinimumSizeNOW ();
         } catch (IOException iox) {
             throw new UncheckedIOException (iox);
-        }
+        }        
     }
 
     public void             delete () {
