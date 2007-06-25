@@ -1,6 +1,7 @@
 package deltix.util.memory;
 
 import deltix.util.collections.generated.ByteArrayList;
+import java.io.UnsupportedEncodingException;
 
 /**
  *  Equivalent of DataInputStream wrapped around
@@ -170,10 +171,25 @@ public class MemoryDataInput {
     }
 
     public final String     readString () {
-        throw new RuntimeException ();
+        int         utflen = readUnsignedShort ();
+        
+        if (utflen == 0xFFFF)
+            return (null);
+        
+        if (utflen == 0)
+            return ("");
+        
+        String      s;
+        
+        try {
+            s = new String (mBuffer, mPos, utflen, "UTF-8");
+        } catch (UnsupportedEncodingException x) {
+            throw new RuntimeException ("UTF-8 unsupported???", x);
+        }
+        
+        mPos += utflen;
+        
+        return (s);
     }
-    
-    public final String     readUTF () {
-        throw new RuntimeException ();
-    }
+
 }
