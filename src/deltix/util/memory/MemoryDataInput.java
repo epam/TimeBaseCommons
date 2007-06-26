@@ -13,6 +13,24 @@ public class MemoryDataInput {
     private int             mPos;
     private int             mLimit;
     
+    public MemoryDataInput () {
+        mBuffer = null;
+        mLimit = 0;
+        mPos = 0;
+    }
+    
+    public MemoryDataInput (byte [] buffer, int offset, int length) {
+        setBytes (buffer, offset, length);
+    }
+    
+    public MemoryDataInput (ByteArrayList list) {
+        setBytes (list);
+    }
+    
+    public MemoryDataInput (MemoryDataOutput mout) {
+        setBytes (mout);
+    }
+    
     public final void       setBytes (byte [] buffer, int offset, int length) {
         mBuffer = buffer;
         mLimit = offset + length;
@@ -29,6 +47,18 @@ public class MemoryDataInput {
         mBuffer = out.getBuffer ();
         mLimit = out.getSize ();
         mPos = 0;
+    }
+    
+    public final byte []    getBytes () {
+        return (mBuffer);
+    }
+        
+    public final int        getPosition () {
+        return (mPos);
+    }
+    
+    public final int        getLimit () {
+        return (mLimit);
     }
     
     public final void       readFully (byte[] b, int off, int len) {

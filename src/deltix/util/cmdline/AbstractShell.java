@@ -21,7 +21,16 @@ public abstract class AbstractShell extends DefaultApplication {
         }
         
         if (key.equalsIgnoreCase ("set")) {
-            set (key, args);
+            int     argLength = args.length ();
+            int     delim = 0;
+            
+            while (delim < argLength && !Character.isWhitespace (args.charAt (delim)))
+                delim++;
+            
+            String  option = args.substring (0, delim);
+            String  value = args.substring (delim).trim ();
+            
+            set (option, value);
             return (true);
         }
         
@@ -54,32 +63,49 @@ public abstract class AbstractShell extends DefaultApplication {
     
     protected void          run () throws Throwable {
         String []               args = getArgs ();
+        boolean                 exitWhenDone = false;
         
         for (int ii = 0; ii < args.length; ) {
             String          arg = args [ii++];
 
-            if (arg.startsWith ("-") || arg.startsWith("/")) {
+            if (arg.startsWith ("-") || arg.startsWith ("/")) {
                 String      option = arg.substring (1).toLowerCase ();
 
-                if (option.equals ("do")) {
+                if (option.equals ("exec")) {
                     String          key = args [ii++];
                     String          cmdArgs;
-                    
-                    if (ii == args.length)
-                        cmdArgs = null;
-                    else {
-                        StringBuilder   sb = new StringBuilder (args [ii++]);
-                    
-                        while (ii < args.length) {
-                            sb.append (" ");
-                            sb.append (args [ii++]);
+                                        
+                    StringBuilder   sb = new StringBuilder ();
+
+                    for (;; ii++) {
+                        if (ii == args.length) 
+                            break;
+                        
+                        arg = args [ii];
+                        
+                        if (arg.startsWith ("-") || arg.startsWith ("/")) {
+                            option = arg.substring (1).toLowerCase ();
+                        
+                            if (option.equals ("exec"))
+                                break;
+                        
+                            if (option.equals ("exit")) {
+                                exitWhenDone = true;
+                                break;
+                            }
                         }
                         
-                        cmdArgs = sb.toString ();
+                        if (sb.length () > 0)
+                            sb.append (" ");
+                        
+                        sb.append (arg);                        
                     }
-                    
+
+                    cmdArgs = sb.toString ();                                        
                     runCommand (key, cmdArgs);
-                    return;
+                    
+                    if (exitWhenDone)
+                        return;
                 }
                 else
                     doSet (option, args [ii++]);
@@ -107,19 +133,15 @@ public abstract class AbstractShell extends DefaultApplication {
             
             int         ws = 0;
             
-            while (ws < len) {
-                if (Character.isWhitespace (line.charAt (ws)))
-                    break;
-                
+            while (ws < len && !Character.isWhitespace (line.charAt (ws)))
                 ws++;
-            }
             
             String      key = line.substring (0, ws);
                         
             if (key.equalsIgnoreCase ("quit") || key.equalsIgnoreCase ("exit"))
                 break;
 
-            String      cmdargs = ws < len ? line.substring (ws + 1).trim () : null;
+            String      cmdargs = line.substring (ws + 1).trim ();
             
             runCommand (key, cmdargs);
         }
