@@ -141,7 +141,7 @@ public abstract class AbstractShell extends DefaultApplication {
             if (key.equalsIgnoreCase ("quit") || key.equalsIgnoreCase ("exit"))
                 break;
 
-            String      cmdargs = line.substring (ws + 1).trim ();
+            String      cmdargs = line.substring (ws).trim ();
             
             runCommand (key, cmdargs);
         }

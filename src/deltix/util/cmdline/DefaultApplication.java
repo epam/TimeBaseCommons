@@ -276,11 +276,10 @@ public abstract class DefaultApplication {
      *	Prints out a standardized diagnostic line. Handles
      *	known wrapper exceptions intelligently, such as,
      *	for example, prints out the line number and position
-     *	if a SAXParseException is thrown. If the debug mode includes
-     *	<b>trace</b>, the stack trace is printed out.
+     *	if a SAXParseException is thrown. 
      */
     public void						handleException (Throwable x) {
-		printException (x, isArgSpecified ("-trace"));
+		printException (x, true);
     }
     
     /**
