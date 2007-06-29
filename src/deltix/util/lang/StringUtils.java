@@ -106,6 +106,24 @@ public class StringUtils {
         return (true);
     }
 
+    public static int           parseDecimalDigit (CharSequence s, int idx) {
+        int         d = s.charAt (idx) - '0';
+        
+        if (d < 0 || d > 9)
+            throw new NumberFormatException (s.toString ());
+        
+        return (d);
+    }
+    
+    public static int           parseUnsignedDecimalInt (CharSequence s, int idx, int len) {
+        int         d = 0;
+        
+        for (int ii = 0; ii < len; ii++)
+            d = d * 10 + parseDecimalDigit (s, idx + ii);
+        
+        return (d);
+    }
+    
     public static int          parseDecimalInt (byte [] bytes, int offset, int len) {
         skipSpace: while (len > 0)
             switch (bytes [offset]) {

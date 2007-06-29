@@ -277,29 +277,6 @@ public class Util {
     /**
      *  Closes a Writer without throwing an exception. Checks for null.
      */
-    public static void			delete (Writer wr) {
-        if (wr != null)
-            try {
-                wr.close ();
-            } catch (Exception x) {
-                handleException (x);
-            }
-    }
-
-    /**
-     *  Deletes a File. If fails, logs an error message.
-     */
-    public static void			delete (File f) {
-        if (f != null && !f.delete ())
-            LOGGER.log (
-                Level.SEVERE,
-                "Failed to delete file " + f
-            );
-    }
-
-    /**
-     *  Closes a Writer without throwing an exception. Checks for null.
-     */
     public static void			close (Writer wr) {
         if (wr != null)
             try {
@@ -541,15 +518,6 @@ public class Util {
         return (ret);
     }
     
-    public static boolean                           eq (Object o1, Object o2) {
-        if (o1 == null)
-            return (o2 == null);
-        else if (o2 == null)
-            return (false);
-        else
-            return (o1.equals (o2));        
-    }
-    
     public static <T extends Comparable <T>> int    xcompare (T o1, T o2) {
         if (o1 == null)
             if (o2 == null)
@@ -570,8 +538,6 @@ public class Util {
     {
         return (obj1 == obj2 || obj1 != null && obj2 != null && obj1.equals (obj2));
     }
-
-    public static final double SMALL_NUMBER = 0.0000000000000001;
 
     /**
      * Given a Class object, attempts to find its .class location [returns null
@@ -1013,7 +979,7 @@ public class Util {
     }
     
     /**
-     *  Replicates the String.hasCode () logic for arbitrary CharSequence instances
+     *  Replicates the String.hashCode () logic for arbitrary CharSequence instances
      */
     public static int               hashCode (CharSequence cs) {        
         int         len = cs.length ();
