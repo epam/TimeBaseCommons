@@ -1,6 +1,7 @@
 package deltix.util.memory;
 
 import deltix.util.collections.generated.ByteArrayList;
+import deltix.util.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -12,7 +13,8 @@ public class MemoryDataInput {
     private byte []         mBuffer;
     private int             mPos;
     private int             mLimit;
-    
+    private StringBuilder   mStringBuilder;
+        
     public MemoryDataInput () {
         mBuffer = null;
         mLimit = 0;
@@ -200,26 +202,112 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final String     readString () {
+    public final String         readString () {
+        CharSequence   sb = readCharSequence ();
+        
+        return (sb == null ? null : sb.toString ());
+    }
+    
+    /**
+     *  Uses an internal buffer. The returned value is valid until the next call to
+     *  this method. Returns null if the string value is null. 
+     */
+    public final CharSequence   readCharSequence () {
+        if (mStringBuilder == null)
+            mStringBuilder = new StringBuilder ();
+        
+        return (readStringBuilder (mStringBuilder));
+    }
+    
+    /**
+     *  Returns null if the string value is null. 
+     */
+    public final StringBuilder  readStringBuilder (StringBuilder sb) {
         int         utflen = readUnsignedShort ();
         
         if (utflen == 0xFFFF)
             return (null);
         
+        sb.setLength (0);
+        
         if (utflen == 0)
-            return ("");
+            return (sb);
         
-        String      s;
+        int c = -2;
+        int char2, char3;
+        int count = 0;        
         
-        try {
-            s = new String (mBuffer, mPos, utflen, "UTF-8");
-        } catch (UnsupportedEncodingException x) {
-            throw new RuntimeException ("UTF-8 unsupported???", x);
+        for (;;) {
+            c = readByte ();    
+            if (c > 127) 
+                break;
+            
+            count++;
+            sb.append ((char) c);
+            
+            if (count >= utflen)
+                return (sb);
         }
+        //  If we are here, we have broken out of the previous loop and there is an
+        //  unhandled escape character in variable c.        
+        for (;;) {
+            switch (c >> 4) {
+                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                    /* 0xxxxxxx*/
+                    count++;
+                    sb.append ((char)c);
+                    break;
+                    
+                case 12: case 13:
+                    /* 110x xxxx   10xx xxxx*/
+                    count += 2;
+                    
+                    if (count > utflen)
+                        throw new UncheckedIOException (
+                            "malformed input: partial character at end"
+                        );
+                    
+                    char2 = readByte ();
+                    
+                    if ((char2 & 0xC0) != 0x80)
+                        throw new UncheckedIOException (
+                            "malformed input around byte " + count
+                        ); 
+                    
+                    sb.append ((char)(((c & 0x1F) << 6) | (char2 & 0x3F)));  
+                    break;
+                    
+                case 14:
+                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+                    count += 3;
+                    if (count > utflen)
+                        throw new UncheckedIOException (
+                            "malformed input: partial character at end"
+                        );
+                    char2 = readByte ();
+                    char3 = readByte ();
+                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+                        throw new UncheckedIOException(
+                            "malformed input around byte " + (count-1));
+                    sb.append ((char)(((c & 0x0F) << 12) |
+                                                    ((char2 & 0x3F) << 6)  |
+                                                    ((char3 & 0x3F) << 0)));
+                    break;
+                    
+                default:
+                    /* 10xx xxxx,  1111 xxxx */
+                    throw new UncheckedIOException (
+                        "malformed input around byte " + count
+                    );
+            }
+                        
+            if (count >= utflen)
+                break;
+            
+            c = readByte ();
+        }        
         
-        mPos += utflen;
-        
-        return (s);
+        return (sb);
     }
 
 }
