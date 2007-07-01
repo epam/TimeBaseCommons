@@ -246,6 +246,18 @@ public class IOUtil {
         }
     }
 
+    public static String []     readLinesFromClassPath (String relPath)
+        throws IOException, InterruptedException
+    {
+        InputStream		is = openResourceAsStream (relPath);
+
+        try {
+            return (readLinesFromReader (new InputStreamReader (is)));
+        } finally {
+            Util.close (is);
+        }
+    }
+
     public static String		readTextFile (String filepath)
         throws IOException, InterruptedException
     {
@@ -267,6 +279,32 @@ public class IOUtil {
         try {
             fr = new FileReader (f);
             return (readFromReader (fr));
+        } finally {
+            Util.close (fr);
+        }
+    }
+
+    public static String []     readLinesFromTextFile (String filepath)
+        throws IOException, InterruptedException
+    {
+        FileReader      fr = null;
+
+        try {
+            fr = new FileReader (filepath);
+            return (readLinesFromReader (fr));
+        } finally {
+            Util.close (fr);
+        }
+    }
+
+    public static String []     readLinesFromTextFile (File f)
+        throws IOException, InterruptedException
+    {
+        FileReader      fr = null;
+
+        try {
+            fr = new FileReader (f);
+            return (readLinesFromReader (fr));
         } finally {
             Util.close (fr);
         }
@@ -312,6 +350,33 @@ public class IOUtil {
         }
 
         return (fileContents.toString ());
+    }
+
+    public static String []     readLinesFromReader (Reader r)
+        throws IOException, InterruptedException
+    {
+        BufferedReader      brd;
+        
+        if (r instanceof BufferedReader)
+            brd = (BufferedReader) r;
+        else
+            brd = new BufferedReader (r);
+
+        ArrayList <String>  lines = new ArrayList <String> ();        
+
+        for (;;) {
+            String          line = brd.readLine ();
+
+            if (line == null)
+                break;
+            
+            if (Thread.interrupted ())
+                throw new InterruptedException ();
+
+            lines.add (line);
+        }
+
+        return (lines.toArray (new String [lines.size ()]));
     }
 
     public static void		writeTextFile (String filepath, String content)
