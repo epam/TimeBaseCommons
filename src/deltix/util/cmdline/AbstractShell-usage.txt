@@ -1,0 +1,6 @@
+Shell Command-Line Options:
+
+-set <option> <value>           Execute the "set" command.
+-exec <command ...>             Execute the specified shell command.
+-exit                           Exit at this point.
+

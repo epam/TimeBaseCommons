@@ -315,18 +315,22 @@ public abstract class DefaultApplication {
     public void                     printUsage (OutputStream os) 
         throws IOException, InterruptedException
     {
-        Class           myClass = getClass ();        
-        String          path = myClass.getName ().replace ('.', '/') + "-usage.txt";
+        boolean         somethingPrinted = false;
         
-        InputStream     is = myClass.getClassLoader ().getResourceAsStream (path);
-        
-        if (is == null)
-            throw new FileNotFoundException ("Cannot open resource " + path);
+        for (Class <?> myClass = getClass (); myClass != Object.class; myClass = myClass.getSuperclass ()) {
+            String          path = myClass.getName ().replace ('.', '/') + "-usage.txt";
+            InputStream     is = myClass.getClassLoader ().getResourceAsStream (path);
 
-        try {
-            StreamPump.pump (is, os);
-        } finally {
-            Util.close (is);
+            if (is == null)
+                continue;
+            
+            try {
+                StreamPump.pump (is, os);
+            } finally {
+                Util.close (is);
+            }
+            
+            somethingPrinted = true;
         }
     }
 }
