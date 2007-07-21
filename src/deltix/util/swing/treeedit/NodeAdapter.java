@@ -93,8 +93,7 @@ final class NodeAdapter implements TreeNode {
     }
     
     public boolean          isLeaf () {
-        updateChildren ();
-        return (mChildNodeAdapters == null);
+        return (mUserNode.getNumChildren () == TreeEditorNode.LEAF_NODE);
     }    
     
     TreeEditorNode          getUserNode () {
