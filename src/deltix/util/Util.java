@@ -17,6 +17,14 @@ public class Util {
     public static final String  LOGGER_NAME = "deltix.util";
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
     public static final Timer   GLOBAL_TIMER = new Timer ("Global Timer", true);
+    
+    public static int           doubleUntilAtLeast (int a, int limit) {
+        do 
+            a = a << 1;
+        while (a < limit);
+        return (a);
+    }    
+    
     /**
      *  Returns the sign of a - b
      */
