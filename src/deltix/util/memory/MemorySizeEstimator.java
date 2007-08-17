@@ -14,7 +14,7 @@ public interface MemorySizeEstimator {
     public static final int     SIZE_OF_LONG = 8;
     public static final int     SIZE_OF_FLOAT = 4;
     public static final int     SIZE_OF_DOUBLE = 8;
-    public static final int     SIZE_OF_POINTER = 4;
+    public static final int     SIZE_OF_POINTER = 8;
     
     public int          getSizeInMemory ();
 }
