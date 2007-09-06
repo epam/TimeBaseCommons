@@ -12,6 +12,21 @@ import deltix.util.Util;
  *
  */
 public class IOUtil {
+    public static void      rename (File from, File to) throws IOException {
+        if (!from.renameTo (to))
+            throw new IOException ("Failed to rename " + from + " -> " + to);
+    }
+    
+    public static void      delete (File f) throws IOException {
+        if (!f.delete ())
+            throw new IOException ("Failed to delete " + f);
+    }
+    
+    public static void      createNew (File f) throws IOException {
+        if (!f.createNewFile ())
+            throw new IOException ("Failed to create " + f);
+    }
+    
     /**
      *  Output character <code>ch</code> <code>n</code> times to Writer
      *  <code>wr</code>.
