@@ -22,6 +22,25 @@ public class IOUtil {
             throw new IOException ("Failed to delete " + f);
     }
     
+    /**
+     *  Deletes the specified file, and continues to attempt to delete its parent directories
+     *  up the directory path, until the deletion fails, or the limit file is reached.
+     *  The deletion of a directory
+     *  fails if the directory is not empty (as well as possibly for a number of other reasons).
+     *
+     *  @param f        The file that will be deleted, and then its parent directories
+     *                  will be deleted, if they are empty.
+     *  @param limit    Unless null, the deletion process will stop at this file. The
+     *                  limit is exclusive, i.e. this file will never be deleted.
+     *  @return The first file that failed to be deleted.
+     */
+    public static File      deleteWithEmptyParentPath (File f, File limit) {
+        while (!f.equals (limit) && f.delete ())
+            f = f.getParentFile ();
+        
+        return (f);
+    }
+    
     public static void      createNew (File f) throws IOException {
         if (!f.createNewFile ())
             throw new IOException ("Failed to create " + f);
