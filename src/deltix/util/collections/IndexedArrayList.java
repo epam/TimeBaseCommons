@@ -20,6 +20,11 @@ import deltix.util.collections.generated.*;
 public class IndexedArrayList <E> implements List <E> {
     private ObjectToIntegerHashMap <Object> mElemToIdxMap;
     private List <E>                        mElemList;
+    private boolean                         mAllowAddingDuplicates = false;
+    
+    public void         setAllowAddingDuplicates (boolean flag) {
+        mAllowAddingDuplicates = flag;
+    }
     
     public static <E> IndexedArrayList <E>  wrapIfNecessary (List <E> in) {
         if (in == null)
@@ -198,11 +203,15 @@ public class IndexedArrayList <E> implements List <E> {
         if (o != null) {
             int     existIdx = mElemToIdxMap.get (o, -1);
 
-            if (existIdx >= 0)
+            if (existIdx >= 0) {
+                if (mAllowAddingDuplicates)
+                    return (false);
+                
                 throw new IllegalArgumentException (
                     "Element " + o + 
                     " already exists at index " + existIdx
                 );
+            }
             
             map (o, mElemList.size ());
         }
