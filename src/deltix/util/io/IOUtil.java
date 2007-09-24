@@ -908,6 +908,24 @@ public class IOUtil {
     }
     
     /**
+     *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
+     *  that many characters in raw 2-byte form.
+     */    
+    public static int      writeUnicode (CharSequence str, DataOutput out) throws IOException {
+        int     strlen = str.length ();
+        
+        if (strlen > 65535)
+            throw new UTFDataFormatException ("string too long: " + strlen + " bytes");
+        
+        out.writeShort ((short) strlen);
+        
+        for (int ii = 0; ii < strlen; ii++)
+            out.writeChar (str.charAt (ii));
+        
+        return (strlen * 2 + 2);
+    }
+    
+    /**
      *  Writes any CharSequence to DataOutput in a way identical to
      *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly 
      *  by forcing the argument to be a String.
