@@ -74,8 +74,14 @@ public class IndexedArrayList <E> implements List <E> {
         }
     }
     
-    public boolean      remove (Object o) {  
-        throw new UnsupportedOperationException ("Removal is not supported");
+    public boolean      remove (Object o) {
+        int     idx = indexOf (o);
+        
+        if (idx < 0)
+            return (false);
+        
+        remove (idx);
+        return (true);
     }
 
     public boolean      contains (Object o) {
@@ -87,14 +93,14 @@ public class IndexedArrayList <E> implements List <E> {
 
     public int          indexOf (Object o) {
         if (o == null)
-            throw new UnsupportedOperationException ("indexOf (null)");
+            return (mElemList.indexOf (null));
         
         return (mElemToIdxMap.get (o, -1));
     }
 
     public int          lastIndexOf (Object o) {
         if (o == null)
-            throw new UnsupportedOperationException ("lastIndexOf (null)");
+            return (mElemList.lastIndexOf (null));
         
         return (mElemToIdxMap.get (o, -1));
     }
