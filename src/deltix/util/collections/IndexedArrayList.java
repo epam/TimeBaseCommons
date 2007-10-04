@@ -20,6 +20,7 @@ import deltix.util.collections.generated.*;
 public class IndexedArrayList <E> implements List <E> {
     private ObjectToIntegerHashMap <Object> mElemToIdxMap;
     private List <E>                        mElemList;
+    private int                             mFirstNullIdx = -1;
     private boolean                         mAllowAddingDuplicates = false;
     
     public void         setAllowAddingDuplicates (boolean flag) {
@@ -60,17 +61,41 @@ public class IndexedArrayList <E> implements List <E> {
     }
 
     private void        map (E e, int idx) {
-        if (!mElemToIdxMap.put (e, idx))
+        if (e == null) {
+            if (mFirstNullIdx < 0 || idx < mFirstNullIdx)
+                mFirstNullIdx = idx;            
+        }            
+        else if (!mElemToIdxMap.put (e, idx))
             throw new IllegalArgumentException (
                 "Duplicate element: " + e + " at index " + idx
-            );
+            );        
     }
     
-    private void        unmap (E e) {
-        try {
-            mElemToIdxMap.remove (e);
-        } catch (ObjectToIntegerHashMap.KeyNotFoundException x) {
-            throw new RuntimeException ("unexpected: " + x, x);
+    private void        unmap (E e, int idx) {
+        if (e == null) {
+            assert mFirstNullIdx >= 0 && idx >= mFirstNullIdx : 
+                "idx: " + idx + "; mFirstNullIdx: " + mFirstNullIdx;
+            
+            if (idx == mFirstNullIdx) {
+                int     size = mElemList.size ();
+                
+                for (;;) {
+                    mFirstNullIdx++;
+                    
+                    if (mFirstNullIdx == size) {
+                        mFirstNullIdx = -1;
+                        break;
+                    }
+                    
+                    if (mElemList.get (mFirstNullIdx) == null)
+                        break;
+                }
+            }
+        }
+        else {            
+            int     prevIdx = mElemToIdxMap.remove (e, -1);
+
+            assert prevIdx == idx : "prevIdx: " + prevIdx + "; idx: " + idx;
         }
     }
     
@@ -80,7 +105,7 @@ public class IndexedArrayList <E> implements List <E> {
         if (idx < 0)
             return (false);
         
-        remove (idx);
+        remove (idx);        
         return (true);
     }
 
@@ -93,7 +118,7 @@ public class IndexedArrayList <E> implements List <E> {
 
     public int          indexOf (Object o) {
         if (o == null)
-            return (mElemList.indexOf (null));
+            return (mFirstNullIdx);
         
         return (mElemToIdxMap.get (o, -1));
     }
@@ -113,8 +138,7 @@ public class IndexedArrayList <E> implements List <E> {
         
         E       e = mElemList.remove (index);
         
-        if (e != null)
-            unmap (e);
+        unmap (e, index);
         
         return (e);
     }
@@ -150,15 +174,13 @@ public class IndexedArrayList <E> implements List <E> {
                 throw new IllegalArgumentException (
                     "Element " + element + " being set at index " + index + 
                     " already exists at index " + existIdx
-                );
-            
-            map (element, index);
+                );            
         }
-        
+                 
         E       prev = mElemList.set (index, element);
         
-        if (prev != null)
-            unmap (prev);        
+        unmap (prev, index);        
+        map (element, index);
         
         return (prev);
     }

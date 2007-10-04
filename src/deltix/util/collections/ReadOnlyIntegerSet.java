@@ -16,4 +16,6 @@ public interface ReadOnlyIntegerSet {
      *  Determines if the specified value is in the set
      */
     public boolean              contains (int value);
+    
+    public int []               toIntArray ();
 }
