@@ -75,6 +75,11 @@ public class BitIntegerSet extends BitSet implements MutableIntegerSet {
         return (notFound);
     }
 
+    public void                     addAll (IntegerEnumeration e) {
+        while (e.hasMoreElements ()) 
+            add (e.nextIntElement ()); 
+    }
+    
     public IntegerEnumeration       elements () {
         return (new BitEnumeration ());
     }
