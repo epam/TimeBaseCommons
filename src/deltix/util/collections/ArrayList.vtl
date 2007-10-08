@@ -9,7 +9,7 @@ import java.util.Enumeration;
 #end
 
 import deltix.util.collections.Arrays;
-
+import deltix.util.*;
 import deltix.util.memory.*;
 
 /**
@@ -353,12 +353,15 @@ public final class ${name}ArrayList
      */
 #if ($name == "Object")
     public int indexOf (Object elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
 #else
     public int indexOf (${type} elem) {
-#end
 	    for (int i = 0; i < size; i++)
 			if (elem == elementData[i])
 		    	return i;
+#end
 		return -1;
     }
 
@@ -372,12 +375,15 @@ public final class ${name}ArrayList
      */
 #if ($name == "Object")
     public int lastIndexOf (Object elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
 #else
     public int lastIndexOf (${type} elem) {
-#end
 	    for (int i = size-1; i >= 0; i--)
 			if (elem == elementData [i])
 		    	return i;
+#end
 		return -1;
     }
 
