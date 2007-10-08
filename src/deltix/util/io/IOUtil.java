@@ -1056,18 +1056,4 @@ public class IOUtil {
         }        
     }
 
-
-    public static String qqlPathToFilePath(String qqlPath) {
-        StringBuffer out = new StringBuffer ();
-        for(int i = 0; i < qqlPath.length(); i++) {
-            char c = qqlPath.charAt(i);
-            if (c == '"')
-                continue;
-            
-            if (Character.isLetterOrDigit(c) || c == '_' || c == '.' || c == '-')
-                out.append(c);
-            else out.append('~');
-        }
-        return out.toString();
-    }
 }
