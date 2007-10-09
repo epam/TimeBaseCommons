@@ -27,7 +27,7 @@ public class BitIntegerSet extends BitSet implements MutableIntegerSet {
             
             int         ret = mCurrentBit;
             
-            mCurrentBit = nextSetBit (mCurrentBit);
+            mCurrentBit = nextSetBit (mCurrentBit + 1);
             
             return (ret);
         }
