@@ -25,6 +25,10 @@ public class MemoryDataInput {
         setBytes (buffer, offset, length);
     }
     
+    public MemoryDataInput (byte [] buffer) {
+        setBytes (buffer);
+    }
+    
     public MemoryDataInput (ByteArrayList list) {
         setBytes (list);
     }
@@ -42,6 +46,12 @@ public class MemoryDataInput {
     public final void       setBytes (ByteArrayList buffer) {
         mBuffer = buffer.getInternalBuffer ();
         mLimit = buffer.size ();
+        mPos = 0;
+    }
+    
+    public final void       setBytes (byte [] buffer) {
+        mBuffer = buffer;
+        mLimit = buffer.length;
         mPos = 0;
     }
     

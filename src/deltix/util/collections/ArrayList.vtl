@@ -149,6 +149,22 @@ public final class ${name}ArrayList
 		}
     }
 
+    public void ensureCapacityUnsafe(int minCapacity) {
+		modCount++;
+		int oldCapacity = elementData.length;
+		if (minCapacity > oldCapacity) {
+	    	${type} oldData [] = elementData;
+	    	int newCapacity = (oldCapacity * 3)/2 + 1;
+    	    if (newCapacity < minCapacity)
+				newCapacity = minCapacity;
+#if( $name == "Object" )
+            elementData = Arrays.<${type}>initializeArray(newCapacity);
+#else
+            elementData = new ${type} [newCapacity];
+#end
+		}
+    }
+
     /**
      * Returns the number of elements in this list.
      *
@@ -757,6 +773,16 @@ public final class ${name}ArrayList
      */
     public void		setSize (int newSize) {
     	ensureCapacity (newSize);
+    	size = newSize;
+    }
+
+    /**
+     *	Sets the size of this array to the supplied value, without
+     *  preserving the original data. After this call, the content of
+     *  the array is undefined!
+     */
+    public void		setSizeUnsafe (int newSize) {
+    	ensureCapacityUnsafe (newSize);
     	size = newSize;
     }
 
