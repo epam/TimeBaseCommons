@@ -34,7 +34,9 @@ public class CharSequenceKey
         return (
             this == other ||
             other instanceof CharSequenceKey &&
-                Util.equals (charSequence, ((CharSequenceKey) other).charSequence)
+                Util.equals (charSequence, ((CharSequenceKey) other).charSequence) ||                                
+            other instanceof CharSequence &&
+                Util.equals (charSequence, (CharSequence) other)
         );
     }
     
