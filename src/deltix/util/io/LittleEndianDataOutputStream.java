@@ -7,7 +7,7 @@ import java.io.*;
  * Date: Nov 28, 2007
  * Time: 1:57:23 PM
  */
-public class LittleEndianDataOutputStream implements DataOutput {
+public class LittleEndianDataOutputStream extends FilterOutputStream implements DataOutput {
 
     /**
      * bytearr is initialized on demand by writeUTF
@@ -18,6 +18,7 @@ public class LittleEndianDataOutputStream implements DataOutput {
      * constructor
      */
     public LittleEndianDataOutputStream(OutputStream out) {
+        super(out);
         this.d = new DataOutputStream(out);
         w = new byte[8]; // work array for composing output
     }
