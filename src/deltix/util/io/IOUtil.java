@@ -949,8 +949,14 @@ public class IOUtil {
             throw new UTFDataFormatException(
                     "encoded string too long: " + utflen + " bytes");
 
-        out.writeByte ((utflen >>> 8) & 0xFF);
-        out.writeByte ((utflen >>> 0) & 0xFF); 
+        if (out instanceof LittleEndianDataOutputStream) {
+            out.writeByte((utflen >>> 0) & 0xFF);
+            out.writeByte((utflen >>> 8) & 0xFF);
+
+        } else {
+            out.writeByte((utflen >>> 8) & 0xFF);
+            out.writeByte((utflen >>> 0) & 0xFF);
+        }
 	
         
         int i=0;
