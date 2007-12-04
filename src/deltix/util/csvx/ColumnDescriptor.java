@@ -66,17 +66,21 @@ public abstract class ColumnDescriptor {
         mOutOfBandValues = values;
     }
     
-    protected abstract Object   parseValue (String cell);
+    protected abstract Object   parseValue (CharSequence cell);
         
-    public final Object         getValue (String cell) {
+    public final Object         getValue (CharSequence cell) {
         if (cell == null)
             return (mEmptyCellObject);
         
-        if (mTrim)
-            cell = cell.trim ();
+        int         cellLength = cell.length ();
         
-        if (cell.length () == 0)
+        if (cellLength == 0)
             return (mEmptyCellObject);
+        
+        if (mTrim &&
+            Character.isWhitespace (cell.charAt (0)) ||
+            Character.isWhitespace (cell.charAt (cellLength - 1)))
+            cell = cell.toString ().trim ();
         
         if (mCompiledOutOfBandPatterns != null) {
             for (int ii = 0; ii < mCompiledOutOfBandPatterns.length; ii++)
@@ -87,14 +91,7 @@ public abstract class ColumnDescriptor {
         return (parseValue (cell));
     }
         
-    public final Object         getValue (String [] line) {
-        if (line.length <= mIdxInCSV)
-            return (null);
-        
-        return (getValue (line [mIdxInCSV]));
-    }
-    
-    protected static int        parseInt (String s, int startIncl, int endIncl) {
+    protected static int        parseInt (CharSequence s, int startIncl, int endIncl) {
         int     ret = 0;
         
         for (int ii = startIncl; ii <= endIncl; ii++) 

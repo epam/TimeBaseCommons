@@ -19,9 +19,7 @@ import deltix.qsrv.impl.util.*;
 public class CSVXReader {
     private String                  mDiagPrefix;
     private String []               mHeaders;
-    private CSVReader               mCSVReader;
-    private int                     mLine;
-    private String []               mCSVRecord = null;
+    private CSVParser               mCSVReader;
 
     public CSVXReader () {
     }
@@ -30,14 +28,17 @@ public class CSVXReader {
         throws IOException 
     {
         mDiagPrefix = diagPrefix;
-        mCSVReader = new CSVReader (rd);
+        mCSVReader = new CSVParser (rd);
         
-        mHeaders = mCSVReader.readNext ();
-        
-        if (mHeaders == null)
+        if (!mCSVReader.nextLine ())
             throw new EOFException (mDiagPrefix + "File is empty");
 
-        mLine = 1;
+        int     numHeaders = mCSVReader.getNumCells ();
+        
+        mHeaders = new String [numHeaders];
+        
+        for (int ii = 0; ii < numHeaders; ii++)
+            mHeaders [ii] = mCSVReader.getCell (ii).toString ();
     }
     
     public String []        getHeaders () {
@@ -45,18 +46,21 @@ public class CSVXReader {
     }
     
     public int              getLine () {
-        return (mLine);
+        return (mCSVReader.getLineNumber ());
     }
     
     public boolean          next () throws IOException {
-        mCSVRecord = mCSVReader.readNext ();
-        mLine++;
-        
-        return (mCSVRecord != null);
+        return (mCSVReader.nextLine ());
     }
     
     public Object           getValue (ColumnDescriptor cd) {
-        return (cd.getValue (mCSVRecord));
+        int     idx = cd.getCSVIdx ();
+        int     curNumCells = mCSVReader.getNumCells ();
+        
+        if (idx >= curNumCells)
+            return (null);
+        
+        return (cd.getValue (mCSVReader.getCell (idx)));
     }
     
     public void             setIndexFromHeaders (ColumnDescriptor ... cds) {

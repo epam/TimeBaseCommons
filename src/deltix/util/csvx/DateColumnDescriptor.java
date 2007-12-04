@@ -24,14 +24,14 @@ public class DateColumnDescriptor extends ColumnDescriptor {
         mFormat.setTimeZone (timeZone);
     }
         
-    protected Object            parseValue (String cell) {
+    protected Object            parseValue (CharSequence cell) {
         return (getDate (cell));
     }
     
-    public Date                 getDate (String s) {
+    public Date                 getDate (CharSequence s) {
         try {
             synchronized (mFormat) {
-                return (mFormat.parse (s));
+                return (mFormat.parse (s.toString ()));
             }
         } catch (ParseException px) {
             throw new NumberFormatException ("Illegal date: '" + s + "': " + px.toString ());
