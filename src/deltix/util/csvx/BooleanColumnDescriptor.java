@@ -15,7 +15,7 @@ public class BooleanColumnDescriptor extends ColumnDescriptor {
         mCompiledTruePattern = Pattern.compile (pattern);
     }
     
-    protected Object            parseValue (CharSequence cell) {
-        return (mCompiledTruePattern.matcher (cell).matches ());
+    public boolean              getBoolean () {
+        return (mCompiledTruePattern.matcher (getCharSequence ()).matches ());
     }
 }
