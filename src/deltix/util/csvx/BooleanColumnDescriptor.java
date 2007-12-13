@@ -11,6 +11,13 @@ public class BooleanColumnDescriptor extends ColumnDescriptor {
     
     private Pattern             mCompiledTruePattern = DEFAULT_TRUE_PATTERN;
     
+    public BooleanColumnDescriptor () { 
+    }
+    
+    public BooleanColumnDescriptor (String header) {
+        super (header);
+    }    
+    
     public void                 setTruePattern (String pattern) {
         mCompiledTruePattern = Pattern.compile (pattern);
     }

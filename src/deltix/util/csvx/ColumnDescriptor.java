@@ -14,6 +14,13 @@ public abstract class ColumnDescriptor {
     private CharSubSequence             mTrimmed = new CharSubSequence ();
     private CharSequence                mCell;
     
+    protected ColumnDescriptor () { 
+    }
+    
+    protected ColumnDescriptor (String header) {
+        setHeader (header);
+    }
+    
     public final void           setHeader (String header) {        
         if (header == null)
             throw new IllegalArgumentException ("header == null");

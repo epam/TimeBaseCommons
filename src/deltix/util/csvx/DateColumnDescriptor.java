@@ -12,10 +12,15 @@ public class DateColumnDescriptor extends ColumnDescriptor {
     private DateFormat          mFormat;    
     private String              mFormatString;
     
-    public DateColumnDescriptor () {
+    public DateColumnDescriptor () { 
         setFormat ("yyyy-MM-dd", GMT.TZ);
     }
     
+    public DateColumnDescriptor (String header) {
+        super (header);
+        setFormat ("yyyy-MM-dd", GMT.TZ);
+    }   
+        
     public void                 setFormat (String format, String timeZone) {
         setFormat (format, TimeZone.getTimeZone (timeZone));
     }
