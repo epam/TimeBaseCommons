@@ -45,6 +45,8 @@ public abstract class ColumnDescriptor {
     }
     
     public final void           fetchCell (CSVXReader csvxrd) {
+        assert mIdxInCSV >= 0 : mHeader + ": index unset - call CSVXReader.setIndexFromHeaders (this)!";
+        
         mCell = csvxrd.getCell (mIdxInCSV, mTrim);
     }
 

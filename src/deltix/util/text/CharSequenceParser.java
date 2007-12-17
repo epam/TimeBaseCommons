@@ -155,10 +155,16 @@ public abstract class CharSequenceParser {
         // Build the double first, ignoring the denominator
         long    exp = NORM_EXP;        
         
-        while ((numerator & 0x10000000000000L) == 0) {
-            exp--;
-            numerator <<= 1;
-        }                  
+        if (numerator > 0x10000000000000L) 
+            while ((numerator & 0xFFE0000000000000L) != 0) {
+                exp++;
+                numerator >>>= 1;
+            }  
+        else
+            while ((numerator & 0x10000000000000L) == 0) {
+                exp--;
+                numerator <<= 1;
+            }                  
         
         numerator &= 0xFFFFFFFFFFFFFL;
         
