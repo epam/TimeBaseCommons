@@ -14,10 +14,10 @@ public class FloatingPointColumnDescriptor extends ColumnDescriptor {
     }    
     
     public double               getDouble () {
-        return (CharSequenceParser.parseDecimal (getCharSequence ()));
+        return (CharSequenceParser.parseDouble (getCharSequence ()));
     }
     
     public float                getFloat () {
-        return ((float) (CharSequenceParser.parseDecimal (getCharSequence ())));
+        return (CharSequenceParser.parseFloat (getCharSequence ()));
     }
 }
