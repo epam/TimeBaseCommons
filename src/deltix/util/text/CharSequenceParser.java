@@ -108,9 +108,10 @@ public abstract class CharSequenceParser {
         
         int                 pos = startIncl;
         long                numerator = 0;        
-        long                denominator = 1;        
+        double              denominator = 1;
         long                sign = 0;
         boolean             dotSeen = false;
+        boolean             overflow = false;
         char                ch = sc.charAt (pos);
         
         if (ch == '+' || ch == '-') {
@@ -135,10 +136,20 @@ public abstract class CharSequenceParser {
                     throw new NumberFormatException (
                         "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
 
-                numerator = numerator * 10 + digit;
+                if (overflow) {
+                    //  Stop shifting the numerator
+                    if (!dotSeen)
+                        denominator *= 0.1;
+                }
+                else {
+                    numerator = numerator * 10 + digit;
 
-                if (dotSeen)
-                    denominator *= 10;
+                    if (dotSeen)
+                        denominator *= 10;
+
+                    if (numerator >= 0x10000000000000L)
+                        overflow = true;
+                }
             }
             
             pos++;
@@ -155,7 +166,7 @@ public abstract class CharSequenceParser {
         // Build the double first, ignoring the denominator
         long    exp = NORM_EXP;        
         
-        if (numerator > 0x10000000000000L) 
+        if (overflow) 
             while ((numerator & 0xFFE0000000000000L) != 0) {
                 exp++;
                 numerator >>>= 1;
@@ -168,8 +179,8 @@ public abstract class CharSequenceParser {
         
         numerator &= 0xFFFFFFFFFFFFFL;
         
-        final long    bits = sign | (exp << 52) | numerator;
-        double  result = Double.longBitsToDouble (bits);
+        final long      bits = sign | (exp << 52) | numerator;
+        double          result = Double.longBitsToDouble (bits);
             
         if (denominator != 1)
             result /= denominator;
