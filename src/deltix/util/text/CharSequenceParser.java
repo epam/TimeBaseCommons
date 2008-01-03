@@ -4,6 +4,8 @@ package deltix.util.text;
  *
  */
 public abstract class CharSequenceParser {
+    private static final int    INT_MAX_VALUE_DIV_10 =      Integer.MAX_VALUE / 10;
+    private static final long   LONG_MAX_VALUE_DIV_10 =     Long.MAX_VALUE / 10;
     private static final long   LONG_SIGN_BIT =             0x8000000000000000L;
     private static final long   DOUBLE_BIAS_EXP =           1023;
     private static final long   DOUBLE_MANTISSA_WIDTH =     52;
@@ -50,9 +52,16 @@ public abstract class CharSequenceParser {
             
             if (digit < 0 || digit > 9)
                 throw new NumberFormatException (
-                    "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
+                    "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ()
+                );
+            
+            if (value > INT_MAX_VALUE_DIV_10)
+                throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
             
             value = value * 10 + digit;
+            
+            if (value < 0)  // Overflow
+                throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
             
             pos++;
             
@@ -96,7 +105,13 @@ public abstract class CharSequenceParser {
                 throw new NumberFormatException (
                     "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
             
+            if (value > LONG_MAX_VALUE_DIV_10)
+                throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
+            
             value = value * 10 + digit;
+            
+            if (value < 0)  // Overflow
+                throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
             
             pos++;
             
@@ -294,6 +309,7 @@ public abstract class CharSequenceParser {
     }
 
     public static void main (String [] args) {
-        System.out.println (parseFloat (args [0]));
+        System.out.println (Long.MAX_VALUE);
+        System.out.println (parseLong (args [0]));
     }
 }
