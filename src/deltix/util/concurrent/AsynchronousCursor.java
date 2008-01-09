@@ -6,7 +6,7 @@ package deltix.util.concurrent;
  *  the concept of "data being available" supported by AsynchronousDataSource
  *  means that a subsequent call to {@link AbstractCursor#next} will not block. 
  *  It does not mean that a subsequent call to {@link AbstractCursor#next} will 
- *  retrn <code>true</code>.
+ *  return <code>true</code>.
  */
 public interface AsynchronousCursor 
     extends AbstractCursor, AsynchronousDisposableDataSource 
