@@ -46,7 +46,11 @@ public class FileModificationTracker {
             mLastModTimeWhenExisted = t;
         }
     }
-    
+
+    public long getLastModTimeWhenExisted() {
+        return mLastModTimeWhenExisted;
+    }
+
     public final void               checkModifiedLogExceptions () {
         try {
             checkModified ();
