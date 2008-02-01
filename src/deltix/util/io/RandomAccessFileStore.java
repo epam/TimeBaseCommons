@@ -53,7 +53,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
     }
 
     public boolean          isOpen () {
-        return (raf != null);
+        return (raf != null && raf.getChannel().isOpen());
     }
 
     public void             format () {
