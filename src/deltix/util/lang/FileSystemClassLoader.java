@@ -8,7 +8,7 @@ import deltix.util.io.IOUtil;
  *  UNTESTED
  */
 public class FileSystemClassLoader extends AbstractClassLoader {
-    private File            mClassDir;
+    protected final File mClassDir;
     
     public FileSystemClassLoader (File rootDir) {
         mClassDir = rootDir;
@@ -25,7 +25,7 @@ public class FileSystemClassLoader extends AbstractClassLoader {
     protected byte []       loadClassBytes (String name)
         throws ClassNotFoundException 
     {
-        File        classFile = new File (mClassDir, name.replace (".", "/") + ".class");
+        File        classFile = new File (mClassDir, name.replace ('.', File.separatorChar) + ".class");
         
         if (!classFile.exists ())
             throw new ClassNotFoundException ("File for class " + name + " not found in " + mClassDir);
