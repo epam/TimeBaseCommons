@@ -276,7 +276,11 @@ public final class ${name}ArrayList
 
         for (int i = 0; i < size; i++)
         {
+#if($name == "Boolean")
+            a[i] = (T) Boolean.valueOf(elementData[i]);
+#else
             a[i] = (T) new ${type_Object}(elementData[i]);
+#end
         }
 
         if (a.length > size)
@@ -830,7 +834,12 @@ public final class ${name}ArrayList
     	}
 
     	public ${type_Object} nextElement () {
+#if($name == "Boolean")
+    		return Boolean.valueOf(nextBooleanElement());
+#else
     		return (new ${type_Object} (next${name_abbr}Element ()));
+#end
+    	
     	}
 
     	public ${type} next${name_abbr}Element () {
