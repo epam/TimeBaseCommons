@@ -224,7 +224,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
         int utflen = in.readUnsignedShort();
         byte[] bytearr = null;
         char[] chararr = null;
-        if (in instanceof DataInputStream) {
+        if (in instanceof LittleEndianDataInputStream) {
             LittleEndianDataInputStream dis = (LittleEndianDataInputStream) in;
             if (dis.bytearr.length < utflen) {
                 dis.bytearr = new byte[utflen * 2];
