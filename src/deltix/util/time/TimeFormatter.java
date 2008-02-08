@@ -29,9 +29,6 @@ public class TimeFormatter {
         mDF.setTimeZone (tz);
     }
 
-    protected void finalize () throws Throwable {
-    }
-    
     public String                   format (long t) {
         return (format (new Date (t)));
     }
