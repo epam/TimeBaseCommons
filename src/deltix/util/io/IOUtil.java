@@ -465,12 +465,14 @@ public class IOUtil {
     )
         throws IOException
     {
-        FileInputStream         fis = new FileInputStream (file);
+        FileInputStream         fis = null;
 
         try {
+        	fis = new FileInputStream (file);
             new DataInputStream (fis).readFully (bytes, offset, length);
         } finally {
-            Util.close (fis);
+        	if (fis != null)
+        		Util.close (fis);
         }
     }
 
