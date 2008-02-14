@@ -17,6 +17,22 @@ public class Util {
     public static final String  LOGGER_NAME = "deltix.util";
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
     public static final Timer   GLOBAL_TIMER = new Timer ("Global Timer", true);
+
+     public static void collectLocalFiles(String path, Collection<String> files) {
+        File file = new File(path);
+        if (file.isDirectory()) {
+            String[] children = file.list();
+            if (children == null) {
+                // Either dir does not exist or is not a directory
+            } else {
+                for (String filename : children) {
+                    collectLocalFiles(file.getAbsolutePath() + File.separator + filename, files);
+                }
+            }
+        } else {
+            files.add(file.getAbsolutePath());
+        }
+    }
     
     public static int           doubleUntilAtLeast (int a, int limit) {
         do 
