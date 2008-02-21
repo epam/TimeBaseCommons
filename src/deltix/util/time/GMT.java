@@ -7,9 +7,12 @@ import java.util.*;
  *
  */
 public abstract class GMT {
-    public static final TimeZone                TZ = TimeZone.getTimeZone ("GMT");
+	
+	public static final String DATE_FORMAT_STR = "yyyy-MM-dd";
+	
+	public static final TimeZone                TZ = TimeZone.getTimeZone ("GMT");
     private static final SimpleDateFormat       DTF = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-    private static final SimpleDateFormat       DF = new SimpleDateFormat ("yyyy-MM-dd");
+    private static final SimpleDateFormat       DF = new SimpleDateFormat (DATE_FORMAT_STR);
     private static final SimpleDateFormat       TF = new SimpleDateFormat ("HH:mm:ss");
     
     static {
@@ -28,8 +31,20 @@ public abstract class GMT {
     }
     
     public static String                formatDate (long t) {
+        return formatDate (new Date (t));
+    }
+
+    public static String                formatDate (Date d) {
         synchronized (DF) {
-            return (DF.format (new Date (t)));
+            return (DF.format (d));
+        }
+    }
+    
+    public static Date                 parseDate (String date) 
+        throws ParseException
+    {
+        synchronized (DF) {
+            return (DF.parse(date));
         }
     }
     
