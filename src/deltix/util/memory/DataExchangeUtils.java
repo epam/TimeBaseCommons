@@ -6,26 +6,46 @@ package deltix.util.memory;
  */
 public class DataExchangeUtils {
     public static int		readByte (byte [] bytes, int offset) {
-            return (((int) bytes [offset]) & 0xFF);
+        return (((int) bytes [offset]) & 0xFF);
     }
 
     public static void		writeByte (byte [] bytes, int offset, int byt) {
-            bytes [offset] = (byte) (byt & 0xFF);
+        bytes [offset] = (byte) (byt & 0xFF);
+    }
+
+    public static void		writeByte (byte [] bytes, int offset, byte byt) {
+        bytes [offset] = byt;
+    }
+
+    public static void		writeByte7 (byte [] bytes, int offset, byte byt) {
+        bytes [offset] = (byte) (byt & 0x7F);
+    }
+
+    public static void		writeByte7 (byte [] bytes, int offset, int byt) {
+        bytes [offset] = (byte) (byt & 0x7F);
     }
 
     private static void		b (byte [] bytes, int offset, long byt) {
-            bytes [offset] = (byte) (byt & 0xFF);
+        bytes [offset] = (byte) (byt & 0xFF);
     }
 
     private static long		lb (byte [] bytes, int offset) {
-            return (((long) bytes [offset]) & 0xFF);
+        return (((long) bytes [offset]) & 0xFF);
     }
 	
+    public static byte   	readByte7 (byte [] bytes, int offset) {
+        return ((byte) (bytes [offset] << 25 >> 25));
+    }
+    
     public static short   	readShort (byte [] bytes, int offset) {
         return ((short)
 			(readByte (bytes, offset) << 8 |
 			 readByte (bytes, offset + 1))
 		);
+    }
+    
+    public static short   	readShort15 (byte [] bytes, int offset) {
+        return ((short) (readShort (bytes, offset) << 17 >> 17));
     }
     
     public static int   	readUnsignedShort (byte [] bytes, int offset) {
@@ -38,6 +58,10 @@ public class DataExchangeUtils {
     public static void   	writeShort (byte [] bytes, int offset, short s) {
 		writeByte (bytes, offset, s >>> 8);
 		writeByte (bytes, offset + 1, s);
+    }
+    
+    public static void   	writeShort15 (byte [] bytes, int offset, short s) {
+        writeUnsignedShort (bytes, offset, s & 0x7FFF);
     }
     
     public static void   	writeUnsignedShort (byte [] bytes, int offset, int s) {
@@ -66,6 +90,10 @@ public class DataExchangeUtils {
 		);
     }
     
+    public static int    	readInt31 (byte [] bytes, int offset) {
+        return (readInt (bytes, offset) << 1 >> 1);
+    }
+    
     public static int   	readIntInvertBytes (byte [] bytes, int offset) {
         return (
 			readByte (bytes, offset) |
@@ -80,6 +108,10 @@ public class DataExchangeUtils {
 		writeByte (bytes, offset + 1, i >>> 16);
 		writeByte (bytes, offset + 2, i >>> 8);
 		writeByte (bytes, offset + 3, i);
+    }
+    
+    public static void   	writeInt31 (byte [] bytes, int offset, int i) {
+        writeInt (bytes, offset, i & 0x7FFFFFFF);
     }
     
     public static void   	writeUnsignedInt (byte [] bytes, int offset, long i) {
@@ -117,6 +149,10 @@ public class DataExchangeUtils {
 		);
     }
     
+    public static long    	readLong63 (byte [] bytes, int offset) {
+        return (readLong (bytes, offset) << 1 >> 1);
+    }
+    
     public static long  	readUnsignedInt (byte [] bytes, int offset) {
         return (
 			lb (bytes, offset + 4) << 24 |
@@ -137,12 +173,15 @@ public class DataExchangeUtils {
 		b (bytes, offset + 7, l);
     }
     
+    public static void  	writeLong63 (byte [] bytes, int offset, long l) {
+        writeLong (bytes, offset, l & 0x7FFFFFFFFFFFFFFFL);
+    }
+    
     public static double   	readDouble (byte [] bytes, int offset) {
         return (Double.longBitsToDouble (readLong (bytes, offset)));
     }
     
     public static void   	writeDouble (byte [] bytes, int offset, double d) {
         writeLong (bytes, offset, Double.doubleToLongBits (d));
-    }
-    
+    }    
 }
