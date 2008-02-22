@@ -1,21 +1,15 @@
 package deltix.qsrv.ui.util;
 
-import sun.awt.dnd.SunDragSourceContextPeer;
-
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import java.awt.dnd.DragSource;
+import java.awt.dnd.DnDConstants;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 /**
- * Created by IntelliJ IDEA.
- * User: PaharelauK
- * Date: Feb 27, 2007
- * Time: 4:15:06 PM
- * To change this template use File | Settings | File Templates.
  */
 public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseMotionListener {
 
@@ -70,7 +64,7 @@ public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseM
 
         JComponent c = getComponent(e);
         TransferHandler th = c.getTransferHandler();
-        return SunDragSourceContextPeer.convertModifiersToDropAction(mods, th.getSourceActions(c));
+        return convertModifiersToDropAction(mods, th.getSourceActions(c));
     }
 
     protected JComponent getComponent(MouseEvent e) {
@@ -80,4 +74,38 @@ public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseM
         }
         return null;
     }
+
+    private static int convertModifiersToDropAction(int modifiers,
+               int sourceActions)
+       {
+            int k = 0;
+            switch (modifiers & (InputEvent.SHIFT_DOWN_MASK |
+                    InputEvent.CTRL_DOWN_MASK)) {
+                 case InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK:
+                      k = DnDConstants.ACTION_LINK;
+                      break;
+                 case InputEvent.CTRL_DOWN_MASK:
+                      k = DnDConstants.ACTION_COPY;
+                      break;
+                 case InputEvent.SHIFT_DOWN_MASK:
+                      k = DnDConstants.ACTION_MOVE;
+                      break;
+                 // without a modifier
+                 default:
+                      if ((sourceActions & DnDConstants.ACTION_MOVE) != 0) {
+                           k = DnDConstants.ACTION_MOVE;
+                           break;
+                      }
+                      else if ((sourceActions & DnDConstants.ACTION_COPY) != 0) {
+                           k = DnDConstants.ACTION_COPY;
+                           break;
+                      }
+                      else if ((sourceActions & DnDConstants.ACTION_LINK) != 0)
+                           k = DnDConstants.ACTION_LINK;
+
+
+            }
+            return (k & sourceActions);
+       }
+
 }
