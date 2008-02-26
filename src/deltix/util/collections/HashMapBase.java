@@ -21,8 +21,8 @@ public abstract class HashMapBase
     private int mCount = 0;
     private int mUsedCells = 0;
 
-    public int getSizeInMemory() {
-        return (OBJECT_OVERHEAD + mStatus.length);
+    public long getSizeInMemory() {
+        return (OBJECT_OVERHEAD + mStatus.length + 3 * SIZE_OF_INT);
     }
 
     /**

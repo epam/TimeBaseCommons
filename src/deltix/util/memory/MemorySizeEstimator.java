@@ -16,5 +16,5 @@ public interface MemorySizeEstimator {
     public static final int     SIZE_OF_DOUBLE = 8;
     public static final int     SIZE_OF_POINTER = 8;
     
-    public int          getSizeInMemory ();
+    public long          getSizeInMemory ();
 }

@@ -36,7 +36,7 @@ public abstract class EstimatorUtils implements MemorySizeEstimator {
         return (a == null ? 0 : (7 + ARRAY_OVERHEAD + a.length * SIZE_OF_DOUBLE) / 8 * 8);
     }
     
-    public static int       getSizeInMemory (MemorySizeEstimator obj) {
+    public static long       getSizeInMemory (MemorySizeEstimator obj) {
         return (obj == null ? 0 : obj.getSizeInMemory ());
     }
     
@@ -48,7 +48,7 @@ public abstract class EstimatorUtils implements MemorySizeEstimator {
         );
     }
     
-    public static int       getSizeInMemory (Object obj) {
+    public static long       getSizeInMemory (Object obj) {
         if (obj == null)
             return (0);
         else if (obj instanceof double[])
@@ -73,7 +73,7 @@ public abstract class EstimatorUtils implements MemorySizeEstimator {
         return (OBJECT_OVERHEAD);
      }
     
-     public static int       getSizeInMemory (Object [] a) {
+     public static long       getSizeInMemory (Object [] a) {
         if (a == null)
             return (0);
         
