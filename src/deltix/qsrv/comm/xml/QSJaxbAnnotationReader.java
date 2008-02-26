@@ -18,7 +18,7 @@ import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
 /** 
  * Patched version of JAXB's RuntimeAnnotationReader that marks java.lang.Exception as @XmlTransient
  * 
- * @see http://wiki.jboss.org/wiki/Wiki.jsp?page=JAXBIntroductions
+ * @see <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JAXBIntroductions">JAXB Introductions</a>
  * 
  * @author Andy Malakov
  */
