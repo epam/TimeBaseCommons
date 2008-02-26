@@ -51,13 +51,25 @@ public abstract class EstimatorUtils implements MemorySizeEstimator {
     public static int       getSizeInMemory (Object obj) {
         if (obj == null)
             return (0);
-        
-        if (obj instanceof MemorySizeEstimator)
+        else if (obj instanceof double[])
+            return (getSizeInMemory ((double[]) obj));
+        else if (obj instanceof byte[])
+            return (getSizeInMemory ((byte[]) obj));
+        else if (obj instanceof Object[])
+            return (getSizeInMemory ((Object[]) obj));
+        else if (obj instanceof MemorySizeEstimator)
             return (getSizeInMemory ((MemorySizeEstimator) obj));
-        
-        if (obj instanceof String)
+        else if (obj instanceof String)
             return (getSizeInMemory ((String) obj));
-        
+        else if (obj instanceof float[])
+            return (getSizeInMemory ((float[]) obj));
+        else if (obj instanceof short[])
+            return (getSizeInMemory ((short[]) obj));
+        else if (obj instanceof int[])
+            return (getSizeInMemory ((int []) obj));
+        else if (obj instanceof long[])
+            return (getSizeInMemory ((long[]) obj));
+
         return (OBJECT_OVERHEAD);
      }
     
