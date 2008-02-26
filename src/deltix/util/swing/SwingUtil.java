@@ -8,6 +8,9 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
 
 import deltix.util.Util;
 import deltix.util.io.StreamPump;
@@ -255,5 +258,72 @@ public abstract class SwingUtil {
 
         if (c instanceof Container)
             setChildrenDeepEnabled ((Container) c, b);
-    }    
+    }
+
+    /**
+     * Creates default titled border.
+     *
+     * @param title border title
+     * @return Border object
+     */
+    public static Border createDefaultBorder(String title) {
+        return BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), title);
+    }
+
+    /**
+     * Creates the transparent panel with given title and layout.
+     *
+     * @param title  panel title
+     * @param layout panel layout
+     * @return JPanel object
+     */
+    public static JPanel createPanel(String title, LayoutManager layout) {
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        if (layout != null)
+            panel.setLayout(layout);
+        if (title != null)
+            panel.setBorder(createDefaultBorder(title));
+        return panel;
+    }
+
+    /**
+     * Creates the transparent panel.
+     *
+     * @return JPanel object
+     */
+    public static JPanel createPanel() {
+        return createPanel(null, null);
+    }
+
+    /**
+     * Creates the transparent panel with given title.
+     *
+     * @return JPanel object
+     */
+    public static JPanel createPanel(String title) {
+        return createPanel(title, null);
+    }
+
+    /**
+     * Creates the transparent panel with given layout.
+     *
+     * @return JPanel object
+     */
+    public static JPanel createPanel(LayoutManager layout) {
+        return createPanel(null, layout);
+  }
+    /**
+    * Creates button.
+    * The preferred button size is 110x30.
+    * @param action button action
+    * @return JButton object
+    */
+   public static JButton createJButton(Action action) {
+     final JButton button = new JButton(action);
+     button.setHorizontalAlignment(SwingConstants.CENTER);
+     button.setPreferredSize(new Dimension(80, 25));
+     return button;
+   }
+
 }
