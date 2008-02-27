@@ -109,6 +109,10 @@ public class MemoryDataOutput {
         write (b, 0, b.length);
     }
 
+    public final void           writeByte (int v) {
+        writeByte ((byte) v);
+    }
+    
     public final void           writeByte (byte v) {
         makeRoom (1);
         mBuffer [mPos] = v;
@@ -137,6 +141,10 @@ public class MemoryDataOutput {
         makeRoom (2);
         DataExchangeUtils.writeShort (mBuffer, mPos, v);
         mPos += 2;
+    }
+
+    public final void           writeShort (int v) {
+        writeShort ((short) v);
     }
 
     public final void           writeUnsignedShort (int v) {
@@ -187,5 +195,11 @@ public class MemoryDataOutput {
         makeRoom (4);
         DataExchangeUtils.writeFloat (mBuffer, mPos, v);
         mPos += 4;
+    }
+    
+    public final byte []        toByteArray () {
+        byte []     ret = new byte [mPos];
+        System.arraycopy (mBuffer, 0, ret, 0, mPos);
+        return (ret);
     }
 }

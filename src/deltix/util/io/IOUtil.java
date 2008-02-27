@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.zip.*;
 
 import deltix.util.Util;
+import deltix.util.memory.MemoryDataOutput;
 
 /**
  *
@@ -926,6 +927,24 @@ public class IOUtil {
     }
     
     /**
+     *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
+     *  that many characters in raw 2-byte form.
+     */    
+    public static int      writeUnicode (CharSequence str, MemoryDataOutput out) throws IOException {
+        int     strlen = str.length ();
+        
+        if (strlen > 65535)
+            throw new UTFDataFormatException ("string too long: " + strlen + " bytes");
+        
+        out.writeShort ((short) strlen);
+        
+        for (int ii = 0; ii < strlen; ii++)
+            out.writeChar (str.charAt (ii));
+        
+        return (strlen * 2 + 2);
+    }
+    
+    /**
      *  Writes any CharSequence to DataOutput in a way identical to
      *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly 
      *  by forcing the argument to be a String.
@@ -960,6 +979,61 @@ public class IOUtil {
             out.writeByte((utflen >>> 0) & 0xFF);
         }
 	
+        
+        int i=0;
+        for (i=0; i<strlen; i++) {
+           c = str.charAt(i);
+           if (!((c >= 0x0001) && (c <= 0x007F))) break;
+           out.writeByte (c);
+        }
+	
+        for (;i < strlen; i++){
+            c = str.charAt(i);
+            
+            if ((c >= 0x0001) && (c <= 0x007F)) 
+                out.writeByte (c);
+            else if (c > 0x07FF) {
+                out.writeByte (0xE0 | ((c >> 12) & 0x0F));
+                out.writeByte (0x80 | ((c >>  6) & 0x3F));
+                out.writeByte (0x80 | ((c >>  0) & 0x3F));
+            }
+            else {
+                out.writeByte (0xC0 | ((c >>  6) & 0x1F));
+                out.writeByte (0x80 | ((c >>  0) & 0x3F));
+            }
+        }
+        
+        return utflen + 2;
+    }
+    
+    /**
+     *  Writes any CharSequence to MemoryDataOutput in a way identical to
+     *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly 
+     *  by forcing the argument to be a String.
+     */
+    public static int      writeUTF (CharSequence str, MemoryDataOutput out) throws IOException {
+        int strlen = str.length();
+        int utflen = 0;
+        int c, count = 0;
+
+            /* use charAt instead of copying String to char array */
+        for (int i = 0; i < strlen; i++) {
+                c = str.charAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) {
+            utflen++;
+            } else if (c > 0x07FF) {
+            utflen += 3;
+            } else {
+            utflen += 2;
+            }
+        }
+
+        if (utflen > 65535)
+            throw new UTFDataFormatException(
+                    "encoded string too long: " + utflen + " bytes");
+
+        out.writeByte((utflen >>> 8) & 0xFF);
+        out.writeByte((utflen >>> 0) & 0xFF);
         
         int i=0;
         for (i=0; i<strlen; i++) {
