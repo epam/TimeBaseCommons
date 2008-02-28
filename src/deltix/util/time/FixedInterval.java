@@ -3,25 +3,39 @@ package deltix.util.time;
 /**
  *
  */
-public class FixedInterval extends Interval {
+public final class FixedInterval extends Interval {
+    private final long      mSize;
+    
     /**
-     * Constructs a fixed interval from number of milliseconds.
+     *  Constructs a fixed interval from number of milliseconds. Guesses the
+     *  underlying unit.
      */
-    public FixedInterval (long numMilliseconds) {
-        throw new RuntimeException ();
+    public FixedInterval (long size) {
+        mSize = size;
     }
     
     /**
-     * Constructs a fixed interval from a number of units.
+     *  Constructs a fixed interval from a number of units.
      */
     public FixedInterval (long numUnits, TimeUnit unit) {
-        throw new RuntimeException ();
+        mSize = numUnits * unit.getSizeInMilliseconds ();
     }
     
     /**
-     * Returns the fixed size of this interval in milliseconds.
+     *  Returns the size of this interval in milliseconds.
      */
-    public long             getFixedSize () {
-        throw new RuntimeException ();
+    public long                 getSizeInMilliseconds () {
+        return (mSize);
     }
+    
+    @Override
+    public TimeUnit             getUnit () {
+        return (TimeUnit.getUnitForMilliseconds (mSize));
+    }
+    
+    @Override
+    public long                 getNumUnits () {
+        return (mSize / getUnit ().getSizeInMilliseconds ());
+    }
+    
 }

@@ -11,7 +11,6 @@ public abstract class ColumnDescriptor {
     private String                      mHeader;
     private boolean                     mTrim = true;
     private int                         mIdxInCSV = -1;
-    private CharSubSequence             mTrimmed = new CharSubSequence ();
     private CharSequence                mCell;
     
     protected ColumnDescriptor () { 

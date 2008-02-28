@@ -4,24 +4,36 @@ package deltix.util.time;
  *
  */
 public class MonthlyInterval extends Interval {
+    private final int           mNumMonths;
+    
     /**
      * Constructs a MonthlyInterval from number of months.
      */
     public MonthlyInterval (int numMonths) {
-        throw new RuntimeException ();
+        mNumMonths = numMonths;
     }
     
     /**
-     * Constructs a fixed interval from a number of units.
+     *  Constructs a MonthlyInterval interval from a number of units.
      */
-    public MonthlyInterval (int numMonths, TimeUnit unit) {
-        throw new RuntimeException ();
+    public MonthlyInterval (int numUnits, TimeUnit unit) {
+        mNumMonths = numUnits * unit.getSizeInMonths ();
     }
     
     /**
-     * Returns the number of months in this interval.
+     *  Returns the number of months in this interval.
      */
-    public int             getNumberOfMonths () {
+    public int                  getNumberOfMonths () {
         throw new RuntimeException ();
     }
+    
+    @Override
+    public TimeUnit             getUnit () {
+        return (TimeUnit.getUnitForMonths (mNumMonths));
+    }
+    
+    @Override
+    public long                  getNumUnits () {
+        return (mNumMonths / getUnit ().getSizeInMonths ());
+    }    
 }
