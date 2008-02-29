@@ -38,4 +38,7 @@ public final class FixedInterval extends Interval {
         return (mSize / getUnit ().getSizeInMilliseconds ());
     }
     
+    public FixedInterval        negate () {
+        return (new FixedInterval (-mSize));
+    }
 }

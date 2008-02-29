@@ -16,7 +16,7 @@ public abstract class Interval {
      * Parse a QQL string.
      * @param text  The QQL representation of the interval.
      */
-    public static Interval      parseQQL (CharSequence text) {
+    public static Interval          parseQQL (CharSequence text) {
         int         end = text.length ();
         
         if (end < 2)
@@ -40,38 +40,33 @@ public abstract class Interval {
     /**
      * Returns whether this interval is zero.
      */
-    public boolean              isZero () {
-        throw new RuntimeException ();
-        
+    public final boolean            isZero () {
+        return (getNumUnits () == 0);
     }
     
     /**
      * Returns whether this interval is positive.
      */
-    public boolean              isPositive () {
-        throw new RuntimeException ();
-        
+    public final boolean            isPositive () {
+        return (getNumUnits () > 0);
     }
     
     /**
      * Returns whether this interval is negative.
      */
-    public boolean              isNegative () {
-        throw new RuntimeException ();
-        
+    public final boolean            isNegative () {
+        return (getNumUnits () < 0);
     }
     
     /**
      * Returns the negated value of this Interval.
      */
-    public Interval             negate () {
-        throw new RuntimeException ();
-    }
+    public abstract Interval        negate ();
     
     /**
      *  Returns the underlying time unit.
      */    
-    public abstract TimeUnit    getUnit ();
+    public abstract TimeUnit        getUnit ();
     
     /**
      *  Returns the size of this interval in in units
@@ -79,14 +74,14 @@ public abstract class Interval {
      * 
      *  @see #getUnit
      */
-    public abstract long        getNumUnits ();
+    public abstract long            getNumUnits ();
     
     /**
      *  Returns the short representation of this interval, such as
      *  <tt>-4Q</tt>
      */
     @Override
-    public String               toString () {
+    public String                   toString () {
         StringBuilder   sb = new StringBuilder ();
         sb.append (getNumUnits ());
         sb.append (getUnit ().getSuffix ());

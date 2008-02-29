@@ -36,4 +36,8 @@ public class MonthlyInterval extends Interval {
     public long                  getNumUnits () {
         return (mNumMonths / getUnit ().getSizeInMonths ());
     }    
+    
+    public MonthlyInterval       negate () {
+        return (new MonthlyInterval (-mNumMonths));
+    }
 }
