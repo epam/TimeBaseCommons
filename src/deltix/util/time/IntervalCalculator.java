@@ -30,7 +30,9 @@ public class IntervalCalculator {
      *                          for example, months, days, or minutes. 
      */
     public static long      normalize (long time, TimeUnit unit) {
-        if (unit.isFixedSize ()) {            
+        if (unit == TimeUnit.WEEK)
+            return ((time - 259200000L) / 604800000L + 604799999L);
+        else if (unit.isFixedSize ()) {            
             long    unitSize = unit.getSizeInMilliseconds ();
             //  Use the fact that 0 is the beginning of all fixed periods in GMT
             return (time / unitSize + unitSize - 1);
