@@ -35,6 +35,8 @@ public class Util {
     }
     
     public static int           doubleUntilAtLeast (int a, int limit) {
+        if (a == 0)
+            return limit;
         do 
             a = a << 1;
         while (a < limit);
