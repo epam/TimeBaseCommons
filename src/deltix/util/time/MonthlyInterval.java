@@ -24,7 +24,7 @@ public class MonthlyInterval extends Interval {
      *  Returns the number of months in this interval.
      */
     public int                  getNumberOfMonths () {
-        throw new RuntimeException ();
+        return (mNumMonths);
     }
     
     @Override

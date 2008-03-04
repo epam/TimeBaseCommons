@@ -135,7 +135,7 @@ public enum TimeUnit {
     }
     
     public static TimeUnit  fromSuffix (char suffix) {
-        switch (suffix) {
+        switch (Character.toUpperCase (suffix)) {
             case 'X':   return MILLISECOND;
             case 'S':   return SECOND;
             case 'I':   return MINUTE;

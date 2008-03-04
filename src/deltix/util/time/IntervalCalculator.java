@@ -12,15 +12,21 @@ public class IntervalCalculator {
     public long             add (long time, Interval interval) {
         if (interval instanceof FixedInterval) 
             return (time + ((FixedInterval) interval).getSizeInMilliseconds ());
-        else
-            throw new UnsupportedOperationException ();
+        else {
+            mCalendar.setTimeInMillis (time + 1);
+            mCalendar.add (Calendar.MONTH, ((MonthlyInterval) interval).getNumberOfMonths ());
+            return (mCalendar.getTimeInMillis () - 1);
+        }
     }
     
     public long             subtract (long time, Interval interval) {
         if (interval instanceof FixedInterval) 
             return (time - ((FixedInterval) interval).getSizeInMilliseconds ());
-        else
-            throw new UnsupportedOperationException ();
+        else {
+            mCalendar.setTimeInMillis (time + 1);
+            mCalendar.add (Calendar.MONTH, -((MonthlyInterval) interval).getNumberOfMonths ());
+            return (mCalendar.getTimeInMillis () - 1);
+        }
     }
     
     /**
@@ -233,6 +239,32 @@ public class IntervalCalculator {
                 )
             );
         }
+        else if (cmd.equals ("+")) {
+            long            t = GMT.parseDateTimeMillis (args [1]).getTime ();
+            Interval        interval = Interval.parseQQL (args [2]);
+            
+            t = ic.normalize (t, interval.getUnit ());
+            
+            System.out.println (
+                GMT.formatDateTimeMillis (t) + " + " + interval.toString () +
+                " = \n" +
+                GMT.formatDateTimeMillis (ic.add (t, interval))
+            );
+        }
+        else if (cmd.equals ("-")) {
+            long            t = GMT.parseDateTimeMillis (args [1]).getTime ();
+            Interval        interval = Interval.parseQQL (args [2]);
+            
+            t = ic.normalize (t, interval.getUnit ());
+            
+            System.out.println (
+                GMT.formatDateTimeMillis (t) + " - " + interval.toString () +
+                " = \n" +
+                GMT.formatDateTimeMillis (ic.subtract (t, interval))
+            );
+        }
+        else
+            throw new IllegalArgumentException (cmd);
     }
     
     
