@@ -103,9 +103,6 @@ public class IntervalCalculator {
         int                     millisecond        
     )
     {
-        assert month >= 1 && month <= 12 : 
-            "Illegal month: " + month;
-        
         /*
          *  Assert argument ranges
          */
@@ -130,6 +127,10 @@ public class IntervalCalculator {
             case WEEK:                    
                 assert day >= 1 && day <= 31 :
                     "Illegal day: " + day;
+            
+            case MONTH:
+                assert month >= 1 && month <= 12 : 
+                    "Illegal month: " + month;                        
         }
         
         //  Set ignored values
@@ -213,7 +214,8 @@ public class IntervalCalculator {
         else if (cmd.equalsIgnoreCase ("t")) {
             TimeUnit            unit = TimeUnit.valueOf (args [1]);
             int                 y = Integer.parseInt (args [2]);
-            int                 m = Integer.parseInt (args [3]);
+            int                 m = 
+                args.length > 3 ? Integer.parseInt (args [3]) : -1;
             int                 d =
                 args.length > 4 ? Integer.parseInt (args [4]) : -1;
             int                 h =

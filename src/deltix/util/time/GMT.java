@@ -6,8 +6,7 @@ import java.util.*;
 /**
  *
  */
-public abstract class GMT {
-	
+public abstract class GMT {	
 	public static final String DATE_FORMAT_STR = "yyyy-MM-dd";
 	
 	public static final TimeZone                TZ = TimeZone.getTimeZone ("GMT");
