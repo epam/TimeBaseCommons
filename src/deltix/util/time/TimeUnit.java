@@ -9,8 +9,18 @@ public enum TimeUnit {
     MINUTE,
     HOUR,
     DAY,
+    
+    /**
+     *  Weeks are fixed to be Monday through Sunday
+     */
     WEEK,
     MONTH,
+    
+    /**
+     *  Quarters are calendar quarters, starting in January, April, July and 
+     *  October. This is different from fiscal quarters, which can start in 
+     *  any calendar month.
+     */
     QUARTER,
     YEAR;
     

@@ -11,6 +11,7 @@ public abstract class GMT {
 	public static final String DATE_FORMAT_STR = "yyyy-MM-dd";
 	
 	public static final TimeZone                TZ = TimeZone.getTimeZone ("GMT");
+    private static final SimpleDateFormat       DTFX = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss.S");
     private static final SimpleDateFormat       DTF = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
     private static final SimpleDateFormat       DF = new SimpleDateFormat (DATE_FORMAT_STR);
     private static final SimpleDateFormat       TF = new SimpleDateFormat ("HH:mm:ss");
@@ -18,6 +19,7 @@ public abstract class GMT {
     static {
         DTF.setTimeZone (TZ);
         DF.setTimeZone (TZ);
+        DTFX.setTimeZone (TZ);
     }
     
     public static Calendar              getCalendarInstance () {
@@ -27,6 +29,12 @@ public abstract class GMT {
     public static String                formatDateTime (long t) {
         synchronized (DTF) {
             return (DTF.format (new Date (t)));
+        }
+    }
+    
+    public static String                formatDateTimeMillis (long t) {
+        synchronized (DTFX) {
+            return (DTFX.format (new Date (t)));
         }
     }
     
@@ -40,7 +48,7 @@ public abstract class GMT {
         }
     }
     
-    public static Date                 parseDate (String date) 
+    public static Date                  parseDate (String date) 
         throws ParseException
     {
         synchronized (DF) {
@@ -48,8 +56,24 @@ public abstract class GMT {
         }
     }
     
+    public static Date                  parseDateTime (String date) 
+        throws ParseException
+    {
+        synchronized (DTF) {
+            return (DTF.parse(date));
+        }
+    }
+    
+    public static Date                  parseDateTimeMillis (String date) 
+        throws ParseException
+    {
+        synchronized (DTFX) {
+            return (DTFX.parse(date));
+        }
+    }
+    
     public static String                formatTime (long t) {
-        synchronized (DF) {
+        synchronized (TF) {
             return (TF.format (new Date (t)));
         }
     }
