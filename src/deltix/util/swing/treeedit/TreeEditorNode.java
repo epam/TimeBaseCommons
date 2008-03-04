@@ -2,9 +2,11 @@ package deltix.util.swing.treeedit;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
 import javax.swing.*;
 
 import deltix.util.swing.*;
+import deltix.qsrv.pub.TaxonomyNode;
 
 /**
  *  Interface implemented by the user of the Tree Editor component. 
@@ -276,5 +278,9 @@ public abstract class TreeEditorNode {
                 }
             )
         );
-    }    
+    }
+
+    protected Transferable getTransferable() {
+        return new LocalObjectTransferable<String>(getLabelText(), String.class);
+    }
 }

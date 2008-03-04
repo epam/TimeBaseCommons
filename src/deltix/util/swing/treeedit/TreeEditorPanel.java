@@ -3,6 +3,8 @@ package deltix.util.swing.treeedit;
 import java.io.*;
 import java.util.*;
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -10,6 +12,7 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 
 import deltix.util.swing.*;
+import deltix.qsrv.ui.util.DefaultDragGestureRecognizer;
 
 public class TreeEditorPanel extends JSplitPane {
     private final Action EDIT_ACTION =
@@ -81,6 +84,12 @@ public class TreeEditorPanel extends JSplitPane {
         setRightComponent (mFormPanel);
         setEditing (null);
         EDIT_ACTION.setEnabled (false);
+
+        DefaultDragGestureRecognizer dgRecognizer = new DefaultDragGestureRecognizer();
+        mTree.addMouseListener(dgRecognizer);
+        mTree.addMouseMotionListener(dgRecognizer);
+        mTree.setDragEnabled(true);
+        mTree.setTransferHandler(new TreeEditorTransferHandler());
     }
     
     private void        setFormComponent (JComponent form) {
@@ -97,10 +106,14 @@ public class TreeEditorPanel extends JSplitPane {
         return (mTreeModel);
     }
     
-    JTree               getTree () {
+    public JTree               getTree () {
         return (mTree);
     }
-    
+
+    protected JComponent getCurrentForm() {
+        return mCurrentForm;
+    }
+
     /**
      *  Controls the visibility of buttons such as "Edit", "Save" and
      *  "Cancel". Applications that use the tree editor as a slave
@@ -211,7 +224,7 @@ public class TreeEditorPanel extends JSplitPane {
         mFormPanel.repaint ();
     }
     
-    private void        selectionChanged (TreePath newPath) {
+    protected void        selectionChanged (TreePath newPath) {
         if (newPath == null) {
             mSelectedNode = null;
             EDIT_ACTION.setEnabled (false);
@@ -222,7 +235,7 @@ public class TreeEditorPanel extends JSplitPane {
         }
         
         setFormFromNode (mSelectedNode);
-        
+
         if (mCurrentForm != null)
             SwingUtil.setDeepEnabled (mCurrentForm, false);
     }
@@ -268,5 +281,43 @@ public class TreeEditorPanel extends JSplitPane {
     void                fireNodeChanged (TreeEditorNode node) {
         for (NodeChangeListener listener : mNodeChangeListeners) 
             listener.nodeChanged (node);
+    }
+
+    //////////////////HELPER CLASSES///////////////////////////
+
+    private class TreeEditorTransferHandler extends TransferHandler {
+
+        public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
+            return false;
+        }
+
+        private boolean isTranferable(Object obj) {
+            return obj instanceof NodeAdapter;
+        }
+
+        protected Transferable createTransferable(JComponent comp) {
+            if (comp instanceof JTree) {
+                JTree tree = (JTree) comp;
+                TreePath[] treePaths = tree.getSelectionPaths();
+                if (treePaths == null || treePaths.length != 1)
+                    return null;
+
+                Object obj = treePaths[0].getLastPathComponent();
+                if (isTranferable(obj)) {
+                    TreeEditorNode node  = ((NodeAdapter)obj).getUserNode();
+                    return node.getTransferable();
+                }
+            }
+            return null;
+        }
+
+        public int getSourceActions(JComponent comp) {
+            return TransferHandler.COPY_OR_MOVE;
+        }
+
+
+        public boolean importData(JComponent comp, Transferable t) {
+            return false;
+        }
     }
 }
