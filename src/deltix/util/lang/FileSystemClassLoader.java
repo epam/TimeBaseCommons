@@ -7,8 +7,8 @@ import deltix.util.io.IOUtil;
 /**
  *  UNTESTED
  */
-public class FileSystemClassLoader extends AbstractClassLoader {
-    protected final File mClassDir;
+public final class FileSystemClassLoader extends AbstractClassLoader {
+    private final File mClassDir;
     
     public FileSystemClassLoader (File rootDir) {
         mClassDir = rootDir;
@@ -40,10 +40,4 @@ public class FileSystemClassLoader extends AbstractClassLoader {
         }
     }
     
-    @Override
-    public synchronized Class<?> loadClass(String name, boolean resolve) 
-    	throws ClassNotFoundException
-    {
-    	return super.loadClass(name, resolve);
-    }
 }

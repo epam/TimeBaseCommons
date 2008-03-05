@@ -1,5 +1,10 @@
 package deltix.util.lang;
 
+import java.io.File;
+import java.io.IOException;
+
+import deltix.util.io.IOUtil;
+
 /**
  *  Loads a single specified class from the supplied byte array.
  */
@@ -18,4 +23,20 @@ public class SingleByteArrayClassLoader extends AbstractClassLoader {
         
         return (mBytes);
     }
+
+	public static Class loadClass(File workingDir, String className) 
+		throws ClassNotFoundException
+	{
+		File classFile = new File (workingDir, className.replace ('.', File.separatorChar) + ".class");
+		if ( ! classFile.exists())
+			throw new ClassNotFoundException (className);
+		
+        try {
+            return new SingleByteArrayClassLoader (className, IOUtil.readBytes (classFile)).loadClass (className);
+        } catch (IOException x) {
+            throw new ClassNotFoundException ("Cannot load class bytes: " + x.getMessage(), x);
+        } finally {
+        	classFile.delete();
+        }
+	}
 }
