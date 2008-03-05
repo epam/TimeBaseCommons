@@ -25,7 +25,7 @@ public class MultiByteArrayClassLoader extends ClassLoader {
 	{
 		final File[] classFiles = rootDir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				if (name.startsWith(className)) {
+				if (name.startsWith(className) && name.endsWith(".class")) {
 					char ch = name.charAt(className.length()); 
 					return ch == '.' || ch == '$';
 				}
