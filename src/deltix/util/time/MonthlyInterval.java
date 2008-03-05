@@ -40,4 +40,12 @@ public class MonthlyInterval extends Interval {
     public MonthlyInterval       negate () {
         return (new MonthlyInterval (-mNumMonths));
     }
+    
+    public MonthlyInterval       add (MonthlyInterval interval) {
+        return (new MonthlyInterval (mNumMonths + interval.mNumMonths));
+    }
+    
+    public MonthlyInterval       subtract (MonthlyInterval interval) {
+        return (new MonthlyInterval (mNumMonths - interval.mNumMonths));
+    }
 }

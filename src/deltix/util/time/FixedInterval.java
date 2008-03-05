@@ -41,4 +41,12 @@ public final class FixedInterval extends Interval {
     public FixedInterval        negate () {
         return (new FixedInterval (-mSize));
     }
+    
+    public FixedInterval        add (FixedInterval interval) {
+        return (new FixedInterval (mSize + interval.mSize));
+    }
+    
+    public FixedInterval        subtract (FixedInterval interval) {
+        return (new FixedInterval (mSize - interval.mSize));
+    }    
 }
