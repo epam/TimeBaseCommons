@@ -49,4 +49,17 @@ public final class FixedInterval extends Interval {
     public FixedInterval        subtract (FixedInterval interval) {
         return (new FixedInterval (mSize - interval.mSize));
     }    
+    
+    @Override
+    public int                  hashCode () {
+        return ((int) (mSize ^ (mSize >>> 32)));
+    }
+    
+    @Override
+    public boolean              equals (Object o) {
+        return (
+            o instanceof FixedInterval &&
+            ((FixedInterval) o).mSize == mSize
+        );
+    }
 }

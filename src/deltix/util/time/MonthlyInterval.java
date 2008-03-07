@@ -48,4 +48,17 @@ public class MonthlyInterval extends Interval {
     public MonthlyInterval       subtract (MonthlyInterval interval) {
         return (new MonthlyInterval (mNumMonths - interval.mNumMonths));
     }
+    
+    @Override
+    public int                  hashCode () {
+        return (mNumMonths);
+    }
+    
+    @Override
+    public boolean              equals (Object o) {
+        return (
+            o instanceof MonthlyInterval &&
+            ((MonthlyInterval) o).mNumMonths == mNumMonths
+        );
+    }    
 }
