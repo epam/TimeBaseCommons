@@ -99,7 +99,7 @@ public abstract class ColumnDescriptor {
         boolean result = mCell != null && mGapPattern != null && matches(mGapPattern);
         if (!result && mCell != null && mGapValues != null) {
             for (String s : mGapValues)
-                if (s.equals(mCell.toString()))
+                if (Util.equals(s, mCell))
                     return true;
         }
         return result;
@@ -109,7 +109,7 @@ public abstract class ColumnDescriptor {
         boolean result = mCell != null && mNullPattern != null && matches(mNullPattern);
         if (!result && mCell != null && mNullValues != null) {
             for (String s : mNullValues)
-                if (s.equals(mCell.toString()))
+                if (Util.equals(s, mCell))
                     return true;
         }
         return result;
