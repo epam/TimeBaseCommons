@@ -135,6 +135,7 @@ public enum TimeUnit {
     }
     
     public static TimeUnit  fromSuffix (char suffix) {
+    	//Note if you about to update this list please update QQLParser2.jj and correct INTERVAL token
         switch (Character.toUpperCase (suffix)) {
             case 'X':   return MILLISECOND;
             case 'S':   return SECOND;
@@ -146,7 +147,7 @@ public enum TimeUnit {
             case 'Q':   return QUARTER;
             case 'Y':   return YEAR;
             default:    
-                throw new IllegalArgumentException (suffix + " is illegal.");
+                throw new IllegalArgumentException (suffix + " is illegal. Expeciting time unit suffix (Y,Q,M,D...)");
         }
     }
 }

@@ -20,7 +20,7 @@ public abstract class Interval {
         int         end = text.length ();
         
         if (end < 2)
-            throw new IllegalArgumentException (text.toString ());
+            throw new IllegalArgumentException ("Interval must consist of at least two characters. For example: \"1D\" or \"5Y\", got: " + text.toString ());
         
         long        num = CharSequenceParser.parseLong (text, 0, end - 1);
         TimeUnit    unit = TimeUnit.fromSuffix (text.charAt (end - 1));
@@ -69,8 +69,8 @@ public abstract class Interval {
     public abstract TimeUnit        getUnit ();
     
     /**
-     *  Returns the size of this interval in in units
-     *  returned by {@link #getUnit}.
+     *  Returns the duration of this interval in in units
+     *  returned by {@link #getUnit}. Result can be negative.
      * 
      *  @see #getUnit
      */
