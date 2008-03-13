@@ -83,7 +83,7 @@ public class DataExchangeUtils {
     
     public static int   	readInt (byte [] bytes, int offset) {
         return (
-                readByte (bytes, offset) << 24 |
+                ((int) bytes [offset]) << 24 |
                 readByte (bytes, offset + 1) << 16 |
                 readByte (bytes, offset + 2) << 8 |
                 readByte (bytes, offset + 3)
@@ -138,14 +138,14 @@ public class DataExchangeUtils {
     
     public static long  	readLong (byte [] bytes, int offset) {
         return (
-			lb (bytes, offset) << 56 |
+			((long) bytes [offset]) << 56 |
 			lb (bytes, offset + 1) << 48 |
 			lb (bytes, offset + 2) << 40 |
 			lb (bytes, offset + 3) << 32 |
 			lb (bytes, offset + 4) << 24 |
-			lb (bytes, offset + 5) << 16 |
-			lb (bytes, offset + 6) << 8 |
-			lb (bytes, offset + 7)
+			readByte (bytes, offset + 5) << 16 |
+			readByte (bytes, offset + 6) << 8 |
+			readByte (bytes, offset + 7)
 		);
     }
     
