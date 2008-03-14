@@ -1,9 +1,15 @@
 package deltix.util.collections;
 
+import deltix.util.Util;
+
 /**
- *
+ *  Provides implementation-independent equals/hashCode implementation
+ *  for comparing instances of CharSequence interface purely based on their
+ *  character content. Therefore, equal CharSequences are guaranteed to be equal.
+ *  If an instance of CharSequenceKey is added to a Map, the caller is responsible
+ *  for keeping the charSequence object immutable.
  */
-public class CharSubSequence implements CharSequence {
+public final class CharSubSequence implements CharSequence {
     public CharSequence         delegate;
     public int                  start;
     public int                  end;
@@ -15,12 +21,20 @@ public class CharSubSequence implements CharSequence {
     }
     
     public CharSubSequence (CharSequence inDelegate) {
-        delegate = inDelegate;
-        start = -1;
-        end = -1;
+        set (inDelegate);
     }
     
     public CharSubSequence (CharSequence inDelegate, int inStart, int inEnd) {
+        set (inDelegate, inStart, inEnd);
+    }
+    
+    public void                 set (CharSequence inDelegate) {
+        delegate = inDelegate;
+        start = 0;
+        end = inDelegate.length ();
+    }
+    
+    public void                 set (CharSequence inDelegate, int inStart, int inEnd) {
         delegate = inDelegate;
         start = inStart;
         end = inEnd;
@@ -38,6 +52,7 @@ public class CharSubSequence implements CharSequence {
         return (end - start);
     }
 
+    @Override
     public final String           toString () {
         return (delegate.subSequence (start, end).toString ());
     }        
@@ -55,4 +70,18 @@ public class CharSubSequence implements CharSequence {
             end = prev;
         }  
     }
+    
+    @Override
+    public boolean                  equals (Object other) {
+        return (
+            this == other ||
+            other instanceof CharSequence &&
+                Util.equals (this, (CharSequence) other)
+        );
+    }
+    
+    @Override
+    public int                      hashCode () {
+        return (Util.hashCode (this));
+    }    
 }
