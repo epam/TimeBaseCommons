@@ -1,7 +1,7 @@
 package deltix.util.csvx;
 
 import deltix.util.csvx.*;
-import deltix.util.io.CSV;
+import deltix.util.io.CSVWriter;
 import java.io.*;
 
 //TMP
@@ -23,7 +23,7 @@ public class CSVFilter {
 
                 int     colIdx = pass [ii];
                 
-                CSV.printCell (in.getCell (colIdx, false), out);
+                CSVWriter.printCell (in.getCell (colIdx, false), out);
             }
             
             out.write ('\n');

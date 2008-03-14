@@ -5,7 +5,7 @@ import java.io.*;
 /**
  *
  */
-public class CSV {
+public class CSVWriter {
     public static void     printCell (CharSequence unescapedText, Writer wr) throws IOException {
         int             len = unescapedText.length ();
         
