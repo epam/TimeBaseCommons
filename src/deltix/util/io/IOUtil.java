@@ -576,10 +576,8 @@ public class IOUtil {
                 break;
             
             File                destFile = new File (destDir, zentry.getName ());
-            File                parent = destFile.getParentFile ();
             
-            if (!parent.mkdirs ())
-                throw new FileNotFoundException ("Failed to create " + parent);
+            mkParentDirIfNeeded (destFile);
             
             FileOutputStream    fos = new FileOutputStream (destFile);
             
