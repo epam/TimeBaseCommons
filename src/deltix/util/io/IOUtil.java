@@ -521,6 +521,18 @@ public class IOUtil {
         }
     }
     
+    public static void          extractResource (String path, File dest) 
+        throws IOException, InterruptedException
+    {
+        OutputStream    os = new FileOutputStream (dest);
+        
+        try {
+            copyResource (path, os);
+        } finally {
+            Util.close (os);
+        }
+    }
+    
     public static Properties	readPropsFromClassPath (String relPath)
         throws IOException
     {
@@ -534,28 +546,6 @@ public class IOUtil {
         }
 
         return (props);
-    }
-
-    public static void      extractResource (String resource, File dest)
-        throws IOException, InterruptedException
-    {
-        InputStream		is = null;
-        OutputStream    os = null;
-
-        try {
-            is = IOUtil.class.getClassLoader ().getResourceAsStream (resource);
-
-            if (is == null)
-                throw new FileNotFoundException (resource);
-
-            os = new FileOutputStream (dest);
-            StreamPump.pump (is, os);
-            os.close ();
-            is.close ();
-        } finally {
-            Util.close (is);
-            Util.close (os);
-        }
     }
 
     public static void		storePropsToFile (
@@ -574,6 +564,35 @@ public class IOUtil {
         }
     }
 
+    public static void          extractZipStream (InputStream is, File destDir) 
+        throws IOException, InterruptedException
+    {
+        ZipInputStream      zis = new ZipInputStream (is);
+        
+        for (;;) {
+            ZipEntry        zentry = zis.getNextEntry ();
+            
+            if (zentry == null)
+                break;
+            
+            File                destFile = new File (destDir, zentry.getName ());
+            File                parent = destFile.getParentFile ();
+            
+            if (!parent.mkdirs ())
+                throw new FileNotFoundException ("Failed to create " + parent);
+            
+            FileOutputStream    fos = new FileOutputStream (destFile);
+            
+            try {
+                StreamPump.pump (zis, fos);
+                fos.close ();
+                fos = null;
+            } finally {
+                Util.close (fos);
+            }
+        }
+    }
+    
     /**
      *	Checks if the file is present.
      *	@exception FileNotFoundException	If the file does not exists.
