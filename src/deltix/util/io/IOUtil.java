@@ -575,18 +575,23 @@ public class IOUtil {
             if (zentry == null)
                 break;
             
-            File                destFile = new File (destDir, zentry.getName ());
+            String          name = zentry.getName ();
+            File            destFile = new File (destDir, name);
             
-            mkParentDirIfNeeded (destFile);
-            
-            FileOutputStream    fos = new FileOutputStream (destFile);
-            
-            try {
-                StreamPump.pump (zis, fos);
-                fos.close ();
-                fos = null;
-            } finally {
-                Util.close (fos);
+            if (name.endsWith ("/"))
+                mkDirIfNeeded (destDir);
+            else {
+                mkParentDirIfNeeded (destFile);
+
+                FileOutputStream    fos = new FileOutputStream (destFile);
+
+                try {
+                    StreamPump.pump (zis, fos);
+                    fos.close ();
+                    fos = null;
+                } finally {
+                    Util.close (fos);
+                }
             }
         }
     }
