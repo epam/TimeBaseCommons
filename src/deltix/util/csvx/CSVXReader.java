@@ -5,6 +5,7 @@ import java.io.*;
 import deltix.util.Util;
 import deltix.util.collections.*;
 import deltix.util.collections.generated.*;
+import deltix.util.text.CharSequenceParser;
 
 /**
  *
@@ -40,6 +41,10 @@ public class CSVXReader {
     private static final int            UNQUOTED_CELL = 3;
     private static final int            QUOTED_QUOTE = 4;
     private static final int            COMMA = 5;
+    
+    public void                         readHeaders () throws IOException {
+        readHeaders (false);
+    }
     
     public void                         readHeaders (boolean trim) throws IOException {
         if (!nextLine ())
@@ -273,6 +278,30 @@ public class CSVXReader {
             mStockCharSequence.trimWhitespace ();
         
         return (mStockCharSequence);
+    }
+    
+    public String                       getString (int idx, boolean trim) {
+        return (getCell (idx, trim).toString ());
+    }
+    
+    public String                       getString (int idx) {
+        return (getString (idx, false));
+    }
+    
+    public double                       getDouble (int idx) {
+        return (CharSequenceParser.parseDouble (getCell (idx, true)));
+    }
+    
+    public float                        getFloat (int idx) {
+        return (CharSequenceParser.parseFloat (getCell (idx, true)));
+    }
+    
+    public int                          getInt (int idx) {
+        return (CharSequenceParser.parseInt (getCell (idx, true)));
+    }
+    
+    public long                         getLong (int idx) {
+        return (CharSequenceParser.parseLong (getCell (idx, true)));
     }
     
     public void                         setIndexFromHeaders (ColumnDescriptor ... cds) {
