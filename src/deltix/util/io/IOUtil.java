@@ -477,6 +477,14 @@ public class IOUtil {
         }
     }
 
+    public static byte []   readBytes (InputStream is)
+        throws IOException, InterruptedException
+    {
+        ByteArrayOutputStream    bais = new ByteArrayOutputStream ();
+        StreamPump.pump (is, bais);
+        return (bais.toByteArray ());
+    }
+
     public static Properties	readPropsFromFile (File file)
         throws IOException
     {
