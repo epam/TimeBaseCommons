@@ -21,6 +21,10 @@ public class DateColumnDescriptor extends ColumnDescriptor {
         setFormat ("yyyy-MM-dd", GMT.TZ);
     }   
         
+    public String               formatDate (long time) {
+        return (mFormat.format (new Date (time)));
+    }
+    
     public void                 setFormat (String format, String timeZone) {
         setFormat (format, TimeZone.getTimeZone (timeZone));
     }
