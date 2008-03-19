@@ -19,14 +19,23 @@ public class CharSequenceSet extends HashSet <String> {
     public CharSequenceSet () {
         super ();
     }
+
+    public boolean              addCharSequence (CharSequence e) {
+        return (add (e.toString ()));
+    }
     
-    public final boolean        contains (CharSequence key) {
+    public boolean              removeCharSequence (CharSequence key) {
+        mBuffer.set (key);
+        return (removeCharSequence (mBuffer));
+    }
+    
+    public final boolean        containsCharSequence (CharSequence key) {
         mBuffer.set (key);   
-        return (contains (mBuffer));
+        return (containsCharSequence (mBuffer));
     }
 
-    public final boolean        contains (CharSequence key, int start, int end) {
+    public final boolean        containsCharSequence (CharSequence key, int start, int end) {
         mBuffer.set (key, start, end);   
-        return (contains (mBuffer));
+        return (containsCharSequence (mBuffer));
     }           
 }
