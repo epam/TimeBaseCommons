@@ -10,14 +10,9 @@ import javax.swing.*;
  */
 public class StandardDialog extends JDialog {
     private int                             mStatus;
-    private JPanel                          mMainPanel = new JPanel ();
     
-    public int                              getStatus () {
+    public final int                        getStatus () {
         return (mStatus);
-    }
-    
-    public JPanel                           getMainPanel () {
-        return (mMainPanel);
     }
     
     /**
@@ -29,10 +24,9 @@ public class StandardDialog extends JDialog {
     
     public StandardDialog (Component parent, final String [] buttonNames) {
         super (JOptionPane.getFrameForComponent (parent));
-        
+
         Container       cp = getContentPane ();
         cp.setLayout (new BorderLayout ());
-        cp.add (mMainPanel, BorderLayout.CENTER);
         
         JPanel          btns = new JPanel ();
         cp.add (btns, BorderLayout.SOUTH);
@@ -57,5 +51,16 @@ public class StandardDialog extends JDialog {
             if (ii == 0)
                 getRootPane ().setDefaultButton (btn);
         }
+    }
+    
+    public final int        doModal () {
+        assert !isVisible ();
+        
+        boolean     saveIsModal = isModal ();
+        setModal (true);
+        setVisible (true);
+        setModal (saveIsModal);
+        
+        return (getStatus ());
     }
 }

@@ -804,6 +804,10 @@ public class IOUtil {
             }
         }
         File [] fileList = from.listFiles(filter);
+        
+        if (fileList == null)
+            throw new FileNotFoundException (from.getPath ());
+        
         for (int i = 0; i < fileList.length; i++){
             File f = fileList [i];
             if ((excludeFilter == null)||(!excludeFilter.accept(to, f.getName()))){
