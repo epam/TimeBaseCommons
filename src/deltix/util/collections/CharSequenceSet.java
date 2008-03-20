@@ -31,11 +31,11 @@ public class CharSequenceSet extends HashSet <String> {
     
     public final boolean        containsCharSequence (CharSequence key) {
         mBuffer.set (key);   
-        return (containsCharSequence (mBuffer));
+        return (contains (mBuffer));
     }
 
     public final boolean        containsCharSequence (CharSequence key, int start, int end) {
         mBuffer.set (key, start, end);   
-        return (containsCharSequence (mBuffer));
+        return (contains (mBuffer));
     }           
 }

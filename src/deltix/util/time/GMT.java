@@ -19,6 +19,7 @@ public abstract class GMT {
         DTF.setTimeZone (TZ);
         DF.setTimeZone (TZ);
         DTFX.setTimeZone (TZ);
+        TF.setTimeZone (TZ);
     }
     
     public static Calendar              getCalendarInstance () {
