@@ -6,6 +6,10 @@ import java.io.*;
  *  Helper for writing correctly formatted CSV files.
  */
 public class CSVWriter extends FilterWriter {
+    public CSVWriter (File f) throws IOException {
+        super (new BufferedWriter (new FileWriter (f)));
+    }
+    
     public CSVWriter (Writer out) {
         super (out);
     }

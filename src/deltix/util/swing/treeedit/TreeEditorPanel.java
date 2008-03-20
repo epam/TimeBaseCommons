@@ -25,7 +25,10 @@ public class TreeEditorPanel extends JSplitPane {
         new SimpleAction (this, "cancel");
     
     public static final Border      HEADER_BORDER =
-        BorderFactory.createEmptyBorder (3, 24, 3, 24);
+        BorderFactory.createCompoundBorder (
+            BorderFactory.createEtchedBorder (),
+            BorderFactory.createEmptyBorder (3, 24, 3, 24)
+        );
     
     private static final Color  mDisabledColor = new Color (0xF8F8F8);
     private static final Color  mEnabledColor = new Color (0xFFFFFF);

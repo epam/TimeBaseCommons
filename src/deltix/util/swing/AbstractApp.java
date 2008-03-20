@@ -44,6 +44,15 @@ public abstract class AbstractApp extends JFrame {
             System.exit (0); 
     }    
 
+    public void             showError (String title, String msg) {
+        JOptionPane.showMessageDialog (
+            this,
+            msg,
+            title,
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+    
     public void		        handle (Throwable x) {
         handle (x, Level.SEVERE);
     }

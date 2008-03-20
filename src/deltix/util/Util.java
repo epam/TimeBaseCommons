@@ -160,10 +160,17 @@ public class Util {
     /**
      *  Loads and instantiates the specified class using the no-argument constructor
      */
-    public static Object    newInstance (String className) 
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    public static Object    newInstance (String className, Object ... args) 
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException, 
+            IllegalArgumentException, NoSuchMethodException, InvocationTargetException
     {
-        return (Class.forName (className).newInstance ());
+        Class<?>    c = Class.forName (className);
+        Class []    paramTypes = new Class [args.length];
+        for (int ii = 0; ii < args.length; ii++)
+            paramTypes [ii] = args [ii].getClass ();
+
+        Constructor      cons = c.getConstructor (paramTypes);
+        return (cons.newInstance (args));
     }
     
     /**
@@ -174,7 +181,7 @@ public class Util {
     public static Object    callStaticMethod (
         String                  className,
         String                  methodName,
-        Object []               args
+        Object ...              args
     )
         throws
             ClassNotFoundException,

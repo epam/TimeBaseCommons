@@ -5,9 +5,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class VerticalForm extends EnablingPanel {
+public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     private GridBagConstraints      mC = new GridBagConstraints ();
     private Set <Component>         mSwitchComponents = new HashSet <Component> ();
+    private int                     mLabelAncor = GridBagConstraints.NORTHWEST;
     
     public VerticalForm () {
         super (new GridBagLayout ());
@@ -33,6 +34,14 @@ public class VerticalForm extends EnablingPanel {
             }
         );
     }
+    
+    @Override
+    public void         setEnabled (boolean b) {
+        super.setEnabled (b);
+        
+        for (Component c : mSwitchComponents)
+            SwingUtil.setDeepEnabled (c, b);
+    }  
     
     /**
      *  Adds a spring with a 1.0 weight
@@ -121,7 +130,7 @@ public class VerticalForm extends EnablingPanel {
         mC.gridx = 0;
         mC.weightx = 0;
         mC.weighty = 0;
-        mC.anchor = GridBagConstraints.WEST;
+        mC.anchor = mLabelAncor;
         
         add (jl, mC);
         
@@ -136,18 +145,5 @@ public class VerticalForm extends EnablingPanel {
         if (disableWithForm)
             SwingUtil.setDeepEnabled (comp, isEnabled ());
     }
-    /*
-    public void         setEnabled (boolean flag) {
-        super.setEnabled (flag);
-        
-        int             numComps = getComponentCount ();
-        
-        for (int ii = 0; ii < numComps; ii++) {
-            Component   c = getComponent (ii);
-            
-            if (mSwitchComponents.contains (c))
-                c.setEnabled (flag);
-        }
-    }
-     */
+    
 }
