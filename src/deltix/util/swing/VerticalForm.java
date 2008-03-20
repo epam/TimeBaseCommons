@@ -67,7 +67,8 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     private void        setWeightAndFill (JComponent comp) {
         if (comp instanceof JTextArea ||
             comp instanceof JScrollPane ||
-            comp instanceof JTabbedPane) 
+            comp instanceof JTabbedPane ||
+            comp instanceof JPanel) 
         {
             mC.weightx = 1;
             mC.weighty = 1;
