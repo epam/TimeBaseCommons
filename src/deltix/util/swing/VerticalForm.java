@@ -6,6 +6,10 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
+    public interface VerticalWeightComponent {
+        public double       getVerticalWeight ();
+    }
+    
     private GridBagConstraints      mC = new GridBagConstraints ();
     private Set <Component>         mSwitchComponents = new HashSet <Component> ();
     private int                     mLabelAncor = GridBagConstraints.NORTHWEST;
@@ -85,6 +89,9 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
             mC.weighty = 0;
             mC.fill = GridBagConstraints.HORIZONTAL;
         }        
+        
+        if (comp instanceof VerticalWeightComponent)
+            mC.weighty = ((VerticalWeightComponent) comp).getVerticalWeight ();
     }
     
     public void         addRow (JComponent comp) {
