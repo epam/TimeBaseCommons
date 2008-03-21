@@ -32,6 +32,28 @@ public class CSVWriter extends FilterWriter {
     }
     
     /**
+     */
+    public void             writeCells (Object ... args) throws IOException {
+        writeCells (true, args);
+    }
+    
+    /**
+     */
+    public void             writeCells (boolean first, Object ... args) throws IOException {
+        synchronized (lock) {
+            for (Object arg : args) {
+                if (first)
+                    first = false;
+                else
+                    write (',');
+
+                if (arg != null)
+                    printCell (arg.toString (), out);
+            }
+        }
+    }
+    
+    /**
      *  Writes out the specified CharSequence as a separate cell.
      * 
      * @param unescapedText      The text of a single cell to print.
@@ -44,6 +66,18 @@ public class CSVWriter extends FilterWriter {
             }
     }
     
+    public void             writeLine () throws IOException {
+        synchronized (lock) {
+            write ('\n');
+        }
+    }
+    
+    public void             writeSeparator () throws IOException {
+        synchronized (lock) {
+            write (',');
+        }
+    }
+    
     /**
      *  Method with variable arguments, which writes each object out as
      *  a separate cell, then outputs a line break.
@@ -52,18 +86,7 @@ public class CSVWriter extends FilterWriter {
      */
     public void             writeLine (Object ... args) throws IOException {
         synchronized (lock) {
-            boolean     first = true;
-            
-            for (Object arg : args) {
-                if (first)
-                    first = false;
-                else
-                    write (',');
-                
-                if (arg != null)
-                    printCell (arg.toString (), out);
-            }
-            
+            writeCells (args);            
             write ('\n');
         }
     }
