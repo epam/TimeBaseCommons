@@ -1096,9 +1096,10 @@ public class IOUtil {
     }
     
     /**
-     *  Reads (appends) a UTF string to a StringBuilder, without clearing it first.
+     *  Reads (appends) a UTF string to an Appendable (such as StringBuidler), 
+     *  without clearing it first.
      */
-    public final static void readUTF(DataInput in, StringBuilder sb) throws IOException {
+    public final static void readUTF(DataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
         
         if (utflen == 0)
