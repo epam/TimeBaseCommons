@@ -36,6 +36,11 @@ public class MemoryDataOutput {
         mPos = 0;
     }
     
+    public final void           skip (int numBytes) {
+        makeRoom (numBytes);
+        mPos += numBytes;
+    }
+    
     public final byte []        getBuffer () {
         return (mBuffer);
     }

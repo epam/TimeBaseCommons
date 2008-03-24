@@ -2,7 +2,6 @@ package deltix.util.memory;
 
 import deltix.util.collections.generated.ByteArrayList;
 import deltix.util.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 
 /**
  *  Equivalent of DataInputStream wrapped around
