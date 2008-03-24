@@ -103,4 +103,32 @@ public class MathUtil {
         
         return (a);
     }
+    
+    private static final double inv_sqrt_twopi = 1.0 / Math.sqrt (2 * Math.PI);
+    
+    /**
+     *  Cumulative Standard Normal Distribution function
+     */
+    public static double    cumulativeStdNormalDistribution (double X) {
+        double          L = Math.abs (X);
+        double          K = 1.0 / (1.0 + 0.2316419 * L);
+        double          K2 = K * K;
+        double          K3 = K2 * K;
+        double          K4 = K2 * K2;
+        double          K5 = K3 * K2;
+        final double    poly =
+            (0.31938153 * K  
+             - 0.356563782 * K2 
+             + 1.781477937 * K3
+             - 1.821255978 * K4 
+             + 1.330274429 * K5);
+        
+        double  dCND = inv_sqrt_twopi * Math.exp (-L * L / 2.0) * poly;
+        return (X >= 0) ? 1.0 - dCND : dCND;
+    }
+    
+    public static void main (String [] args) {
+        for (double k = -5; k <= 5; k+= 0.5)
+            System.out.println (cumulativeStdNormalDistribution (k));
+    }
 }
