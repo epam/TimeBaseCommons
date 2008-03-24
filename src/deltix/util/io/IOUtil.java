@@ -5,13 +5,27 @@ import java.util.*;
 import java.util.zip.*;
 
 import deltix.util.Util;
+import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.memory.MemoryDataInput;
 import deltix.util.memory.MemoryDataOutput;
+import java.nio.channels.FileChannel;
 
 /**
  *
  */
 public class IOUtil {
+    public static void      force (FileChannel fc, boolean metaData) 
+        throws IOException, InterruptedException
+    {
+        fc.force (metaData);
+        //  For some reason we can be here without any exceptions
+        //  but with a suddenly closed file.
+        if (Thread.interrupted ())
+            throw new InterruptedException ();
+        else if (!fc.isOpen ())
+            throw new IOException ("FileChannel is closed.");    
+    }
+    
     public static void      rename (File from, File to) throws IOException {
         if (!from.renameTo (to))
             throw new IOException ("Failed to rename " + from + " -> " + to);

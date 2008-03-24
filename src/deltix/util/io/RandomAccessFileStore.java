@@ -9,14 +9,17 @@ public class RandomAccessFileStore implements AbstractDataStore {
     protected final File            file;
     protected RandomAccessFile      raf;
     private boolean                 mIsReadOnly;
+    private boolean                 mIsOpen;
     private long                    mMinSize = 0;
     
     public RandomAccessFileStore (File f) {
         file = f;
     }
     
-    protected void          force (boolean metaData) throws IOException {
-        raf.getChannel ().force (metaData);
+    protected void          force (boolean metaData)
+        throws IOException, InterruptedException
+    {
+        IOUtil.force (raf.getChannel (), metaData);
     }
     
     private void            setMinimumSizeNOW () throws IOException {
@@ -36,36 +39,46 @@ public class RandomAccessFileStore implements AbstractDataStore {
         }
     }
     
-    public void             open (boolean readOnly) {
-        mIsReadOnly = readOnly;
-        
+    private void            openFile () {
         try {
-            raf = new RandomAccessFile (file, readOnly ? "r" : "rw");
+            raf = new RandomAccessFile (file, mIsReadOnly ? "r" : "rw");
             
             setMinimumSizeNOW ();
         } catch (IOException iox) {
             throw new UncheckedIOException (iox);
         }
     }
+    
+    public void             open (boolean readOnly) {
+        mIsReadOnly = readOnly;        
+        openFile ();
+        mIsOpen = true;
+    }
 
     public boolean          isReadOnly () {
         return (mIsReadOnly);
     }
 
+    public boolean          checkFileOpen () {
+        assert raf.getChannel ().isOpen () : 
+            "The file under " + this + " is closed";
+        
+        return (true);
+    }
+    
+    public void             reopen () {
+        assert mIsOpen : this + " is closed";
+        
+        if (!raf.getChannel ().isOpen())
+            openFile ();
+    }
+    
     public boolean          isOpen () {
-        return (raf != null && raf.getChannel().isOpen());
+        return (mIsOpen);
     }
 
     public void             format () {
-        mIsReadOnly = false;
-        
-        try {
-            raf = new RandomAccessFile (file, "rw");
-            
-            setMinimumSizeNOW ();
-        } catch (IOException iox) {
-            throw new UncheckedIOException (iox);
-        }        
+        open (false);     
     }
 
     public void             delete () {
@@ -76,6 +89,8 @@ public class RandomAccessFileStore implements AbstractDataStore {
     }
 
     public void             close () {
+        mIsOpen = false;
+        
         if (raf != null) {
             try {
                 raf.close ();
@@ -85,7 +100,5 @@ public class RandomAccessFileStore implements AbstractDataStore {
             
             raf = null;
         }
-    }
-    
-    
+    }        
 }
