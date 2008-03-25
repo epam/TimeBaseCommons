@@ -78,7 +78,9 @@ public class RandomAccessFileStore implements AbstractDataStore {
     }
 
     public void             format () {
-        open (false);     
+        mIsReadOnly = false;        
+        openFile ();
+        mIsOpen = true;  
     }
 
     public void             delete () {
