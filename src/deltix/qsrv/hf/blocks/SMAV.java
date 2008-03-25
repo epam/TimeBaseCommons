@@ -32,7 +32,7 @@ public class SMAV extends DoubleQueue {
         return (mSumSquares / n - mean * mean);
     }
     
-    public double       getSqrtVariance () {
+    public double       getStdDev () {
         return (Math.sqrt (getVariance ()));
     }
     
