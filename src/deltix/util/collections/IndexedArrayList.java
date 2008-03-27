@@ -40,12 +40,17 @@ public class IndexedArrayList <E> implements List <E> {
     public IndexedArrayList () {  
         this (32);
     }
-    
+
     public IndexedArrayList (int capacity) {    
         mElemToIdxMap = new ObjectToIntegerHashMap <Object> (capacity);
         mElemList = new ObjectArrayList <E> (capacity);
     }
     
+    public IndexedArrayList (int capacity, boolean allowDuplicates) {    
+        this (capacity);
+        setAllowAddingDuplicates(allowDuplicates);
+    }
+
     public IndexedArrayList (List <E> list) {
         int             num = list.size ();
         
