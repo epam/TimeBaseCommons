@@ -23,8 +23,8 @@ public class IndexedArrayList <E> implements List <E> {
     private int                             mFirstNullIdx = -1;
     private boolean                         mAllowAddingDuplicates = false;
     
-    public void         setAllowAddingDuplicates (boolean flag) {
-        mAllowAddingDuplicates = flag;
+    public void         setAllowAddingDuplicates (boolean ignoreDuplicates) {
+        mAllowAddingDuplicates = ignoreDuplicates;
     }
     
     public static <E> IndexedArrayList <E>  wrapIfNecessary (List <E> in) {
@@ -46,9 +46,9 @@ public class IndexedArrayList <E> implements List <E> {
         mElemList = new ObjectArrayList <E> (capacity);
     }
     
-    public IndexedArrayList (int capacity, boolean allowDuplicates) {    
+    public IndexedArrayList (int capacity, boolean ignoreDuplicates) {    
         this (capacity);
-        setAllowAddingDuplicates(allowDuplicates);
+        setAllowAddingDuplicates(ignoreDuplicates);
     }
 
     public IndexedArrayList (List <E> list) {
