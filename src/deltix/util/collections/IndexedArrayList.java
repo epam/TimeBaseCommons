@@ -3,6 +3,7 @@ package deltix.util.collections;
 import java.util.*;
 
 import deltix.util.collections.generated.*;
+import java.io.Serializable;
 
 /**
  *  <p>A special implementation of List which provides very fast indexOf and 
@@ -17,7 +18,9 @@ import deltix.util.collections.generated.*;
  *      <li>Insertion into the middle is not allowed.
  *  </ul></p>
  */
-public class IndexedArrayList <E> implements List <E> {
+public class IndexedArrayList <E> implements List <E>, Serializable {
+    static final long   serialVersionUID = 1L;
+    
     private ObjectToIntegerHashMap <Object> mElemToIdxMap;
     private List <E>                        mElemList;
     private int                             mFirstNullIdx = -1;
