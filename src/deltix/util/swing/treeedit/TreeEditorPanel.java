@@ -1,18 +1,22 @@
 package deltix.util.swing.treeedit;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-
-import deltix.util.swing.*;
 import deltix.qsrv.ui.util.DefaultDragGestureRecognizer;
+import deltix.util.swing.SimpleAction;
+import deltix.util.swing.SwingUtil;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class TreeEditorPanel extends JSplitPane {
     private final Action EDIT_ACTION =
@@ -46,8 +50,10 @@ public class TreeEditorPanel extends JSplitPane {
     private JButton             mEditBtn = new JButton (EDIT_ACTION);
     private JButton             mSaveBtn = new JButton (SAVE_ACTION);
     private JButton             mCancelBtn = new JButton (CANCEL_ACTION);
-    private Collection <NodeChangeListener>     mNodeChangeListeners = 
+    private Collection <NodeChangeListener>     mNodeChangeListeners =
         new HashSet <NodeChangeListener> ();
+    private Collection <EnablingChangeListener> mEnablingChangeListeners = 
+        new HashSet <EnablingChangeListener> ();
     
     public TreeEditorPanel (TreeEditorNode root) {
         super (HORIZONTAL_SPLIT);
@@ -191,6 +197,8 @@ public class TreeEditorPanel extends JSplitPane {
                             
         mBottom.revalidate ();
         mBottom.repaint ();
+
+        fireEditingChanged(node == null);
     }
     
     public void         updateFormHeaderFromEditedNode () {
@@ -286,6 +294,20 @@ public class TreeEditorPanel extends JSplitPane {
             listener.nodeChanged (node);
     }
 
+     public void         addEnablingChangeListener (EnablingChangeListener listener) {
+        mEnablingChangeListeners.add (listener);
+    }
+
+    public void         removeEnablingChangeListener (EnablingChangeListener listener) {
+        mEnablingChangeListeners.remove (listener);
+    }
+
+
+     void                fireEditingChanged (boolean edit) {
+        for (EnablingChangeListener listener : mEnablingChangeListeners)
+            listener.enablingChanged(edit);
+    }
+
     //////////////////HELPER CLASSES///////////////////////////
 
     private class TreeEditorTransferHandler extends TransferHandler {
@@ -322,5 +344,9 @@ public class TreeEditorPanel extends JSplitPane {
         public boolean importData(JComponent comp, Transferable t) {
             return false;
         }
+    }
+
+    public interface EnablingChangeListener {
+        public void enablingChanged(boolean enable);
     }
 }
