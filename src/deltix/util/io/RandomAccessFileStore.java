@@ -11,7 +11,8 @@ public class RandomAccessFileStore implements AbstractDataStore {
     private boolean                 mIsReadOnly;
     private boolean                 mIsOpen;
     private long                    mMinSize = 0;
-    
+    private boolean                 mIsLocked = false;
+
     public RandomAccessFileStore (File f) {
         file = f;
     }
@@ -42,7 +43,9 @@ public class RandomAccessFileStore implements AbstractDataStore {
     private void            openFile () {
         try {
             raf = new RandomAccessFile (file, mIsReadOnly ? "r" : "rw");
-            
+            FileLockSynchronizer.lock(file, raf, mIsReadOnly);
+            mIsLocked = true;
+
             setMinimumSizeNOW ();
         } catch (IOException iox) {
             throw new UncheckedIOException (iox);
@@ -69,8 +72,10 @@ public class RandomAccessFileStore implements AbstractDataStore {
     public void             reopen () {
         assert mIsOpen : this + " is closed";
         
-        if (!raf.getChannel ().isOpen())
+        if (!raf.getChannel ().isOpen()) {
+            releaseLock();
             openFile ();
+        }
     }
     
     public boolean          isOpen () {
@@ -95,6 +100,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
         
         if (raf != null) {
             try {
+                releaseLock();
                 raf.close ();
             } catch (IOException iox) {
                 throw new UncheckedIOException (iox);
@@ -102,5 +108,17 @@ public class RandomAccessFileStore implements AbstractDataStore {
             
             raf = null;
         }
-    }        
+    }
+
+    private void releaseLock() {
+        if (mIsLocked) {
+            try {
+                FileLockSynchronizer.release(file);
+                mIsLocked = false;
+            }
+            catch (IOException iox) {
+                throw new UncheckedIOException(iox);
+            }
+        }
+    }
 }
