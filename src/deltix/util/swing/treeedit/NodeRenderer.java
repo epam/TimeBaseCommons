@@ -31,6 +31,13 @@ class NodeRenderer extends DefaultTreeCellRenderer {
                 row,
                 hasFocus
             );
+
+        if (node instanceof NodeAdapter){
+
+            String tootip = (((NodeAdapter)node).getUserNode()).getTooltip();
+            if (tootip != null)
+                setToolTipText(tootip);
+        }
         
         /**
          *  Reset font because it may have been tweaked

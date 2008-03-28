@@ -21,6 +21,10 @@ public abstract class TreeEditorNode {
     private NodeAdapter         mCallback;
     private JScrollPane         mScroller = null;
     private VerticalForm        mForm = null;  // For the default implementation of getUI
+
+    protected String getTooltip(){
+        return null;
+    }
     
     void                        setCallback (NodeAdapter a) {
         mCallback = a;

@@ -99,6 +99,8 @@ public class TreeEditorPanel extends JSplitPane {
         mTree.addMouseMotionListener(dgRecognizer);
         mTree.setDragEnabled(true);
         mTree.setTransferHandler(new TreeEditorTransferHandler());
+        //Enable tool tips.
+        ToolTipManager.sharedInstance().registerComponent(mTree);
     }
     
     private void        setFormComponent (JComponent form) {
