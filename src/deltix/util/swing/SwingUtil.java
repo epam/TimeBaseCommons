@@ -1,19 +1,20 @@
 package deltix.util.swing;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
-
 import deltix.util.Util;
 import deltix.util.io.StreamPump;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *  Colleciton of static utilities
@@ -34,6 +35,15 @@ public abstract class SwingUtil {
             tree.expandRow (ii);
         }
     }
+
+    public static void          collapseEntireTree (JTree tree) {
+        int row = tree.getRowCount() - 1;
+        while (row >= 0) {
+            tree.collapseRow(row);
+            row--;
+        }
+    }
+
     
     public static ResourceBundle    getBundle (String name) {
         try {
@@ -258,6 +268,36 @@ public abstract class SwingUtil {
 
         if (c instanceof Container)
             setChildrenDeepEnabled ((Container) c, b);
+    }
+
+    public static void          setDeepEditable (Component c, boolean b) {
+
+        if (c instanceof JEditorPane){
+            ((JEditorPane)c).setEditable(b);
+        }
+        else if (c instanceof JTextField){
+            ((JTextField)c).setEditable(b);
+        }
+        else if (c instanceof JTextArea){
+            ((JTextArea)c).setEditable(b);
+        }
+        else if (c instanceof JComboBox){
+            c.setEnabled(b);
+        }
+         else if (c instanceof JCheckBox){
+            c.setEnabled(b);
+         }
+
+        if (c instanceof Container)
+            setChildrenDeepEditable ((Container) c, b);
+    }
+
+    public static void          setChildrenDeepEditable (Container c, boolean b) {
+        Component []    comps = c.getComponents();
+
+        if (comps != null)
+            for (Component comp : comps)
+                setDeepEditable (comp, b);
     }
 
     /**

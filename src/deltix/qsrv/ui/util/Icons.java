@@ -33,4 +33,16 @@ public class Icons {
     
     public static final Icon    PLUS =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus.gif");
+
+     public static final Icon    EXPANDE_ALL =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/expandall.png");
+    
+     public static final Icon    COLLAPSE_ALL =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/collapseall.png");
+
+     public static final Icon    EDIT =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/edit.png");
+
+     public static final Icon    QUERY =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/query.png");
 }

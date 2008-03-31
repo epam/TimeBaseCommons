@@ -19,13 +19,13 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class TreeEditorPanel extends JSplitPane {
-    private final Action EDIT_ACTION =
+    protected final Action EDIT_ACTION =
         new SimpleAction (this, "edit");
     
-    private final Action SAVE_ACTION =
+    protected final Action SAVE_ACTION =
         new SimpleAction (this, "save");
     
-    private final Action CANCEL_ACTION =
+    protected final Action CANCEL_ACTION =
         new SimpleAction (this, "cancel");
     
     public static final Border      HEADER_BORDER =
@@ -34,25 +34,25 @@ public class TreeEditorPanel extends JSplitPane {
             BorderFactory.createEmptyBorder (3, 24, 3, 24)
         );
     
-    private static final Color  mDisabledColor = new Color (0xF8F8F8);
-    private static final Color  mEnabledColor = new Color (0xFFFFFF);
+    protected static final Color  mDisabledColor = new Color (0xF8F8F8);
+    protected static final Color  mEnabledColor = new Color (0xFFFFFF);
     
-    private DefaultTreeModel    mTreeModel;
-    private JTree               mTree;
-    private JLabel              mStockHeader = new JLabel (" ");
-    private JPanel              mFormPanel = new JPanel (new BorderLayout ());
-    private JPanel              mBottom = new JPanel (new FlowLayout ());
-    private JComponent          mCurrentForm = null;
-    private JComponent          mFormHeader = null;
-    private TreeEditorNode      mSelectedNode;
-    private TreeEditorNode      mEditedNode;
-    private boolean             mCreationMode;
-    private JButton             mEditBtn = new JButton (EDIT_ACTION);
-    private JButton             mSaveBtn = new JButton (SAVE_ACTION);
-    private JButton             mCancelBtn = new JButton (CANCEL_ACTION);
-    private Collection <NodeChangeListener>     mNodeChangeListeners =
+    protected DefaultTreeModel    mTreeModel;
+    protected JTree               mTree;
+    protected JLabel              mStockHeader = new JLabel (" ");
+    protected JPanel              mFormPanel = new JPanel (new BorderLayout ());
+    protected JPanel              mBottom = new JPanel (new FlowLayout ());
+    protected JComponent          mCurrentForm = null;
+    protected JComponent          mFormHeader = null;
+    protected TreeEditorNode      mSelectedNode;
+    protected TreeEditorNode      mEditedNode;
+    protected boolean             mCreationMode;
+    protected JButton             mEditBtn = new JButton (EDIT_ACTION);
+    protected JButton             mSaveBtn = new JButton (SAVE_ACTION);
+    protected JButton             mCancelBtn = new JButton (CANCEL_ACTION);
+    protected Collection <NodeChangeListener>     mNodeChangeListeners =
         new HashSet <NodeChangeListener> ();
-    private Collection <EnablingChangeListener> mEnablingChangeListeners = 
+    protected Collection <EnablingChangeListener> mEnablingChangeListeners =
         new HashSet <EnablingChangeListener> ();
     
     public TreeEditorPanel (TreeEditorNode root) {
@@ -103,7 +103,7 @@ public class TreeEditorPanel extends JSplitPane {
         ToolTipManager.sharedInstance().registerComponent(mTree);
     }
     
-    private void        setFormComponent (JComponent form) {
+    protected void        setFormComponent (JComponent form) {
         if (mCurrentForm != null)
             mFormPanel.remove (mCurrentForm);
         
@@ -174,7 +174,7 @@ public class TreeEditorPanel extends JSplitPane {
         node.beginEdit ();
     }
     
-    private void        setEditing (TreeEditorNode node) {
+    protected void        setEditing (TreeEditorNode node) {
         mEditedNode = node;
         mTree.setBackground (node == null ? mEnabledColor : mDisabledColor);
         mTree.setEnabled (node == null);
@@ -208,7 +208,7 @@ public class TreeEditorPanel extends JSplitPane {
             setFormHeader (mEditedNode);
     }
     
-    private void        setFormHeader (TreeEditorNode userNode) {
+    protected void        setFormHeader (TreeEditorNode userNode) {
         JComponent          c = userNode.render (true, true, mStockHeader);
         
         if (mFormHeader == c)
@@ -225,7 +225,7 @@ public class TreeEditorPanel extends JSplitPane {
         }
     }
     
-    private void        setFormFromNode (TreeEditorNode userNode) {
+    protected void        setFormFromNode (TreeEditorNode userNode) {
         if (userNode == null) 
             setFormComponent (null);
         else {
@@ -253,7 +253,7 @@ public class TreeEditorPanel extends JSplitPane {
             SwingUtil.setDeepEnabled (mCurrentForm, false);
     }
     
-    private void        popup (int x, int y) {
+    protected void        popup (int x, int y) {
         if (!mTree.isEnabled ())
             return;
             
@@ -273,6 +273,10 @@ public class TreeEditorPanel extends JSplitPane {
     
     public void         expandEntireTree () {
         SwingUtil.expandEntireTree (mTree);
+    }
+
+    public void         collapseEntireTree () {
+        SwingUtil.collapseEntireTree (mTree);
     }
     
     final void           setSaveEnabled (boolean flag) {
@@ -305,20 +309,20 @@ public class TreeEditorPanel extends JSplitPane {
     }
 
 
-     void                fireEditingChanged (boolean edit) {
+     protected void      fireEditingChanged (boolean edit) {
         for (EnablingChangeListener listener : mEnablingChangeListeners)
             listener.enablingChanged(edit);
     }
 
     //////////////////HELPER CLASSES///////////////////////////
 
-    private class TreeEditorTransferHandler extends TransferHandler {
+    protected class TreeEditorTransferHandler extends TransferHandler {
 
         public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
             return false;
         }
 
-        private boolean isTranferable(Object obj) {
+        protected boolean isTranferable(Object obj) {
             return obj instanceof NodeAdapter;
         }
 
