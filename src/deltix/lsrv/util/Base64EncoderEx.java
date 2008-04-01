@@ -9,6 +9,7 @@ import java.io.OutputStream;
 /**
  */
 public class Base64EncoderEx {
+    public static String            CHARSET    = "UTF-8";
 
     public static String encode(byte[] bytes) throws IOException {
         StringWriter stringWriter = new StringWriter();
@@ -23,6 +24,6 @@ public class Base64EncoderEx {
         Base64Encoder encoder = new Base64Encoder(stringWriter);
         encoder.write(bytes);
         encoder.flush();
-        outputStream.write(stringWriter.getBuffer().toString().getBytes());
+        outputStream.write(stringWriter.getBuffer().toString().getBytes(CHARSET));
     }
 }
