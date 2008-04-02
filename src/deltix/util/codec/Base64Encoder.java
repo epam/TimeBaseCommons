@@ -53,7 +53,7 @@ public class Base64Encoder extends BinCharEncoder {
         }
     }
   
-    public void     flush () throws IOException {
+    public void     close () throws IOException {
         switch (mNumBytes) {
             case 0:
                 break;
@@ -75,7 +75,7 @@ public class Base64Encoder extends BinCharEncoder {
                 throw new RuntimeException ();
         }
         
-        super.flush ();
+        super.close ();
     }
     
     public static void main (String [] args) throws Exception {

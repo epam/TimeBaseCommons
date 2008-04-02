@@ -1,5 +1,6 @@
 package deltix.util;
 
+import deltix.util.io.UncheckedIOException;
 import java.io.*;
 import java.net.*;
 
@@ -11,31 +12,12 @@ import java.net.*;
  *  an identifier that is globally unique, unless the clock is set back, or 
  *  the system's IP address is non-unique within the scope of interest.
  */
-public abstract class GUID {
-    /**
-     *  Creates a string consisting of digits and underscore characters, suitable for
-     *  use in language identifiers. This method does not throw checked exceptons.
-     */
-    public static String        createNoX (boolean includeIPAddress) {
-        try {
-            return (create (includeIPAddress));            
-        } catch (InterruptedException ix) {
-            throw new RuntimeException ("Unexpected " + ix, ix);
-        } catch (IOException iox) {
-            throw new RuntimeException ("Unexpected " + iox, iox);
-        }
-    }
+public class GUID {
+    public final long           time;
+    public final int            port;
     
-    /**
-     *  Creates a string consisting of digits and underscore characters, suitable for
-     *  use in language identifiers.
-     */
-    public static String        create (boolean includeIPAddress)
-        throws IOException, InterruptedException 
-    {
+    public GUID () throws IOException, InterruptedException {
         ServerSocket        socket = new ServerSocket ();
-        int                 port;
-        long                time;
         
         try {
             socket.bind (null);
@@ -51,27 +33,52 @@ public abstract class GUID {
         } finally {
             socket.close ();
         }
+    }
+    
+    public void                 writeTo (OutputStream out) throws IOException {
+        DataOutputStream    dos = new DataOutputStream (out);
+        dos.writeLong (time);
+        dos.writeShort (port);
+        dos.flush ();
+    }
+    
+    public String               toString () {
+        return (port + "_" + time);
+    }
+    
+    public static void          writeLocalIPAddress (OutputStream out) 
+        throws IOException 
+    {        
+        InetAddress         addr = InetAddress.getLocalHost ();
+        byte []             addressBytes = addr.getAddress ();
         
+        out.write (addressBytes);
+    }
+    
+    public String               toStringWithLocalIPAddress () {
         StringBuilder       s = new StringBuilder ();
         
-        if (includeIPAddress) {
-            InetAddress         addr = InetAddress.getLocalHost ();
-            byte []             addressBytes = addr.getAddress ();
+        InetAddress         addr;
+        
+        try {
+            addr = InetAddress.getLocalHost ();
+        } catch (UnknownHostException x) {
+            throw new UncheckedIOException (x);
+        }
+        
+        byte []             addressBytes = addr.getAddress ();
 
-            for (byte b : addressBytes) {
-                s.append (((int) b) & 0xFF);
-                s.append ('_');
-            }
+        for (byte b : addressBytes) {
+            s.append (((int) b) & 0xFF);
+            s.append ('_');
         }
         
         s.append (port);
         s.append ('_');
-        s.append (time - 1170522000000L);
+        s.append (time);
         
         return (s.toString ());
     }
     
-    public static void main (String [] args) throws Exception {
-        System.out.println (create (true));
-    }
+
 }
