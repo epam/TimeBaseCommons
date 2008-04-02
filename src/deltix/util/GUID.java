@@ -1,5 +1,6 @@
 package deltix.util;
 
+import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.io.UncheckedIOException;
 import java.io.*;
 import java.net.*;
@@ -16,10 +17,12 @@ public class GUID {
     public final long           time;
     public final int            port;
     
-    public GUID () throws IOException, InterruptedException {
-        ServerSocket        socket = new ServerSocket ();
+    public GUID () {
+        ServerSocket        socket = null;
         
         try {
+            socket = new ServerSocket ();
+        
             socket.bind (null);
             //
             //  Sleep for 2 ticks to prevent the (extremely unlikely) situation
@@ -30,8 +33,12 @@ public class GUID {
             //  Get a time at which we definitely owned the socket ...
             time = System.currentTimeMillis () - 1;
             port = socket.getLocalPort ();
+        } catch (InterruptedException x) {
+            throw new UncheckedInterruptedException (x);
+        } catch (IOException x) {
+            throw new UncheckedIOException (x);
         } finally {
-            socket.close ();
+            Util.close (socket);
         }
     }
     
