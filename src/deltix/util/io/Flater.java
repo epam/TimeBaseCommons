@@ -12,8 +12,8 @@ public class Flater {
         throws IOException, InterruptedException    
     {
         StreamPump.pump (
-            new DeflaterInputStream (new BufferedInputStream (is)),
-            os
+            is,
+            new GZIPOutputStream (os, 1 << 16)
         );
     }
     
@@ -43,7 +43,7 @@ public class Flater {
         throws IOException, InterruptedException    
     {
         StreamPump.pump (
-            new InflaterInputStream (new BufferedInputStream (is)),
+            new GZIPInputStream (is, 1 << 16),
             os
         );
     }
@@ -97,6 +97,7 @@ public class Flater {
                 
         File    from = new File (fromName);
         to = new File (toName);
+        long    t0 = System.currentTimeMillis ();
         
         if (fromGZ) {
             System.out.println ("Inflating " + fromName + " ==> " + toName + " ...");
@@ -106,5 +107,9 @@ public class Flater {
             System.out.println ("Deflating " + fromName + " ==> " + toName + " ...");
             deflate (from, to);
         }
+        
+        long    t1 = System.currentTimeMillis ();
+        System.out.println ("Done in " + (t1 - t0) * 0.001 + " seconds.");
+            
     }
 }
