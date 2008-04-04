@@ -71,6 +71,10 @@ public class CSVXReader {
         }
     }
     
+    public CharSequence                 getBuffer () {
+        return (mBuffer);
+    }
+    
     public boolean                      nextLine () throws IOException {
         if (mEOF)
             return (false);

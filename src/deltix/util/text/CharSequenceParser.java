@@ -1,5 +1,7 @@
 package deltix.util.text;
 
+import deltix.util.Util;
+
 /**
  *
  */
@@ -159,10 +161,14 @@ public abstract class CharSequenceParser {
             else {            
                 final int       digit = ch - '0';
 
-                if (digit < 0 || digit > 9)
+                if (digit < 0 || digit > 9) {
+                    if (Util.equals (sc, "NaN"))
+                        return (Double.NaN);
+                    
                     throw new NumberFormatException (
                         "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
-
+                }
+                
                 if (overflow) {
                     //  Stop shifting the numerator
                     if (!dotSeen)
@@ -252,10 +258,14 @@ public abstract class CharSequenceParser {
             else {            
                 final int       digit = ch - '0';
 
-                if (digit < 0 || digit > 9)
+                if (digit < 0 || digit > 9) {
+                    if (Util.equals (sc, "NaN"))
+                        return (Float.NaN);                    
+                    
                     throw new NumberFormatException (
                         "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
-
+                }
+                
                 if (overflow) {
                     //  Stop shifting the numerator
                     if (!dotSeen)
