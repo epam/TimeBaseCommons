@@ -44,6 +44,7 @@ public class FileField extends JPanel {
         );
         
         mFileChooser.setApproveButtonText (RB.getString ("selectFile"));
+        mDialogButton.setMargin(new Insets (0, 2, 0, 2));
     }
     
     /**
