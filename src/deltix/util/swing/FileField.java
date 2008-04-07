@@ -20,6 +20,7 @@ public class FileField extends JPanel {
     public static final int VALID_EXISTING_DIR = 1;
     public static final int VALID_EXISTING_FILE = 2;
     public static final int VALID_EXISTING_OR_NEW_DIR = 3;
+    public static final int VALID_EXISTING_OR_NEW_DIR_CC = 4;
     
     public static final int VALID_ALLOW_NULL = 0x100;
     
@@ -59,7 +60,8 @@ public class FileField extends JPanel {
                 break;
                 
             case VALID_EXISTING_DIR:
-            case VALID_EXISTING_OR_NEW_DIR:     
+            case VALID_EXISTING_OR_NEW_DIR:   
+            case VALID_EXISTING_OR_NEW_DIR_CC:
                 mFileChooser.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
                 break;
                 
@@ -108,8 +110,8 @@ public class FileField extends JPanel {
                 if (!f.isDirectory ()) 
                     complain (new ParsingException ("notDir", path));
                 break;
-                
-            case VALID_EXISTING_OR_NEW_DIR:     
+            
+            case VALID_EXISTING_OR_NEW_DIR_CC:
                 if (!f.isDirectory ()) {
                     int	status =
                         JOptionPane.showOptionDialog (
@@ -134,6 +136,9 @@ public class FileField extends JPanel {
                     if (!f.mkdirs ()) 
                         complain (new ParsingException ("notDir", path));
                 }
+                break;
+                
+            case VALID_EXISTING_OR_NEW_DIR:                     
                 break;
                 
             case VALID_EXISTING_FILE:
