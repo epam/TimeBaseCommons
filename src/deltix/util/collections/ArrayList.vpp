@@ -1,16 +1,27 @@
 package deltix.util.collections.generated;
 
+
 import java.util.AbstractList;
-import java.util.List;
 import java.util.Collection;
-import java.util.Iterator;
+import java.lang.reflect.Array;
 #if($name == "Object")
+import deltix.util.Util;
 import java.util.Enumeration;
 #end
+import java.util.Iterator;
+import java.util.List;
 
-import deltix.util.collections.Arrays;
-import deltix.util.*;
-import deltix.util.memory.*;
+import deltix.util.collections.SafeArrays;
+import deltix.util.memory.MemorySizeEstimator;
+
+
+
+#if( $name == "Object" )
+#set($actualType = "Object");
+#else
+#set($actualType = $type);
+#end
+
 
 /**
  * Resizable array of primitive ${type}s. Much more efficient than
@@ -34,7 +45,11 @@ public final class ${name}ArrayList
      *
      * @serial
      */
+#if($name == "Object")
+    private Object elementData[];
+#else
     private ${type} elementData[];
+#end
 
     /**
      * The size of the ArrayList (the number of elements it contains).
@@ -59,11 +74,7 @@ public final class ${name}ArrayList
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal Capacity: "+
                                                initialCapacity);
-#if( $name == "Object" )
-        this.elementData = Arrays.<${type}>initializeArray(initialCapacity);
-#else
-		this.elementData = new ${type} [initialCapacity];
-#end
+        elementData = new $actualType [initialCapacity];
     }
 
     /**
@@ -83,11 +94,7 @@ public final class ${name}ArrayList
      */
     public ${name}ArrayList(Collection<? extends ${type_Object}> c) {
         size = c.size ();
-#if( $name == "Object" )
-        this.elementData = Arrays.<${type}>initializeArray(size);
-#else
-		elementData = new ${type} [(size*110) / 100];
-#end
+		elementData = new ${actualType} [(size*110) / 100];
 			// Allow 10% room for growth
         Iterator<? extends ${type_Object}> iter = c.iterator ();
         int			idx = 0;
@@ -98,12 +105,8 @@ public final class ${name}ArrayList
 
     public ${name}ArrayList (${type} [] arr) {
     	size = arr.length;
-#if( $name == "Object" )
-        elementData = Arrays.<${type}>initializeArray((size*110) / 100);
-#else
-    	elementData = new ${type} [(size*110) / 100];
-#end
-    	Arrays.safeArrayCopy(arr, 0, elementData, 0, size);
+    	elementData = new ${actualType} [(size*110) / 100];
+    	SafeArrays.safeArrayCopy(arr, 0, elementData, 0, size);
     }
 
     /**
@@ -115,13 +118,10 @@ public final class ${name}ArrayList
 		modCount++;
 		int oldCapacity = elementData.length;
 		if (size < oldCapacity) {
-	    	${type} oldData [] = elementData;
-#if( $name == "Object" )
-        elementData = Arrays.<${type}>initializeArray(size);
-#else
-    	elementData = new ${type} [size];
-#end
-	    	Arrays.safeArrayCopy (oldData, 0, elementData, 0, size);
+	    	${actualType} oldData [] = elementData;
+	    	elementData = new ${actualType} [size];
+
+	    	SafeArrays.safeArrayCopy (oldData, 0, elementData, 0, size);
 		}
     }
 
@@ -136,16 +136,12 @@ public final class ${name}ArrayList
 		modCount++;
 		int oldCapacity = elementData.length;
 		if (minCapacity > oldCapacity) {
-	    	${type} oldData [] = elementData;
+	    	${actualType} oldData [] = elementData;
 	    	int newCapacity = (oldCapacity * 3)/2 + 1;
     	    if (newCapacity < minCapacity)
 				newCapacity = minCapacity;
-#if( $name == "Object" )
-        elementData = Arrays.<${type}>initializeArray(newCapacity);
-#else
-    	elementData = new ${type} [newCapacity];
-#end
-	    	Arrays.safeArrayCopy (oldData, 0, elementData, 0, size);
+    		elementData = new ${actualType} [newCapacity];
+	    	SafeArrays.safeArrayCopy (oldData, 0, elementData, 0, size);
 		}
     }
 
@@ -153,15 +149,10 @@ public final class ${name}ArrayList
 		modCount++;
 		int oldCapacity = elementData.length;
 		if (minCapacity > oldCapacity) {
-	    	${type} oldData [] = elementData;
 	    	int newCapacity = (oldCapacity * 3)/2 + 1;
     	    if (newCapacity < minCapacity)
 				newCapacity = minCapacity;
-#if( $name == "Object" )
-            elementData = Arrays.<${type}>initializeArray(newCapacity);
-#else
-            elementData = new ${type} [newCapacity];
-#end
+            elementData = new ${actualType} [newCapacity];
 		}
     }
 
@@ -213,11 +204,12 @@ public final class ${name}ArrayList
      * @throws ArrayStoreException if the runtime type of a is not a supertype
      *         of <code>${type_Object}</code>.
      */
-    public <T> T [] toArray(T a[]) {
+     @SuppressWarnings("unchecked")
+     public <T> T [] toArray(T a[]) {
         if (a.length < size)
-            a = Arrays.<T>initializeArray(size);
-
-        Arrays.safeArrayCopy (elementData, 0, a, 0, size);
+            a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+    
+        SafeArrays.safeArrayCopy (elementData, 0, a, 0, size);
 
         if (a.length > size)
             a [size] = null;
@@ -272,7 +264,7 @@ public final class ${name}ArrayList
     @SuppressWarnings("unchecked")
     public <T> T [] toArray(T a[]) {
         if (a.length < size)
-            a = Arrays.<T>initializeArray(size);
+			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
 
         for (int i = 0; i < size; i++)
         {
@@ -416,12 +408,8 @@ public final class ${name}ArrayList
     public Object clone () {
 		try {
 	    	${name}ArrayList v = (${name}ArrayList) super.clone();
-#if( ${name} == "Object" )
-	    	v.elementData = Arrays.<${type}>initializeArray(size);
-#else
-            v.elementData = new ${type} [size];
-#end
-	    	Arrays.safeArrayCopy (elementData, 0, v.elementData, 0, size);
+            v.elementData = new ${actualType} [size];
+	    	SafeArrays.safeArrayCopy (elementData, 0, v.elementData, 0, size);
 	    	v.modCount = 0;
 	    	return v;
 		} catch (CloneNotSupportedException e) {
@@ -449,13 +437,14 @@ public final class ${name}ArrayList
      * @return an array containing all of the elements in this list
      * 	       in the correct order.
      */
-    public ${type} [] to${name_abbr}Array () {
 #if($name == "Object")
-    	${type} []		ret = Arrays.<${type}>initializeArray(size);
+    public Object [] to${name_abbr}Array () {
+    	Object []		ret = new Object [size];
 #else
+    public ${type} [] to${name_abbr}Array () {
     	${type} []		ret = new ${type} [size];
 #end
-    	Arrays.safeArrayCopy (elementData, 0, ret, 0, size);
+    	SafeArrays.safeArrayCopy (elementData, 0, ret, 0, size);
 		return (ret);
     }
 
@@ -470,9 +459,10 @@ public final class ${name}ArrayList
      * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
+     @SuppressWarnings("unchecked")
     public ${type} get${name} (int index) {
 		RangeCheck(index);
-		return elementData[index];
+		return (${type}) elementData[index];
     }
 
     /**
@@ -481,8 +471,9 @@ public final class ${name}ArrayList
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
      */
+    @SuppressWarnings("unchecked") 
     public ${type} get${name}NoRangeCheck (int index) {
-		return elementData [index];
+		return (${type}) elementData [index];
     }
     
     /**
@@ -495,9 +486,10 @@ public final class ${name}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range
      *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
      */
+     @SuppressWarnings("unchecked")
     public ${type} set (int index, ${type} element) {
 		RangeCheck(index);
-		${type} oldValue = elementData[index];
+		${type} oldValue = (${type}) elementData[index];
 		elementData[index] = element;
 		return oldValue;
     }
@@ -530,7 +522,7 @@ public final class ${name}ArrayList
 			"Index: "+index+", Size: "+size);
 
 		ensureCapacity (size+1);  // Increments modCount!!
-		Arrays.safeArrayCopy(elementData, index, elementData, index + 1,
+		SafeArrays.safeArrayCopy(elementData, index, elementData, index + 1,
 				size - index);
 		elementData[index] = element;
 		size++;
@@ -560,15 +552,16 @@ public final class ${name}ArrayList
      * @throws    IndexOutOfBoundsException if index out of range <tt>(index
      * 		  &lt; 0 || index &gt;= size())</tt>.
      */
+     @SuppressWarnings("unchecked")
     public ${type} remove${name} (int index) {
 		RangeCheck(index);
 
 		modCount++;
-		${type} oldValue = elementData[index];
+		${type} oldValue = (${type}) elementData[index];
 
 		int numMoved = size - index - 1;
 		if (numMoved > 0)
-	    	Arrays.safeArrayCopy(elementData, index+1, elementData, index,
+	    	SafeArrays.safeArrayCopy(elementData, index+1, elementData, index,
 			    	numMoved);
 
 		size--;
@@ -638,7 +631,7 @@ public final class ${name}ArrayList
 
 		int numMoved = size - index;
 		if (numMoved > 0)
-	    	Arrays.safeArrayCopy(elementData, index, elementData, index + numNew,
+	    	SafeArrays.safeArrayCopy(elementData, index, elementData, index + numNew,
 			    	numMoved);
 
         Iterator<? extends ${type_Object}> iter = c.iterator ();
@@ -662,7 +655,7 @@ public final class ${name}ArrayList
     public void removeRange (int fromIndex, int toIndex) {
 		modCount++;
 		int numMoved = size - toIndex;
-        Arrays.safeArrayCopy (
+        SafeArrays.safeArrayCopy (
         	elementData, toIndex, elementData, fromIndex, numMoved
         );
         size -= (toIndex - fromIndex);
@@ -707,19 +700,11 @@ public final class ${name}ArrayList
     {
         // Read in array length and allocate array
         size = s.readInt();
-#if( $name == "Object" )
-        elementData = Arrays.<${type}>initializeArray(size);
-#else
-        elementData = new ${type} [size];
-#end
+        elementData = new ${actualType} [size];
 
 		// Read in all elements in the proper order.
 		for (int i=0; i<size; i++)
-#if( $name == "Object" )
-            elementData [i] = (${type})s.read${name_abbr} ();
-#else
         	elementData [i] = s.read${name_abbr} ();
-#end
     }
 
     public boolean		equals (Object otherObj) {
@@ -731,26 +716,28 @@ public final class ${name}ArrayList
 
     	return (java.util.Arrays.equals (
     					to${name_abbr}Array (),
-    					((${name}ArrayList) otherObj).to${name_abbr}Array ()
+((${name}ArrayList#if( $name == "Object" )<?>#end) otherObj).to${name_abbr}Array ()
     			)
 
     	);
     }
 
+	@SuppressWarnings("unchecked")
     public void		swap (int idx1, int idx2) {
 		RangeCheck (idx1);
 		RangeCheck (idx2);
-    	${type}		buf = elementData [idx1];
+    	${type}		buf = (${type}) elementData [idx1];
     	elementData [idx1] = elementData [idx2];
     	elementData [idx2] = buf;
     }
     
 	
 	/** Reverses order of elements */
+	@SuppressWarnings("unchecked")
     public void     reverse () {
         final int length = size();
         for (int i = 0, j = length - 1; i < j; i++, j--) {
-            final ${type} tmp = elementData[i];
+            final ${type} tmp = (${type}) elementData[i];
             elementData[i] = elementData[j];
             elementData[j] = tmp;
         }
@@ -766,9 +753,11 @@ public final class ${name}ArrayList
     }
 
 #end
-    public ${type} []	getInternalBuffer () {
+
+    public ${actualType} []	getInternalBuffer () {
     	return (elementData);
     }
+
 
     /**
      *	Sets the size of this array to the supplied value.
@@ -814,12 +803,13 @@ public final class ${name}ArrayList
     		return (mIndex < size);
     	}
 
+		@SuppressWarnings("unchecked")
     	public ${type} nextElement () {
-    		return (elementData [mIndex++]);
+    		return (${type}) elementData [mIndex++];
     	}
     }
 
-    public Enumeration elements () {
+    public Enumeration<$type> elements () {
     	return (new ElemEnumeration ());
     }    
 #else
@@ -843,7 +833,7 @@ public final class ${name}ArrayList
     	}
 
     	public ${type} next${name_abbr}Element () {
-    		return (elementData [mIndex++]);
+    		return elementData [mIndex++];
     	}
     }
 

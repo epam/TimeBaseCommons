@@ -3,14 +3,9 @@ package deltix.util.collections;
 /**
  * @author Jacob Alber
  */
-public class Arrays {
+public class SafeArrays {
     public static <Generic> Generic[] asArray(Generic... array) {
         return array;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <Generic> Generic[] initializeArray(int size) {
-        return (Generic[]) new Object[size];
     }
 
     public static <Generic> void safeArrayCopy(Generic[] src, int srcPos, Generic[] dest, int destPos, int length) {
