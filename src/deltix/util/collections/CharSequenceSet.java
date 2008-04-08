@@ -21,6 +21,9 @@ public class CharSequenceSet extends HashSet <String> {
     }
 
     public boolean              addCharSequence (CharSequence e) {
+        if (containsCharSequence (e))
+            return (false);
+        
         return (add (e.toString ()));
     }
     

@@ -7,8 +7,12 @@ import javax.swing.*;
 
 import deltix.util.*;
 import deltix.util.io.*;
+import java.lang.Thread.UncaughtExceptionHandler;
 
-public abstract class AbstractApp extends JFrame {    
+public abstract class AbstractApp 
+    extends JFrame 
+    implements UncaughtExceptionHandler
+{    
     protected AbstractApp () {
         this (EXIT_ON_CLOSE);        
     }
@@ -86,7 +90,7 @@ public abstract class AbstractApp extends JFrame {
         asyncHandle (x, Util.LOGGER, logLevel);
     }
     
-    public void		        asyncHandle (
+    public void                 asyncHandle (
         Throwable                   x,
         Logger                      logger,
         Level                       logLevel
@@ -108,7 +112,7 @@ public abstract class AbstractApp extends JFrame {
         }
     }
     
-    public void                     printUsage () throws IOException, InterruptedException  {
+    public void                 printUsage () throws IOException, InterruptedException  {
         String      cname = getClass ().getName ();
         int         dot = cname.lastIndexOf ('.');
         String      path;
@@ -119,5 +123,13 @@ public abstract class AbstractApp extends JFrame {
             path = "usage.txt";
         
         IOUtil.copyResource (path, System.out);
+    }
+    
+    public void                 uncaughtException (Thread t, Throwable e) {
+        asyncHandle (e);
+    }
+    
+    public void                 installExceptionHandler () {
+        Thread.setDefaultUncaughtExceptionHandler (this);
     }
 }
