@@ -13,7 +13,7 @@ public class Base64DecoderEx {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Base64Decoder decoder = new Base64Decoder(outputStream);
         decoder.write(s);
-        decoder.flush();
+        decoder.close();
         return outputStream.toByteArray();
     }
 
