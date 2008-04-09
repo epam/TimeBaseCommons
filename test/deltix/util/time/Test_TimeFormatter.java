@@ -279,14 +279,6 @@ public class Test_TimeFormatter {
 		return seconds;
 	}
 
-	private static int scannerParse(String value) {
-		try {
-			return TimeFormatter.parseDurationInSeconds(value);
-		} catch (NumberFormatException ex) {
-			throw new AssertionFailedError (ex.getMessage());
-		}
-	}
-
 
 	@Test
 	public void testParsingPerformance() {
@@ -295,25 +287,25 @@ public class Test_TimeFormatter {
 		parse(15, true);
 		parse(15, false);
 
-		long startTime, scannerRunTime, standardRunTime;
-
-		startTime = System.nanoTime();
-		parse(23, true);
-		scannerRunTime = System.nanoTime() - startTime;
-
-		startTime = System.nanoTime();
-		parse(23, false);
-		standardRunTime = System.nanoTime() - startTime;
+		final long startTime1 = System.nanoTime();
+		parse(24, true);
+		final long startTime2 = System.nanoTime();
+		parse(24, false);
+		final long endTime = System.nanoTime();
+		
+		long customRunTime = startTime2 - startTime1;
+		long standardRunTime = endTime - startTime2;
+		
 		
 
-		Assert.assertTrue("Scanner parsing is expected to be at least 3 times faster. Actual: " + (double) standardRunTime/ scannerRunTime,
-				scannerRunTime * 3 < standardRunTime);
+		Assert.assertTrue("Scanner parsing is expected to be at least 3 times faster. Actual: " + (double) standardRunTime/ customRunTime,
+				customRunTime * 3 < standardRunTime);
 
 	}
 
-	private static void parse (int numberOfHours, boolean useScanner) {
+	private static void parse (int numberOfHours, boolean useTimeFormatter) {
 		StringBuilder sb = new StringBuilder(64);
-		for (int i = 0; i < 3; i++) { // extra cycle
+		for (int i = 0; i < 10; i++) { // extra cycle
 			for (int hr = 0; hr < numberOfHours; hr++) {
 				if (hr < 10)
 					sb.append('0');
@@ -334,8 +326,8 @@ public class Test_TimeFormatter {
 						sb.append(sec);
 						
 						int actual;
-						if (useScanner)
-							actual = scannerParse(sb.toString());
+						if (useTimeFormatter)
+							actual = TimeFormatter.parseDurationInSeconds(sb.toString());
 						else
 							actual = standardParse(sb.toString());
 
@@ -347,22 +339,20 @@ public class Test_TimeFormatter {
 	}
 	
 	private static void validate (int numberOfHours) {
-		for (int i = 0; i < 3; i++) { // extra cycle
-			for (int hr = 0; hr < numberOfHours; hr++) {
-				final String hours = (hr < 10) ? "0" + hr : Integer.toString(hr);
-				final int hoursInSec = hr * 3600;
-				for (int min = 0; min < 60; min++) {
-					final String minutes = (min < 10) ? ":0" + min : ":" + min;
-					final int minInSec = min * 60;
+		for (int hr = 0; hr < numberOfHours; hr++) {
+			final String hours = (hr < 10) ? "0" + hr : Integer.toString(hr);
+			final int hoursInSec = hr * 3600;
+			for (int min = 0; min < 60; min++) {
+				final String minutes = (min < 10) ? ":0" + min : ":" + min;
+				final int minInSec = min * 60;
 
-					for (int sec = 0; sec < 60; sec++) {
-						String seconds = (sec < 10) ? ":0" + sec : ":" + sec;
-						String text = hours + minutes + seconds;
+				for (int sec = 0; sec < 60; sec++) {
+					String seconds = (sec < 10) ? ":0" + sec : ":" + sec;
+					String text = hours + minutes + seconds;
 
-						int actual = scannerParse(text);
-						int expected = hoursInSec + minInSec + sec;
-						Assert.assertEquals(actual, expected);
-					}
+					int actual = TimeFormatter.parseDurationInSeconds(text);
+					int expected = hoursInSec + minInSec + sec;
+					Assert.assertEquals(actual, expected);
 				}
 			}
 		}
@@ -374,24 +364,23 @@ public class Test_TimeFormatter {
 		format(10, true);
 		format(10, false);
 
-		long startTime, scannerRunTime, standardRunTime;
-
-		startTime = System.nanoTime();
-		format(23, true);
-		scannerRunTime = System.nanoTime() - startTime;
-
-		startTime = System.nanoTime();
-		format(23, false);
-		standardRunTime = System.nanoTime() - startTime;
+		final long startTime1 = System.nanoTime();
+		format(24, true);
+		final long startTime2 = System.nanoTime();
+		format(24, false);
+		final long endTime = System.nanoTime();
+		
+		long customRunTime = startTime2 - startTime1;
+		long standardRunTime = endTime - startTime2;
 		
 
-		Assert.assertTrue("TimeFormatter is expected to be at least 2.5 times faster. Actual: " + (double) standardRunTime/ scannerRunTime,
-				scannerRunTime * 2.5 < standardRunTime);
+		Assert.assertTrue("TimeFormatter is expected to be at least 2.5 times faster. Actual: " + (double) standardRunTime/ customRunTime,
+				customRunTime * 2.5 < standardRunTime);
 
 	}	
 	
-	private static void format(int numberOfHours, boolean useScanner) {
-		for (int i = 0; i < 3; i++) { // extra cycle
+	private static void format(int numberOfHours, boolean useTimeFormatter) {
+		for (int i = 0; i < 10; i++) { // extra cycle
 			for (int hr = 0; hr < numberOfHours; hr++) {
 				
 				final int hoursInSec = hr * 3600;
@@ -402,7 +391,7 @@ public class Test_TimeFormatter {
 						int time = hoursInSec + minInSec + sec;
 
 						String text;
-						if (useScanner)
+						if (useTimeFormatter)
 							text = TimeFormatter.formatTimeOfDayFromSeconds(time);
 						else
 							text = naiveFormat(time);
