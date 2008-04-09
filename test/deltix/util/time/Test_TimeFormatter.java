@@ -1,0 +1,366 @@
+package deltix.util.time;
+
+import java.util.StringTokenizer;
+
+import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
+
+import org.junit.Test;
+
+public class Test_TimeFormatter {
+
+	private final static long MILLIS_PER_DAY = 24*60*60*1000L;
+	
+	public void simpleTest() {
+		assertFormat(0 * 1000, "00:00:00");
+		assertFormat(1 * 1000, "00:00:01");
+		assertFormat(10 * 1000, "00:00:10");
+		assertFormat(60 * 1000, "00:01:00");
+		assertFormat(3600 * 1000, "01:00:00");
+		assertFormat(3601 * 1000, "01:00:01");
+		assertFormat(3601 * 1000, "01:00:01");
+		
+		assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
+	}
+	
+	public void simpleOneDayTruncation() {
+		assertFormat(MILLIS_PER_DAY, "00:00:00");
+		assertFormat(MILLIS_PER_DAY+1, "00:00:00");
+		assertFormat(MILLIS_PER_DAY+1000, "00:00:01");
+		assertFormat(5*MILLIS_PER_DAY+1000, "00:00:01");
+	}
+	
+
+	private static void assertFormat(long time, String expected) {
+		String actual = TimeFormatter.formatTimeOfDay(time);
+		Assert.assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testBadCasesTime() {
+		assertBad(null);
+		assertBad("");
+		assertBad(":");
+		assertBad(":10");
+		assertBad(":10 am");
+		assertBad("10 amABC");
+
+		// extra : character
+		assertBad("1:");
+		assertBad("1: am");
+		assertBad("11:");
+		assertBad("11: am");
+		assertBad("1:1:");
+		assertBad("1:1:am");
+		assertBad("11:11:");
+		assertBad("11:11:am");
+		assertBad("1:1:1:");
+		assertBad("1:1:1: am");
+		assertBad("11:11:11:");
+		assertBad("11:11:11: am");
+
+		// h/m/s exceed max allowed
+		assertBad("24:00:00");
+		assertBad("00:60:00");
+		assertBad("00:00:60");
+
+		// illegal am-pm hours
+		assertBad("00:00 am");
+		assertBad("00:00 pm");
+		assertBad("13:00 pm");
+		assertBad("13:00 am");
+
+		// maximum two digits per group
+		assertBad("001:01:01");
+		assertBad("01:001:01");
+		assertBad("01:01:001");
+
+		// no traling/leading spaces and space separators
+		assertBad(" 11:11:11");
+		assertBad("11: 11:11");
+		assertBad("11:11: 11");
+		assertBad("11:11:11 ");
+
+		// uneterminated string
+		assertBad("1:");
+		assertBad("1:1:");
+		assertBad("1:1:1 ");
+		assertBad("1:1:1 a");
+
+	}
+
+	@Test
+	public void testOneDigitCasesTime() {
+		assertTimeParsed("0", 0);
+		assertTimeParsed("0:1", 1 * 60);
+		assertTimeParsed("1:1", 1 * 60 * 60 + 1 * 60);
+		assertTimeParsed("0:0:1", 1);
+		assertTimeParsed("0:1:1", 1 * 60 + 1);
+		assertTimeParsed("1:1:1", 1 * 60 * 60 + 1 * 60 + 1);
+	}
+
+	@Test
+	public void testMilitaryFormatTime() {
+		assertTimeParsed("0", 0);
+		assertTimeParsed("1", 1 * 60 * 60);
+		assertTimeParsed("12", 12 * 60 * 60);
+		assertTimeParsed("12:3", 12 * 60 * 60 + 3 * 60);
+		assertTimeParsed("12:34", 12 * 60 * 60 + 34 * 60);
+		assertTimeParsed("12:34:5", 12 * 60 * 60 + 34 * 60 + 5);
+		assertTimeParsed("12:34:56", 12 * 60 * 60 + 34 * 60 + 56);
+	}
+
+	@Test
+	public void testAmPmFormatTime() {
+		assertTimeParsed("1 am", 1 * 60 * 60);
+		assertTimeParsed("11 AM", 11 * 60 * 60);
+		assertTimeParsed("11:3 am", 11 * 60 * 60 + 3 * 60);
+		assertTimeParsed("11:34 AM", 11 * 60 * 60 + 34 * 60);
+		assertTimeParsed("11:34:5 am", 11 * 60 * 60 + 34 * 60 + 5);
+		assertTimeParsed("11:34:56   \t  \t  \t     AM", 11 * 60 * 60 + 34 * 60
+				+ 56);
+
+		assertTimeParsed("1 pm", 13 * 60 * 60);
+		assertTimeParsed("11 Pm", 23 * 60 * 60);
+		assertTimeParsed("11:3 pM", 23 * 60 * 60 + 3 * 60);
+		assertTimeParsed("11:34 PM", 23 * 60 * 60 + 34 * 60);
+		assertTimeParsed("11:34:5 pm", 23 * 60 * 60 + 34 * 60 + 5);
+		assertTimeParsed("11:34:56   \t  \t  \t     pm", 23 * 60 * 60 + 34 * 60
+				+ 56);
+	}
+
+	@Test
+	public void testHoursOnlyTime() {
+		assertTimeParsed("0", 0);
+		assertTimeParsed("1", 1 * 60 * 60);
+		assertTimeParsed("23", 23 * 60 * 60);
+		assertTimeParsed("1 am", 1 * 60 * 60);
+		assertTimeParsed("1 pm", 13 * 60 * 60);
+		assertTimeParsed("11 am", 11 * 60 * 60);
+		assertTimeParsed("12 am", 0 * 60 * 60);
+		assertTimeParsed("12 pm", 12 * 60 * 60);
+		assertTimeParsed("11 pm", 23 * 60 * 60);
+	}
+
+	// MMM
+	@Test
+	public void testOneDigitGroupsDuration() {
+		assertDurationParse("0", 0);
+		assertDurationParse("1", 1 * 60);
+		assertDurationParse("10", 10 * 60);
+		assertDurationParse("100", 100 * 60); // can be more than 60
+	}
+
+	// MMM:SS
+	@Test
+	public void testTwoDigitGroupsDuration() {
+		assertDurationParse("0:0", 0);
+		assertDurationParse("1:1", 1 * 60 + 1);
+		assertDurationParse("10:10", 10 * 60 + 10);
+		assertDurationParse("100:10", 100 * 60 + 10);
+
+		assertBadDuration("10:100"); // secounds > 59
+		assertBadDuration("10:10:");
+		assertBadDuration("10:");
+	}
+
+	// HHH:MM:SS
+	@Test
+	public void testThreeDigitGroupsDuration() {
+		assertDurationParse("0:0:0", 0);
+		assertDurationParse("1:1:1", 1 * 3600 + 1 * 60 + 1);
+		assertDurationParse("10:10:10", 10 * 3600 + 10 * 60 + 10);
+		assertDurationParse("100:10:10", 100 * 3600 + 10 * 60 + 10); // duration can exceed 24h
+
+		assertBadDuration("10:10:100"); // secounds > 59
+		assertBadDuration("10:100:10"); // minutes > 59
+	}
+
+	@Test
+	public void testOneDigitCasesDuration() {
+		assertDurationParse("0", 0);
+		assertDurationParse("0:1", 1);
+		assertDurationParse("1:1", 1 * 60 + 1);
+		assertDurationParse("0:0:1", 1);
+		assertDurationParse("0:1:1", 1 * 60 + 1);
+		assertDurationParse("1:1:1", 1 * 60 * 60 + 1 * 60 + 1);
+	}
+
+	@Test
+	public void test12345Duration() {
+		assertDurationParse("0", 0);
+		assertDurationParse("1", 1 * 60);
+		assertDurationParse("12", 12 * 60);
+		assertDurationParse("12:3", 12 * 60 + 3);
+		assertDurationParse("12:34", 12 * 60 + 34);
+		assertDurationParse("12:34:5", 12 * 60 * 60 + 34 * 60 + 5);
+		assertDurationParse("12:34:56", 12 * 60 * 60 + 34 * 60 + 56);
+	}
+
+	@Test
+	public void testBadCasesDuration() {
+		assertBadDuration(null);
+		assertBadDuration("");
+		assertBadDuration(":");
+		assertBadDuration(":10");
+		assertBadDuration(":10 am");
+		assertBadDuration("10 amABC");
+
+		// extra : character
+		assertBadDuration("1:");
+		assertBadDuration("11:");
+		assertBadDuration("1:1:");
+		assertBadDuration("11:11:");
+		assertBadDuration("1:1:1:");
+		assertBadDuration("11:11:11:");
+
+		// h/m/s exceed max allowed
+		//assertBad ("24:00:00");
+		assertBadDuration("00:60:00");
+		assertBadDuration("00:00:60");
+
+		// maximum two digits per group (except first group)
+		assertBadDuration("01:001:01");
+		assertBadDuration("01:01:001");
+		assertBadDuration("01:001");
+
+		// no traling/leading spaces and space separators
+		assertBadDuration(" 11:11:11");
+		assertBadDuration("11: 11:11");
+		assertBadDuration("11:11: 11");
+		assertBadDuration("11:11:11 ");
+
+		// uneterminated string
+		assertBadDuration("1:");
+		assertBadDuration("1:1:");
+		assertBadDuration("1:1:1 ");
+		assertBadDuration("1:1:1 am");
+
+	}
+
+	private static void assertDurationParse(String input,
+			int expectedNumberOfSeconds) {
+		try {
+			int actualNumberOfSeconds = TimeFormatter
+					.parseDurationInSeconds(input);
+			Assert.assertEquals("Number of seconds in '" + input + '\'',
+					expectedNumberOfSeconds, actualNumberOfSeconds);
+		} catch (NumberFormatException ex) {
+			Assert.fail("Parsing of '" + input + "' failed with message ["
+					+ ex.getMessage() + ']');
+		}
+	}
+
+	private static void assertBadDuration(String time) {
+		try {
+			TimeFormatter.parseDurationInSeconds(time);
+			Assert.fail("Expected to detect a problem in time string \"" + time
+					+ '"');
+		} catch (NumberFormatException expected) {
+		}
+	}
+
+	private static int standardParse(String value) {
+
+		StringTokenizer t = new StringTokenizer(value, ":", false);
+
+		int numTokens = t.countTokens();
+		int seconds = 0;
+
+		if (numTokens > 2)
+			seconds += Integer.parseInt(t.nextToken()) * 3600;
+
+		if (numTokens > 1)
+			seconds += Integer.parseInt(t.nextToken()) * 60
+					+ Integer.parseInt(t.nextToken());
+		else if (numTokens > 0)
+			seconds += Integer.parseInt(t.nextToken()) * 60;
+
+		return seconds;
+	}
+
+	private static int scannerParse(String value) {
+		try {
+			return TimeFormatter.parseDurationInSeconds(value);
+		} catch (NumberFormatException ex) {
+			throw new AssertionFailedError (ex.getMessage());
+		}
+	}
+
+	private static void parse(int numberOfHours, boolean useScanner) {
+		for (int i = 0; i < 3; i++) { // extra cycle
+			for (int hr = 0; hr < numberOfHours; hr++) {
+				final String hours = (hr < 10) ? "0" + Integer.toString(hr)
+						: (Integer.toString(hr));
+				final int hoursInSec = hr * 3600;
+				for (int min = 0; min < 60; min++) {
+					final String minutes = (min < 10) ? ":0"
+							+ Integer.toString(min) : (":" + Integer
+							.toString(min));
+					final int minInSec = min * 60;
+
+					for (int sec = 0; sec < 60; sec++) {
+						String seconds = (sec < 10) ? ":0"
+								+ Integer.toString(sec) : (":" + Integer
+								.toString(sec));
+						String text = hours + minutes + seconds;
+
+						int actual;
+						if (useScanner)
+							actual = scannerParse(text);
+						else
+							actual = standardParse(text);
+
+						int expected = hoursInSec + minInSec + sec;
+						Assert.assertEquals(actual, expected);
+					}
+				}
+			}
+		}
+	}
+
+	@Test
+	public void testPerformance() {
+		//warmup
+		parse(15, true);
+		parse(15, false);
+
+		long startTime, scannerRunTime, standardRunTime;
+
+		startTime = System.currentTimeMillis();
+		parse(23, true);
+		scannerRunTime = System.currentTimeMillis() - startTime;
+
+		System.out.println("Scanner: " + scannerRunTime);
+
+		startTime = System.currentTimeMillis();
+		parse(23, false);
+		standardRunTime = System.currentTimeMillis() - startTime;
+		System.out.println("Standard: " + standardRunTime);
+
+		Assert.assertTrue("Scanner parsing is expected to be 1.5 times faster",
+				scannerRunTime * 1.5 < standardRunTime);
+
+	}
+
+	private static void assertTimeParsed(String input, int expectedSeconds) {
+		try {
+			int actualSeconds = TimeFormatter.parseTimeOfDay(input);
+			Assert.assertEquals("Number of seconds in '" + input + '\'',
+					expectedSeconds, actualSeconds);
+		} catch (NumberFormatException ex) {
+			Assert.fail("Parsing of '" + input + "' failed with message ["
+					+ ex.getMessage() + ']');
+		}
+	}
+
+	private static void assertBad(String time) {
+		try {
+			TimeFormatter.parseTimeOfDay(time);
+			Assert.fail("Expected to detect a problem in time string \"" + time
+					+ '"');
+		} catch (NumberFormatException expected) {
+		}
+	}
+
+}
