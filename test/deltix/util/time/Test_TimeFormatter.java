@@ -306,8 +306,8 @@ public class Test_TimeFormatter {
 		standardRunTime = System.nanoTime() - startTime;
 		
 
-		Assert.assertTrue("Scanner parsing is expected to be 4 times faster. Actual: " + (double) standardRunTime/ scannerRunTime,
-				scannerRunTime * 4 < standardRunTime);
+		Assert.assertTrue("Scanner parsing is expected to be at least 3 times faster. Actual: " + (double) standardRunTime/ scannerRunTime,
+				scannerRunTime * 3 < standardRunTime);
 
 	}
 
@@ -385,8 +385,8 @@ public class Test_TimeFormatter {
 		standardRunTime = System.nanoTime() - startTime;
 		
 
-		Assert.assertTrue("TimeFormatter is expected to be 3 times faster. Actual: " + (double) standardRunTime/ scannerRunTime,
-				scannerRunTime * 3 < standardRunTime);
+		Assert.assertTrue("TimeFormatter is expected to be at least 2.5 times faster. Actual: " + (double) standardRunTime/ scannerRunTime,
+				scannerRunTime * 2.5 < standardRunTime);
 
 	}	
 	
