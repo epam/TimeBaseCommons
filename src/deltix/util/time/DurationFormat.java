@@ -1,8 +1,9 @@
 package deltix.util.time;
 
 /**
- *
+ * For durations less than 24h use TimeFormatter
  */
+@Deprecated
 public class DurationFormat {
     private void        f2 (StringBuffer sb, int value) {
         if (value < 10)
