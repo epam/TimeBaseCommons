@@ -22,7 +22,11 @@ public class StandardDialog extends JDialog {
         return (true);
     }
     
-    public StandardDialog (Component parent, final String [] buttonNames) {
+    public void                             centerOnParent () {
+        setLocationRelativeTo (getOwner ());
+    }
+    
+    public StandardDialog (Component parent, final String ... buttonNames) {
         super (JOptionPane.getFrameForComponent (parent));
 
         Container       cp = getContentPane ();

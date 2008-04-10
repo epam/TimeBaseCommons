@@ -159,12 +159,7 @@ public abstract class SwingUtil {
         if (logger != null)
             logger.log (logLevel, "Uncaught Exception", x);
 
-    	JOptionPane.showMessageDialog (
-    		parent,
-    		getMsg (x),
-    		x.getClass ().getName (),
-    		JOptionPane.ERROR_MESSAGE
-    	);
+        new StdExceptionDialog (parent, x).setVisible (true);    	
     }
         
     public static void		    staticHandle (

@@ -5,14 +5,14 @@ package deltix.util.time;
  */
 @Deprecated
 public class DurationFormat {
-    private void        f2 (StringBuffer sb, int value) {
+    private static void        f2 (StringBuffer sb, int value) {
         if (value < 10)
             sb.append ("0");
         
         sb.append (value);
     }
     
-    public String       format (double seconds) {
+    public static String       format (double seconds) {
         int         isec = (int) seconds;
         
         int         secComp = isec % 60;
