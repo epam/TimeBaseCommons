@@ -280,7 +280,7 @@ public class Test_TimeFormatter {
 	}
 
 
-	@Test
+	//This is no longer automatic test since in context of CI build our code is instrumented by Cobertura and runs much slower than non-instrumented Java library code  
 	public void testParsingPerformance() {
 		validate (24);
 		//warmup
@@ -358,7 +358,7 @@ public class Test_TimeFormatter {
 		}
 	}
 	
-	@Test
+	//This is no longer automatic test since in context of CI build our code is instrumented by Cobertura and runs much slower than non-instrumented Java library code  
 	public void testFormattingPerformance() {
 		//warmup
 		format(10, true);
