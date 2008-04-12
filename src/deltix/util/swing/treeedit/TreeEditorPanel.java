@@ -1,6 +1,6 @@
 package deltix.util.swing.treeedit;
 
-import deltix.qsrv.ui.util.DefaultDragGestureRecognizer;
+import deltix.util.swing.DefaultDragGestureRecognizer;
 import deltix.util.swing.SimpleAction;
 import deltix.util.swing.SwingUtil;
 

@@ -1,4 +1,4 @@
-package deltix.qsrv.ui.util;
+package deltix.util.swing;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;

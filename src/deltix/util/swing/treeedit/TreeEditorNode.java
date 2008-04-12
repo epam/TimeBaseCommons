@@ -6,7 +6,6 @@ import java.awt.datatransfer.Transferable;
 import javax.swing.*;
 
 import deltix.util.swing.*;
-import deltix.qsrv.pub.TaxonomyNode;
 
 /**
  *  Interface implemented by the user of the Tree Editor component. 
