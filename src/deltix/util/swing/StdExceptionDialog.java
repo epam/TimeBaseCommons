@@ -50,17 +50,32 @@ public class StdExceptionDialog extends StandardDialog {
         
         cp.add (mMessage, BorderLayout.NORTH);
         cp.add (mTraceScroller, BorderLayout.CENTER);
-        pack ();
+        
+        repack ();
         centerOnParent ();
     }
 
+    private void            repack () {
+        pack ();
+        
+        Dimension       size = getSize ();
+        
+        if (size.width > 800)
+            size.width = 800;
+        
+        if (size.height > 600)
+            size.height = 600;
+        
+        setSize (size);
+    }
+    
     @Override
     public boolean          acceptStdAction (int status) {
         if (status == 0)
             return (true);
         
         mTraceScroller.setVisible (!mTraceScroller.isVisible ());
-        pack ();
+        repack ();
         return (false);
     }
     

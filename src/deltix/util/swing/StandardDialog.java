@@ -1,7 +1,10 @@
 package deltix.util.swing;
 
+import deltix.util.Util;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 /**
@@ -42,9 +45,13 @@ public class StandardDialog extends JDialog {
                 new JButton (
                     new AbstractAction (buttonNames [ii]) {
                         public void actionPerformed (ActionEvent e) {
-                            if (acceptStdAction (status)) {
-                                mStatus = status;
-                                dispose ();
+                            try {
+                                if (acceptStdAction (status)) {
+                                    mStatus = status;
+                                    dispose ();
+                                }
+                            } catch (Throwable x) {
+                                handle (x);
                             }
                         }
                     }
@@ -67,4 +74,26 @@ public class StandardDialog extends JDialog {
         
         return (getStatus ());
     }
+    
+    public void		        handle (Throwable x) {
+        handle (x, Level.SEVERE);
+    }
+    
+    public void		        handle (
+        Throwable                   x,
+        Level                       logLevel        
+    ) 
+    {
+        handle (x, Util.LOGGER, logLevel);
+    }
+    
+    public void		        handle (
+        Throwable                   x,
+        Logger                      logger,
+        Level                       logLevel
+    ) 
+    {
+        SwingUtil.staticHandle (this, x, logger, logLevel);
+    }
+        
 }

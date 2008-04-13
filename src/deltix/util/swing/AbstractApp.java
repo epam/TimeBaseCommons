@@ -27,6 +27,8 @@ public abstract class AbstractApp
                 }
             }
         );
+        
+        AppExceptionHandler.currentApp = this;
     }
     
     protected void          windowClosing (WindowEvent e) {        
@@ -131,5 +133,6 @@ public abstract class AbstractApp
     
     public void                 installExceptionHandler () {
         Thread.setDefaultUncaughtExceptionHandler (this);
+        System.setProperty ("sun.awt.exception.handler", AppExceptionHandler.class.getName ());
     }
 }
