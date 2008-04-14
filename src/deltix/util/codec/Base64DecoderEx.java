@@ -1,4 +1,4 @@
-package deltix.lsrv.util;
+package deltix.util.codec;
 
 import deltix.util.codec.Base64Decoder;
 
