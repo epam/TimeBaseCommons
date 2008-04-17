@@ -8,6 +8,28 @@ import static org.junit.Assert.*;
  */
 public class Test_DailyCalendar {
     @Test
+    public void     testDayNumbers () {
+        assertEquals (0, DailyCalendar.gmtToDayNumber (0));
+        assertEquals (0, DailyCalendar.gmtToDayNumber (1));
+        assertEquals (0, DailyCalendar.gmtToDayNumber (86399000));
+        assertEquals (1, DailyCalendar.gmtToDayNumber (86400000));
+        assertEquals (-1, DailyCalendar.gmtToDayNumber (-1));
+        assertEquals (-1, DailyCalendar.gmtToDayNumber (-86399000));
+        assertEquals (-1, DailyCalendar.gmtToDayNumber (-86400000));
+        assertEquals (-2, DailyCalendar.gmtToDayNumber (-86400001));
+        
+        assertEquals (0L, DailyCalendar.dayNumberToGMT (0));
+        assertEquals (86400000L, DailyCalendar.dayNumberToGMT (1));
+        assertEquals (-86400000L, DailyCalendar.dayNumberToGMT (-1));
+            
+        for (int ii = -200; ii < 200; ii++)
+            assertEquals (
+                ii, 
+                DailyCalendar.gmtToDayNumber (DailyCalendar.dayNumberToGMT (ii))
+            );
+    }
+    
+    @Test
     public void     testWeekdaysBetween () {
         /*
          *      DAY NUMBERS AROUND 0:

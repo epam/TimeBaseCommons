@@ -76,19 +76,19 @@ public class DailyCalendar {
                 break;
                 
             case SUNDAY:    
-                from++;    
+                from++;
                 fromDoW = MONDAY;
                 break;
         }
         
         switch (toDoW) {
             case SATURDAY:  
-                to += 2;    
+                to += 2;
                 toDoW = MONDAY;
                 break;
                 
             case SUNDAY:    
-                to++;   
+                to++;
                 toDoW = MONDAY;
                 break;
         }
