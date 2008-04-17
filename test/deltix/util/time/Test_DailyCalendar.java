@@ -5,8 +5,39 @@ import static org.junit.Assert.*;
 
 /**
  *
- */
+ * <h3>Day Numbers</h3>
+ *<pre>
+ *Mon Tue Wed Thu Fri Sat Sun
+ *-3  -2  -1   0   1@  2   3
+ * 4   5   6   7   8   9  10
+ *11@ 12@ 13  14  15  16  17
+ *18  19  20  21  22  23  24
+ *</pre>
+ * 
+ *<h3>Test Holidays</h3>
+ * 1,11,12
+ */ 
 public class Test_DailyCalendar {
+    private DailyCalendar       mCal = new DailyCalendar (true);
+    
+    @Before
+    public void     setUp () {
+        mCal.addHoliday (1);
+        mCal.addHoliday (11);
+        mCal.addHoliday (12);
+    }
+    
+    @Test
+    public void     testHolidays () {
+        assertEquals (0, mCal.nonHolidaysBetween (0, 0));
+        assertEquals (1, mCal.nonHolidaysBetween (0, 4));   // 1 is off
+        // test outside of calendar
+        assertEquals (3, mCal.nonHolidaysBetween (15, 20));
+        assertEquals (1, mCal.nonHolidaysBetween (-2, -1));
+        // test all of calendar
+        assertEquals (7, mCal.nonHolidaysBetween (0, 14));
+    }
+    
     @Test
     public void     testDayNumbers () {
         assertEquals (0, DailyCalendar.gmtToDayNumber (0));
@@ -30,16 +61,7 @@ public class Test_DailyCalendar {
     }
     
     @Test
-    public void     testWeekdaysBetween () {
-        /*
-         *      DAY NUMBERS AROUND 0:
-         * 
-         *      Mon Tue Wed Thu Fri Sat Sun
-         *                   0   1   2   3
-         *       4   5   5   7   8   9  10
-         *      11  12  13  14  15  16  17
-         *      18  19  20  21  22  23  24
-         */
+    public void     testWeekdaysBetween () {        
         //  same weekend
         assertEquals (0, DailyCalendar.weekdaysBetween (2, 3));
         //  exclude Monday

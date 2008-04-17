@@ -1,5 +1,8 @@
 package deltix.util.time;
 
+import deltix.util.collections.generated.IntegerArrayList;
+import java.util.Arrays;
+
 /**
  *
  */
@@ -52,8 +55,19 @@ public class DailyCalendar {
         return (mod7);
     }
     
+    public static boolean   isWeekend (int day) {
+        switch (dayOfWeek (day)) {
+            case SATURDAY:
+            case SUNDAY:
+                return (true);
+                
+            default:
+                return (false);
+        }
+    }
+    
     /**
-     *  Return the inclusive number of weekdays between two specified dates.
+     *  Return the number of weekdays between two specified dates.
      * 
      *  @param from     From date as day number, inclusive.
      *  @param to       To date as day number, exclusive.
@@ -64,7 +78,7 @@ public class DailyCalendar {
             "Illegal ordering: from = " + from + "; to = " + to;
         
         /*
-         *  Narrow the range to make sure from and to are weekdays
+         *  Adjust weekend dates to next Monday
          */
         int         fromDoW = dayOfWeek (from);
         int         toDoW = dayOfWeek (to);
@@ -109,5 +123,92 @@ public class DailyCalendar {
             toDoW +                             // weekdays included in to week
             ((toWeeksMonday - fromWeeksMonday) / 7 - 1) * 5
         );
+    }
+    
+    /**
+     *  Return the number of holidays between two specified dates, according
+     *  to the supplied list.
+     * 
+     *  @param fromDay  From date as day number, inclusive.
+     *  @param toDay    To date as day number, exclusive.
+     *  @param holidays A sorted array of holidays as day numbers, which 
+     *                  must not contain any weekend days.
+     *  @param fromIdx  The inclusive start offset in the holidays array.
+     *  @param toIdx    The exclusive end offset in the holidays array.
+     *  @return         Number of holidays between from and to.
+     */
+    public static int       holidaysBetween (
+        int                     fromDay, 
+        int                     toDay, 
+        int []                  holidays, 
+        int                     fromIdx,
+        int                     toIdx
+    )
+    {
+        int         fromPos = Arrays.binarySearch (holidays, fromIdx, toIdx, fromDay);
+        
+        if (fromPos < 0)
+            fromPos = -fromPos - 1;
+        
+        int         toPos = Arrays.binarySearch (holidays, fromIdx, toIdx, toDay - 1);
+        
+        if (toPos < 0)
+            toPos = -toPos - 1;
+        
+        return (toPos - fromPos);
+    }   
+    
+    private IntegerArrayList        mHolidays = null;
+    private final boolean           mWeekendsAreHolidays;
+    
+    public DailyCalendar (boolean weekendsAreHolidays) {
+        mWeekendsAreHolidays = weekendsAreHolidays;
+    }
+    
+    public boolean          addHoliday (int day) {
+        if (mHolidays == null)
+            mHolidays = new IntegerArrayList (1000);
+        
+        if (mWeekendsAreHolidays && isWeekend (day))
+            return (false);
+        
+        int         fromPos = 
+            Arrays.binarySearch (
+                mHolidays.getInternalBuffer (),
+                0,
+                mHolidays.size (),
+                day
+            );
+
+        if (fromPos >= 0)
+            return (false);
+        
+        mHolidays.add (-fromPos - 1, day);
+        return (true);
+    }
+    
+    public int              nonHolidaysBetween (
+        int                     fromDay, 
+        int                     toDay
+    )
+    {
+        int         n;
+        
+        if (mWeekendsAreHolidays)
+            n = weekdaysBetween (fromDay, toDay);
+        else
+            n = toDay - fromDay;
+        
+        if (mHolidays != null)
+            n -= 
+                holidaysBetween (
+                    fromDay, 
+                    toDay, 
+                    mHolidays.getInternalBuffer (),
+                    0,
+                    mHolidays.size ()
+                );
+        
+        return (n);
     }
 }
