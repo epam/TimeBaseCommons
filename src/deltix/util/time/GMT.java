@@ -77,4 +77,15 @@ public abstract class GMT {
             return (TF.format (new Date (t)));
         }
     }
+    
+    public static Date 					getTomorrow() {
+        Calendar calendar = getCalendarInstance();
+        // clear time fields
+        for (int i = Calendar.HOUR_OF_DAY; i <= Calendar.MILLISECOND; i++) {
+            calendar.set(i, 0);
+        }
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+    
 }
