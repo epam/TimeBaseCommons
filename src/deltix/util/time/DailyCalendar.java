@@ -116,8 +116,21 @@ public class DailyCalendar {
     public DailyCalendar () {
     }
     
-    private int                     bs (int day) {
-        return (Arrays.binarySearch (mDays.getInternalBuffer (), 0, mDays.size (), day));
+    private int                     find (int day) {
+        final int         size = mDays.size ();
+        final int []      data = mDays.getInternalBuffer ();
+        
+        //  A few very quick checks before we commit to Arrays.binarySearch
+        if (size == 0)
+            return (-1);
+                
+        if (day < data [0])
+            return (-1);
+        
+        if (day > data [size - 1])
+            return (-size - 1);
+        
+        return (Arrays.binarySearch (data, 0, size, day));
     }
     
     private void                    checkDay (int day) {
@@ -136,7 +149,7 @@ public class DailyCalendar {
     public int                      getIndex (int day) {
         checkDay (day);
         
-        int     idx = bs (day);
+        int     idx = find (day);
         
         if (idx < 0)
             throw new DayNotInCalendarException (day);
@@ -157,7 +170,7 @@ public class DailyCalendar {
     }
     
     public boolean                  add (int day) {
-        int         idx = bs (day);
+        int         idx = find (day);
         
         if (idx < 0) {
             mDays.add (-idx - 1, day);
@@ -168,7 +181,7 @@ public class DailyCalendar {
     }
     
     public boolean                  clear (int day) {
-        int         idx = bs (day);
+        int         idx = find (day);
         
         if (idx >= 0) {
             mDays.remove (idx);
