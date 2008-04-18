@@ -654,11 +654,58 @@ public final class ${name}ArrayList
      */
     public void removeRange (int fromIndex, int toIndex) {
 		modCount++;
-		int numMoved = size - toIndex;
+		final int numMoved = size - toIndex;
         SafeArrays.safeArrayCopy (
         	elementData, toIndex, elementData, fromIndex, numMoved
         );
         size -= (toIndex - fromIndex);
+    }
+
+    /**
+     * Inserts an uninitialized area at <tt>atIndex</tt>. Shifts any succeeding
+     * elements to the right by <tt>offset</tt> (increases their index).
+     * This call lengthens the list by <tt>offset</tt> elements.
+     * (If <tt>offset==0</tt>, this operation has no effect.)
+     *
+     * @param atIndex   index of first element to be shifted.
+     * @param offset    offset to shift by.
+     */
+    public void insertUnsafe (int atIndex, int offset) {
+        final int   newSize = size + offset;
+
+		ensureCapacity (newSize);
+
+		SafeArrays.safeArrayCopy (
+        	elementData, atIndex, elementData, atIndex + offset, size - atIndex
+        );
+
+        size = newSize;
+    }
+
+    /**
+     * Inserts and fills an area at <tt>atIndex</tt>. Shifts any succeeding
+     * elements to the right by <tt>offset</tt> (increases their index).
+     * This call lengthens the list by <tt>offset</tt> elements.
+     * (If <tt>offset==0</tt>, this operation has no effect.)
+     *
+     * @param atIndex   index of first element to be shifted.
+     * @param offset    offset to shift by.
+     * @param filler    value to initialize new elements
+     */
+    public void insert (int atIndex, int offset, ${type} filler) {
+        final int   newSize = size + offset;
+        final int   end = atIndex + offset;
+
+		ensureCapacity (newSize);
+
+		SafeArrays.safeArrayCopy (
+        	elementData, atIndex, elementData, end, size - atIndex
+        );
+
+        for (int ii = atIndex; ii < end; ii++)
+            elementData [ii] = filler;
+
+        size = newSize;
     }
 
     /**

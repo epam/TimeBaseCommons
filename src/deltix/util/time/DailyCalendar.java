@@ -6,7 +6,42 @@ import java.util.Arrays;
 /**
  *
  */
-public class DailyCalendar {
+public class DailyCalendar {    
+    public static class EmptyCalendarException extends RuntimeException {
+        EmptyCalendarException () {
+            super ("Calendar is empty");            
+        }
+    }
+    
+    public static class DayOutOfCalendarRangeException extends RuntimeException {
+        public final int        day;
+        public final int        first;
+        public final int        last;
+        
+        DayOutOfCalendarRangeException (int inDay, int inFirst, int inLast) {
+            super (
+                "Day " + formatDay (inDay) + " is outside of calendar range: " +
+                formatDay (inFirst) + " .. " + formatDay (inLast)
+            );
+            
+            day = inDay;
+            first = inFirst;
+            last = inLast;
+        }
+    }
+    
+    public static class DayNotInCalendarException extends RuntimeException {
+        public final int        day;
+        
+        DayNotInCalendarException (int inDay) {
+            super (
+                "Day " + formatDay (inDay) + " is not in the calendar"
+            );
+            
+            day = inDay;
+        }
+    }
+    
     public static final int     MONDAY = 0;
     public static final int     TUESDAY = 1;
     public static final int     WEDNESDAY = 2;
@@ -14,6 +49,16 @@ public class DailyCalendar {
     public static final int     FRIDAY = 4;
     public static final int     SATURDAY = 5;
     public static final int     SUNDAY = 6;
+    
+    public static final int     WEEKDAY_MASK = 0x1F;
+    public static final int     WEEKEND_MASK = 0x60;    
+    
+    public static String    formatDay (int day) {
+        if (day == Integer.MIN_VALUE)
+            return ("<N/A>");
+        
+        return (GMT.formatDate (dayNumberToGMT (day)));
+    }
     /**
      *  Converts a ms timestamp to the number of days (using GMT boundary)
      *  since 1/1/1970.
@@ -66,149 +111,123 @@ public class DailyCalendar {
         }
     }
     
-    /**
-     *  Return the number of weekdays between two specified dates.
-     * 
-     *  @param from     From date as day number, inclusive.
-     *  @param to       To date as day number, exclusive.
-     *  @return         Number of weekdays between from and to.
-     */
-    public static int       weekdaysBetween (int from, int to) {
-        assert to >= from : 
-            "Illegal ordering: from = " + from + "; to = " + to;
+    private IntegerArrayList        mDays = new IntegerArrayList ();
+    
+    public DailyCalendar () {
+    }
+    
+    private int                     bs (int day) {
+        return (Arrays.binarySearch (mDays.getInternalBuffer (), 0, mDays.size (), day));
+    }
+    
+    private void                    checkDay (int day) {
+        int         num = mDays.size ();
         
-        /*
-         *  Adjust weekend dates to next Monday
-         */
-        int         fromDoW = dayOfWeek (from);
-        int         toDoW = dayOfWeek (to);
-        
-        switch (fromDoW) {
-            case SATURDAY:  
-                from += 2;
-                fromDoW = MONDAY;
-                break;
+        if (num == 0)
+            throw new EmptyCalendarException ();
                 
-            case SUNDAY:    
-                from++;
-                fromDoW = MONDAY;
-                break;
+        int         first = mDays.get (0);
+        int         last = mDays.get (num - 1);
+       
+        if (day < first || day > last)
+            throw new DayOutOfCalendarRangeException (day, first, last);
+    }
+    
+    public int                      getIndex (int day) {
+        checkDay (day);
+        
+        int     idx = bs (day);
+        
+        if (idx < 0)
+            throw new DayNotInCalendarException (day);
+        
+        return (idx < 0 ? -1 : idx);
+    }
+    
+    public int                      getDayByIndex (int idx) {
+        return (mDays.get (idx));
+    }
+    
+    public int                      getDistance (int from, int to) {
+        return (getIndex (to) - getIndex (from));
+    }
+    
+    public int                      shift (int day, int offset) {
+        return (getDayByIndex (getIndex (day) + offset));
+    }
+    
+    public boolean                  add (int day) {
+        int         idx = bs (day);
+        
+        if (idx < 0) {
+            mDays.add (-idx - 1, day);
+            return (true);
         }
-        
-        switch (toDoW) {
-            case SATURDAY:  
-                to += 2;
-                toDoW = MONDAY;
-                break;
-                
-            case SUNDAY:    
-                to++;
-                toDoW = MONDAY;
-                break;
-        }
-        
-        int         fromWeeksMonday = from - fromDoW;
-        int         toWeeksMonday = to - toDoW;
-        
-        //  If same week, just subtract
-        if (fromWeeksMonday == toWeeksMonday)
-            return (to - from);
-        
-        /*
-         *  We have established that there is at least one weekend between
-         *  from and to.
-         */
-        return (
-            SATURDAY - fromDoW +                // weekdays included in from week
-            toDoW +                             // weekdays included in to week
-            ((toWeeksMonday - fromWeeksMonday) / 7 - 1) * 5
-        );
-    }
-    
-    /**
-     *  Return the number of holidays between two specified dates, according
-     *  to the supplied list.
-     * 
-     *  @param fromDay  From date as day number, inclusive.
-     *  @param toDay    To date as day number, exclusive.
-     *  @param holidays A sorted array of holidays as day numbers, which 
-     *                  must not contain any weekend days.
-     *  @param fromIdx  The inclusive start offset in the holidays array.
-     *  @param toIdx    The exclusive end offset in the holidays array.
-     *  @return         Number of holidays between from and to.
-     */
-    public static int       holidaysBetween (
-        int                     fromDay, 
-        int                     toDay, 
-        int []                  holidays, 
-        int                     fromIdx,
-        int                     toIdx
-    )
-    {
-        int         fromPos = Arrays.binarySearch (holidays, fromIdx, toIdx, fromDay);
-        
-        if (fromPos < 0)
-            fromPos = -fromPos - 1;
-        
-        int         toPos = Arrays.binarySearch (holidays, fromIdx, toIdx, toDay - 1);
-        
-        if (toPos < 0)
-            toPos = -toPos - 1;
-        
-        return (toPos - fromPos);
-    }   
-    
-    private IntegerArrayList        mHolidays = null;
-    private final boolean           mWeekendsAreHolidays;
-    
-    public DailyCalendar (boolean weekendsAreHolidays) {
-        mWeekendsAreHolidays = weekendsAreHolidays;
-    }
-    
-    public boolean          addHoliday (int day) {
-        if (mHolidays == null)
-            mHolidays = new IntegerArrayList (1000);
-        
-        if (mWeekendsAreHolidays && isWeekend (day))
-            return (false);
-        
-        int         fromPos = 
-            Arrays.binarySearch (
-                mHolidays.getInternalBuffer (),
-                0,
-                mHolidays.size (),
-                day
-            );
-
-        if (fromPos >= 0)
-            return (false);
-        
-        mHolidays.add (-fromPos - 1, day);
-        return (true);
-    }
-    
-    public int              nonHolidaysBetween (
-        int                     fromDay, 
-        int                     toDay
-    )
-    {
-        int         n;
-        
-        if (mWeekendsAreHolidays)
-            n = weekdaysBetween (fromDay, toDay);
         else
-            n = toDay - fromDay;
+            return (false);
+    }
+    
+    public boolean                  clear (int day) {
+        int         idx = bs (day);
         
-        if (mHolidays != null)
-            n -= 
-                holidaysBetween (
-                    fromDay, 
-                    toDay, 
-                    mHolidays.getInternalBuffer (),
-                    0,
-                    mHolidays.size ()
-                );
+        if (idx >= 0) {
+            mDays.remove (idx);
+            return (true);
+        }
+        else
+            return (false); 
+    }
+    
+    private int                     countBits (int mask) {
+        int     count = 0;
         
-        return (n);
+        for (int ii = MONDAY; ii <= SUNDAY; ii++)
+            if ((mask & (1 << ii)) != 0)
+                count++;
+        
+        return (count);
+    }
+    
+    public void                     reset (int from, int to) {       
+        reset (from, to, WEEKDAY_MASK);
+    }
+    
+    public void                     reset (int from, int to, int mask) {        
+        mDays.ensureCapacity ((from + 6 - to) / 7 * countBits (mask));
+        
+        int     bit = 1 << dayOfWeek (from);
+       
+        for (int ii = from; ii < to; ii++) {
+            if ((mask & bit) != 0)
+                mDays.add (ii);
+            
+            bit <<= 1;
+            
+            if (bit == 0x80)
+                bit = 0x01;
+        }
+    }
+    
+    @Override
+    public String                   toString () {
+        StringBuilder       sb = new StringBuilder ();
+        int                 num = mDays.size ();
+        
+        for (int ii = 0; ii < num; ii++) {
+            if (ii > 0)
+                sb.append (",");
+            
+            sb.append (mDays.get (ii));            
+        }
+            
+        return (sb.toString ());
+    }
+    
+    public static void              main (String [] args) {
+        DailyCalendar   dc = new DailyCalendar ();
+        
+        dc.reset (0, 100);
+        
+        System.out.println (dc);
     }
 }

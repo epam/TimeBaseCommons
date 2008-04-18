@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * <h3>Day Numbers</h3>
+ *<h3>Day Numbers (true)</h3>
  *<pre>
  *Mon Tue Wed Thu Fri Sat Sun
  *-3  -2  -1   0   1@  2   3
@@ -14,28 +14,20 @@ import static org.junit.Assert.*;
  *18  19  20  21  22  23  24
  *</pre>
  * 
- *<h3>Test Holidays</h3>
+ *<h3>Test Holidays (fake)</h3>
  * 1,11,12
  */ 
 public class Test_DailyCalendar {
-    private DailyCalendar       mCal = new DailyCalendar (true);
+    private DailyCalendar       mCal;
     
     @Before
     public void     setUp () {
-        mCal.addHoliday (1);
-        mCal.addHoliday (11);
-        mCal.addHoliday (12);
-    }
-    
-    @Test
-    public void     testHolidays () {
-        assertEquals (0, mCal.nonHolidaysBetween (0, 0));
-        assertEquals (1, mCal.nonHolidaysBetween (0, 4));   // 1 is off
-        // test outside of calendar
-        assertEquals (3, mCal.nonHolidaysBetween (15, 20));
-        assertEquals (1, mCal.nonHolidaysBetween (-2, -1));
-        // test all of calendar
-        assertEquals (7, mCal.nonHolidaysBetween (0, 14));
+        mCal = new DailyCalendar ();
+        mCal.reset (-3, 25);
+        
+        mCal.clear (1);
+        mCal.clear (11);
+        mCal.clear (12);
     }
     
     @Test
@@ -58,23 +50,24 @@ public class Test_DailyCalendar {
                 ii, 
                 DailyCalendar.gmtToDayNumber (DailyCalendar.dayNumberToGMT (ii))
             );
+    }    
+    
+    @Test
+    public void     testGetDistance () {
+        assertEquals (0, mCal.getDistance (0, 0));
+        assertEquals (1, mCal.getDistance (0, 4));   // 1 is off
+        // test outside of calendar
+        assertEquals (3, mCal.getDistance (15, 20));
+        assertEquals (1, mCal.getDistance (-2, -1));
+        // test all of calendar
+        assertEquals (7, mCal.getDistance (0, 14));
     }
     
     @Test
-    public void     testWeekdaysBetween () {        
-        //  same weekend
-        assertEquals (0, DailyCalendar.weekdaysBetween (2, 3));
-        //  exclude Monday
-        assertEquals (0, DailyCalendar.weekdaysBetween (2, 4));
-        //  same day
-        assertEquals (0, DailyCalendar.weekdaysBetween (13, 13));
-        //  one day
-        assertEquals (1, DailyCalendar.weekdaysBetween (13, 14));
-        //  whole week
-        assertEquals (5, DailyCalendar.weekdaysBetween (11, 16));
-        //  whole week over weekend
-        assertEquals (5, DailyCalendar.weekdaysBetween (11, 18));
-        //  one day over weekend
-        assertEquals (1, DailyCalendar.weekdaysBetween (8, 11));
-    }
+    public void     testShift () {
+        assertEquals (13, mCal.shift (-2, 8));
+        assertEquals (4, mCal.shift (0, 1));
+        //  No gaps
+        assertEquals (15, mCal.shift (13, 2));
+    }    
 }
