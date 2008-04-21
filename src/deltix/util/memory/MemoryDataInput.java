@@ -10,6 +10,7 @@ import deltix.util.io.UncheckedIOException;
  */
 public class MemoryDataInput {
     private byte []         mBuffer;
+    private int             mStart;
     private int             mPos;
     private int             mLimit;
     private StringBuilder   mStringBuilder;
@@ -39,7 +40,7 @@ public class MemoryDataInput {
     public final void       setBytes (byte [] buffer, int offset, int length) {
         mBuffer = buffer;
         mLimit = offset + length;
-        mPos = offset;
+        mStart = mPos = offset;
     }
     
     public final void       setBytes (ByteArrayList buffer) {
@@ -64,12 +65,16 @@ public class MemoryDataInput {
         return (mBuffer);
     }
         
+    /**
+     *  Returns the current position relative to start.
+     *  @return
+     */
     public final int        getPosition () {
-        return (mPos);
+        return (mPos - mStart);
     }
     
-    public final int        getLimit () {
-        return (mLimit);
+    public final int        getLength () {
+        return (mLimit - mStart);
     }
     
     public final void       readFully (byte[] b, int off, int len) {
@@ -83,6 +88,10 @@ public class MemoryDataInput {
 
     public final void       skipBytes (int n) {
         mPos += n;
+    }
+
+    public final void       seek (int n) {
+        mPos = mStart + n;
     }
 
     public final int        readUnsignedShort () {

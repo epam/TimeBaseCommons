@@ -3,11 +3,11 @@ package deltix.qsrv.hf.pub;
 import java.lang.annotation.*;
 
 /**
- *  Binds an Algorithm property to a property found in the 
- *  init.properties resource.
+ *  Defines a user-visible title for a record field.
  */
 @Documented
 @Retention (RetentionPolicy.RUNTIME)
 @Target (ElementType.FIELD)
-public @interface InitProperty {    
+public @interface Unique {   
+    public String []      value ();
 }

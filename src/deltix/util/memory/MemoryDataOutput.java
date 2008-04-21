@@ -8,6 +8,7 @@ package deltix.util.memory;
 public class MemoryDataOutput {
     private byte []             mBuffer;
     private int                 mPos = 0;
+    private int                 mSize = 0;
     
     public MemoryDataOutput () {
         this (4096);
@@ -19,6 +20,10 @@ public class MemoryDataOutput {
     
     private final void          makeRoom (int space) {
         int         requiredSize = mPos + space;
+        
+        if (mSize < requiredSize)
+            mSize = requiredSize;
+        
         int         currentSize = mBuffer.length;
         
         if (currentSize < requiredSize) {
@@ -32,8 +37,34 @@ public class MemoryDataOutput {
         }
     }
     
+    /**
+     *  Reset buffer with the size of 0.
+     */
     public final void           reset () {
         mPos = 0;
+        mSize = 0;
+    }
+    
+    /**
+     *  Reset buffer with initial size.
+     */
+    public final void           reset (int size) {
+        mPos = 0;
+        mSize = 0;
+        makeRoom (size);
+    }
+    
+    /**
+     *  Seek to absolute position
+     *  @param offset
+     */
+    public final void           seek (int offset) {
+        mPos = offset;
+        makeRoom (0);
+    }
+    
+    public final int            getPosition () {
+        return (mPos);
     }
     
     public final void           skip (int numBytes) {
@@ -46,7 +77,7 @@ public class MemoryDataOutput {
     }
     
     public final int            getSize () {
-        return (mPos);
+        return (mSize);
     }
     
     public final void           writeString (CharSequence str) {
