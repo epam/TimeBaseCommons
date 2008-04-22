@@ -20,6 +20,11 @@ public class CharSequenceSet extends HashSet <String> {
         super ();
     }
 
+    public CharSequenceSet (Set <String> ... unionMembers) {
+        for (Set <String> s : unionMembers)
+            addAll (s);
+    }
+    
     public boolean              addCharSequence (CharSequence e) {
         if (containsCharSequence (e))
             return (false);

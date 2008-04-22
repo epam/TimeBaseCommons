@@ -454,6 +454,27 @@ public class Util {
     public static int			arraycomp (
         byte [] 					arr1,
         int							off1,
+        int							len1,
+        byte [] 					arr2,
+        int							off2,
+        int							len2   
+    )
+    {
+        int		diff = arraycomp (arr1, off1, arr2, off2, Math.min (len1, len2));
+        
+        if (diff != 0)
+            return (diff);
+        
+        return (len1 - len2);
+    }
+    
+    /**
+     *	Returns the difference between the specified segments of
+     *	arr1 and arr2, MSBF.
+     */
+    public static int			arraycomp (
+        byte [] 					arr1,
+        int							off1,
         byte [] 					arr2,
         int							off2,
         int							len
@@ -467,6 +488,27 @@ public class Util {
         return (diff);
     }
 
+    /**
+     *	Returns the difference between the specified segments of
+     *	arr1 and arr2, MSBF, comparing bytes' unsigned values.
+     */
+    public static int			arrayucomp (
+        byte [] 					arr1,
+        int							off1,
+        int							len1,
+        byte [] 					arr2,
+        int							off2,
+        int							len2   
+    )
+    {
+        int		diff = arrayucomp (arr1, off1, arr2, off2, Math.min (len1, len2));
+        
+        if (diff != 0)
+            return (diff);
+        
+        return (len1 - len2);
+    }
+    
     /**
      *	Returns the difference between the specified segments of
      *	arr1 and arr2, MSBF, comparing bytes' unsigned values.
