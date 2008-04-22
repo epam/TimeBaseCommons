@@ -6,7 +6,13 @@ import java.util.Arrays;
 /**
  *
  */
-public class DailyCalendar {    
+public class DailyCalendar {  
+    public static enum Adjust {
+        NONE,
+        FORWARD,
+        BACKWARD
+    }
+    
     public static class EmptyCalendarException extends RuntimeException {
         EmptyCalendarException () {
             super ("Calendar is empty");            
@@ -147,26 +153,58 @@ public class DailyCalendar {
     }
     
     public int                      getIndex (int day) {
+        return (getIndex (day, Adjust.NONE));
+    }
+    
+    public int                      getIndex (int day, Adjust adj) {
         checkDay (day);
         
         int     idx = find (day);
         
-        if (idx < 0)
-            throw new DayNotInCalendarException (day);
+        if (idx < 0) {
+            switch (adj) {
+                case NONE:
+                    throw new DayNotInCalendarException (day);
+                    
+                case FORWARD:
+                    return (-idx - 1);
+                    
+                case BACKWARD:
+                    return (-idx - 2);
+            }
+        }
         
-        return (idx < 0 ? -1 : idx);
+        return (idx);
     }
     
     public int                      getDayByIndex (int idx) {
         return (mDays.get (idx));
     }
     
-    public int                      getDistance (int from, int to) {
-        return (getIndex (to) - getIndex (from));
+    public int                      getDistance (
+        int                             from, 
+        Adjust                          fromAdj, 
+        int                             to,
+        Adjust                          toAdj
+    )
+    {
+        return (getIndex (to, fromAdj) - getIndex (from, toAdj));
+    }
+    
+    public int                      getDistance (
+        int                             from, 
+        int                             to
+    )
+    {
+        return (getIndex (to, Adjust.FORWARD) - getIndex (from, Adjust.FORWARD));
     }
     
     public int                      shift (int day, int offset) {
         return (getDayByIndex (getIndex (day) + offset));
+    }
+    
+    public int                      shift (int day, Adjust adj, int offset) {
+        return (getDayByIndex (getIndex (day, adj) + offset));
     }
     
     public boolean                  add (int day) {
