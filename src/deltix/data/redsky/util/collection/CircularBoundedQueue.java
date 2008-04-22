@@ -8,16 +8,16 @@ public class CircularBoundedQueue<E> {
     
     
     /** The queued items  */
-    private final E[] items;
+    private final E[] mItems;
     
     /** items index for next take, poll or remove */
-    private int takeIndex = 0;
+    private int mTakeIndex = 0;
     
     /** items index for next put, offer, or add. */
-    private int putIndex = 0;
+    private int mPutIndex = 0;
     
     /** Number of items in the queue */
-    private int count;
+    private int mCount;
     
   
     @SuppressWarnings("unchecked")
@@ -25,7 +25,7 @@ public class CircularBoundedQueue<E> {
         if (capacity <= 0) {
             throw new IllegalArgumentException();
         }
-        this.items = (E[]) new Object[capacity];
+        this.mItems = (E[]) new Object[capacity];
     }
     
     // Internal helper methods
@@ -34,16 +34,16 @@ public class CircularBoundedQueue<E> {
      * Circularly increment i.
      */
     final int inc(int i) {
-        return (++i == items.length) ? 0 : i;
+        return (++i == mItems.length) ? 0 : i;
     }
 
     /**
      * Inserts element at current put position.
      */
     private void insert(E x) {
-        items[putIndex] = x;
-        putIndex = inc(putIndex);
-        ++count;
+        mItems[mPutIndex] = x;
+        mPutIndex = inc(mPutIndex);
+        ++mCount;
         notifyAll();
     }
 
@@ -51,10 +51,10 @@ public class CircularBoundedQueue<E> {
      * Extracts element at current take position.
      */
     private E extract() {
-        E x = items[takeIndex];
-        items[takeIndex] = null;
-        takeIndex = inc(takeIndex);
-        --count;
+        E x = mItems[mTakeIndex];
+        mItems[mTakeIndex] = null;
+        mTakeIndex = inc(mTakeIndex);
+        --mCount;
         notifyAll();
         return x;
     }
@@ -100,7 +100,7 @@ public class CircularBoundedQueue<E> {
         if (e == null) {
             throw new NullPointerException();
         }
-        if (count == items.length) {
+        if (mCount == mItems.length) {
             return false;
         } else {
             insert(e);
@@ -117,7 +117,7 @@ public class CircularBoundedQueue<E> {
             throw new NullPointerException();
         }
         try {
-            while (count == items.length) {
+            while (mCount == mItems.length) {
                 wait();
             }
         } catch (InterruptedException ie) {
@@ -130,7 +130,7 @@ public class CircularBoundedQueue<E> {
 
     public synchronized E take() throws InterruptedException {
         try {
-            while (count == 0) {
+            while (mCount == 0) {
                 wait();
             }
         } catch (InterruptedException ie) {
@@ -147,6 +147,6 @@ public class CircularBoundedQueue<E> {
      * @return the number of elements in this queue
      */
     public synchronized int size() {
-        return count;
+        return mCount;
     }
 }
