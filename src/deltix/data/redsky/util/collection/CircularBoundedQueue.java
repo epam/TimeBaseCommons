@@ -4,7 +4,7 @@ package deltix.data.redsky.util.collection;
  *
  * @author PaharelauK
  */
-public class CircularBoundedQueue<E> {
+public class CircularBoundedQueue<E> { 
     
     
     /** The queued items  */
@@ -20,6 +20,7 @@ public class CircularBoundedQueue<E> {
     private int count;
     
   
+    @SuppressWarnings("unchecked")
     public CircularBoundedQueue(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException();
