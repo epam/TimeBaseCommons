@@ -11,6 +11,7 @@ public class Test_TimeFormatter {
 
 	private final static long MILLIS_PER_DAY = 24*60*60*1000L;
 	
+	@Test
 	public void simpleTest() {
 		assertFormat(0 * 1000, "00:00:00");
 		assertFormat(1 * 1000, "00:00:01");
@@ -23,6 +24,7 @@ public class Test_TimeFormatter {
 		assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
 	}
 	
+    @Test
 	public void simpleOneDayTruncation() {
 		assertFormat(MILLIS_PER_DAY, "00:00:00");
 		assertFormat(MILLIS_PER_DAY+1, "00:00:00");
