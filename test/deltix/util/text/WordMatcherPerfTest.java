@@ -25,12 +25,10 @@ public class WordMatcherPerfTest {
             wm.add (s);
         }
         
-        WordMatcher         code32 = wm.compile (true);
-        WordMatcher         code16 = wm.compile (false);
+        WordMatcher         compiled = wm.compile ();
         
         test ("Empty", null);
-        test ("Compiled 32-bit", code32);
-        test ("Compiled 16-bit", code16);
+        test ("Compiled", compiled);
         test ("Interpreted", wm);        
     }
 

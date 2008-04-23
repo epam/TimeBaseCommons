@@ -4,10 +4,58 @@ package deltix.util.text;
  *
  */
 class WordMatcher16 implements WordMatcher {
+    static class CodeTooBigException extends Exception { }
+    
     private final short []          mCode;
     
-    WordMatcher16 (short [] code) {
-        mCode = code;
+    private int                     getCodeSize (Node node) {
+        final int       numBranches = node.length;
+        final Node []   branches = node.branches;
+        int             size = 3 + numBranches;
+
+        for (int ii = 0; ii < numBranches; ii++) {
+            Node    branch = branches [ii];
+
+            if (branch != null)
+                size += getCodeSize (branch);
+        }
+
+        return (size);
+    }
+    
+    private int                     compile (Node node, int offset) {
+        final int       numBranches = node.length;
+        final Node []   branches = node.branches;
+        
+        mCode [offset++] = (short) (node.endOk ? 1 : 0);
+        mCode [offset++] = (short) node.base;
+        mCode [offset++] = node.length;
+
+        int         endOffset = offset + numBranches;
+
+        for (int ii = 0; ii < numBranches; ii++) {
+            Node    branch = branches [ii];
+
+            if (branch != null) {
+                mCode [offset++] = (short) endOffset;
+                endOffset = compile (branch, endOffset);
+            }
+            else
+                mCode [offset++] = -1;
+        }
+
+        return (endOffset);
+    }
+
+    WordMatcher16 (Node root) throws CodeTooBigException {
+        int         size = getCodeSize (root);
+        
+        if (size > 0xFFFF)
+            throw new CodeTooBigException ();
+        
+        mCode = new short [size];
+        
+        compile (root, 0);
     }
     
     public boolean  matches (final byte [] bytes, int offset, int len) {
@@ -38,17 +86,19 @@ class WordMatcher16 implements WordMatcher {
         }        
     }
 
-    public boolean  matches (CharSequence s) {
-        final int       len = s.length ();
-        int             sIdx = 0;
+    public boolean          matches (CharSequence s) {
+        return (matches (s, 0, s.length ()));
+    }
+    
+    public boolean          matches (CharSequence s, int offset, int len) {
         int             codeIdx = 0;
         
         for (;;) {
-            if (sIdx == len)
+            if (len == 0)
                 return (mCode [codeIdx] != 0);
             
             final int   base = mCode [codeIdx + 1] & 0xFFFF;
-            final int   jump = s.charAt (sIdx) - base;
+            final int   jump = s.charAt (offset) - base;
             
             if (jump < 0)
                 return (false);
@@ -58,7 +108,8 @@ class WordMatcher16 implements WordMatcher {
             if (jump >= jtl)
                 return (false);
             
-            sIdx++;
+            offset++;
+            len--;
             
             codeIdx = mCode [codeIdx + 3 + jump] & 0xFFFF;
             
