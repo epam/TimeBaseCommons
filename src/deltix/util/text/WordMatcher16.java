@@ -3,10 +3,10 @@ package deltix.util.text;
 /**
  *
  */
-class WordMatcher32 implements WordMatcher {
-    private final int []          mCode;
+class WordMatcher16 implements WordMatcher {
+    private final short []          mCode;
     
-    WordMatcher32 (int [] code) {
+    WordMatcher16 (short [] code) {
         mCode = code;
     }
     
@@ -17,13 +17,13 @@ class WordMatcher32 implements WordMatcher {
             if (len == 0)
                 return (mCode [codeIdx] != 0);
             
-            final int   base = mCode [codeIdx + 1];
+            final int   base = mCode [codeIdx + 1] & 0xFFFF;
             final int   jump = bytes [offset] - base;
             
             if (jump < 0)
                 return (false);
             
-            final int   jtl = mCode [codeIdx + 2];
+            final int   jtl = mCode [codeIdx + 2] & 0xFFFF;
             
             if (jump >= jtl)
                 return (false);
@@ -31,7 +31,7 @@ class WordMatcher32 implements WordMatcher {
             offset++;
             len--;
             
-            codeIdx = mCode [codeIdx + 3 + jump];
+            codeIdx = mCode [codeIdx + 3 + jump] & 0xFFFF;
             
             if (codeIdx == -1)
                 return (false);
@@ -47,20 +47,20 @@ class WordMatcher32 implements WordMatcher {
             if (sIdx == len)
                 return (mCode [codeIdx] != 0);
             
-            final int   base = mCode [codeIdx + 1];
+            final int   base = mCode [codeIdx + 1] & 0xFFFF;
             final int   jump = s.charAt (sIdx) - base;
             
             if (jump < 0)
                 return (false);
             
-            final int   jtl = mCode [codeIdx + 2];
+            final int   jtl = mCode [codeIdx + 2] & 0xFFFF;
             
             if (jump >= jtl)
                 return (false);
             
             sIdx++;
             
-            codeIdx = mCode [codeIdx + 3 + jump];
+            codeIdx = mCode [codeIdx + 3 + jump] & 0xFFFF;
             
             if (codeIdx == -1)
                 return (false);

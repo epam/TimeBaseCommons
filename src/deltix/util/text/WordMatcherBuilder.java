@@ -5,6 +5,7 @@ import java.util.*;
 
 /**
  *  Builds a decision tree for matching words from the given set.
+ *  This matches about 13,600 times faster than java regular expressions.
  */
 public class WordMatcherBuilder implements WordMatcher {
     private static final int        INIT_CAPACITY = 32;
@@ -67,6 +68,21 @@ public class WordMatcherBuilder implements WordMatcher {
             length = (short) newLength;
         }
                 
+        boolean         match (byte [] bytes, int offset, int len) {
+            if (len == 0) 
+                return (endOk);
+            
+            if (length == 0)
+                return (false);
+            
+            int     idx = bytes [offset] - base;
+            
+            if (idx < 0 || idx >= length)
+                return (false);
+            
+            return (branches [idx].match (bytes, offset + 1, len - 1));
+        }
+        
         boolean         match (CharSequence s, int pos) {
             if (pos == s.length ()) 
                 return (endOk);
@@ -122,7 +138,7 @@ public class WordMatcherBuilder implements WordMatcher {
         }
         
         int         getCodeSize () {
-            int         size = 1 + length;
+            int         size = 3 + length;
             
             for (int ii = 0; ii < length; ii++) {
                 Node    branch = branches [ii];
@@ -134,14 +150,10 @@ public class WordMatcherBuilder implements WordMatcher {
             return (size);
         }
         
-        int         buildCode (int [] code, int offset) {
-            int         header = 
-                base | (length << 16);
-            
-            if (endOk)
-                header |= 0x80000000;
-            
-            code [offset++] = header;
+        int         buildCode32 (int [] code, int offset) {
+            code [offset++] = endOk ? 1 : 0;
+            code [offset++] = base;
+            code [offset++] = length;
             
             int         endOffset = offset + length;
             
@@ -149,11 +161,32 @@ public class WordMatcherBuilder implements WordMatcher {
                 Node    branch = branches [ii];
 
                 if (branch != null) {
-                    code [offset + ii] = endOffset;
-                    endOffset = branch.buildCode (code, endOffset);
+                    code [offset++] = endOffset;
+                    endOffset = branch.buildCode32 (code, endOffset);
                 }
                 else
-                    code [offset + ii] = -1;
+                    code [offset++] = -1;
+            }
+            
+            return (endOffset);
+        }
+        
+        int         buildCode16 (short [] code, int offset) {
+            code [offset++] = (short) (endOk ? 1 : 0);
+            code [offset++] = (short) base;
+            code [offset++] = length;
+            
+            int         endOffset = offset + length;
+            
+            for (int ii = 0; ii < length; ii++) {
+                Node    branch = branches [ii];
+
+                if (branch != null) {
+                    code [offset++] = (short) endOffset;
+                    endOffset = branch.buildCode16 (code, endOffset);
+                }
+                else
+                    code [offset++] = -1;
             }
             
             return (endOffset);
@@ -174,13 +207,28 @@ public class WordMatcherBuilder implements WordMatcher {
     }
     
     public WordMatcher      compile () {
+        return (compile (false));
+    }
+    
+    public WordMatcher      compile (boolean speedOverSize) {
         int     size = mRoot.getCodeSize ();
-        int []  code = new int [size];
-        int     size2 = mRoot.buildCode (code, 0);
         
-        assert size == size2;
-        
-        return (new WordMatcher32 (code));
+        if (speedOverSize || size > 0xFFFF) {
+            int []  code = new int [size];
+            int     size2 = mRoot.buildCode32 (code, 0);
+
+            assert size == size2;
+
+            return (new WordMatcher32 (code));
+        }
+        else {
+            short [] code = new short [size];
+            int     size2 = mRoot.buildCode16 (code, 0);
+
+            assert size == size2;
+
+            return (new WordMatcher16 (code));            
+        }
     }
     
     /**
@@ -188,32 +236,18 @@ public class WordMatcherBuilder implements WordMatcher {
      *  @param s        String to match
      *  @return         Whether it matches the vocabulary.
      */
-    public boolean          match (CharSequence s) {
+    public boolean          matches (CharSequence s) {
         return (mRoot.match (s, 0));
     }
     
-    /*
-    public static void      main (String [] args) throws Exception {
-        WordMatcherBuilder     wm = new WordMatcherBuilder ();
-        
-        BufferedReader  rd = 
-            new BufferedReader (new FileReader (Home.get () + "/src/deltix/custom/forthill/algorithms/option-master.rpt"));
-        
-        OptionMaster    om = new OptionMaster (rd);
-        
-        rd.close ();
-        
-        for (OptionMaster.Record r : om.records ()) {
-            wm.add (r.root);
-        }
-        
-        WordMatcher         code = wm.compile ();
-        
-        System.out.println (code.match ("DBD"));
-        System.out.println (code.match ("DIA"));
-        System.out.println (wm.match ("DBD"));
-        System.out.println (wm.match ("DIA"));
-        //wm.printJavaMethod (new PrintWriter (System.out, true), "", "public", "test");       
-    }
+    /**
+     *  A relatively slow, interpreted version of matching logic. Used for testing.
+     *  @param s        String to match
+     *  @return         Whether it matches the vocabulary.
      */
+    public boolean          matches (byte [] bytes, int offset, int length) {
+        return (mRoot.match (bytes, offset, length));
+    }
+    
+
 }

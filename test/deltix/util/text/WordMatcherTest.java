@@ -26,23 +26,30 @@ public class WordMatcherTest {
             wm.add (s);
     }
     
-    @Test
-    public void     testInterpreter () {
+    private void    check (WordMatcher m, String s, boolean expectedResult) {
+        byte []         bytes = s.getBytes ();
+        
+        assertEquals (expectedResult, m.matches (s));
+        assertEquals (expectedResult, m.matches (bytes, 0, bytes.length));
+    }
+    
+    private void    testSuite (WordMatcher m) {
         for (String s : TEST)
-            assertTrue (wm.match (s));
+            check (m, s, true);
         
         for (String s : TEST)
-            assertFalse (wm.match (s + "*"));
+            check (m, s + "*", false);
+    }  
+    
+    @Test
+    public void     testInterpreter () {
+        testSuite (wm);
     }    
     
     @Test
     public void     testCompiler () throws Exception {        
         WordMatcher          code = wm.compile ();
         
-        for (String s : TEST)
-            assertTrue (code.match (s));
-        
-        for (String s : TEST)
-            assertFalse (code.match (s + "*"));
+        testSuite (code);
     }
 }
