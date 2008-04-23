@@ -1,13 +1,12 @@
-package deltix.util.collections;
+package deltix.util.text;
 
 import deltix.util.Util;
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
  *  Builds a decision tree for matching words from the given set.
  */
-public class WordMatcher {
+public class WordMatcherBuilder implements WordMatcher {
     private static final int        INIT_CAPACITY = 32;
     
     private static class Node {
@@ -83,37 +82,6 @@ public class WordMatcher {
             return (branches [idx].match (s, pos + 1));
         }
         
-        void            printJava (
-            PrintWriter         pwr,
-            String              indent,
-            String              varName,
-            int                 pos
-        )
-        {
-            pwr.printf ("%sif (%s_length == %d) return (%b);\n", indent, varName, pos, endOk);
-            
-            if (length > 0) {
-                String          indent2 = indent + "  ";
-                
-                pwr.printf ("%sswitch (%s.charAt (%d) - %d) {\n", indent, varName, pos, (int) base);
-
-                for (int ii = 0; ii < length; ii++) {
-                    Node    branch = branches [ii];
-                    
-                    if (branch == null)
-                        continue;
-                        
-                    pwr.printf ("%s case %d: {\n", indent, ii);
-                    branch.printJava (pwr, indent2, varName, pos + 1);
-                    pwr.printf ("%s }\n", indent);
-                }
-
-                pwr.printf ("%s}\n", indent);
-            }
-            
-            pwr.printf ("%sreturn false;\n", indent);
-        }
-        
         void            add (CharSequence s, int pos) {
             if (pos == s.length ()) {
                 endOk = true;
@@ -152,41 +120,67 @@ public class WordMatcher {
                                 
             branch.add (s, pos + 1);
         }
+        
+        int         getCodeSize () {
+            int         size = 1 + length;
+            
+            for (int ii = 0; ii < length; ii++) {
+                Node    branch = branches [ii];
+
+                if (branch != null)
+                    size += branch.getCodeSize ();
+            }
+            
+            return (size);
+        }
+        
+        int         buildCode (int [] code, int offset) {
+            int         header = 
+                base | (length << 16);
+            
+            if (endOk)
+                header |= 0x80000000;
+            
+            code [offset++] = header;
+            
+            int         endOffset = offset + length;
+            
+            for (int ii = 0; ii < length; ii++) {
+                Node    branch = branches [ii];
+
+                if (branch != null) {
+                    code [offset + ii] = endOffset;
+                    endOffset = branch.buildCode (code, endOffset);
+                }
+                else
+                    code [offset + ii] = -1;
+            }
+            
+            return (endOffset);
+        }
     }
     
     private Node        mRoot = new Node ();
     
-    public WordMatcher () {
+    public WordMatcherBuilder () {
     }
     
-    public void         add (CharSequence s) {
+    public void             add (CharSequence s) {
         mRoot.add (s, 0);
     } 
     
-    public void         dump () {
+    public void             dump () {
         mRoot.dump ("");
     }
     
-    public void         printJavaMethod (
-        PrintWriter         pwr,
-        String              indent,
-        String              access,
-        String              name
-    )
-    {
-        pwr.printf ("%s%s static boolean %s (CharSequence cs) {\n", indent, access, name);
-        printJava (pwr, indent + " ", "cs");
-        pwr.printf ("%s}\n", indent);
-    }
-    
-    public void         printJava (
-        PrintWriter         pwr,
-        String              indent,
-        String              varName
-    )
-    {
-        pwr.printf ("%sfinal int %s_length = %<s.length ();\n", indent, varName);
-        mRoot.printJava (pwr, indent, varName, 0);
+    public WordMatcher      compile () {
+        int     size = mRoot.getCodeSize ();
+        int []  code = new int [size];
+        int     size2 = mRoot.buildCode (code, 0);
+        
+        assert size == size2;
+        
+        return (new WordMatcher32 (code));
     }
     
     /**
@@ -194,18 +188,32 @@ public class WordMatcher {
      *  @param s        String to match
      *  @return         Whether it matches the vocabulary.
      */
-    public boolean      match (CharSequence s) {
+    public boolean          match (CharSequence s) {
         return (mRoot.match (s, 0));
     }
     
-    public static void main (String [] args) {
-        WordMatcher     wm = new WordMatcher ();
+    /*
+    public static void      main (String [] args) throws Exception {
+        WordMatcherBuilder     wm = new WordMatcherBuilder ();
         
-        wm.add ("XY");
-        wm.add ("ABC");
-        wm.add ("B");
-        wm.add ("ABD");
+        BufferedReader  rd = 
+            new BufferedReader (new FileReader (Home.get () + "/src/deltix/custom/forthill/algorithms/option-master.rpt"));
         
-        wm.printJavaMethod (new PrintWriter (System.out, true), "", "public", "test");       
+        OptionMaster    om = new OptionMaster (rd);
+        
+        rd.close ();
+        
+        for (OptionMaster.Record r : om.records ()) {
+            wm.add (r.root);
+        }
+        
+        WordMatcher         code = wm.compile ();
+        
+        System.out.println (code.match ("DBD"));
+        System.out.println (code.match ("DIA"));
+        System.out.println (wm.match ("DBD"));
+        System.out.println (wm.match ("DIA"));
+        //wm.printJavaMethod (new PrintWriter (System.out, true), "", "public", "test");       
     }
+     */
 }
