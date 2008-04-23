@@ -421,7 +421,36 @@ public class StringUtils {
             }
         return (buf.toString());                
     }
-    
+
+    // adapted from String.indexOf(char[] ...)
+    public static int           indexOf (final CharSequence s1, final CharSequence s2) {
+        final int sourceCount = s1.length();
+        final int targetCount = s2.length();
+        char first  = s2.charAt(0);
+        int max = (sourceCount - targetCount);
+
+        for (int i = 0; i <= max; i++) {
+            /* Look for first character. */
+            if (s1.charAt(i) != first) {
+                while (++i <= max && s1.charAt(i) != first);
+            }
+
+            /* Found first character, now look at the rest of v2 */
+            if (i <= max) {
+                int j = i + 1;
+                int end = j + targetCount - 1;
+                for (int k = 1; j < end && s1.charAt(j) ==
+                         s2.charAt(k); j++, k++);
+
+                if (j == end) {
+                    /* Found whole string. */
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     public static void main (String [] args) {
         byte []     b = args [0].getBytes();
 
