@@ -1,11 +1,11 @@
 package deltix.util.io;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.zip.*;
 
 import deltix.util.Util;
-import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.memory.MemoryDataInput;
 import deltix.util.memory.MemoryDataOutput;
 import java.nio.channels.FileChannel;
@@ -14,6 +14,15 @@ import java.nio.channels.FileChannel;
  *
  */
 public class IOUtil {
+    public static URL       createFileUrl (File f) throws IOException {
+        String          path = f.getAbsolutePath ().replace ('\\', '/');
+        
+        if (path.length () > 1 && path.charAt (1) == ':')   // drive letter
+            return (new URL ("file:///" + path));
+        else
+            return (new URL ("file://" + path));
+    }
+    
     public static void      force (FileChannel fc, boolean metaData) 
         throws IOException, InterruptedException
     {
