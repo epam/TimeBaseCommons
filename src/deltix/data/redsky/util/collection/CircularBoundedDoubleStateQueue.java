@@ -37,7 +37,7 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
         synchronized (mEmptyElements) {
             try {
                 while (mEmptyElements.size() == 0) {
-                    wait();
+                    mEmptyElements.wait();
                 }
             } catch (InterruptedException ie) {
                 notifyAll();
@@ -51,7 +51,7 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
         synchronized (mReadyElements) {
             try {
                 while (mReadyElements.size() == 0) {
-                    wait();
+                    mReadyElements.wait();
                 }
             } catch (InterruptedException ie) {
                 notifyAll();
