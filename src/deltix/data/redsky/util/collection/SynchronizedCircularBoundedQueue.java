@@ -4,7 +4,7 @@ package deltix.data.redsky.util.collection;
  *
  * @author PaharelauK
  */
-public class CircularBoundedQueue<E> { 
+public class SynchronizedCircularBoundedQueue<E> implements CircularQueue<E>{ 
     
     
     /** The queued items  */
@@ -21,7 +21,7 @@ public class CircularBoundedQueue<E> {
     
   
     @SuppressWarnings("unchecked")
-    public CircularBoundedQueue(int capacity) {
+    public SynchronizedCircularBoundedQueue(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException();
         }
@@ -140,6 +140,12 @@ public class CircularBoundedQueue<E> {
         E x = extract();
         return x;
     }
+
+    public E remove() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    
 
     /**
      * Returns the number of elements in this queue.

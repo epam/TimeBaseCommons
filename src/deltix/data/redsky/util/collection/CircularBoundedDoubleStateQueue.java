@@ -19,19 +19,45 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
         mReadyElements = new CircularBoundedQueue<E>(elementCount);
     }
 
-    public void addEmptyElement(E e) throws InterruptedException {
-        mEmptyElements.put(e);
+    public final void addEmptyElement(E e) {
+        synchronized (mEmptyElements) {
+            mEmptyElements.add(e);
+            mEmptyElements.notify();
+        }
     }
 
-    public void addReadyElement(E e) throws InterruptedException {
-        mReadyElements.put(e);
+    public final void addReadyElement(E e) {
+        synchronized (mReadyElements) {
+            mReadyElements.add(e);
+            mReadyElements.notify();
+        }
     }
 
-    public E getEmptyElement() throws InterruptedException {
-        return mEmptyElements.take();
+    public final E getEmptyElement() throws InterruptedException {
+        synchronized (mEmptyElements) {
+            try {
+                while (mEmptyElements.size() == 0) {
+                    wait();
+                }
+            } catch (InterruptedException ie) {
+                notifyAll();
+                throw ie;
+            }
+            return mEmptyElements.remove();
+        }
     }
 
-    public E getReadyElement() throws InterruptedException {
-        return mReadyElements.take();
+    public final E getReadyElement() throws InterruptedException { 
+        synchronized (mReadyElements) {
+            try {
+                while (mReadyElements.size() == 0) {
+                    wait();
+                }
+            } catch (InterruptedException ie) {
+                notifyAll();
+                throw ie;
+            }
+            return mReadyElements.remove();
+        }
     }
 }
