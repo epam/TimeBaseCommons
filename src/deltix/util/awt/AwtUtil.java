@@ -19,4 +19,13 @@ public class AwtUtil {
 	    return new Point (x, y);
 	}
    
+    public static void  inflate (Dimension out, Dimension add) {
+        if (add.width > out.width)
+            out.width = add.width;
+        
+        if (add.height > out.height)
+            out.height = add.height;
+    }
+    
+    
 }
