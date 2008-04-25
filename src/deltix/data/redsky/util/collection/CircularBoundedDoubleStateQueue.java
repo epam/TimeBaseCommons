@@ -19,6 +19,11 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
         mReadyElements = new CircularBoundedQueue<E>(elementCount);
     }
 
+    public int capacity() {
+        assert mEmptyElements.size() == mReadyElements.size();
+        return mEmptyElements.size();
+    }
+    
     public final void addEmptyElement(E e) {
         synchronized (mEmptyElements) {
             mEmptyElements.add(e);

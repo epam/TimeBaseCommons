@@ -13,4 +13,6 @@ public interface DoubleStateQueue<E> {
     void addReadyElement(E e);
 
     E getReadyElement() throws InterruptedException;
+    
+    int capacity();
 }
