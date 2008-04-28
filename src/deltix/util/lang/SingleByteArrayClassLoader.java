@@ -13,6 +13,7 @@ public class SingleByteArrayClassLoader extends AbstractClassLoader {
     private byte []         mBytes;
     
     public SingleByteArrayClassLoader (String className, byte [] bytes) {
+        super (SingleByteArrayClassLoader.class.getClassLoader (), false);
         mClassName = className;
         mBytes = bytes;
     }

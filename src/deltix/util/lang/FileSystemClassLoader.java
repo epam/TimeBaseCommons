@@ -3,6 +3,7 @@ package deltix.util.lang;
 import java.io.*;
 
 import deltix.util.io.IOUtil;
+import java.net.URL;
 
 /**
  *  UNTESTED
@@ -10,10 +11,17 @@ import deltix.util.io.IOUtil;
 public final class FileSystemClassLoader extends AbstractClassLoader {
     private final File mClassDir;
     
-    public FileSystemClassLoader (File rootDir) {
+    public FileSystemClassLoader (File rootDir, boolean searchParentFirst) {
+        super (FileSystemClassLoader.class.getClassLoader (), searchParentFirst);
         mClassDir = rootDir;
     }
 
+    @Override
+    public URL              getResource (String name) {
+        return (IOUtil.createFileUrl (new File (mClassDir, name)));
+    }
+    
+    @Override
     public InputStream      getResourceAsStream (String name) {
         try {
             return (new FileInputStream (new File (mClassDir, name)));

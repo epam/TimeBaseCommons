@@ -3,6 +3,7 @@ package deltix.util.swing;
 import deltix.util.Util;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -13,6 +14,8 @@ import javax.swing.*;
  */
 public class StandardDialog extends JDialog {
     private int                             mStatus;
+    private ArrayList <Action>              mStdActions =
+        new ArrayList <Action>  ();
     
     public final int                        getStatus () {
         return (mStatus);
@@ -41,22 +44,24 @@ public class StandardDialog extends JDialog {
         for (int ii = 0; ii < buttonNames.length; ii++) {
             final int       status = ii;
             
-            JButton         btn = 
-                new JButton (
-                    new AbstractAction (buttonNames [ii]) {
-                        public void actionPerformed (ActionEvent e) {
-                            try {
-                                if (acceptStdAction (status)) {
-                                    mStatus = status;
-                                    dispose ();
-                                }
-                            } catch (Throwable x) {
-                                handle (x);
+            Action          action =
+                new AbstractAction (buttonNames [ii]) {
+                    public void actionPerformed (ActionEvent e) {
+                        try {
+                            if (acceptStdAction (status)) {
+                                mStatus = status;
+                                dispose ();
                             }
+                        } catch (Throwable x) {
+                            handle (x);
                         }
                     }
-                );
+                };
+                    
+            JButton         btn = new JButton (action);
                 
+            mStdActions.add (action);
+            
             btns.add (btn);
             
             if (ii == 0)
@@ -96,4 +101,7 @@ public class StandardDialog extends JDialog {
         SwingUtil.staticHandle (this, x, logger, logLevel);
     }
         
+    protected Action        getAction (int idx) {
+        return (mStdActions.get (idx));
+    }
 }

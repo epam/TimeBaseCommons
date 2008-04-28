@@ -69,7 +69,12 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     }
     
     private void        setWeightAndFill (JComponent comp) {
-        if (comp instanceof JTextArea ||
+        if (comp instanceof FileField) {
+            mC.weightx = 1;
+            mC.weighty = 0;
+            mC.fill = GridBagConstraints.HORIZONTAL;
+        }
+        else if (comp instanceof JTextArea ||
             comp instanceof JScrollPane ||
             comp instanceof JTabbedPane ||
             comp instanceof JPanel) 

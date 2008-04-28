@@ -15,13 +15,17 @@ import java.util.regex.*;
  *
  */
 public class IOUtil {
-    public static URL       createFileUrl (File f) throws IOException {
+    public static URL       createFileUrl (File f) {
         String          path = f.getAbsolutePath ().replace ('\\', '/');
         
-        if (path.length () > 1 && path.charAt (1) == ':')   // drive letter
-            return (new URL ("file:///" + path));
-        else
-            return (new URL ("file://" + path));
+        try {
+            if (path.length () > 1 && path.charAt (1) == ':')   // drive letter
+                return (new URL ("file:///" + path));
+            else
+                return (new URL ("file://" + path));
+        } catch (IOException iox) {
+            throw new UncheckedIOException (iox);
+        }
     }
     
     public static void      force (FileChannel fc, boolean metaData) 
