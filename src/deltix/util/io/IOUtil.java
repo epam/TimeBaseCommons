@@ -9,6 +9,7 @@ import deltix.util.Util;
 import deltix.util.memory.MemoryDataInput;
 import deltix.util.memory.MemoryDataOutput;
 import java.nio.channels.FileChannel;
+import java.util.regex.*;
 
 /**
  *
@@ -596,6 +597,43 @@ public class IOUtil {
         }
     }
 
+    public static ZipEntry [] listZipEntries (File f, String regex)
+        throws IOException, InterruptedException
+    {
+        FileInputStream         fis = new FileInputStream (f);
+        ArrayList <ZipEntry>    ret = new ArrayList <ZipEntry> ();
+        Matcher                 m = null;
+        
+        if (regex != null) {
+            Pattern                 pat = Pattern.compile (regex);
+            m = pat.matcher ("");
+        }
+        
+        try {
+            ZipInputStream      zis = new ZipInputStream (fis);
+
+            for (;;) {
+                ZipEntry        zentry = zis.getNextEntry ();
+
+                if (zentry == null)
+                    break;
+
+                if (m != null) {
+                    m.reset (zentry.getName ());
+                    
+                    if (!m.matches ())
+                        continue;
+                }
+                
+                ret.add (zentry);
+            }
+        } finally {
+            Util.close (fis);
+        }
+        
+        return (ret.toArray (new ZipEntry [ret.size ()]));
+    }
+    
     public static void          extractZipStream (InputStream is, File destDir) 
         throws IOException, InterruptedException
     {
