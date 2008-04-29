@@ -52,6 +52,7 @@ public class StdExceptionDialog extends StandardDialog {
         cp.add (mTraceScroller, BorderLayout.CENTER);
         
         repack ();
+        
         centerOnParent ();
     }
 
@@ -60,8 +61,7 @@ public class StdExceptionDialog extends StandardDialog {
         
         Dimension       size = getSize ();
         
-        if (size.width > 800)
-            size.width = 800;
+        size.width = 600;
         
         if (size.height > 600)
             size.height = 600;
