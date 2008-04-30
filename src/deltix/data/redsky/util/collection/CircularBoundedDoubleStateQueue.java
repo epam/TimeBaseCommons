@@ -15,8 +15,8 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
     }
 
     public int capacity() {
-        assert mEmptyElements.count() == mReadyElements.count();
-        return mEmptyElements.count();
+        assert mEmptyElements.capacity() == mReadyElements.capacity();
+        return mEmptyElements.capacity();
     }
     
     public final void addEmptyElement(E e) {

@@ -19,12 +19,15 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
     /** Number of items in the queue */
     private int mCount;
     
+    private int mCapacity;
+    
   
     @SuppressWarnings("unchecked")
     public CircularBoundedQueue(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException();
         }
+        mCapacity = capacity;
         this.mItems = (E[]) new Object[capacity];
     }
     
@@ -122,4 +125,10 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
     public final int count() {
         return mCount;
     }
+
+    public int capacity() {
+        return mCapacity;
+    }
+    
+    
 }
