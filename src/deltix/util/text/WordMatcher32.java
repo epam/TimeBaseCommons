@@ -1,10 +1,23 @@
 package deltix.util.text;
 
+import deltix.util.collections.EmptyEnumeration;
+import java.util.Enumeration;
+
 /**
  *
  */
 class WordMatcher32 implements WordMatcher {
     private final int []            mCode;
+    private final int               mMaxLength;
+    
+    WordMatcher32 (Node root, int maxLength) {
+        int         size = getCodeSize (root);
+        
+        mCode = new int [size];
+        mMaxLength = maxLength;
+        
+        compile (root, 0);
+    }
     
     private int                     getCodeSize (Node node) {
         final int       numBranches = node.length;
@@ -45,14 +58,6 @@ class WordMatcher32 implements WordMatcher {
         return (endOffset);
     }
 
-    WordMatcher32 (Node root) {
-        int         size = getCodeSize (root);
-        
-        mCode = new int [size];
-        
-        compile (root, 0);
-    }
-    
     public boolean          matches (final byte [] bytes, int offset, int len) {
         int             codeIdx = 0;
         
@@ -89,7 +94,7 @@ class WordMatcher32 implements WordMatcher {
         int             codeIdx = 0;
         
         for (;;) {
-            if (offset == 0)
+            if (len == 0)
                 return (mCode [codeIdx] != 0);
             
             final int   base = mCode [codeIdx + 1];
@@ -113,4 +118,10 @@ class WordMatcher32 implements WordMatcher {
         }        
     }
 
+    public Enumeration <CharSequence>     vocabulary () {
+        if (mMaxLength < 0)
+            return (new EmptyEnumeration <CharSequence> ());
+        
+        return (new VocabularyEnumeration32 (mCode, mMaxLength));
+    }     
 }

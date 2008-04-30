@@ -1,5 +1,6 @@
 package deltix.util.text;
 
+import deltix.util.collections.EmptyEnumeration;
 import java.util.*;
 
 /**
@@ -8,6 +9,7 @@ import java.util.*;
  */
 public class WordMatcherBuilder implements WordMatcher {
     private Node        mRoot = new Node ();
+    private int         mMaxLength = -1;
     
     public WordMatcherBuilder () {
     }
@@ -19,6 +21,7 @@ public class WordMatcherBuilder implements WordMatcher {
     }
     
     public void             add (CharSequence s) {
+        mMaxLength = Math.max (mMaxLength, s.length ());        
         mRoot.add (s, 0);
     } 
     
@@ -26,11 +29,15 @@ public class WordMatcherBuilder implements WordMatcher {
         mRoot.dump ("");
     }
     
-    public WordMatcher      compile () {        
+    WordMatcher             compile32 () {           
+        return (new WordMatcher32 (mRoot, mMaxLength));
+    }
+    
+    public WordMatcher      compile () {           
         try {
-            return (new WordMatcher16 (mRoot));
+            return (new WordMatcher16 (mRoot, mMaxLength));
         } catch (WordMatcher16.CodeTooBigException x) {
-            return (new WordMatcher32 (mRoot));
+            return (new WordMatcher32 (mRoot, mMaxLength));
         }                
     }
     
@@ -60,4 +67,32 @@ public class WordMatcherBuilder implements WordMatcher {
     public boolean          matches (byte [] bytes, int offset, int length) {
         return (mRoot.match (bytes, offset, length));
     }    
+    
+    public Enumeration <CharSequence>     vocabulary () {
+        if (mMaxLength < 0)
+            return (new EmptyEnumeration <CharSequence> ());
+        
+        return (new NodeVocabularyEnumeration (mRoot, mMaxLength));
+    }    
+    
+    public static void main (String [] args) {
+        WordMatcherBuilder  wmb = new WordMatcherBuilder ();
+        
+        wmb.add ("");
+        wmb.add ("a");
+        wmb.add ("ba");
+        wmb.add ("bx");
+        wmb.add ("ab");
+        wmb.add ("ass");
+        
+        WordMatcher m = wmb.compile32 ();
+        
+        for (Enumeration <CharSequence> e = m.vocabulary (); e.hasMoreElements (); ) {
+            CharSequence cs = e.nextElement ();
+            
+            System.out.println (cs);     
+            System.out.println (m.matches(cs));
+        }
+        
+    }
 }

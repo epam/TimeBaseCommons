@@ -1,5 +1,8 @@
 package deltix.util.text;
 
+import deltix.util.collections.EmptyEnumeration;
+import java.util.Enumeration;
+
 /**
  *
  */
@@ -7,6 +10,7 @@ class WordMatcher16 implements WordMatcher {
     static class CodeTooBigException extends Exception { }
     
     private final short []          mCode;
+    private final int               mMaxLength;
     
     private int                     getCodeSize (Node node) {
         final int       numBranches = node.length;
@@ -47,13 +51,14 @@ class WordMatcher16 implements WordMatcher {
         return (endOffset);
     }
 
-    WordMatcher16 (Node root) throws CodeTooBigException {
+    WordMatcher16 (Node root, int maxLength) throws CodeTooBigException {
         int         size = getCodeSize (root);
         
-        if (size > 0xFFFF)
+        if (size >= 0xFFFF)
             throw new CodeTooBigException ();
         
         mCode = new short [size];
+        mMaxLength = maxLength;
         
         compile (root, 0);
     }
@@ -118,4 +123,10 @@ class WordMatcher16 implements WordMatcher {
         }        
     }
 
+    public Enumeration <CharSequence>     vocabulary () {
+        if (mMaxLength < 0)
+            return (new EmptyEnumeration <CharSequence> ());
+        
+        return (new VocabularyEnumeration16 (mCode, mMaxLength));
+    }    
 }

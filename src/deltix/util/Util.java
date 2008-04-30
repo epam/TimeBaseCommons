@@ -1066,6 +1066,14 @@ public class Util {
     }
     
     /**
+     *  Creates a string that is a copy of the specified char sequence
+     *  without calling CharSequence.toString ().
+     */
+    public static String               toString (CharSequence cs) {        
+        return (new StringBuilder (cs).toString ());
+    }
+    
+    /**
      *  Replicates the String.hashCode () logic for arbitrary CharSequence instances
      */
     public static int               hashCode (CharSequence cs) {        
