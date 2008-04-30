@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package deltix.data.redsky.util.collection;
 
 /**
@@ -20,8 +15,8 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
     }
 
     public int capacity() {
-        assert mEmptyElements.size() == mReadyElements.size();
-        return mEmptyElements.size();
+        assert mEmptyElements.count() == mReadyElements.count();
+        return mEmptyElements.count();
     }
     
     public final void addEmptyElement(E e) {
@@ -41,7 +36,7 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
     public final E getEmptyElement() throws InterruptedException {
         synchronized (mEmptyElements) {
             try {
-                while (mEmptyElements.size() == 0) {
+                while (mEmptyElements.count() == 0) {
                     mEmptyElements.wait();
                 }
             } catch (InterruptedException ie) {
@@ -51,11 +46,23 @@ public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
             return mEmptyElements.remove();
         }
     }
+    
+    public final int getCountReadyElements() {
+        synchronized (mReadyElements) {
+            return mReadyElements.count();
+        }
+    }
+
+    public final int getCountEmptyElements() {
+        synchronized (mEmptyElements) {
+            return mEmptyElements.count();
+        }
+    }
 
     public final E getReadyElement() throws InterruptedException { 
         synchronized (mReadyElements) {
             try {
-                while (mReadyElements.size() == 0) {
+                while (mReadyElements.count() == 0) {
                     mReadyElements.wait();
                 }
             } catch (InterruptedException ie) {

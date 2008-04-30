@@ -15,4 +15,8 @@ public interface DoubleStateQueue<E> {
     E getReadyElement() throws InterruptedException;
     
     int capacity();
+    
+    int getCountReadyElements();
+
+    int getCountEmptyElements();
 }

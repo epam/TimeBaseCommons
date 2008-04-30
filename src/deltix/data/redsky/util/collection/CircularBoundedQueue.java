@@ -119,7 +119,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
      *
      * @return the number of elements in this queue
      */
-    public final int size() {
+    public final int count() {
         return mCount;
     }
 }
