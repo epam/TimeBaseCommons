@@ -967,6 +967,14 @@ public class Util {
     }
     
     /**
+     *  Find an element in the specified array that equals to the specified element
+     *  and return its index, or -1 if not found.
+     */
+    public static boolean           contains (Object [] array, Object elem) {
+        return (indexOf (array, elem) >= 0);
+    }
+    
+    /**
      *  Find the index of the minimum element. Returns -1 if array is empty.
      */
     public static <T> int           indexOfMinMax (T [] array, Comparator <T> comp, int order) {
