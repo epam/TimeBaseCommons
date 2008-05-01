@@ -84,10 +84,12 @@ class WordMatcher16 implements WordMatcher {
             offset++;
             len--;
             
-            codeIdx = mCode [codeIdx + 3 + jump] & 0xFFFF;
+            codeIdx = mCode [codeIdx + 3 + jump];
             
             if (codeIdx == -1)
                 return (false);
+            
+            codeIdx = codeIdx & 0xFFFF;
         }        
     }
 
@@ -116,10 +118,12 @@ class WordMatcher16 implements WordMatcher {
             offset++;
             len--;
             
-            codeIdx = mCode [codeIdx + 3 + jump] & 0xFFFF;
+            codeIdx = mCode [codeIdx + 3 + jump];
             
             if (codeIdx == -1)
                 return (false);
+            
+            codeIdx = codeIdx & 0xFFFF;
         }        
     }
 

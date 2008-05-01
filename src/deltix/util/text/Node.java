@@ -78,7 +78,12 @@ class Node {
         if (idx < 0 || idx >= length)
             return (false);
 
-        return (branches [idx].match (bytes, offset + 1, len - 1));
+        Node        branch = branches [idx];
+        
+        if (branch == null)
+            return (false);
+        
+        return (branch.match (bytes, offset + 1, len - 1));
     }
 
     boolean         match (CharSequence s, int pos, int len) {
@@ -93,7 +98,12 @@ class Node {
         if (idx < 0 || idx >= length)
             return (false);
 
-        return (branches [idx].match (s, pos + 1, len - 1));
+        Node        branch = branches [idx];
+        
+        if (branch == null)
+            return (false);
+        
+        return (branch.match (s, pos + 1, len - 1));
     }
 
     void            add (CharSequence s, int pos) {
