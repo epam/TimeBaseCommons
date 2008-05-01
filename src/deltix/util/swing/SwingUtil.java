@@ -225,6 +225,14 @@ public abstract class SwingUtil {
         return (btn);
     }
 
+    public static JButton       newZeroMarginNoTextButton (Action action) {
+        JButton btn = newZeroMarginButton (action);
+        
+        btn.setText ("");
+        
+        return (btn);
+    }
+
     public static void setEscapeHandler(JDialog dlg, Action escapeAction) {
 	  KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 	  dlg.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escape, "ESCAPE");
