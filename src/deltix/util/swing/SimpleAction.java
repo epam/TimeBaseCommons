@@ -5,9 +5,7 @@ import java.awt.event.*;
 
 /**
  *  Extension of StandardAction, which delegates the action to a void no-arguments
- *  method whose name coincides with the name of the action. Also, the supplied
- *  object may provide a <code>public boolean <i>name</i>Enabled ()</code> method,
- *  to which the action will then delegate its own <code>isEnabled</code> method.
+ *  method whose name coincides with the name of the action. 
  *  Please see
  *  {@link deltix.util.swing.StandardAction} documentation for a detailed description
  *  of how action properties are retrieved, based on the package of the object and
@@ -24,7 +22,6 @@ public final class SimpleAction extends StandardAction {
 
     private Object      mObject;
     private Method      mMethod;
-    private Method      mCheckMethod;
 
     /**
      *  Constructs a StandardAction which will call a method of the
@@ -41,6 +38,7 @@ public final class SimpleAction extends StandardAction {
         while (c != Object.class) {
             try {
                 mMethod = c.getDeclaredMethod (nameKey, NO_ARGS_SIG);
+                mMethod.setAccessible (true);
                 break;
             } catch (NoSuchMethodException x) {
             }
@@ -53,12 +51,6 @@ public final class SimpleAction extends StandardAction {
                 "Did not find public void " + nameKey + " () in class " +
                 mObject.getClass () + " or any of its ancestors."
             );
-
-        try {
-            mCheckMethod = c.getDeclaredMethod (nameKey + "Enabled", NO_ARGS_SIG);
-        } catch (NoSuchMethodException x) {
-            mCheckMethod = null;
-        }
     }
 
     /**
@@ -74,6 +66,7 @@ public final class SimpleAction extends StandardAction {
 
         try {
             mMethod = delegateClass.getDeclaredMethod (nameKey, NO_ARGS_SIG);
+            mMethod.setAccessible (true);
         } catch (NoSuchMethodException x) {
             throw new RuntimeException (x.toString ());
         }
@@ -95,7 +88,7 @@ public final class SimpleAction extends StandardAction {
 
     public void         actionPerformed (ActionEvent e) {
         try {
-            mMethod.invoke (mObject, (Object []) null); /** @todo: casting to (Object[]) to suppress javac v1.5 warning */
+            mMethod.invoke (mObject, (Object []) null);
         } catch (IllegalAccessException iax) {
             throw new RuntimeException (
                 "Failed to invoke " + mMethod + ": " + iax.toString ()
