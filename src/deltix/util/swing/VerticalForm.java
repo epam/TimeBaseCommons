@@ -77,7 +77,8 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         else if (comp instanceof JTextArea ||
             comp instanceof JScrollPane ||
             comp instanceof JTabbedPane ||
-            comp instanceof JPanel) 
+            comp instanceof JPanel ||
+            comp instanceof JTable) 
         {
             mC.weightx = 1;
             mC.weighty = 1;
@@ -155,16 +156,18 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         
         add (jl, mC);
         
-        mC.gridx = 1;
+        if (comp != null) {
+            mC.gridx = 1;
+
+            setWeightAndFill (comp);
+
+            add (comp, mC);
+            
+            if (disableWithForm)
+                SwingUtil.setDeepEnabled (comp, isEnabled ());
+        }
         
-        setWeightAndFill (comp);
-        
-        add (comp, mC);
-        
-        mC.gridy++;
-        
-        if (disableWithForm)
-            SwingUtil.setDeepEnabled (comp, isEnabled ());
+        mC.gridy++;        
     }
     
 }

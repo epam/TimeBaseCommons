@@ -9,19 +9,20 @@ import deltix.util.*;
 import deltix.util.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 
-public abstract class AbstractApp 
+public class AbstractApp 
     extends JFrame 
     implements UncaughtExceptionHandler
 {    
-    protected AbstractApp () {
+    public AbstractApp () {
         this (EXIT_ON_CLOSE);        
     }
     
-    protected AbstractApp (int defaultCloseOperation) {
+    public AbstractApp (int defaultCloseOperation) {
         setDefaultCloseOperation (defaultCloseOperation);     
         
         addWindowListener (
             new WindowAdapter () {
+                @Override
                 public void windowClosing (WindowEvent e) {
                     AbstractApp.this.windowClosing (e);
                 }
