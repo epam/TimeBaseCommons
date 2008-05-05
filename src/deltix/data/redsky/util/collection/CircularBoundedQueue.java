@@ -19,7 +19,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
     /** Number of items in the queue */
     private int mCount;
     
-    private int mCapacity;
+    private final int mCapacity;
     
   
     @SuppressWarnings("unchecked")
@@ -37,7 +37,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
      * Circularly increment i.
      */
     private final int inc(int i) {
-        return (++i == mItems.length) ? 0 : i;
+        return (++i == mCapacity) ? 0 : i;
     }
 
     /**
@@ -101,7 +101,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
         if (e == null) {
             throw new NullPointerException();
         }
-        if (mCount == mItems.length) {
+        if (mCount == mCapacity) {
             return false;
         } else {
             insert(e);
