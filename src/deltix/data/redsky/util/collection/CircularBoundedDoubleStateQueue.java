@@ -6,11 +6,11 @@ package deltix.data.redsky.util.collection;
  */
 public class CircularBoundedDoubleStateQueue<E> implements DoubleStateQueue<E> {
 
-    private final CircularBoundedQueue<E> mEmptyElements;
+    private final FixedSizeStack<E> mEmptyElements;
     private final CircularBoundedQueue<E> mReadyElements;
 
     public CircularBoundedDoubleStateQueue(int elementCount) {
-        mEmptyElements = new CircularBoundedQueue<E>(elementCount);
+        mEmptyElements = new FixedSizeStack<E>(elementCount); // empty elements have no order, stack is faster than queue
         mReadyElements = new CircularBoundedQueue<E>(elementCount);
     }
 
