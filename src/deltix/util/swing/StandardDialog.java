@@ -69,6 +69,20 @@ public class StandardDialog extends JDialog {
         }
     }
     
+    protected void          packWithMinimumSize (int minWidth, int minHeight) {
+        pack ();
+        
+        Dimension   d = getPreferredSize ();
+        
+        if (d.width < minWidth)
+            d.width = minWidth;
+        
+        if (d.height < minHeight)
+            d.height = minHeight;
+                
+        setSize (d);
+    }
+    
     public final int        doModal () {
         assert !isVisible ();
         
