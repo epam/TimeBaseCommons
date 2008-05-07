@@ -19,4 +19,8 @@ public interface DoubleStateQueue<E> {
     int getCountReadyElements();
 
     int getCountEmptyElements();
+
+    /** Factory method to fill empty elements pool at creation time */
+    E newEmptyElement();
+
 }
