@@ -92,7 +92,7 @@ public class TreeEditorPanel extends JSplitPane {
         
         setRightComponent (mFormPanel);
         setEditing (null);
-        EDIT_ACTION.setEnabled (false);
+        setEditEnabled (false);
 
         DefaultDragGestureRecognizer dgRecognizer = new DefaultDragGestureRecognizer();
         mTree.addMouseListener(dgRecognizer);
@@ -101,6 +101,11 @@ public class TreeEditorPanel extends JSplitPane {
         mTree.setTransferHandler(new TreeEditorTransferHandler());
         //Enable tool tips.
         ToolTipManager.sharedInstance().registerComponent(mTree);
+    }
+    
+    private void            setEditEnabled (boolean flag) {
+        mEditBtn.setVisible (flag);
+        EDIT_ACTION.setEnabled (flag);
     }
     
     protected void        setFormComponent (JComponent form) {
@@ -240,11 +245,11 @@ public class TreeEditorPanel extends JSplitPane {
     protected void        selectionChanged (TreePath newPath) {
         if (newPath == null) {
             mSelectedNode = null;
-            EDIT_ACTION.setEnabled (false);
+            setEditEnabled (false);
         }
         else {        
             mSelectedNode = ((NodeAdapter) newPath.getLastPathComponent ()).getUserNode ();
-            EDIT_ACTION.setEnabled (mSelectedNode.isEditable ());
+            setEditEnabled (mSelectedNode.isEditable ());
         }
         
         setFormFromNode (mSelectedNode);
