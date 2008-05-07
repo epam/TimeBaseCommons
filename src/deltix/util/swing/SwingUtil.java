@@ -369,4 +369,16 @@ public abstract class SwingUtil {
      return button;
    }
 
+   public static void       setText (Component comp, String text) {
+       if (comp instanceof JTextField)
+            ((JTextField) comp).setText (text); 
+       else if (comp instanceof JLabel)
+            ((JLabel) comp).setText (text);
+       else if (comp instanceof JTextArea)
+           ((JTextArea) comp).setText (text);
+       else if (comp instanceof JScrollPane)
+           setText (((JScrollPane) comp).getViewport ().getView (), text);
+       else
+           throw new IllegalArgumentException (comp.toString ());
+   }
 }
