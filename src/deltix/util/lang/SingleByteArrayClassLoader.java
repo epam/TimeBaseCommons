@@ -9,18 +9,19 @@ import deltix.util.io.IOUtil;
  *  Loads a single specified class from the supplied byte array.
  */
 public class SingleByteArrayClassLoader extends AbstractClassLoader {
-    private String          mClassName;
+    private String          mResourceName;
     private byte []         mBytes;
     
     public SingleByteArrayClassLoader (String className, byte [] bytes) {
         super (SingleByteArrayClassLoader.class.getClassLoader (), false);
-        mClassName = className;
+        mResourceName = classNameToResourcePath(className);
         mBytes = bytes;
     }
     
-    protected byte [] loadClassBytes (String name) throws ClassNotFoundException {
-        if (!name.equals (mClassName))
-            throw new ClassNotFoundException (name);
+    @Override
+    protected byte[] findResourceAsByteArray(String resourceName) {
+        if (!resourceName.equals (mResourceName))
+            return null;
         
         return (mBytes);
     }
@@ -37,7 +38,11 @@ public class SingleByteArrayClassLoader extends AbstractClassLoader {
         } catch (IOException x) {
             throw new ClassNotFoundException ("Cannot load class bytes: " + x.getMessage(), x);
         } finally {
-        	classFile.delete();
+        	try {
+        	    classFile.delete();
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	}
         }
 	}
 }
