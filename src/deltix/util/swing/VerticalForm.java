@@ -120,6 +120,34 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
             SwingUtil.setDeepEnabled (comp, isEnabled ());
     }
     
+    public void         addRow (
+        JComponent          comp, 
+        double              weightx,
+        double              weighty,
+        int                 fill,
+        int                 anchor,        
+        boolean             disableWithForm
+    )
+    {
+        if (disableWithForm)
+            mSwitchComponents.add (comp);
+        
+        mC.gridx = 0;
+        mC.gridwidth = 2;
+        
+        mC.weightx = weightx;
+        mC.weighty = weighty;
+        mC.fill = fill;
+        mC.anchor = anchor;
+        
+        add (comp, mC);
+        
+        mC.gridy++;
+        
+        if (disableWithForm)
+            SwingUtil.setDeepEnabled (comp, isEnabled ());
+    }
+    
     public void         addLine () {
         addRow (new Line (Line.HORIZONTAL));
     }
@@ -144,10 +172,7 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         addField (jl, comp, !(comp instanceof JLabel));
     }
     
-    public void         addField (JLabel jl, JComponent comp, boolean disableWithForm) {
-        if (disableWithForm)
-            mSwitchComponents.add (comp);
-        
+    public void         addField (JLabel jl, JComponent comp, boolean disableWithForm) {                
         mC.gridwidth = 1;
         mC.gridx = 0;
         mC.weightx = 0;
@@ -157,6 +182,9 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         add (jl, mC);
         
         if (comp != null) {
+            if (disableWithForm)
+                mSwitchComponents.add (comp);
+            
             mC.gridx = 1;
 
             setWeightAndFill (comp);
