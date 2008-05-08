@@ -55,9 +55,6 @@ public abstract class AbstractClassLoader extends ClassLoader {
     {
         Class   c = findLoadedClass (name);
         
-        if (name.equals ("deltix.qsrv.hf.blocks.InstrumentState"))
-            System.out.println ();
-        
         if (c == null) {
             if (mSearchParentFirst) {
                 try {
