@@ -17,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
+import javax.swing.tree.TreeModel;
 
 public class TreeEditorPanel extends JSplitPane {
     protected final Action EDIT_ACTION =
@@ -56,10 +57,26 @@ public class TreeEditorPanel extends JSplitPane {
         new HashSet <EnablingChangeListener> ();
     
     public TreeEditorPanel (TreeEditorNode root) {
-        super (HORIZONTAL_SPLIT);
-
+        this ();
+        setRoot (root);
+    }
+    
+    public void         setRoot (TreeEditorNode root) {
         mTreeModel = new DefaultTreeModel (new NodeAdapter (this, root));
-        mTree = new JTree (mTreeModel);
+        mTree.setModel (mTreeModel);        
+    }
+    
+    public void         clearTree () {
+        mTree.setModel (null);
+        mSelectedNode = null;
+        setEditEnabled (false);
+        setFormFromNode (null);
+    }
+    
+    public TreeEditorPanel () {
+        super (HORIZONTAL_SPLIT);
+        
+        mTree = new JTree ((TreeModel) null);
         mTree.setShowsRootHandles (true);
         mTree.setCellRenderer (new NodeRenderer ());
         mTree.addMouseListener (
