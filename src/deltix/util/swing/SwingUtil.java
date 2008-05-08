@@ -266,6 +266,16 @@ public abstract class SwingUtil {
               c instanceof JTabbedPane ||
               c instanceof JScrollBar))
             c.setEnabled (true);
+        else if (c instanceof JTextField) {
+            JTextField      tf = (JTextField) c;
+            tf.setEnabled (true);
+            tf.setEditable (b);
+        }            
+        else if (c instanceof JTextArea) {
+            JTextArea      tf = (JTextArea) c;
+            tf.setEnabled (true);
+            tf.setEditable (b);
+        }            
         else
             c.setEnabled (b);
 
@@ -369,15 +379,36 @@ public abstract class SwingUtil {
      return button;
    }
 
+   public static String       getText (Component comp) {
+       if (comp instanceof JTextField)
+           return (((JTextField) comp).getText ()); 
+       else if (comp instanceof JLabel)
+           return (((JLabel) comp).getText ());
+       else if (comp instanceof JCheckBox)
+           return (((JCheckBox) comp).isSelected () ? "true" : "false");
+       else if (comp instanceof JTextArea)
+           return (((JTextArea) comp).getText ());
+       else if (comp instanceof JScrollPane)
+           return (getText (((JScrollPane) comp).getViewport ().getView ()));
+       else if (comp instanceof JComboBox)
+           return (((JComboBox) comp).getSelectedItem ().toString ());
+       else
+           throw new IllegalArgumentException (comp.toString ());
+   }
+      
    public static void       setText (Component comp, String text) {
        if (comp instanceof JTextField)
             ((JTextField) comp).setText (text); 
        else if (comp instanceof JLabel)
             ((JLabel) comp).setText (text);
+       else if (comp instanceof JCheckBox)
+            ((JCheckBox) comp).setSelected (Boolean.parseBoolean (text));
        else if (comp instanceof JTextArea)
            ((JTextArea) comp).setText (text);
        else if (comp instanceof JScrollPane)
            setText (((JScrollPane) comp).getViewport ().getView (), text);
+       else if (comp instanceof JComboBox)
+            ((JComboBox) comp).setSelectedItem (text);
        else
            throw new IllegalArgumentException (comp.toString ());
    }
