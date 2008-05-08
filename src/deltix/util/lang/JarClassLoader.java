@@ -1,7 +1,5 @@
 package deltix.util.lang;
 
-import deltix.util.Util;
-import deltix.util.io.IOUtil;
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
@@ -19,27 +17,10 @@ public class JarClassLoader extends AbstractClassLoader {
     }
         
     @Override
-    protected byte []           loadClassBytes (String name) 
-        throws ClassNotFoundException 
-    {
-        JarEntry    e = mJarFile.getJarEntry (classNameToResourcePath (name));
+    protected InputStream       findResourceAsStream (String name) throws IOException {
+        JarEntry    e = mJarFile.getJarEntry (name);
         
-        if (e == null)
-            throw new ClassNotFoundException (name);
-        
-        InputStream is = null;
-
-        try {
-            is = mJarFile.getInputStream (e);
-            return (IOUtil.readBytes (is));
-        } catch (Exception x) {
-            throw new ClassNotFoundException (
-                "Failed to load class " + name,
-                x
-            );
-        } finally {
-            Util.close (is);
-        }
+        return (e == null ? null : mJarFile.getInputStream (e));
     }
     
     public void                 loadAllClasses (Collection <Class <?>> classes)

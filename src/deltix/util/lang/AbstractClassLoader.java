@@ -1,7 +1,10 @@
 package deltix.util.lang;
 
+import deltix.util.Util;
+import deltix.util.io.IOUtil;
 import java.io.*;
 import java.net.URL;
+import java.util.logging.Level;
 
 /**
  *  Utility class which adapts the ClassLoader base class to
@@ -52,6 +55,9 @@ public abstract class AbstractClassLoader extends ClassLoader {
     {
         Class   c = findLoadedClass (name);
         
+        if (name.equals ("deltix.qsrv.hf.blocks.InstrumentState"))
+            System.out.println ();
+        
         if (c == null) {
             if (mSearchParentFirst) {
                 try {
@@ -81,23 +87,88 @@ public abstract class AbstractClassLoader extends ClassLoader {
      *  @param flag     Whether the parent class laoder should be searched
      *                  first for all class names.
      */
-    public synchronized void        setSearchParentFirst (boolean flag) {
+    public synchronized final void  setSearchParentFirst (boolean flag) {
         mSearchParentFirst = flag;
     }
     
-    protected abstract byte []      loadClassBytes (String name)
-        throws ClassNotFoundException;
-
     @Override
     protected Class <?>             findClass (String name)
         throws ClassNotFoundException
     {
-        byte []     b = loadClassBytes (name);
-        return (defineClass (name, b, 0, b.length));        
+        byte []     b;
+        
+        try {
+            b = findResourceAsByteArray (classNameToResourcePath (name));
+        } catch (Exception iox) {
+            Util.LOGGER.log (Level.WARNING, "Failed to read " + name, iox);
+            return (null);
+        }
+        
+        if (b == null)
+            throw new ClassNotFoundException (name);
+
+        return (defineClass (name, b, 0, b.length));     
+    }
+    
+    protected byte []               findResourceAsByteArray (String name) 
+        throws IOException, InterruptedException
+    {
+        InputStream     is = findResourceAsStream (name);
+        
+        if (is == null)
+            return (null);
+        
+        try {
+            return (IOUtil.readBytes (is));        
+        } finally {
+            Util.close (is);
+        }
+    }
+    
+    protected InputStream           findResourceAsStream (String name)
+        throws IOException 
+    {
+        URL     url = findResource (name);
+        
+        try {
+            return (url == null ? null : url.openStream ());
+        } catch (IOException iox) {
+            Util.LOGGER.log (Level.WARNING, "Failed to open " + url, iox);
+            return (null);
+        }
+    }
+    
+    protected InputStream           findResourceAsStreamNoX (String name) {
+        try {
+            return (findResourceAsStream (name));
+        } catch (IOException iox) {
+            Util.LOGGER.log (Level.WARNING, "Failed to open " + name, iox);
+            return (null);
+        }
+    }
+        
+    @Override
+    public final InputStream              getResourceAsStream (String name) {
+        InputStream     is;
+        
+        if (mSearchParentFirst) {        
+            is = getParent ().getResourceAsStream (name);
+        
+            if (is == null) 
+                is = findResourceAsStreamNoX (name);
+        }
+        else {        
+            is = findResourceAsStreamNoX (name);
+        
+            if (is == null) 
+                is = getParent ().getResourceAsStream (name);
+        }
+        
+        return (is);
     }
     
     @Override
-    public URL                      getResource(String name) {
+    public final URL                      getResource(String name) {
         URL         url;
         
         if (mSearchParentFirst) {        

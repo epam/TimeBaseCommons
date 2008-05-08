@@ -17,35 +17,12 @@ public final class FileSystemClassLoader extends AbstractClassLoader {
     }
 
     @Override
-    public URL              getResource (String name) {
+    public URL              findResource (String name) {
         return (IOUtil.createFileUrl (new File (mClassDir, name)));
     }
     
     @Override
-    public InputStream      getResourceAsStream (String name) {
-        try {
-            return (new FileInputStream (new File (mClassDir, name)));
-        } catch (IOException iox) {
-            return (null);
-        }
-    }
-    
-    protected byte []       loadClassBytes (String name)
-        throws ClassNotFoundException 
-    {
-        File        classFile = new File (mClassDir, name.replace ('.', File.separatorChar) + ".class");
-        
-        if (!classFile.exists ())
-            throw new ClassNotFoundException ("File for class " + name + " not found in " + mClassDir);
-        
-        try {
-            return (IOUtil.readBytes (classFile));
-        } catch (IOException iox) {
-            throw new ClassNotFoundException (
-                "Failed to read file: " + classFile + " due to: " + iox, 
-                iox
-            );
-        }
-    }
-    
+    protected InputStream   findResourceAsStream (String name) throws IOException {
+        return (new FileInputStream (new File (mClassDir, name)));
+    }          
 }
