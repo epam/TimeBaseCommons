@@ -16,6 +16,9 @@ import static deltix.util.swing.SwingUtil.RB;
  *  for forms where a form field has a file as its value.
  */
 public class FileField extends JPanel {
+    public static final int ACTION_FILE_DIALOG = 1;
+    public static final int ACTION_TEXT_ENTER = 2;
+    
     public static final int VALID_ANY_PATH = 0;
     public static final int VALID_EXISTING_DIR = 1;
     public static final int VALID_EXISTING_FILE = 2;
@@ -28,7 +31,8 @@ public class FileField extends JPanel {
     private NonEmptyTextField   mPathField = new NonEmptyTextField (true);
     private JButton             mDialogButton = new JButton ("...");
     private int                 mValidationMode = VALID_ANY_PATH;
-    
+    private ArrayList <ActionListener> mActionListeners = new ArrayList <ActionListener> ();
+        
     public FileField () {
         super (new BorderLayout ());
         
@@ -38,13 +42,40 @@ public class FileField extends JPanel {
         mDialogButton.addActionListener (
             new ActionListener () {
                 public void actionPerformed (ActionEvent e) {
-                    dialog ();
+                    dialog ();                    
+                }
+            }
+        );
+        
+        mPathField.addActionListener (
+            new ActionListener () {
+                public void actionPerformed (ActionEvent e) {
+                    fireActionEvent (
+                        new ActionEvent (
+                            FileField.this, 
+                            ACTION_TEXT_ENTER, 
+                            mPathField.getText ()
+                        )
+                    );                  
                 }
             }
         );
         
         mFileChooser.setApproveButtonText (RB.getString ("selectFile"));
         mDialogButton.setMargin(new Insets (0, 2, 0, 2));
+    }
+    
+    public void         addActionListener (ActionListener lnr) {
+        mActionListeners.add (lnr);
+    }
+    
+    public void         removeActionListener (ActionListener lnr) {
+        mActionListeners.remove (lnr);
+    }
+    
+    protected void      fireActionEvent (ActionEvent e) {
+        for (ActionListener lnr : mActionListeners)
+            lnr.actionPerformed (e);
     }
     
     /**
@@ -175,8 +206,12 @@ public class FileField extends JPanel {
         
         int                 ret = mFileChooser.showOpenDialog (this);
         
-        if (ret == JFileChooser.APPROVE_OPTION) 
-            setFile (mFileChooser.getSelectedFile ());
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            String      path = mFileChooser.getSelectedFile ().getPath ();
+            
+            setPath (path); 
+            fireActionEvent (new ActionEvent (this, ACTION_FILE_DIALOG, path));
+        }
     }
     
     public void             complain (String errorMsg) {
