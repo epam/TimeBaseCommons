@@ -143,7 +143,11 @@ final class NodeAdapter implements TreeNode {
          *      force the reloading of the node's form.
          */  
         mPanel.getTree ().setSelectionPath (null);
-        mPanel.getTree ().setSelectionPath (getPath ());            
+        
+        TreePath    path = getPath ();
+        
+        mPanel.getTree ().setSelectionPath (path);     
+        mPanel.getTree ().expandPath (path);
     }
     
     final void           selectAndStartEditing () {
