@@ -24,7 +24,9 @@ public class StandardDialog extends JDialog {
     /**
      *  Child classes override for validation
      */
-    public boolean                          acceptStdAction (int status) {
+    public boolean                          acceptStdAction (int status) 
+        throws Exception
+    {
         return (true);
     }
     
@@ -67,6 +69,10 @@ public class StandardDialog extends JDialog {
             if (ii == 0)
                 getRootPane ().setDefaultButton (btn);
         }
+    }
+    
+    protected void          setContentPaneCenter (Component c) {
+        getContentPane ().add (c, BorderLayout.CENTER);
     }
     
     protected void          packWithMinimumSize (int minWidth, int minHeight) {
