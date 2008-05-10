@@ -4,6 +4,7 @@ import deltix.util.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.*;
+import java.util.WeakHashMap;
 import javax.swing.*;
 import static javax.swing.SwingConstants.*;
 import static javax.swing.JSplitPane.VERTICAL_SPLIT;
@@ -16,15 +17,19 @@ public class GridPanel extends JPanel {
     static final DataFlavor     COMP_MOVE_FLAVOR =
         LocalObjectTransferable.getLocalObjectFlavor (Component.class);
     
-    static final DragSource     DS = DragSource.getDefaultDragSource ();
+    static final DragSource     DS = new DragSource ();
+    static final WeakHashMap <Component, Component> DRAGGABLES =
+        new WeakHashMap <Component, Component> ();
     
-    private final MoveDGL       mDGL = new MoveDGL ();
+    private static final MoveDGL       mDGL = new MoveDGL ();
     
     public GridPanel () { 
         super (new BorderLayout ());
     }
     
     public static void         addComponent (Component c, Component ref, int side) {
+           setupDraggable (c);
+        
         Container                   parent = ref.getParent ();
                 
         if (parent instanceof GridPanel) {
@@ -157,13 +162,15 @@ public class GridPanel extends JPanel {
         }
     }
     
-    private void            setupNewChild (Component c) {
-        new DropTarget (c, DnDConstants.ACTION_MOVE, new MoveDTL (this, c));
-        DS.createDefaultDragGestureRecognizer (c, DnDConstants.ACTION_MOVE, mDGL);
+    private static void     setupDraggable (Component c) {
+        if (DRAGGABLES.put (c, c) == null) {        
+            MoveDTL.install (c);
+            DS.createDefaultDragGestureRecognizer (c, DnDConstants.ACTION_MOVE, mDGL);
+        }
     }
     
     public void             addComponent (Component c, int side) {
-        setupNewChild (c);
+           setupDraggable (c);
         
         if (getComponentCount () == 0) 
             add (c, BorderLayout.CENTER);            

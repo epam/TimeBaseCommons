@@ -4,66 +4,23 @@ import deltix.qsrv.hf.pub.md.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
-import java.io.IOException;
-import javax.swing.SwingUtilities;
 import static javax.swing.SwingConstants.*;
 
-class MoveDTL extends DropTargetAdapter {
-    private final GridPanel         mPanel;
-    private final Component         mTarget;
-    
-    MoveDTL (GridPanel panel, Component target) {
-        mTarget = target;
-        mPanel = panel;
-    }
-
-    private Component     getComponentIfLegal (Transferable trf) {
-        Component             c;
-        
-        try {
-            c = (Component) trf.getTransferData (GridPanel.COMP_MOVE_FLAVOR);
-        } catch (IOException iox) {
-            throw new RuntimeException (iox);
-        } catch (UnsupportedFlavorException x) {
-            return (null);
-        }
-        
-        if (c == mTarget)
-            return (null);
-                
-        return (c);
+class MoveDTL extends GridPanelDTL {
+    public static void      install (Component target) {
+        new MoveDTL (target);
     }
     
-    @Override
-    public void             dragEnter (DropTargetDragEvent e) {
-        Component   c = getComponentIfLegal (e.getTransferable ());
-        
-        if (c == null) {
-            e.rejectDrag ();
-            return;
-        }
-        
-        e.acceptDrag (DnDConstants.ACTION_MOVE);                               
+    private MoveDTL (Component target) {
+        super (target);
     }
 
-    @Override
-    public void             dragExit (DropTargetEvent e) {
-        
-    }
-
-    public void             drop (DropTargetDropEvent e) {
-        final Component   c = getComponentIfLegal (e.getTransferable ());
-        
-        if (c == null) {
-            e.rejectDrop ();
-            return;
-        }
-        
-        e.acceptDrop (DnDConstants.ACTION_MOVE);
-        e.dropComplete (true);
-        
-        Point       p = e.getLocation ();
-        Dimension   size = mTarget.getSize ();
+    protected void          executeDrop (
+        Component               dragged,
+        Point                   p
+    )
+    {
+        Dimension   size = target.getSize ();
         
         double      k = ((double) size.height) / size.width;
             
@@ -82,12 +39,7 @@ class MoveDTL extends DropTargetAdapter {
             else
                 side = RIGHT;
         
-        SwingUtilities.invokeLater (
-            new Runnable () {
-                public void run () {
-                    GridPanel.move (c, mTarget, side);
-                }
-            }
-        );
+        
+        GridPanel.move (dragged, target, side);               
     }
 }
