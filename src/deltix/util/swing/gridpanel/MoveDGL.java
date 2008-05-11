@@ -4,6 +4,7 @@ import deltix.util.swing.LocalObjectTransferable;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
+import javax.swing.JComponent;
 
 class MoveDGL extends DragSourceAdapter implements DragGestureListener {
     
@@ -36,7 +37,10 @@ class MoveDGL extends DragSourceAdapter implements DragGestureListener {
         
     public void     dragGestureRecognized (DragGestureEvent e) {
         Transferable        transferable = 
-            new LocalObjectTransferable <Component> (e.getComponent (), Component.class);
+            new LocalObjectTransferable <JComponent> (
+                (JComponent) e.getComponent (), 
+                JComponent.class
+            );
                 
         e.startDrag (DragSource.DefaultMoveNoDrop, transferable, this);
     }

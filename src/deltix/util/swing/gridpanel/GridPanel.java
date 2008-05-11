@@ -15,11 +15,11 @@ import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
  */
 public class GridPanel extends JPanel {
     static final DataFlavor     COMP_MOVE_FLAVOR =
-        LocalObjectTransferable.getLocalObjectFlavor (Component.class);
+        LocalObjectTransferable.getLocalObjectFlavor (JComponent.class);
     
     static final DragSource     DS = new DragSource ();
-    static final WeakHashMap <Component, Component> DRAGGABLES =
-        new WeakHashMap <Component, Component> ();
+    static final WeakHashMap <JComponent, JComponent> DRAGGABLES =
+        new WeakHashMap <JComponent, JComponent> ();
     
     private static final MoveDGL       mDGL = new MoveDGL ();
     
@@ -27,7 +27,7 @@ public class GridPanel extends JPanel {
         super (new BorderLayout ());
     }
     
-    public static void         addComponent (Component c, Component ref, int side) {
+    public static void         addComponent (JComponent c, JComponent ref, int side) {
            setupDraggable (c);
         
         Container                   parent = ref.getParent ();
@@ -56,7 +56,7 @@ public class GridPanel extends JPanel {
         }
     }
     
-    private static void     replace (Component ref, Component c) {
+    private static void     replace (JComponent ref, JComponent c) {
         Container               parent = ref.getParent ();
                 
         if (parent instanceof GridPanel) {
@@ -83,7 +83,7 @@ public class GridPanel extends JPanel {
         }
     }
     
-    public static void      removeChild (Component c) {
+    public static void      removeChild (JComponent c) {
         Container               parent = c.getParent ();
         
         if (parent instanceof GridPanel) {
@@ -93,10 +93,10 @@ public class GridPanel extends JPanel {
         else {
             JSplitPane      split = (JSplitPane) parent;
             
-            Component       other = split.getTopComponent ();
+            JComponent       other = (JComponent) split.getTopComponent ();
             
             if (other == c)
-                other = split.getBottomComponent ();
+                other = (JComponent) split.getBottomComponent ();
             
             split.remove (other);
             replace (split, other);
@@ -110,8 +110,8 @@ public class GridPanel extends JPanel {
                 split.getHeight () :
                 split.getWidth ();
         
-        Component   a = split.getTopComponent ();
-        Component   b = split.getBottomComponent ();
+        JComponent   a = (JComponent) split.getTopComponent ();
+        JComponent   b = (JComponent) split.getBottomComponent ();
         
         split.remove (a);
         split.remove (b);
@@ -121,7 +121,7 @@ public class GridPanel extends JPanel {
         split.repaint ();
     }
     
-    private static int      curSide (Component c) {
+    private static int      curSide (JComponent c) {
         JSplitPane      split = (JSplitPane) c.getParent ();
         int             orient = split.getOrientation ();
         
@@ -135,7 +135,7 @@ public class GridPanel extends JPanel {
         return ((a == LEFT || a == RIGHT) == (b == LEFT || b == RIGHT));
     }
     
-    public static void      move (Component c, Component ref, int side) {
+    public static void      move (JComponent c, JComponent ref, int side) {
         if (c.getParent () == ref.getParent ()) {
             int             curSide = curSide (c);
             
@@ -152,7 +152,7 @@ public class GridPanel extends JPanel {
         addComponent (c, ref, side);        
     }
     
-    private static JSplitPane createSplit (Component ref, Component c, int side) {
+    private static JSplitPane createSplit (JComponent ref, JComponent c, int side) {
         switch (side) {
             case LEFT:      return (new JSplitPane (HORIZONTAL_SPLIT, c, ref));
             case RIGHT:     return (new JSplitPane (HORIZONTAL_SPLIT, ref, c));
@@ -162,20 +162,20 @@ public class GridPanel extends JPanel {
         }
     }
     
-    private static void     setupDraggable (Component c) {
+    private static void     setupDraggable (JComponent c) {
         if (DRAGGABLES.put (c, c) == null) {        
             MoveDTL.install (c);
             DS.createDefaultDragGestureRecognizer (c, DnDConstants.ACTION_MOVE, mDGL);
         }
     }
     
-    public void             addComponent (Component c, int side) {
+    public void             addComponent (JComponent c, int side) {
            setupDraggable (c);
         
         if (getComponentCount () == 0) 
             add (c, BorderLayout.CENTER);            
         else {            
-            Component       child = getComponent (0);                        
+            JComponent       child = (JComponent) getComponent (0);                        
             removeAll ();
             add (createSplit (child, c, side), BorderLayout.CENTER);
         }

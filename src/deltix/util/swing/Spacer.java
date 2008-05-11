@@ -14,5 +14,15 @@ public class Spacer extends JComponent {
     public Spacer (Dimension size) {
         setPreferredSize (size);
         setSize (size);
-    }    
+    }
+
+    @Override
+    protected void paintComponent (Graphics g) {
+        if (isOpaque ()) {
+            g.setColor (getBackground ());
+            g.fillRect (0, 0, getWidth (), getHeight ());
+        }
+    }
+    
+    
 }

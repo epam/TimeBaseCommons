@@ -9,13 +9,13 @@ import javax.swing.*;
  *
  */
 public class TabDTL extends GridPanelDTL {
-    public static void      install (Component tab) {
+    public static void      install (JComponent tab) {
         new TabDTL (tab);
     }
     
     private Color           mSaveFGColor = null;
     
-    private TabDTL (Component tab) {
+    private TabDTL (JComponent tab) {
         super (tab);
     }
 
@@ -65,7 +65,7 @@ public class TabDTL extends GridPanelDTL {
     }
     
     @Override
-    protected void          executeDrop (Component dragged, Point dropLocation) {
+    protected void          executeDrop (JComponent dragged, Point dropLocation) {
         unhighlight ();
         
         JTabbedPane     tabbedPane = getTabbedPane ();

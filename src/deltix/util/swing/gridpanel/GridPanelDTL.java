@@ -5,22 +5,22 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.io.IOException;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import static javax.swing.SwingConstants.*;
 
 abstract class GridPanelDTL extends DropTargetAdapter {
-    protected final Component       target;
+    protected final JComponent       target;
     
-    GridPanelDTL (Component inTarget) {
+    GridPanelDTL (JComponent inTarget) {
         target = inTarget;
         new DropTarget (inTarget, DnDConstants.ACTION_MOVE, this);
     }
 
-    protected Component     getComponentIfLegal (Transferable trf) {
-        Component             c;
+    protected JComponent     getComponentIfLegal (Transferable trf) {
+        JComponent             c;
         
         try {
-            c = (Component) trf.getTransferData (GridPanel.COMP_MOVE_FLAVOR);
+            c = (JComponent) trf.getTransferData (GridPanel.COMP_MOVE_FLAVOR);
         } catch (IOException iox) {
             throw new RuntimeException (iox);
         } catch (UnsupportedFlavorException x) {
@@ -35,7 +35,7 @@ abstract class GridPanelDTL extends DropTargetAdapter {
     
     @Override
     public void             dragEnter (DropTargetDragEvent e) {
-        Component   c = getComponentIfLegal (e.getTransferable ());
+        JComponent   c = getComponentIfLegal (e.getTransferable ());
         
         if (c == null) {
             e.rejectDrag ();
@@ -51,12 +51,12 @@ abstract class GridPanelDTL extends DropTargetAdapter {
     }
 
     protected abstract void executeDrop (
-        Component               dragged,
+        JComponent               dragged,
         Point                   dropLocation
     );
     
     public void             drop (DropTargetDropEvent e) {
-        final Component   c = getComponentIfLegal (e.getTransferable ());
+        final JComponent   c = getComponentIfLegal (e.getTransferable ());
         
         if (c == null) {
             e.rejectDrop ();
