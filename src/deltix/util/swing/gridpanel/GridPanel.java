@@ -27,14 +27,39 @@ public class GridPanel extends JPanel {
         super (new BorderLayout ());
     }
     
-    public static void         addComponent (JComponent c, JComponent ref, int side) {
-           setupDraggable (c);
+    public static boolean       isLocated (JComponent c, JComponent ref, int side) {
+        Container   parent = c.getParent ();
         
-        Container                   parent = ref.getParent ();
+        if (parent != ref.getParent ())
+            return (false);
+      
+        assert parent instanceof JSplitPane : "Only JSplitPane is handled.";
+        
+        JSplitPane  split = (JSplitPane) parent;
+        int         orient = split.getOrientation ();
+        boolean     refIsFirst = ref == split.getTopComponent ();
+        
+        switch (side) {
+            case LEFT:      return (orient == HORIZONTAL_SPLIT && !refIsFirst);
+            case RIGHT:     return (orient == HORIZONTAL_SPLIT && refIsFirst);
+            case TOP:       return (orient == VERTICAL_SPLIT && !refIsFirst);
+            case BOTTOM:    return (orient == VERTICAL_SPLIT && refIsFirst);
+            default:    throw new IllegalArgumentException ("Side: " + side);
+        }
+    }
+    
+    public static JSplitPane   addComponent (JComponent c, JComponent ref, int side) {
+        JSplitPane                  ret;
+        
+        setupDraggable (c);
+        
+        JComponent                   parent = (JComponent) ref.getParent ();
                 
         if (parent instanceof GridPanel) {
-            parent.remove (ref);        
-            parent.add (createSplit (ref, c, side), BorderLayout.CENTER);
+            parent.remove (ref); 
+            ret = createSplit (ref, c, side);
+            parent.add (ret, BorderLayout.CENTER);
+            parent.revalidate ();
             parent.repaint ();
         }
         else {
@@ -44,24 +69,30 @@ public class GridPanel extends JPanel {
             
             if (ref == split.getTopComponent ()) {
                 split.remove (ref);
-                split.setTopComponent (createSplit (ref, c, side));
+                ret = createSplit (ref, c, side);
+                split.setTopComponent (ret);
             }
             else {
                 split.remove (ref);
-                split.setBottomComponent (createSplit (ref, c, side));
+                ret = createSplit (ref, c, side);
+                split.setBottomComponent (ret);
             }
             
             split.setDividerLocation (loc);
+            split.revalidate ();
             split.repaint ();
         }
+        
+        return (ret);
     }
     
-    private static void     replace (JComponent ref, JComponent c) {
-        Container               parent = ref.getParent ();
+    public static void     replace (JComponent ref, JComponent c) {
+        JComponent               parent = (JComponent) ref.getParent ();
                 
         if (parent instanceof GridPanel) {
             parent.remove (ref);        
             parent.add (c, BorderLayout.CENTER);
+            parent.revalidate ();
             parent.repaint ();
         }
         else {
@@ -79,6 +110,7 @@ public class GridPanel extends JPanel {
             }
             
             split.setDividerLocation (loc);
+            split.revalidate ();
             split.repaint ();
         }
     }
@@ -86,7 +118,10 @@ public class GridPanel extends JPanel {
     public static void      removeChild (JComponent c) {
         Container               parent = c.getParent ();
         
-        if (parent instanceof GridPanel) {
+        if (parent == null)
+            return;
+                        
+        if (parent instanceof GridPanel) {        
             parent.remove (c);
             parent.repaint ();
         }
@@ -98,7 +133,7 @@ public class GridPanel extends JPanel {
             if (other == c)
                 other = (JComponent) split.getBottomComponent ();
             
-            split.remove (other);
+            split.removeAll ();
             replace (split, other);
         }
     }
