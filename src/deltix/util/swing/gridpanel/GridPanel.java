@@ -25,6 +25,7 @@ public class GridPanel extends JPanel {
     
     public GridPanel () { 
         super (new BorderLayout ());
+        MoveDTL.install (this);
     }
     
     public static boolean       isLocated (JComponent c, JComponent ref, int side) {

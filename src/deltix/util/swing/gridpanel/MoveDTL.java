@@ -113,6 +113,12 @@ class MoveDTL extends GridPanelDTL {
     )
     {
         removeIndicator ();
-        GridPanel.move (dragged, target, getSide (p));               
+        
+        int         side = getSide (p);
+        
+        if (target instanceof GridPanel)
+            ((GridPanel) target).addComponent (dragged, side);
+        else
+            GridPanel.move (dragged, target, side);               
     }
 }
