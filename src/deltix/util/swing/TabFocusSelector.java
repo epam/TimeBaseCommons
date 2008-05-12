@@ -17,6 +17,8 @@ public class TabFocusSelector extends FocusAdapter {
     public void     focusGained (FocusEvent e) {
         Component       tab = e.getComponent ();
         JTabbedPane     pane = SwingUtil.findParent (tab, JTabbedPane.class);
-        pane.setSelectedIndex (pane.indexOfTabComponent (tab));
+        
+        if (pane != null)
+            pane.setSelectedIndex (pane.indexOfTabComponent (tab));
     }
 }
