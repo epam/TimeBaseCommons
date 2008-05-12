@@ -2,6 +2,7 @@ package deltix.util.swing.gridpanel;
 
 import deltix.util.swing.AbstractApp;
 import deltix.util.swing.SwingUtil;
+import deltix.util.swing.TabFocusSelector;
 import java.awt.*;
 import javax.swing.*;
 
@@ -23,14 +24,17 @@ public class Test {
                 JTextArea    ta = new JTextArea ();
 
                 ta.setText ("Control #" + ii);
-
+                ta.setPreferredSize(new Dimension (100, 100));
                 gp.addComponent (ta, SwingConstants.BOTTOM);
             }
             
             tabs.addTab ("" + jj, gp);
             
-            JLabel      tab = new JLabel ("Tab #" + jj);
-            tab.setForeground (Color.green);
+            JTextField      tab = new JTextField ("Tab #" + jj);
+            tab.setOpaque (false);
+            tab.setBorder (null);
+            tab.addFocusListener (TabFocusSelector.INSTANCE);
+            
             tabs.setTabComponentAt (jj, tab); 
             
             TabDTL.install (tab);           

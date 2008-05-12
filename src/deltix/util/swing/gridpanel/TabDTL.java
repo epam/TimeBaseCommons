@@ -1,5 +1,6 @@
 package deltix.util.swing.gridpanel;
 
+import deltix.util.swing.SwingUtil;
 import java.awt.*;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -20,12 +21,7 @@ public class TabDTL extends GridPanelDTL {
     }
 
     private JTabbedPane     getTabbedPane () {
-        Component       c = target.getParent ();
-        
-        while (!(c instanceof JTabbedPane))
-            c = c.getParent ();
-
-        return ((JTabbedPane) c);
+        return (SwingUtil.findParent (target, JTabbedPane.class));        
     }
 
     /**

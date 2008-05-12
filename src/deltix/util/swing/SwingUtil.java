@@ -412,4 +412,19 @@ public abstract class SwingUtil {
        else
            throw new IllegalArgumentException (comp.toString ());
    }
+   
+   @SuppressWarnings ("unchecked")
+   public static <T extends Container> T findParent (Component c, Class <? extends T> cls) {
+       for (;;) {
+           Container        parent = c.getParent ();
+           
+           if (parent == null)
+               return (null);
+           
+           if (cls.isAssignableFrom (parent.getClass ()))
+               return ((T) parent);
+           
+           c = parent;
+       }
+   }
 }

@@ -8,7 +8,7 @@ import java.io.IOException;
 import javax.swing.*;
 import static javax.swing.SwingConstants.*;
 
-abstract class GridPanelDTL extends DropTargetAdapter {
+public abstract class GridPanelDTL extends DropTargetAdapter {
     protected final JComponent       target;
     
     GridPanelDTL (JComponent inTarget) {
