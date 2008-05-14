@@ -81,9 +81,12 @@ public enum TimeUnit {
     }
     
     /**
-     *  Returns the largest unit by which the specified size is divisible.
-     *  @param size     Interval size in milliseconds.
-     *  @return         The largest time unit by which the size is divisible.
+     *  Returns the largest unit by which the specified number of 
+     *  months is divisible.
+     * 
+     *  @param numMonths Interval size in months.
+     *  @return         The largest time unit by which the specified 
+     *                  number of months is divisible.
      */
     public static TimeUnit  getUnitForMonths (int numMonths) {
         if (numMonths % 12 == 0)
