@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 import org.w3c.dom.Element;
 
 /**
- *  A bean holding Locale/CultureInfo information
+ *  Adapts arbitrary XHTML to JAXB.
  */
 @XmlRootElement (name = "html", namespace="http://www.w3.org/1999/xhtml")
 public class HTML {

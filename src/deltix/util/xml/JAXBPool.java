@@ -4,7 +4,8 @@ import java.util.*;
 import javax.xml.bind.*;
 
 /**
- *
+ *  Nobody knows if pooling marshallers and/or unmarshallers ever 
+ *  improves performance.
  */
 public class JAXBPool {
     private JAXBContext                 mContext;
