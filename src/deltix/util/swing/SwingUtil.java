@@ -1,5 +1,6 @@
 package deltix.util.swing;
 
+import deltix.qsrv.ui.treeedit.DomainAttributePersistentConfigurationPanel;
 import deltix.util.Util;
 import deltix.util.io.StreamPump;
 
@@ -27,8 +28,8 @@ public abstract class SwingUtil {
     /**
      *  Marks components that call setDeepEnabled from their own setEnabled method
      */
-    public interface DeepEnabler { };
-    
+    public interface DeepEnabler { }
+
     static final ResourceBundle     RB = ResourceBundle.getBundle ("deltix/util/swing/ui");
     
     public static final String  ERROR_TITLE =
@@ -287,26 +288,23 @@ public abstract class SwingUtil {
             setChildrenDeepEnabled ((Container) c, b);
     }
 
-    public static void          setDeepEditable (Component c, boolean b) {
-
-        if (c instanceof JEditorPane){
-            ((JEditorPane)c).setEditable(b);
-        }
-        else if (c instanceof JTextField){
-            ((JTextField)c).setEditable(b);
-        }
-        else if (c instanceof JTextArea){
-            ((JTextArea)c).setEditable(b);
-        }
-        else if (c instanceof JComboBox){
+    public static void setDeepEditable(Component c, boolean b) {
+        if (c instanceof JEditorPane) {
+            ((JEditorPane) c).setEditable(b);
+        } else if (c instanceof JTextField) {
+            ((JTextField) c).setEditable(b);
+        } else if (c instanceof JTextArea) {
+            ((JTextArea) c).setEditable(b);
+        } else if (c instanceof JComboBox) {
+            c.setEnabled(b);
+        } else if (c instanceof JCheckBox) {
+            c.setEnabled(b);
+        } else if (c instanceof DomainAttributePersistentConfigurationPanel) {
             c.setEnabled(b);
         }
-         else if (c instanceof JCheckBox){
-            c.setEnabled(b);
-         }
 
         if (c instanceof Container)
-            setChildrenDeepEditable ((Container) c, b);
+            setChildrenDeepEditable((Container) c, b);
     }
 
     public static void          setChildrenDeepEditable (Container c, boolean b) {
