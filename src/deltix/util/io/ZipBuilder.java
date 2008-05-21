@@ -30,7 +30,7 @@ public class ZipBuilder implements Closeable {
         mZipOut.close ();
     }
     
-    private void            addEntry (
+    private void            addEntryInternal (
         String                  name,
         long                    size,
         long                    time,
@@ -44,8 +44,32 @@ public class ZipBuilder implements Closeable {
         e.setTime (time);
         
         mZipOut.putNextEntry (e);
-        StreamPump.pump (is, mZipOut);        
+        StreamPump.pump (is, mZipOut); 
+        mZipOut.flush ();
         mZipOut.closeEntry ();
+    }
+    
+    private void            addEntryNoCheck (ZipFile f, ZipEntry from) 
+        throws IOException, InterruptedException
+    {
+        InputStream     is = f.getInputStream (from);
+        
+        try {
+            addEntryInternal (from.getName (), from.getSize (), from.getTime (), is);
+        } finally {
+            Util.close (is);
+        }
+    }
+    
+    public void             addEntry (ZipFile f, ZipEntry from) 
+        throws IOException, InterruptedException
+    {
+        String          name = from.getName ();
+        
+        if (!mEntryNames.add (name))
+            return;
+
+        addEntryNoCheck (f, from);
     }
     
     public void             addEntry (ZipFile f, String name) 
@@ -54,14 +78,7 @@ public class ZipBuilder implements Closeable {
         if (!mEntryNames.add (name))
             return;
 
-        ZipEntry        from = f.getEntry (name);        
-        InputStream     is = f.getInputStream (from);
-        
-        try {
-            addEntry (name, from.getSize (), from.getTime (), is);
-        } finally {
-            Util.close (is);
-        }
+        addEntryNoCheck (f, f.getEntry (name));        
     }
     
     public void             addFile (File f, String name) 
@@ -73,7 +90,7 @@ public class ZipBuilder implements Closeable {
         FileInputStream     fis = new FileInputStream (f);
 
         try {
-            addEntry (name, f.length (), f.lastModified (), fis);
+            addEntryInternal (name, f.length (), f.lastModified (), fis);
         } finally {
             Util.close (fis);
         }
