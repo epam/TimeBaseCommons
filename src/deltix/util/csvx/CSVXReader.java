@@ -6,6 +6,7 @@ import deltix.util.Util;
 import deltix.util.collections.*;
 import deltix.util.collections.generated.*;
 import deltix.util.text.CharSequenceParser;
+import java.util.regex.*;
 
 /**
  *
@@ -255,6 +256,24 @@ public class CSVXReader {
         return (mHeaders);
     }
     
+    public int                          getHeaderIndex (String hdr) {
+        if (mHeaders == null)
+            throw new IllegalStateException ("readHeaders () has not been called");
+        
+        return (Util.indexOf (mHeaders, hdr));
+    }
+    
+    public int                          getHeaderIndexEx (String hdr) 
+        throws IOException
+    {
+        int         idx = getHeaderIndex (hdr);
+        
+        if (idx < 0)
+            throw new IOException ("Required header '" + hdr + "' is missing.");
+        
+        return (idx);
+    }
+    
     public int                          getNumCells () {
         return (mInclStartIndexes.size ());
     }
@@ -269,6 +288,27 @@ public class CSVXReader {
     
     public String                       getDiagPrefixWithLineNumber () {
         return (mDiagPrefix + mLineNumber + ": ");
+    }
+    
+    public boolean                      cellMatches (int idx, Matcher regex) {
+        regex.reset (getCell (idx));
+        return (regex.matches ());
+    }
+    
+    public boolean                      cellMatches (int idx, Pattern regex) {
+        return (regex.matcher (getCell (idx)).matches ());
+    }
+    
+    public boolean                      cellContains (int idx, String text) {
+        return (cellContains (idx, text, false));
+    }
+    
+    public boolean                      cellContains (int idx, String text, boolean trimCell) {
+        return (Util.equals (text, getCell (idx, trimCell)));
+    }
+    
+    public CharSequence                 getCell (int idx) {
+        return (getCell (idx, false));
     }
     
     public CharSequence                 getCell (int idx, boolean trim) {

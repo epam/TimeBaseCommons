@@ -119,6 +119,10 @@ public abstract class ColumnDescriptor {
         mIdxInCSV = csvIdx;
     }
 
+    public final boolean        findIndexFromHeaders (CSVXReader csv) {
+        return (findIndexFromHeaders (csv.getHeaders ()));
+    }
+    
     public final boolean        findIndexFromHeaders (String [] headers) {
         mIdxInCSV = Util.indexOf (headers, mHeader);
 
