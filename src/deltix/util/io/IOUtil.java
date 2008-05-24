@@ -460,6 +460,21 @@ public class IOUtil {
         }
     }
 
+    public static void		writeLines (File f, Collection <String> lines)
+        throws IOException
+    {
+        PrintWriter fw = new PrintWriter (f);
+
+        try {
+            for (String s : lines)
+                fw.println (s);
+            
+            fw.close ();
+        } finally {
+            Util.close (fw);
+        }
+    }
+
     public static void		writeBytes (
         File                    file,
         byte []                 bytes,

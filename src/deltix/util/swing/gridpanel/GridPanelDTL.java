@@ -1,6 +1,5 @@
 package deltix.util.swing.gridpanel;
 
-import deltix.qsrv.hf.pub.md.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
