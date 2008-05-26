@@ -280,7 +280,7 @@ public abstract class SwingUtil {
             JTextArea      tf = (JTextArea) c;
             tf.setEnabled (true);
             tf.setEditable (b);
-        }            
+        }
         else
             c.setEnabled (b);
 
@@ -299,7 +299,7 @@ public abstract class SwingUtil {
             c.setEnabled(b);
         } else if (c instanceof JCheckBox) {
             c.setEnabled(b);
-        } else if (c instanceof DomainAttributePersistentConfigurationPanel) {
+        } if (c instanceof JPanel) {
             c.setEnabled(b);
         }
 
