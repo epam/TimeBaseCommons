@@ -336,6 +336,10 @@ public class CSVXReader {
         return (CharSequenceParser.parseDouble (getCell (idx, true)));
     }
     
+    public double                       getDoubleEx (int idx) {
+        return (Double.parseDouble (getString (idx, true)));
+    }
+    
     public float                        getFloat (int idx) {
         return (CharSequenceParser.parseFloat (getCell (idx, true)));
     }
