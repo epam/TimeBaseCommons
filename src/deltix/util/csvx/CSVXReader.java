@@ -17,13 +17,24 @@ public class CSVXReader {
     private final boolean               mCloseReader;
     private String                      mDiagPrefix;
     private boolean                     mEOF = false;
-    private int                         mLineNumber = 1;
     private int                         mPosition = 1;
+    private int                         mLineNumber = 1;
     private StringBuilder               mBuffer = new StringBuilder ();
     private IntegerArrayList            mInclStartIndexes = new IntegerArrayList ();
     private IntegerArrayList            mExclEndIndexes = new IntegerArrayList ();
     private boolean                     mLastCharWasCR = false;    
     private CharSubSequence             mStockCharSequence = new CharSubSequence (mBuffer);
+    
+    public static CSVXReader            openResource (Class <?> cls, String path) 
+        throws IOException
+    {
+        InputStream         is = cls.getResourceAsStream (path);
+        
+        if (is == null)
+            throw new FileNotFoundException (path);
+        
+        return (new CSVXReader (new InputStreamReader (is), true, path + ": "));
+    }
     
     public CSVXReader (Reader rd, boolean closeReader, String diagPrefix) {
         mReader = rd;
