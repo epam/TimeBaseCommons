@@ -32,8 +32,22 @@ public class CharSequenceSet extends HashSet <String> {
         return (add (e.toString ()));
     }
     
+    public boolean              addCharSequence (CharSequence key, int start, int end) {
+        mBuffer.set (key, start, end);   
+        
+        if (contains (mBuffer))
+            return (false);
+        
+        return (add (mBuffer.toString ()));
+    }
+    
     public boolean              removeCharSequence (CharSequence key) {
         mBuffer.set (key);
+        return (removeCharSequence (mBuffer));
+    }
+    
+    public boolean              removeCharSequence (CharSequence key, int start, int end) {
+        mBuffer.set (key, start, end);
         return (removeCharSequence (mBuffer));
     }
     
