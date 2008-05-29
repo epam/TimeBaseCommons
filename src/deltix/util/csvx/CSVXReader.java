@@ -365,7 +365,7 @@ public class CSVXReader {
     
     public void                         setIndexFromHeaders (ColumnDescriptor ... cds) {
         for (ColumnDescriptor cd : cds)
-            if (!cd.findIndexFromHeaders (mHeaders))
+            if (!cd.hasConstantValue () && !cd.findIndexFromHeaders (mHeaders))
                 throw new RuntimeException (
                     mDiagPrefix + "1: Header '" + cd.getHeader () + "' was not found"
                 );

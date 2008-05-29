@@ -8,6 +8,7 @@ import java.util.regex.*;
  */
 public abstract class ColumnDescriptor {
     private String                      mHeader;
+    private String                      mConstValue;
     private boolean                     mTrim = true;
     private int                         mIdxInCSV = -1;
     private CharSequence                mCell;
@@ -32,6 +33,9 @@ public abstract class ColumnDescriptor {
     }
 
     public final String         getHeader () {
+        if (mHeader == null)
+            throw new IllegalStateException ("Column has no header");
+        
         return (mHeader);
     }
 
@@ -39,6 +43,10 @@ public abstract class ColumnDescriptor {
         return (mIdxInCSV);
     }
 
+    public final void           setConstValue (String value) {
+        mConstValue = value;
+    }
+    
     public final void           setTrimWhiteSpace (boolean flag) {
         mTrim = flag;
     }
@@ -47,28 +55,31 @@ public abstract class ColumnDescriptor {
         return (mTrim);
     }
 
-    public void setGapPattern(String gapPattern) {
+    public void                 setGapPattern(String gapPattern) {
         if (gapPattern != null)
             mGapPattern = Pattern.compile(gapPattern);
     }
 
-    public void setGapValues(String[] gapValues) {
+    public void                 setGapValues(String[] gapValues) {
         this.mGapValues = gapValues;
     }
 
-    public void setNullPattern(String nullPattern) {
+    public void                 setNullPattern(String nullPattern) {
         if (nullPattern != null)
             mNullPattern = Pattern.compile(nullPattern);
     }
 
-    public void setNullValues(String[] nullValues) {
+    public void                 setNullValues(String[] nullValues) {
         this.mNullValues = nullValues;
     }
 
     public final void           fetchCell (CSVXReader csvxrd) {
-        assert mIdxInCSV >= 0 : mHeader + ": index unset - call CSVXReader.setIndexFromHeaders (this)!";
-
-        mCell = csvxrd.getCell (mIdxInCSV, mTrim);
+        if (mConstValue != null)
+            mCell = mConstValue;
+        else {
+            assert mIdxInCSV >= 0 : mHeader + ": index unset";
+            mCell = csvxrd.getCell (mIdxInCSV, mTrim);
+        }
     }
 
     public final boolean        isEmpty () {
@@ -115,6 +126,10 @@ public abstract class ColumnDescriptor {
         return result;
     }
 
+    public final boolean        hasConstantValue () {
+        return (mConstValue != null);
+    }
+    
     public final void           setIndexInCSV (int csvIdx) {
         mIdxInCSV = csvIdx;
     }
@@ -124,8 +139,7 @@ public abstract class ColumnDescriptor {
     }
     
     public final boolean        findIndexFromHeaders (String [] headers) {
-        mIdxInCSV = Util.indexOf (headers, mHeader);
-
+        mIdxInCSV = Util.indexOf (headers, getHeader ());
         return (mIdxInCSV >= 0);
     }
 }
