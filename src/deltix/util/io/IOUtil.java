@@ -1332,4 +1332,67 @@ public class IOUtil {
         }        
     }
     
+    public static void      addFileToZip (File f, ZipOutputStream zos, String path) 
+        throws IOException, InterruptedException
+    {
+        ZipEntry        e = new ZipEntry (path);
+        
+        e.setTime (f.lastModified ());
+        e.setSize (f.length ());
+
+        zos.putNextEntry (e);
+
+        FileInputStream     fis = new FileInputStream (f);
+        
+        try {
+            StreamPump.pump (fis, zos);
+        } finally {
+            fis.close ();
+        }
+        
+        zos.closeEntry ();
+    }
+    
+    public static void      rezip (
+        ZipFile                 src, 
+        ZipOutputStream         zos,
+        String                  pathPrefix,
+        boolean                 ignoreDuplicates
+    ) 
+        throws IOException, InterruptedException
+    {
+        Enumeration <? extends ZipEntry>  entries = src.entries ();
+        
+        while (entries.hasMoreElements ()) {
+            ZipEntry        srcEntry = entries.nextElement ();
+            String          name = srcEntry.getName ();
+            
+            if (pathPrefix != null)
+                name = pathPrefix + name;
+            
+            ZipEntry        e = new ZipEntry (name);
+            
+            e.setTime (srcEntry.getTime ());
+            e.setSize (srcEntry.getSize ());
+
+            try {
+                zos.putNextEntry (e);
+            } catch (ZipException x) {
+                if (ignoreDuplicates && x.getMessage ().startsWith ("duplicate entry"))
+                    continue;
+                
+                throw x;
+            }
+            
+            InputStream     is = src.getInputStream (srcEntry);
+
+            try {
+                StreamPump.pump (is, zos);
+            } finally {
+                is.close ();
+            }
+
+            zos.closeEntry ();
+        }                
+    }    
 }

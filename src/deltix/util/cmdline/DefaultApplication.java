@@ -1,11 +1,11 @@
 package deltix.util.cmdline;
 
 import deltix.util.io.StreamPump;
-import deltix.util.io.UncheckedIOException;
 import java.util.*;
 import java.io.*;
 
 import deltix.util.Util;
+import deltix.util.collections.generated.IntegerArrayList;
 import deltix.util.io.IOUtil;
 import org.xml.sax.SAXParseException;
 
@@ -30,8 +30,9 @@ import org.xml.sax.SAXParseException;
  *</pre>
  */
 public abstract class DefaultApplication {
-    private String []                   mArgs;
-    private Map <String, Integer>       mMap = new HashMap <String, Integer> ();
+    private String []                       mArgs;
+    private Map <String, IntegerArrayList>    mMap = 
+        new HashMap <String, IntegerArrayList> ();
     
     protected DefaultApplication (String [] args) {
         ArrayList <String>      expArgs = new ArrayList <String> ();
@@ -61,8 +62,17 @@ public abstract class DefaultApplication {
             
     	mArgs = expArgs.toArray (new String [expArgs.size ()]);
     	
-    	for (int ii = 0; ii < mArgs.length; ii++)
-    		mMap.put (mArgs [ii], ii);
+    	for (int ii = 0; ii < mArgs.length; ii++) {
+            String              arg = mArgs [ii];
+            IntegerArrayList    index = mMap.get (arg);
+            
+            if (index == null) {
+                index = new IntegerArrayList ();
+                mMap.put (arg, index);
+            }
+            
+    		index.add (ii);
+        }
     	
         //
         //  Do some default argument processing
@@ -109,11 +119,47 @@ public abstract class DefaultApplication {
      *						or -1 if not found.
      */
     public int							findArg (String key) {
-    	Integer		idx = (Integer) mMap.get (key);
-    	if (idx == null)
+    	IntegerArrayList    index = mMap.get (key);
+        
+    	if (index == null)
     		return (-1);
-    	else
-    		return (idx.intValue ());
+        
+        if (index.size () == 1)    	
+    		return (index.get (0));
+        
+        throw new IllegalArgumentException ("Argument " + key + " was specified more than once.");
+    }
+    
+    /**
+     *	Returns the arguments following the specified key on the
+     *	command line, which can be present more than once.
+     *
+     *	@param key		The argument being looked for.
+     *	@return			An array of arguments following <i>key</i>, 
+     *						or <i>null</i> if not found. The return value is
+     *                      NEVER an empty array.
+     */
+    public String []					getArgValues (String key) {
+    	IntegerArrayList    index = mMap.get (key);
+        
+    	if (index == null)
+    		return (null);
+        
+        int                 num = index.size ();
+        String []           ret = new String [num];
+        
+        for (int ii = 0; ii < num; ii++) {
+            int             pos = index.get (ii) + 1;
+            
+            if (pos >= mArgs.length)
+                throw new IllegalArgumentException (
+                    "Argument " + key + " must not be the last argument on the command line."
+                );
+            
+            ret [ii] = mArgs [pos];
+        }
+        
+        return (ret);
     }
     
     /**
@@ -138,15 +184,20 @@ public abstract class DefaultApplication {
      *	@param defval	The value to return if the argument is not 
      *						specified.
      *	@return			The next argument following <i>key</i>, 
-     *						or <i>null</i> if not found, or if 
-     *						<i>key</i> was the last argument.
+     *						or <i>null</i> if not found.
      */
     public String						getArgValue (String key, String defval) {
     	int			idx = findArg (key);
-    	if (idx == -1 || idx + 1 >= mArgs.length)
+        
+        if (idx == -1)
     		return (defval);
-    	else
-    		return (mArgs [idx + 1]);
+        
+        if (idx + 1 >= mArgs.length)
+            throw new IllegalArgumentException (
+                "Argument " + key + " must not be the last argument on the command line."
+            );
+        
+    	return (mArgs [idx + 1]);
     }
     
     /**
