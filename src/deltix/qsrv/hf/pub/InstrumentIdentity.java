@@ -1,7 +1,5 @@
 package deltix.qsrv.hf.pub;
 
-import deltix.qsrv.hf.pub.InstrumentType;
-
 /**
  *
  */
