@@ -373,6 +373,18 @@ public class Util {
     }
 
     /**
+     *  Closes a Closeable without throwing an exception. Checks for null.
+     */
+    public static void			close (Closeable closeable) {
+        if (closeable != null)
+            try {
+                closeable.close ();
+            } catch (Exception x) {
+                handleException (x);
+            }
+    }
+
+    /**
      *  Closes a Socket without throwing an exception. Checks for null.
      */
     public static void			close (Socket s) {
