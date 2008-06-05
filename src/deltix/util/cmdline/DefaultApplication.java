@@ -7,6 +7,11 @@ import java.io.*;
 import deltix.util.Util;
 import deltix.util.collections.generated.IntegerArrayList;
 import deltix.util.io.IOUtil;
+import deltix.util.time.GMT;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -380,7 +385,56 @@ public abstract class DefaultApplication {
         printUsage (System.out);
     }
     
-    public void                     printUsage (OutputStream os) 
+    protected long                  getDateArg (String key, long defValue) {
+        String      arg = getArgValue (key);
+
+        if (arg == null)
+            return (defValue);
+
+        try {
+            return (Long.parseLong (arg));
+        } catch (NumberFormatException x) {
+            // continue trying different formats
+        }
+
+        DateFormat  format = createDateFormat ();
+
+        try {
+            return (format.parse (arg).getTime ());
+        } catch (ParseException px) {
+            throw new IllegalArgumentException (
+    			"Bad " + key + " date: " + arg
+    		);
+        }
+    }
+
+    protected String            getDefaultDateFormat () {
+        return ("yyyy-MM-dd");
+    }
+    
+    protected TimeZone          getDefaultTimeZone () {
+        return (GMT.TZ);
+    }
+    
+    protected DecimalFormat     createDecimalFormat () {
+        return (new DecimalFormat (getArgValue ("-ff", "#,###.##")));
+    }
+
+    protected TimeZone          getTimeZone () {
+        String          tzname = getArgValue ("-tz");
+                
+        return (tzname == null ? getDefaultTimeZone () : TimeZone.getTimeZone (tzname));
+    }
+    
+    protected DateFormat        createDateFormat () {
+        DateFormat      format = new SimpleDateFormat (getArgValue ("-tf", getDefaultDateFormat ()));
+
+        format.setTimeZone (getTimeZone ());
+
+        return (format);
+    }
+    
+    public void                 printUsage (OutputStream os) 
         throws IOException, InterruptedException
     {
         boolean         somethingPrinted = false;
