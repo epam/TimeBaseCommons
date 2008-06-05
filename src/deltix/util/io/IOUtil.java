@@ -547,6 +547,16 @@ public class IOUtil {
     }
 
     /**
+     *  Opens a resource and wraps in a LineNumberReader, throws a FileNotFoundException
+     *  if not found.
+     */
+    public static LineNumberReader   openResourceAsReader (String relPath)
+        throws FileNotFoundException
+    {
+        return (new LineNumberReader (new InputStreamReader (openResourceAsStream (relPath))));                
+    }
+    
+    /**
      *  Opens a resource as stream, but throws a FileNotFoundException
      *  if not found.
      */
