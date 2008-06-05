@@ -15,6 +15,8 @@ import java.util.regex.*;
  *
  */
 public class IOUtil {
+    public static final String  CR = System.getProperty ("line.separator");
+    
     public static URL       createFileUrl (File f) {
         String          path = f.getAbsolutePath ().replace ('\\', '/');
         
@@ -1332,25 +1334,65 @@ public class IOUtil {
         }        
     }
     
-    public static void      addFileToZip (File f, ZipOutputStream zos, String path) 
+    public static long      addFileToZip (File f, ZipOutputStream zos, String path) 
         throws IOException, InterruptedException
     {
-        ZipEntry        e = new ZipEntry (path);
-        
-        e.setTime (f.lastModified ());
-        e.setSize (f.length ());
-
-        zos.putNextEntry (e);
-
-        FileInputStream     fis = new FileInputStream (f);
-        
-        try {
-            StreamPump.pump (fis, zos);
-        } finally {
-            fis.close ();
+        return (addFileToZip (f, zos, path, null));
+    }
+    
+    public static interface EntryListener {
+        public void     entryAdded (ZipEntry e);
+    }
+    
+    public static long      addFileToZip (
+        File                    f, 
+        ZipOutputStream         zos, 
+        String                  path,
+        EntryListener           listener
+    ) 
+        throws IOException, InterruptedException
+    {
+        if (f.isDirectory ()) {
+            File []         files = f.listFiles ();
+            long            length = 0;
+            
+            if (files != null) {
+                for (File ff : files)
+                    length +=
+                        addFileToZip (
+                            ff, 
+                            zos, 
+                            path == null ? ff.getName () : path + '/' + ff.getName (),
+                            listener
+                        );                
+            }
+            
+            return (length);
         }
-        
-        zos.closeEntry ();
+        else {
+            ZipEntry        e = new ZipEntry (path);
+            long            length = f.length ();
+            
+            e.setTime (f.lastModified ());
+            e.setSize (length);
+
+            zos.putNextEntry (e);
+
+            FileInputStream     fis = new FileInputStream (f);
+
+            try {
+                StreamPump.pump (fis, zos);
+            } finally {
+                fis.close ();
+            }
+
+            zos.closeEntry ();
+            
+            if (listener != null)
+                listener.entryAdded (e);
+            
+            return (length);
+        }
     }
     
     public static void      rezip (

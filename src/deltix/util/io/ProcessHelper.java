@@ -70,7 +70,39 @@ public class ProcessHelper {
     ) 
     	throws IOException
     {
-    	Process			proc = Runtime.getRuntime ().exec (cmd, envp);
+        Process			proc = Runtime.getRuntime ().exec (cmd, envp);
+        
+        exec (proc, stdin, closeStdin, stdout, closeStdout, stderr, closeStderr);
+        
+        return (proc);
+    }
+    
+	/**
+	 *	Starts a system process and returns asynchronously.
+	 *
+	 *	@param cmd			The command to execute.
+	 *	@param envp			The environment.
+	 *	@param stdin		The stream from which the process will read.
+	 *	@param closeStdin	Whether to close stdin at EOF.
+	 *	@param stdout		The stream into which the process will write its output.
+	 *	@param closeStdout	Whether to close stdout at EOF.
+	 *	@param stderr		The stream into which the process will write its errors.
+	 *	@param closeStderr	Whether to close stderr at EOF.
+	 *	@return				The process object.
+	 *
+	 *	@exception IOException	When <code>Runtime.exec ()</code> throws it.
+	 */
+    public static void          exec (
+    	Process                     proc, 
+    	InputStream					stdin,
+    	boolean						closeStdin,
+    	OutputStream				stdout,
+    	boolean						closeStdout,
+    	OutputStream				stderr,
+    	boolean						closeStderr
+    ) 
+    	throws IOException
+    {    	
     	InputStream		proc_stderr = proc.getErrorStream ();
     	InputStream		proc_stdout = proc.getInputStream ();
     	OutputStream	proc_stdin = proc.getOutputStream ();
@@ -87,8 +119,6 @@ public class ProcessHelper {
     	
     	if (stdin != null)
     		new StreamPump (stdin, proc_stdin, closeStderr, true).start ();
-    		
-    	return (proc);
     }
 
 	/**
