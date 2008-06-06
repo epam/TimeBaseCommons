@@ -7,6 +7,15 @@ import org.apache.bcel.*;
 
 public class AnnotationReader implements AttributeReader
 {
+    private AnnotationReader () { }
+    
+    public static final AnnotationReader    INSTANCE = new AnnotationReader ();
+    
+    public static void      install () {
+        Attribute.addAttributeReader ("RuntimeInvisibleAnnotations", INSTANCE);
+        Attribute.addAttributeReader ("RuntimeVisibleAnnotations", INSTANCE);
+    }
+    
 	public Attribute createAttribute (int name_index, int length, DataInputStream in, ConstantPool cp)
 	{
 		try {
@@ -54,11 +63,14 @@ public class AnnotationReader implements AttributeReader
 		byte tag = in.readByte();
 		switch(tag) {
 			case 'B': case 'C': case 'D': case 'J':
-			case 'F': case 'I': case 'S':
+            case 'F': case 'I': case 'S': case 'Z':
 				return ((ConstantObject)cp.getConstant(in.readShort())).getConstantValue(cp);
 
 			case 's':
-				return cp.constantToString(cp.getConstant(in.readShort()));
+                return cp.constantToString (cp.getConstant (in.readShort ()));
+                
+			case 'c':
+            	return new ClassValue (cp.constantToString (cp.getConstant (in.readShort ())));
 
             case '[': {
                 short numElems = in.readShort ();
@@ -67,9 +79,13 @@ public class AnnotationReader implements AttributeReader
                     arr [ii] = readMemberValue (in, cp);
                 return (arr);
             }
-                
+                                
             case 'e':
-            case 'c':
+                return new EnumValue (
+                    cp.constantToString (cp.getConstant (in.readShort ())),
+                    cp.constantToString (cp.getConstant (in.readShort ()))
+                );
+                
             case '@':
             default:
 				throw new UnsupportedOperationException("tag = " + (char) tag);
