@@ -68,6 +68,19 @@ public class IndexedArrayList <E> implements List <E>, Serializable {
         this (new ObjectArrayList <E> (list));
     }
 
+    public IndexedArrayList (E [] array) {
+        int             num = array.length;
+        
+        mElemList = new ArrayList <E> (num);
+        mElemToIdxMap = new ObjectToIntegerHashMap <Object> (num);
+        
+        for (int ii = 0; ii < num; ii++) {
+            E   e = array [ii];
+            mElemList.add (e);
+            map (e, ii);
+        }
+    }
+
     private void        map (E e, int idx) {
         if (e == null) {
             if (mFirstNullIdx < 0 || idx < mFirstNullIdx)
