@@ -22,14 +22,14 @@ public class MSSQLServer {
         throws SQLException
     {
         try {
-            loadMSDriver ();
+            loadMS2005Driver ();
         } catch (ClassNotFoundException cnfx) {
             Util.LOGGER.log (Level.SEVERE, "Failed to load the MS SQL Server driver", cnfx);
         }
         
         return (
             DriverManager.getConnection (
-                "jdbc:microsoft:sqlserver://" + host + ":" + port + ";DatabaseName=" + dbname +
+                "jdbc:sqlserver://" + host + ":" + port + ";DatabaseName=" + dbname +
                 ";SelectMethod=cursor",
                 user,
                 password
