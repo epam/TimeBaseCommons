@@ -1,21 +1,25 @@
 package deltix.util.collections;
 
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- *  
+ *
  */
 public class CharSequenceSet extends HashSet <String> {
-    private CharSubSequence     mBuffer = new CharSubSequence ();
-    
+    private static final long serialVersionUID = 1L;
+    private transient CharSubSequence     mBuffer = new CharSubSequence ();
+
     public CharSequenceSet (int initialCapacity, float loadFactor) {
         super (initialCapacity, loadFactor);
     }
-    
+
     public CharSequenceSet (int initialCapacity) {
         super (initialCapacity);
     }
-    
+
     public CharSequenceSet () {
         super ();
     }
@@ -24,40 +28,45 @@ public class CharSequenceSet extends HashSet <String> {
         for (Set <String> s : unionMembers)
             addAll (s);
     }
-    
+
     public boolean              addCharSequence (CharSequence e) {
         if (containsCharSequence (e))
             return (false);
-        
+
         return (add (e.toString ()));
     }
-    
+
     public boolean              addCharSequence (CharSequence key, int start, int end) {
-        mBuffer.set (key, start, end);   
-        
+        mBuffer.set (key, start, end);
+
         if (contains (mBuffer))
             return (false);
-        
+
         return (add (mBuffer.toString ()));
     }
-    
+
     public boolean              removeCharSequence (CharSequence key) {
         mBuffer.set (key);
         return (removeCharSequence (mBuffer));
     }
-    
+
     public boolean              removeCharSequence (CharSequence key, int start, int end) {
         mBuffer.set (key, start, end);
         return (removeCharSequence (mBuffer));
     }
-    
+
     public final boolean        containsCharSequence (CharSequence key) {
-        mBuffer.set (key);   
+        mBuffer.set (key);
         return (contains (mBuffer));
     }
 
     public final boolean        containsCharSequence (CharSequence key, int start, int end) {
-        mBuffer.set (key, start, end);   
+        mBuffer.set (key, start, end);
         return (contains (mBuffer));
-    }           
+    }
+
+    public void readObject (ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        mBuffer = new CharSubSequence ();
+    }
 }
