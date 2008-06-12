@@ -5,8 +5,8 @@ import java.sql.SQLException;
 /**
  *
  */
-public class NullValueException extends SQLException {
-    public NullValueException () {
+public class NullSqlValueException extends SQLException {
+    public NullSqlValueException () {
         super ("Query returned null");
     }
 }

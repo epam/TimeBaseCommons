@@ -60,7 +60,7 @@ public class JDBCUtils {
             int                 ret = rs.getInt (1);
             
             if (rs.wasNull ())
-                throw new NullValueException ();
+                throw new NullSqlValueException ();
             
             if (rs.next ())
                 throw new MultipleRowsReturnedException ();
@@ -81,7 +81,7 @@ public class JDBCUtils {
             long                ret = rs.getLong (1);
             
             if (rs.wasNull ())
-                throw new NullValueException ();
+                throw new NullSqlValueException ();
             
             if (rs.next ())
                 throw new MultipleRowsReturnedException ();
