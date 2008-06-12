@@ -1,6 +1,7 @@
 package deltix.qsrv.comm.xml;
 
 import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
+import deltix.util.Util;
 
 /**
  * Patched version of JAXB's RuntimeAnnotationReader that marks java.lang.Exception as @XmlTransient
@@ -8,14 +9,16 @@ import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
 public class QSJaxbAnnotationReader extends TransientAnnotationReader implements RuntimeAnnotationReader {
 
     public QSJaxbAnnotationReader () {
+        if (!Util.IS_IKVM)
+            try {
+                addTransientField(Throwable.class.getDeclaredField("stackTrace"));            
+            } catch (NoSuchFieldException unexpected) {
+                throw new RuntimeException (unexpected);
+            }
+        
         try {
-
-            addTransientField(Throwable.class.getDeclaredField("stackTrace"));
             addTransientMethod(Throwable.class.getDeclaredMethod("getStackTrace"));
-
         } catch (NoSuchMethodException unexpected) {
-            throw new RuntimeException (unexpected);
-        } catch (NoSuchFieldException unexpected) {
             throw new RuntimeException (unexpected);
         }
     }
