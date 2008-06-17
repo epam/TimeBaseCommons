@@ -32,6 +32,10 @@ public class EmptyAsynchronousCursor
         return (true);
     }
 
+    public boolean          isDataAvailable () {
+        return (true);
+    }
+    
     public boolean          next () {
         if (isAtEnd ())
             throw new IllegalStateException ("Cursor is at end");
@@ -48,7 +52,5 @@ public class EmptyAsynchronousCursor
         return (mNextWasCalled);
     }
 
-    public boolean          isDataAvailable () {
-        return (true);
-    }
+    
 }
