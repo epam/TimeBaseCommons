@@ -27,6 +27,18 @@ public class DoubleQueue {
             mTail = 0;                
     }
     
+    public double               youngest () {
+        assert mSize > 0;
+        
+        return (mBuffer [mTail]);
+    }
+    
+    public double               oldest () {
+        assert mSize > 0;
+        
+        return (mBuffer [mHead]);
+    }
+    
     public double               poll () {
         assert mSize > 0;
         
