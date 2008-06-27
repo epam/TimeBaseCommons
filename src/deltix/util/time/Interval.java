@@ -8,7 +8,11 @@ import deltix.util.text.*;
  */
 public abstract class Interval {
     public static final Interval    ZERO = null;
-    
+    public static final Interval DAY = Interval.parseQQL("1D");
+    public static final Interval HOUR = Interval.parseQQL("1H");
+    public static final Interval MINUTE = Interval.parseQQL("1I");
+    public static final Interval SECOND = Interval.parseQQL("1S");
+
     protected Interval () {
     }
     
