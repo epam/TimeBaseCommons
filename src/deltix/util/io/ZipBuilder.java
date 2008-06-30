@@ -22,6 +22,10 @@ public class ZipBuilder implements Closeable {
         mZipOut = zos;
     }
     
+    public ZipBuilder (OutputStream os) {
+        mZipOut = new ZipOutputStream (os);
+    }
+    
     public boolean          containsEntry (String name) {
         return (mEntryNames.contains (name));
     }
