@@ -10,20 +10,20 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
     private final FixedSizeStack<E> mEmptyElements;
     private final CircularBoundedQueue<E> mReadyElements;
     private final boolean mCannibalizeStaleReadyElements = true;
-    
+
     public CircularBoundedDoubleStateQueue(final int elementCount) {
         mReadyElements = new CircularBoundedQueue<E>(elementCount);
         mEmptyElements = new FixedSizeStack<E>(elementCount); // empty elements have no order, stack is faster than queue
         for (int idx = 0; idx < elementCount; idx++) {
             mEmptyElements.add(newEmptyElement());
-        }   
-        
+        }
+
     }
 
     public int capacity() {
         return mEmptyElements.capacity();
     }
-    
+
     public final void addEmptyElement(E e) {
         synchronized (mEmptyElements) {
             mEmptyElements.add(e);
@@ -42,11 +42,14 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         synchronized (mEmptyElements) {
             try {
                 while (mEmptyElements.count() == 0) {
+
+//FIXME: Classic concurrent if-then checking trap. The fact that emptyElements was empty a moment ago doesn't imply we have at least one ready element now
                     if (mCannibalizeStaleReadyElements) {
-                        assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
+
+                        // assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
                         return getReadyElement();
                     }
-                    
+
                     mEmptyElements.wait();
                 }
             } catch (InterruptedException ie) {
@@ -56,8 +59,8 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
             return mEmptyElements.remove();
         }
     }
-    
-    public final E getReadyElement() throws InterruptedException { 
+
+    public final E getReadyElement() throws InterruptedException {
         synchronized (mReadyElements) {
             try {
                 while (mReadyElements.count() == 0) {
