@@ -20,7 +20,7 @@ public class HTML {
         StringWriter    swr = new StringWriter ();
         
         try {
-            JAXBContext     ctxt = JAXBContext.newInstance (HTML.class);
+            JAXBContext     ctxt = JAXBContextFactory.newInstance (HTML.class);
             Marshaller      m = ctxt.createMarshaller ();
             m.setProperty (Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             m.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
