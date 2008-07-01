@@ -4,24 +4,24 @@ package deltix.data.redsky.util.collection;
  *
  * @author PaharelauK
  */
-public class CircularBoundedQueue<E> implements CircularQueue<E>{ 
-    
-    
+public class CircularBoundedQueue<E> implements CircularQueue<E>{
+
+
     /** The queued items  */
     private final E[] mItems;
-    
+
     /** items index for next take, poll or remove */
     private int mTakeIndex = 0;
-    
+
     /** items index for next put, offer, or add. */
     private int mPutIndex = 0;
-    
+
     /** Number of items in the queue */
     private int mCount;
-    
+
     private final int mCapacity;
-    
-  
+
+
     @SuppressWarnings("unchecked")
     public CircularBoundedQueue(int capacity) {
         if (capacity <= 0) {
@@ -30,7 +30,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
         mCapacity = capacity;
         this.mItems = (E[]) new Object[capacity];
     }
-    
+
     // Internal helper methods
 
     /**
@@ -59,7 +59,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
         --mCount;
         return x;
     }
-    
+
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
@@ -70,7 +70,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
      * else throws an <tt>IllegalStateException</tt>.
      *
      * @param e the element to add
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to capacity restrictions
      * @throws ClassCastException if the class of the specified element
@@ -108,8 +108,8 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
             return true;
         }
     }
-    
-    
+
+
     public final E remove(){
         if (mCount == 0)
              return null;
@@ -129,6 +129,6 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
     public int capacity() {
         return mCapacity;
     }
-    
-    
+
+
 }
