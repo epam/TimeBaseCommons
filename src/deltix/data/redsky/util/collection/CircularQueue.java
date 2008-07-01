@@ -10,7 +10,7 @@ package deltix.data.redsky.util.collection;
  * @author PaharelauK
  */
 public interface CircularQueue<E> {
-    
+
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
@@ -21,7 +21,7 @@ public interface CircularQueue<E> {
      * else throws an <tt>IllegalStateException</tt>.
      *
      * @param e the element to add
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to capacity restrictions
      * @throws ClassCastException if the class of the specified element
@@ -32,7 +32,7 @@ public interface CircularQueue<E> {
      *         prevents it from being added to this queue
      */
     public boolean add(E e) ;
-    
+
     public E remove();
 
 }
