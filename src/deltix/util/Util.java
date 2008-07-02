@@ -1,6 +1,5 @@
 package deltix.util;
 
-import deltix.util.memory.DataExchangeUtils;
 import java.io.*;
 import java.net.*;
 import java.security.*;
@@ -21,8 +20,7 @@ public class Util {
         System.getProperty ("path.separator").equals (";");
     public static final String  NATIVE_LINE_BREAK =
         System.getProperty ("line.separator");
-    public static final boolean IS_IKVM =
-        System.getProperty ("java.runtime.name").contains ("IKVM");
+    
     public static void collectLocalFiles(String path, Collection<String> files) {
         File file = new File(path);
         if (file.isDirectory()) {
