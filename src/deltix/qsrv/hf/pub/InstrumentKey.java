@@ -56,4 +56,11 @@ public class InstrumentKey implements InstrumentIdentity {
     public int                  hashCode () {
         return (hashCode (this));
     }
+
+    @Override
+    public String               toString () {
+        return (symbol + ":" + instrumentType);
+    }
+    
+    
 }
