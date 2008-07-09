@@ -42,8 +42,8 @@ public class RandomAccessFileToInputStreamAdapterMT extends InputStream {
             long    dist = additionalLimit () - offset;
             
             if (dist < len) {
-                if (dist < 0)            
-                    return (0);
+                if (dist <= 0)            
+                    return (-1);
                 
                 len = (int) dist;
             }
