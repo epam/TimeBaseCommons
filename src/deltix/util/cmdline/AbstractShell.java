@@ -40,8 +40,7 @@ public abstract class AbstractShell extends DefaultApplication {
     protected void          set (String option, String value) {
         try {
             if (!doSet (option, value)) {
-                System.err.println ("set " + option + ": unrecognized option.");
-                printUsage (System.err);
+                System.err.println ("set " + option + ": unrecognized option. (Type ? for usage)");
             }
         } catch (Throwable x) {
             printException (x, true);
@@ -53,8 +52,7 @@ public abstract class AbstractShell extends DefaultApplication {
 
         try {
             if (!doCommand (key, args)) {
-                System.err.println (key + ": unrecognized command.");
-                printUsage (System.err);
+                System.err.println (key + ": unrecognized command. (Type ? for usage)");
             }
         } catch (Throwable x) {
             printException (x, true);
