@@ -14,6 +14,9 @@ public abstract class AbstractShell extends DefaultApplication {
         return (false);
     }
     
+    protected void          doSet () throws Exception {
+    }
+    
     protected boolean       doCommand (String key, String args) throws Exception {
         if (key.equalsIgnoreCase ("help") || key.equalsIgnoreCase ("?")) {
             printUsage (System.err);
@@ -22,15 +25,21 @@ public abstract class AbstractShell extends DefaultApplication {
         
         if (key.equalsIgnoreCase ("set")) {
             int     argLength = args.length ();
-            int     delim = 0;
             
-            while (delim < argLength && !Character.isWhitespace (args.charAt (delim)))
-                delim++;
+            if (argLength == 0) 
+                doSet ();
+            else {
+                int     delim = 0;
+
+                while (delim < argLength && !Character.isWhitespace (args.charAt (delim)))
+                    delim++;
+
+                String  option = args.substring (0, delim);
+                String  value = args.substring (delim).trim ();
+
+                set (option, value);
+            }
             
-            String  option = args.substring (0, delim);
-            String  value = args.substring (delim).trim ();
-            
-            set (option, value);
             return (true);
         }
         
