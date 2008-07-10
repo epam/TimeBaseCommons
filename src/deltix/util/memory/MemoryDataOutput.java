@@ -81,17 +81,20 @@ public class MemoryDataOutput {
     }
     
     public final void           writeString (CharSequence str) {
+        writeString (str, 0, str == null ? 0 : str.length ());
+    }
+    
+    public final void           writeString (CharSequence str, int start, int strlen) {
         if (str == null) {
             writeUnsignedShort (0xFFFF);        
             return;
         }
         
-        int     strlen = str.length();
         int     utflen = 0;
         int     c, count = 0;
 
         /* use charAt instead of copying String to char array */
-        for (int i = 0; i < strlen; i++) {
+        for (int i = start; i < strlen; i++) {
             c = str.charAt(i);
             if ((c >= 0x0001) && (c <= 0x007F)) 
                 utflen++;
@@ -109,7 +112,7 @@ public class MemoryDataOutput {
 	        
         int i=0;
         
-        for (i=0; i<strlen; i++) {
+        for (i=start; i<strlen; i++) {
            c = str.charAt (i);
            
            if (!((c >= 0x0001) && (c <= 0x007F))) 

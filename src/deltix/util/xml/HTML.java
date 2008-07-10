@@ -16,11 +16,12 @@ public class HTML {
 
     public HTML () { }      // Make JAXB happy
     
+    @Override
     public String               toString () {
         StringWriter    swr = new StringWriter ();
         
         try {
-            JAXBContext     ctxt = JAXBContextFactory.newInstance (HTML.class);
+            JAXBContext     ctxt = JAXBContext.newInstance (HTML.class);
             Marshaller      m = ctxt.createMarshaller ();
             m.setProperty (Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             m.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);

@@ -237,16 +237,23 @@ public class MemoryDataInput {
         return (readStringBuilder (mStringBuilder));
     }
     
+        
     /**
      *  Returns null if the string value is null. 
      */
     public final StringBuilder  readStringBuilder (StringBuilder sb) {
+        sb.setLength (0);
+        return (appendToStringBuilder (sb));
+    }
+    
+    /**
+     *  Returns false if the string value is null. 
+     */
+    public final StringBuilder    appendToStringBuilder (StringBuilder sb) {
         int         utflen = readUnsignedShort ();
         
         if (utflen == 0xFFFF)
             return (null);
-        
-        sb.setLength (0);
         
         if (utflen == 0)
             return (sb);
