@@ -47,22 +47,22 @@ public class CharSequenceSet extends HashSet <String> {
 
     public boolean              removeCharSequence (CharSequence key) {
         mBuffer.set (key);
-        return (removeCharSequence (mBuffer));
+        return (super.remove (mBuffer));
     }
 
     public boolean              removeCharSequence (CharSequence key, int start, int end) {
         mBuffer.set (key, start, end);
-        return (removeCharSequence (mBuffer));
+        return (super.remove (mBuffer));
     }
 
     public final boolean        containsCharSequence (CharSequence key) {
         mBuffer.set (key);
-        return (contains (mBuffer));
+        return (super.contains (mBuffer));
     }
 
     public final boolean        containsCharSequence (CharSequence key, int start, int end) {
         mBuffer.set (key, start, end);
-        return (contains (mBuffer));
+        return (super.contains (mBuffer));
     }
 
     public void readObject (ObjectInputStream in) throws IOException, ClassNotFoundException {
