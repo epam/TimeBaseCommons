@@ -11,11 +11,11 @@ import java.io.Serializable;
  *  <p>Notes:
  *  <ul>
  *      <li>Null elements can be added, but are not indexed, 
- *          therefore indexOf (null) is not allowed.
+ *          therefore indexOf (null) is not allowed.</li>
  *      <li>Duplicate elements are not allowed. Therefore, indexOf () 
- *          and lastIndexOf () always return identical results.
- *      <li>Removal of elements is not allowed.
- *      <li>Insertion into the middle is not allowed.
+ *          and lastIndexOf () always return identical results.</li>
+ *      <li>Removal of elements is not allowed.</li>
+ *      <li>Insertion into the middle is not allowed.</li>
  *  </ul></p>
  */
 public class IndexedArrayList <E> implements List <E>, Serializable {
