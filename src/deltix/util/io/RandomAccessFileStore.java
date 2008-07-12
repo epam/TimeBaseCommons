@@ -8,6 +8,7 @@ import java.io.*;
 public class RandomAccessFileStore implements AbstractDataStore {
     protected final File            file;
     protected RandomAccessFile      raf;
+    protected boolean               useLock = true;
     private boolean                 mIsReadOnly;
     private boolean                 mIsOpen;
     private long                    mMinSize = 0;
@@ -43,7 +44,10 @@ public class RandomAccessFileStore implements AbstractDataStore {
     private void            openFile () {
         try {
             raf = new RandomAccessFile (file, mIsReadOnly ? "r" : "rw");
-            FileLockSynchronizer.lock(file, raf, mIsReadOnly);
+            
+            if (useLock) 
+                FileLockSynchronizer.lock(file, raf, mIsReadOnly);
+            
             mIsLocked = true;
 
             setMinimumSizeNOW ();
@@ -113,7 +117,8 @@ public class RandomAccessFileStore implements AbstractDataStore {
     private void releaseLock() {
         if (mIsLocked) {
             try {
-                FileLockSynchronizer.release(file);
+                if (useLock)
+                    FileLockSynchronizer.release(file);
                 mIsLocked = false;
             }
             catch (IOException iox) {

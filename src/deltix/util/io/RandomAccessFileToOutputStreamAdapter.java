@@ -12,6 +12,10 @@ public class RandomAccessFileToOutputStreamAdapter extends OutputStream {
         this.raf = raf;
     }
 
+    public void             seek (long offset) throws IOException {
+        raf.seek (offset);
+    }
+    
     @Override
     public void             write (int b) throws IOException {
         raf.write (b);
