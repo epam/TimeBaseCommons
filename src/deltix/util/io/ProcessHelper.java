@@ -80,15 +80,13 @@ public class ProcessHelper {
 	/**
 	 *	Starts a system process and returns asynchronously.
 	 *
-	 *	@param cmd			The command to execute.
-	 *	@param envp			The environment.
+	 *	@param proc			The process to execute.
 	 *	@param stdin		The stream from which the process will read.
 	 *	@param closeStdin	Whether to close stdin at EOF.
 	 *	@param stdout		The stream into which the process will write its output.
 	 *	@param closeStdout	Whether to close stdout at EOF.
 	 *	@param stderr		The stream into which the process will write its errors.
 	 *	@param closeStderr	Whether to close stderr at EOF.
-	 *	@return				The process object.
 	 *
 	 *	@exception IOException	When <code>Runtime.exec ()</code> throws it.
 	 */
@@ -118,7 +116,7 @@ public class ProcessHelper {
     		new StreamPump (proc_stderr, stderr, true, closeStderr).start ();
     	
     	if (stdin != null)
-    		new StreamPump (stdin, proc_stdin, closeStderr, true).start ();
+    		new StreamPump (stdin, proc_stdin, closeStdin, true).start ();
     }
 
 	/**

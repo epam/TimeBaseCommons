@@ -67,7 +67,6 @@ public class MemoryDataInput {
         
     /**
      *  Returns the current position relative to start.
-     *  @return
      */
     public final int        getPosition () {
         return (mPos - mStart);

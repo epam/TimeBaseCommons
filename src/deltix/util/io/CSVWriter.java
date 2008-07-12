@@ -56,7 +56,7 @@ public class CSVWriter extends FilterWriter {
     /**
      *  Writes out the specified CharSequence as a separate cell.
      * 
-     * @param unescapedText      The text of a single cell to print.
+     * @param cell      The text of a single cell to print.
      * @throws java.io.IOException  If writer fails to write
      */
     public void             writeCell (Object cell) throws IOException {

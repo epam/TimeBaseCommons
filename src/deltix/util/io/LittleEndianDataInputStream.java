@@ -11,22 +11,16 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
 
     /**
      * to get at the big-Endian methods of a basic DataInputStream
-     *
-     * @noinspection WeakerAccess
      */
     protected final DataInputStream dis;
 
     /**
      * to get at the a basic readBytes method.
-     *
-     * @noinspection WeakerAccess
      */
     protected final InputStream is;
 
     /**
      * work array for buffering input.
-     *
-     * @noinspection WeakerAccess
      */
     protected final byte[] work;
 
@@ -54,6 +48,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      *
      * @throws IOException if close fails.
      */
+    @Override
     public final void close() throws IOException {
         dis.close();
     }
@@ -67,6 +62,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      * @return how many bytes read.
      * @throws IOException if read fails.
      */
+    @Override
     public final int read(byte ba[], int off, int len) throws IOException {
         // For efficiency, we avoid one layer of wrapper
         return is.read(ba, off, len);
