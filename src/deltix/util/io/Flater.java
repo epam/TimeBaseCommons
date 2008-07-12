@@ -1,6 +1,6 @@
 package deltix.util.io;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import java.io.*;
 import java.util.zip.*;
 

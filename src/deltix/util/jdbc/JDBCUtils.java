@@ -1,5 +1,7 @@
 package deltix.util.jdbc;
 
+import deltix.util.lang.Util;
+import deltix.util.lang.Justification;
 import java.sql.*;
 import java.util.logging.*;
 import java.util.*;

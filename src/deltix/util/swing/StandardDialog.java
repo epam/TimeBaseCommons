@@ -1,6 +1,6 @@
 package deltix.util.swing;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;

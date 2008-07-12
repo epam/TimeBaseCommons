@@ -2,7 +2,7 @@ package deltix.util.concurrent;
 
 import java.util.*;
 
-import deltix.util.Disposable;
+import deltix.util.lang.Disposable;
 
 /**
  *

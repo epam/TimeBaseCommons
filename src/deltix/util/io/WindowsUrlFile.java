@@ -1,6 +1,6 @@
 package deltix.util.io;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import java.io.*;
 
 /**
@@ -45,31 +45,31 @@ The HotKey field specifies what is the shortcut key used to automatically launch
 
  
 
-833 – Ctrl + Shift + A
+833 ï¿½ Ctrl + Shift + A
 
-834 – Ctrl + Shift + B
+834 ï¿½ Ctrl + Shift + B
 
-835 – Ctrl + Shift + C
-
-.
-
-.
-
-1345 – Shift + Alt + A
-
-1346 – Shift + Alt + B
-
-1347 – Shift + Alt + C
+835 ï¿½ Ctrl + Shift + C
 
 .
 
 .
 
-1601 – Ctrl + Alt + A
+1345 ï¿½ Shift + Alt + A
 
-1602 – Ctrl + Alt + B
+1346 ï¿½ Shift + Alt + B
 
-1603 – Ctrl + Alt + C
+1347 ï¿½ Shift + Alt + C
+
+.
+
+.
+
+1601 ï¿½ Ctrl + Alt + A
+
+1602 ï¿½ Ctrl + Alt + B
+
+1603 ï¿½ Ctrl + Alt + C
 
 .
 

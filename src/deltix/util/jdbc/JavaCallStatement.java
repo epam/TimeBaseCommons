@@ -3,7 +3,7 @@ package deltix.util.jdbc;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 
 class JavaCallStatement implements ScriptStatement {
     private String      mClassName;

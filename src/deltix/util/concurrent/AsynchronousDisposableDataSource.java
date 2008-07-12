@@ -1,6 +1,6 @@
 package deltix.util.concurrent;
 
-import deltix.util.Disposable;
+import deltix.util.lang.Disposable;
 
 /**
  *

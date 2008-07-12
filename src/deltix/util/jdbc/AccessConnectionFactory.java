@@ -1,6 +1,6 @@
 package deltix.util.jdbc;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import java.sql.*;
 import java.io.*;
 import java.util.logging.*;

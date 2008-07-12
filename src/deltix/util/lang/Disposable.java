@@ -1,4 +1,4 @@
-package deltix.util;
+package deltix.util.lang;
 
 /**
  *  Something that can be closed. Analogous to the dot Net IDisposable concept.

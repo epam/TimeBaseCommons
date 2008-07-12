@@ -1,5 +1,6 @@
-package deltix.util;
+package deltix.util.io;
 
+import deltix.util.lang.Util;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.io.UncheckedIOException;
 import java.io.*;

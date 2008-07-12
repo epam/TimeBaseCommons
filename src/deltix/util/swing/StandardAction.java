@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.*;
 import java.util.logging.Level;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 
 /**
  *  Base class for Action implementations. Action properties

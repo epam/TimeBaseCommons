@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.*;
 import java.util.zip.*;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import deltix.util.memory.MemoryDataInput;
 import deltix.util.memory.MemoryDataOutput;
 import java.nio.channels.FileChannel;

@@ -1,5 +1,6 @@
 package deltix.util.io;
 
+import deltix.util.lang.Util;
 import java.io.*;
 import java.nio.channels.*;
 

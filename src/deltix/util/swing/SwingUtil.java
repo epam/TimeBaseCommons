@@ -1,7 +1,7 @@
 package deltix.util.swing;
 
 import deltix.qsrv.ui.treeedit.DomainAttributePersistentConfigurationPanel;
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import deltix.util.io.StreamPump;
 
 import javax.swing.*;

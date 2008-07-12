@@ -1,6 +1,6 @@
 package deltix.data.stream;
 
-import deltix.util.Disposable;
+import deltix.util.lang.Disposable;
 
 /**
  *  Object which consumes messages.

@@ -1,7 +1,7 @@
 package deltix.util.io;
 
 import deltix.util.progress.ProgressIndicator;
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import java.io.*;
 
 

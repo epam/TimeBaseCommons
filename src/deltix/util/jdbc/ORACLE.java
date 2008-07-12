@@ -6,7 +6,7 @@ import java.text.*;
 import java.sql.*;
 import java.io.*;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 
 public class ORACLE {
     public static void          loadDriver () throws ClassNotFoundException {

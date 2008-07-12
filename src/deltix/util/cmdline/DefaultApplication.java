@@ -4,7 +4,7 @@ import deltix.util.io.StreamPump;
 import java.util.*;
 import java.io.*;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import deltix.util.collections.generated.IntegerArrayList;
 import deltix.util.io.IOUtil;
 import deltix.util.time.GMT;

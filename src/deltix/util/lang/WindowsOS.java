@@ -1,4 +1,4 @@
-package deltix.util;
+package deltix.util.lang;
 
 import deltix.util.io.RegexFilenameFilter;
 import java.io.File;

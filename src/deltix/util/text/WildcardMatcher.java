@@ -1,4 +1,4 @@
-package deltix.util;
+package deltix.util.text;
 
 import java.util.StringTokenizer;
 

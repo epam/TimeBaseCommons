@@ -1,6 +1,6 @@
 package deltix.util.csvx;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import java.util.regex.*;
 
 /**

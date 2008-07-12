@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.logging.*;
 import java.util.*;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 
 /**
  *

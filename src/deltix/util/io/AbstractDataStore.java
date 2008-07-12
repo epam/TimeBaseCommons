@@ -1,6 +1,6 @@
 package deltix.util.io;
 
-import deltix.util.Disposable;
+import deltix.util.lang.Disposable;
 import java.io.*;
 
 /**

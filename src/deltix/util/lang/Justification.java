@@ -1,4 +1,4 @@
-package deltix.util;
+package deltix.util.lang;
 
 /**
  *  Left, right or center.

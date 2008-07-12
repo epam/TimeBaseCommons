@@ -1,5 +1,6 @@
 package deltix.util.jdbc;
 
+import deltix.util.lang.Util;
 import java.util.*;
 import java.text.*;
 import java.sql.*;

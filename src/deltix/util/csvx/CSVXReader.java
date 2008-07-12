@@ -2,7 +2,7 @@ package deltix.util.csvx;
 
 import java.io.*;
 
-import deltix.util.Util;
+import deltix.util.lang.Util;
 import deltix.util.collections.*;
 import deltix.util.collections.generated.*;
 import deltix.util.text.CharSequenceParser;
