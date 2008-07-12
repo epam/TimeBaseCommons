@@ -9,18 +9,18 @@ import java.text.*;
  *
  *	<ol>
  *		<li>Derive your child exception class from this class. Suppose that your
- *			exception class is <code>deltix.gobbler.FooException</code>.
+ *			exception class is <tt>deltix.gobbler.FooException</tt>.</li>
  *		<li>Define a resource bundle called
- *			<code>deltixlab/gobbler/exceptions</code>. The best way of doing this is
+ *			<tt>deltixlab/gobbler/exceptions</tt>. The best way of doing this is
  *			to create a properties resource bundle
- *			<code>codebase/deltixlab/gobbler/exception.properties</code>. This bundle will
- *			contain the translations of this exception.
+ *			<tt>deltixlab/gobbler/exception.properties</tt>. This bundle will
+ *			contain the translations of this exception.</li>
  *		<li>Now there are two ways of referencing the individual messages.
- *			If a <code>LocalizableException</code> instance is constructed with no
- *			<code>addlKey</code> argument, then the message in the resource bundle
+ *			If a <tt>LocalizableException</tt> instance is constructed with no
+ *			<tt>addlKey</tt> argument, then the message in the resource bundle
  *			will be keyed by the short class name fo the exception.
- *			If a <code>LocalizableException</code> instance is constructed with a
- *			<code>addlKey</code> argument, then the message in the resource bundle
+ *			If a <tt>LocalizableException</tt> instance is constructed with a
+ *			<tt>addlKey</tt> argument, then the message in the resource bundle
  *			will be keyed by the a string starting with the short class name,
  *			followed by a ".", and then by the supplied addlKey. In all cases the
  *			addlKey starts with the exception's short class name. For instance,
@@ -31,9 +31,9 @@ import java.text.*;
  *			you would throw the exceptions as follows:
  *<pre>throw new FooException (new Object [] { fooBarName });
  *...
- *throw new FooException ("unknown");</pre>
+ *throw new FooException ("unknown");</pre></li>
  *		<li>Note that if the exception class is renamed, all recource bundles
- *			must be updated.
+ *			must be updated.</li>
  *	</ol>
  */
 public abstract class LocalizableException extends Exception {
