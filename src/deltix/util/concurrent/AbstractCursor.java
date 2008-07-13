@@ -28,13 +28,6 @@ public interface AbstractCursor extends Disposable {
     public boolean                  next ();
     
     /**
-     *  Returns <code>true</code> if <code>next ()</code> has not yet been called
-     *  This method is legal to call any number of times at any
-     *  point in the cursor's lifecycle.
-     */
-    public boolean                  isAtBeginning ();
-    
-    /**
      *  Returns <code>true</code> if the last call to <code>next ()</code> returned <code>false</code>.
      *  Returns <code>false</code> if <code>next ()</code> has not been called yet.
      *  This method is legal to call any number of times at any
