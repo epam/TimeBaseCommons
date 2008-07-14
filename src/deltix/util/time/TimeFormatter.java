@@ -17,14 +17,14 @@ public final class TimeFormatter {
     }
 
     private TimeFormatter () {}
-    
-    
+
+
     /**
      * Fast and thread-safe method for printing *local* time of day from GMT time of day. Useful for logging absolute time.
      *
      * @param gmtTimeInMilliseconds number of milliseconds in GMT time zone. Note: input will be truncated to single day!
      * @return time formatted like "00:00:00"
-     * 
+     *
      * @see #formatTimeOfDay(long)
      * @see #formatTimeOfDayFromSeconds(long)
      */
@@ -48,7 +48,7 @@ public final class TimeFormatter {
      *
      * @param seconds number of *seconds* to format. Note: input will be truncated to single day!
      * @return duration formatted like "12:34:45"
-     * 
+     *
      * @see #formatTimeOfDay(long)
      * @see #formatTimeOfDayGMT(long)
      */
@@ -93,23 +93,23 @@ public final class TimeFormatter {
         return new String (timebuf);
     }
 
-    
+
 
     /**
      * <p>Thread-Safe method to parse duration.
      *    <u>No trailing or leading spaces are allowed.</u>
-     *    Digit groups may defined using one or two digits.
+     *    Digit groups may defined using one or two digits.</p>
      *
      * <p>Duration string format: <code>M+ | M+:SS | H+:M[M]:S[S]</code>, or:
      *              <ul>
-     *                  <li>HH:MM:SS (HH can exceed 60)
-     *                  <li>MM:SS (MM can exceed 60)
-     *                  <li>MM (MM can exceed 60)
-     *              </ul>
+     *                  <li>HH:MM:SS (HH can exceed 60)</li>
+     *                  <li>MM:SS (MM can exceed 60)</li>
+     *                  <li>MM (MM can exceed 60)</li>
+     *              </ul></p>
      *
      * @param text input string (e.g. "0:12" or "00:12:00")
      * @return number of seconds in duration
-     * 
+     *
      * @see #parseTimeOfDay(String)
      */
     public static int parseDurationInSeconds (String text)
@@ -255,22 +255,23 @@ public final class TimeFormatter {
         return result;
     }
 
-    
+
     /**
      * <p>Thread-Safe method to parse time of day.
      *    <u>No trailing or leading spaces are allowed.</u>
-     *    Digit groups may defined using one or two digits.
+     *    Digit groups may defined using one or two digits.</p>
      *
      * <p>Time of day string format: <code> H[H][:M[M][:S[S]]] [am|pm|AM|PM] </code>, for example:
      *  <ul>
-     *     <li>HH:MM:SS (24-hour)
-     *     <li>HH:MM (24-hour)
-     *     <li>HH:MM:SS am/pm
-     *     <li>HH:MM am/pm
-     *     <li>HH am/pm
-     *     <li>HH
+     *     <li>HH:MM:SS (24-hour)</li>
+     *     <li>HH:MM (24-hour)</li>
+     *     <li>HH:MM:SS am/pm</li>
+     *     <li>HH:MM am/pm</li>
+     *     <li>HH am/pm</li>
+     *     <li>HH</li>
      *   </ul>
-     *   
+     * </p>
+     *
      * @param text input string (e.g. "0:12" or "11:12:13 pm")
      * @return number of seconds since midnight represented by given time of day string
      * @see #parseDurationInSeconds(String)
@@ -483,5 +484,5 @@ public final class TimeFormatter {
         }
     }
 
-    
+
 }
