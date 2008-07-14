@@ -17,9 +17,9 @@ import deltix.util.memory.MemorySizeEstimator;
 
 
 #if( $name == "Object" )
-#set($actualType = "Object");
+#set($actualType = "Object")
 #else
-#set($actualType = $type);
+#set($actualType = $type)
 #end
 
 
@@ -60,8 +60,8 @@ public final class ${name}ArrayList
 
     public long              getSizeInMemory () {
         return (OBJECT_OVERHEAD + elementData.length * ${size});
-    }    
-    
+    }
+
     /**
      * Constructs an empty list with the specified initial capacity.
      *
@@ -186,16 +186,16 @@ public final class ${name}ArrayList
 
 #if( $name == "Object" )
     /**
-     * Returns an array containing all of the elements in this list in the
+     * <p>Returns an array containing all of the elements in this list in the
      * correct order.  The runtime type of the returned array is that of the
      * specified array.  If the list fits in the specified array, it is
      * returned therein.  Otherwise, a new array is allocated with the runtime
-     * type of the specified array and the size of this list.<p>
+     * type of the specified array and the size of this list.</p>
      *
-     * If the list fits in the specified array with room to spare (i.e., the
+     * <p>If the list fits in the specified array with room to spare (i.e., the
      * array has more elements than the list), the element in the array
      * immediately following the end of the collection is set to
-     * <tt>null</tt>.
+     * <tt>null</tt>.</p>
      *
      * @param a the array into which the elements of the list are to
      *		be stored, if it is big enough; otherwise, a new array of the
@@ -208,7 +208,7 @@ public final class ${name}ArrayList
      public <T> T [] toArray(T a[]) {
         if (a.length < size)
             a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
-    
+
         SafeArrays.safeArrayCopy (elementData, 0, a, 0, size);
 
         if (a.length > size)
@@ -243,16 +243,16 @@ public final class ${name}ArrayList
     }
 
     /**
-     * Returns an array containing all of the elements in this list in the
+     * <p>Returns an array containing all of the elements in this list in the
      * correct order.  The runtime type of the returned array is that of the
      * specified array.  If the list fits in the specified array, it is
      * returned therein.  Otherwise, a new array is allocated with the runtime
-     * type of the specified array and the size of this list.<p>
+     * type of the specified array and the size of this list.</p>
      *
-     * If the list fits in the specified array with room to spare (i.e., the
+     * <p>If the list fits in the specified array with room to spare (i.e., the
      * array has more elements than the list), the element in the array
      * immediately following the end of the collection is set to
-     * <tt>null</tt>.
+     * <tt>null</tt>.</p>
      *
      * @param a the array into which the elements of the list are to
      *		be stored, if it is big enough; otherwise, a new array of the
@@ -471,11 +471,11 @@ public final class ${name}ArrayList
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")
     public ${type} get${name}NoRangeCheck (int index) {
 		return (${type}) elementData [index];
     }
-    
+
     /**
      * Replaces the element at the specified position in this list with
      * the specified element.
@@ -597,7 +597,7 @@ public final class ${name}ArrayList
 
         Iterator<? extends ${type_Object}> iter = c.iterator ();
 		for (int i=0; i<numNew; i++)
-	    	elementData[size++] = 
+	    	elementData[size++] =
 #if( $name == "Object" )
                 iter.next ();
 #else
@@ -777,8 +777,8 @@ public final class ${name}ArrayList
     	elementData [idx1] = elementData [idx2];
     	elementData [idx2] = buf;
     }
-    
-	
+
+
 	/** Reverses order of elements */
 	@SuppressWarnings("unchecked")
     public void     reverse () {
@@ -789,7 +789,7 @@ public final class ${name}ArrayList
             elementData[j] = tmp;
         }
     }
-    
+
 #if( $type != "boolean" )
     public void		sort () {
     	sort (0, size ());
@@ -838,7 +838,7 @@ public final class ${name}ArrayList
 
 		return (buf.toString ());
     }
-    
+
 #if( $name == "Object" )
 	private class ElemEnumeration implements Enumeration<$type> {
     	private int	mIndex = 0;
@@ -858,7 +858,7 @@ public final class ${name}ArrayList
 
     public Enumeration<$type> elements () {
     	return (new ElemEnumeration ());
-    }    
+    }
 #else
 	private class ElemEnumeration implements ${name}Enumeration {
     	private int mIndex = 0;
@@ -876,7 +876,7 @@ public final class ${name}ArrayList
 #else
     		return (new ${type_Object} (next${name_abbr}Element ()));
 #end
-    	
+
     	}
 
     	public ${type} next${name_abbr}Element () {
@@ -886,6 +886,6 @@ public final class ${name}ArrayList
 
     public ${name}Enumeration ${type}Elements () {
     	return (new ElemEnumeration ());
-    }    
+    }
 #end
 }
