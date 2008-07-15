@@ -51,6 +51,7 @@ public final class Lock extends Throwable implements Disposable {
         return (mThread);
     }
 
+    @Override
     public String               toString () {
         return (
             (mIsShared ? "Shared" : "Exclusive") +
