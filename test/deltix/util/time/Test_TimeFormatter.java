@@ -6,6 +6,7 @@ import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.junit.Test;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Test_TimeFormatter {
 
@@ -21,7 +22,7 @@ public class Test_TimeFormatter {
 		assertFormat(3601 * 1000, "01:00:01");
 		assertFormat(3601 * 1000, "01:00:01");
 		
-		assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
+                assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
 	}
 	
     @Test
@@ -455,4 +456,8 @@ public class Test_TimeFormatter {
 		}
 	}
 
+        
+        public void main (String [] args) {
+            System.out.print("hey");
+        }
 }
