@@ -61,6 +61,6 @@ public class InstrumentKey implements InstrumentIdentity {
     public String               toString () {
         return (symbol + ":" + instrumentType);
     }
-    
-    
+
+
 }
