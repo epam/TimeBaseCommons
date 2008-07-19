@@ -1,11 +1,11 @@
 package deltix.qsrv.hf.pub;
 
-import deltix.data.stream.*;
-
 /**
  *
  */
-public class ConstantInstrumentKey implements InstrumentIdentity {
+public class ConstantInstrumentKey 
+    implements InstrumentIdentity, Comparable <InstrumentIdentity>
+{
     public final InstrumentType     instrumentType;    
     public final String             symbol;
 
@@ -38,4 +38,13 @@ public class ConstantInstrumentKey implements InstrumentIdentity {
     public int                  hashCode () {
         return (InstrumentKey.hashCode (this));
     }        
+    
+    @Override
+    public String               toString () {
+        return (InstrumentKey.toString (this));
+    }
+    
+    public int                  compareTo (InstrumentIdentity o) {
+        return (InstrumentKey.compare (this, o));
+    }
 }

@@ -5,7 +5,9 @@ import deltix.util.lang.Util;
 /**
  *
  */
-public class InstrumentKey implements InstrumentIdentity {
+public class InstrumentKey 
+    implements InstrumentIdentity, Comparable <InstrumentIdentity>
+{
     public InstrumentType       instrumentType;
     public CharSequence         symbol;
 
@@ -44,6 +46,19 @@ public class InstrumentKey implements InstrumentIdentity {
         );
     }
 
+    public static int           compare (InstrumentIdentity id1, InstrumentIdentity id2) {
+        int dif = id1.getType ().compareTo (id2.getType ());
+        
+        if (dif != 0)
+            return (dif);
+        
+        return (Util.compare (id1.getSymbol (), id2.getSymbol (), false));
+    }
+
+    public static String        toString (InstrumentIdentity id) {
+        return (id.getSymbol () + ":" + id.getType ());
+    }
+    
     @Override
     public boolean              equals (Object obj) {
         if (!(obj instanceof InstrumentIdentity))
@@ -59,8 +74,12 @@ public class InstrumentKey implements InstrumentIdentity {
 
     @Override
     public String               toString () {
-        return (symbol + ":" + instrumentType);
+        return (toString (this));
     }
 
-
+    public int                  compareTo (InstrumentIdentity o) {
+        return (compare (this, o));
+    }
+    
+    
 }
