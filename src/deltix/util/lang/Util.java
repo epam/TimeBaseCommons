@@ -84,6 +84,13 @@ public class Util {
     }
     
     /**
+     *  Compare two CharSequences for equality. A null equals null.
+     */
+    public static boolean       equals (CharSequence s1, CharSequence s2, int maxLength) {
+        return (compare (s1, s2, maxLength, true) == 0);
+    }
+    
+    /**
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
      *
@@ -92,6 +99,26 @@ public class Util {
      *                  When false, performs lexicographic comparison.
      */
     public static int           compare (CharSequence s1, CharSequence s2, boolean fast) {
+        return (compare (s1, s2, 0, fast));
+    }
+    
+    /**
+     *  Compare two CharSequences. A null argument is always less than a non-null argument
+     *  and is equal to another null argument.
+     *
+     *  @param maxLength Only compare the first <tt>maxLength</tt> characters.
+     *                      Send 0 to unlimit.
+     *  @param fast     When true, use a fast algorithm, which makes a
+     *                  char sequence greater than another if it is longer.
+     *                  When false, performs lexicographic comparison.
+     */
+    public static int           compare (
+        CharSequence                s1, 
+        CharSequence                s2, 
+        int                         maxLength,
+        boolean                     fast
+    )
+    {
         if (s1 == null)
             if (s2 == null)
                 return (0);
@@ -104,6 +131,15 @@ public class Util {
         else {
             int         len1 = s1.length ();
             int         len2 = s2.length ();
+            
+            if (maxLength > 0) {
+                if (maxLength < len1)
+                    len1 = maxLength;
+                
+                if (maxLength < len2)
+                    len2 = maxLength;
+            }
+                
             int         diff = len1 - len2;
             
             if (fast && diff != 0)
