@@ -147,6 +147,12 @@ public class MemoryDataInput {
         return (ret);
     }
 
+    public final long       readLong48 () {
+        long    ret = DataExchangeUtils.readLong48 (mBuffer, mPos);
+        mPos += 6;
+        return (ret);
+    }
+
     private final long      readLongByte () {
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
@@ -204,6 +210,34 @@ public class MemoryDataInput {
                 
             case 1:
                 ret |= readLongByte () << 5;
+                break;
+                
+            case 0:
+                break;               
+        }
+        
+        return (ret);
+    }
+
+    public final int       readPackedUnsignedInt () {        
+        int     head = mBuffer [mPos++];
+        int     ret = head & 0x3F;
+        int     numAddlBytes = (head >>> 6) & 0x3;
+        
+        switch (numAddlBytes) {
+            case 3:
+                ret |= readUnsignedByte () << 6;
+                ret |= readUnsignedByte () << 14;
+                ret |= readUnsignedByte () << 22;
+                break;
+                
+            case 2:
+                ret |= readUnsignedByte () << 6;
+                ret |= readUnsignedByte () << 14;
+                break;
+                
+            case 1:
+                ret |= readUnsignedByte () << 6;
                 break;
                 
             case 0:

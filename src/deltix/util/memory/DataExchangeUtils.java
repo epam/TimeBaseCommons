@@ -5,6 +5,9 @@ package deltix.util.memory;
  *	in <b>precisely</b> the same format as DataInput/DataOutput.
  */
 public class DataExchangeUtils {
+    public static final long        MAX_LONG48 = 0x00007FFFFFFFFFFFL;
+    public static final long        MIN_LONG48 = 0xFFFF800000000000L;
+    
     public static int		readByte (byte [] bytes, int offset) {
         return (((int) bytes [offset]) & 0xFF);
     }
@@ -149,6 +152,21 @@ public class DataExchangeUtils {
 		);
     }
     
+    /**
+     *  Useful for compressing timestamps. 48 bits cover approximately
+     *  years -2000 .. 6000, which is usually enough.
+     */
+    public static long  	readLong48 (byte [] bytes, int offset) {
+        return (
+			((long) bytes [offset]) << 40 |
+			lb (bytes, offset + 1) << 32 |
+			lb (bytes, offset + 2) << 24 |
+			readByte (bytes, offset + 3) << 16 |
+			readByte (bytes, offset + 4) << 8 |
+			readByte (bytes, offset + 5)
+		);
+    }
+    
     public static long    	readLong63 (byte [] bytes, int offset) {
         return (readLong (bytes, offset) << 1 >> 1);
     }
@@ -175,6 +193,21 @@ public class DataExchangeUtils {
     
     public static void  	writeLong63 (byte [] bytes, int offset, long l) {
         writeLong (bytes, offset, l & 0x7FFFFFFFFFFFFFFFL);
+    }
+    
+    /**
+     *  Useful for compressing timestamps. 48 bits cover approximately
+     *  years -2000 .. 6000, which is usually enough.
+     */
+    public static void  	writeLong48 (byte [] bytes, int offset, long l) {
+        assert l <= MAX_LONG48 && l >= MIN_LONG48 : l;
+        
+		b (bytes, offset, l >>> 40);
+		b (bytes, offset + 1, l >>> 32);
+		b (bytes, offset + 2, l >>> 24);
+		b (bytes, offset + 3, l >>> 16);
+		b (bytes, offset + 4, l >>> 8);
+		b (bytes, offset + 5, l);
     }
     
     public static double   	readDouble (byte [] bytes, int offset) {

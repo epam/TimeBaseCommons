@@ -204,11 +204,44 @@ public class MemoryDataOutput {
         mPos += 8;
     }
 
+    public final void           writeLong48 (long v) {
+        makeRoom (6);
+        DataExchangeUtils.writeLong48 (mBuffer, mPos, v);
+        mPos += 6;
+    }
+
+    /**
+     *  Writes an unsigned int in the smallest possible number of bytes.
+     */
+    public final void           writePackedUnsignedInt (int v) {
+        if ((v & 0xC0000000) != 0)
+            throw new IllegalArgumentException ("High 2 bits must be 0; v=" + v);
+        
+        makeRoom (1);   
+        
+        int         pos = mPos++;
+        int         addlPos = mPos;
+        int         low6bits = v & 0x3F;
+        
+        v = v >>> 6; 
+        
+        while (v != 0) {   
+            makeRoom (1);
+            mBuffer [mPos++] = (byte) (v & 0xFF);
+            v = v >>> 8;
+        }
+        
+        mBuffer [pos] = (byte) (low6bits | ((mPos - addlPos) << 6));
+    }
+
+    /**
+     *  Writes an unsigned long in the smallest possible number of bytes.
+     */
     public final void           writePackedUnsignedLong (long v) {
         if ((v & 0xE000000000000000L) != 0)
             throw new IllegalArgumentException ("High 3 bits must be 0; v=" + v);
         
-        makeRoom (8);   
+        makeRoom (1);   
         
         int         pos = mPos++;
         int         addlPos = mPos;
@@ -217,6 +250,7 @@ public class MemoryDataOutput {
         v = v >>> 5; 
         
         while (v != 0) {   
+            makeRoom (1);
             mBuffer [mPos++] = (byte) (v & 0xFF);
             v = v >>> 8;
         }
