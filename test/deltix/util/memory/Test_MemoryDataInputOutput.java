@@ -25,6 +25,8 @@ public class Test_MemoryDataInputOutput {
         for (long v : testValues)
             out.writePackedUnsignedLong (v);
         
+        assertEquals (out.getSize (), 1+1+1+2+2+3+7+8);
+        
         in.setBytes (out);
         
         for (long v : testValues) {
@@ -43,6 +45,8 @@ public class Test_MemoryDataInputOutput {
         
         for (int v : testValues) 
             out.writePackedUnsignedInt (v);
+        
+        assertEquals (out.getSize (), 1+1+1+2+2+3);
         
         in.setBytes (out);
         
@@ -63,6 +67,8 @@ public class Test_MemoryDataInputOutput {
         
         for (long v : testValues)
             out.writeLong48 (v);
+        
+        assertEquals (out.getSize (), 6 * 4);
         
         in.setBytes (out);
         
