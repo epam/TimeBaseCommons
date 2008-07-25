@@ -153,7 +153,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    private final long      readLongByte () {
+    public final long       readLongUnsignedByte () {
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
     
@@ -164,52 +164,52 @@ public class MemoryDataInput {
         
         switch (numAddlBytes) {
             case 7:
-                ret |= readLongByte () << 5;
-                ret |= readLongByte () << 13;
-                ret |= readLongByte () << 21;
-                ret |= readLongByte () << 29;
-                ret |= readLongByte () << 37;
-                ret |= readLongByte () << 45;
-                ret |= readLongByte () << 53;
+                ret |= readLongUnsignedByte () << 5;
+                ret |= readLongUnsignedByte () << 13;
+                ret |= readLongUnsignedByte () << 21;
+                ret |= readLongUnsignedByte () << 29;
+                ret |= readLongUnsignedByte () << 37;
+                ret |= readLongUnsignedByte () << 45;
+                ret |= readLongUnsignedByte () << 53;
                 break;
                 
             case 6:
-                ret |= readLongByte () << 5;
-                ret |= readLongByte () << 13;
-                ret |= readLongByte () << 21;
-                ret |= readLongByte () << 29;
-                ret |= readLongByte () << 37;
-                ret |= readLongByte () << 45;
+                ret |= readLongUnsignedByte () << 5;
+                ret |= readLongUnsignedByte () << 13;
+                ret |= readLongUnsignedByte () << 21;
+                ret |= readLongUnsignedByte () << 29;
+                ret |= readLongUnsignedByte () << 37;
+                ret |= readLongUnsignedByte () << 45;
                 break;
                 
             case 5:
-                ret |= readLongByte () << 5;
-                ret |= readLongByte () << 13;
-                ret |= readLongByte () << 21;
-                ret |= readLongByte () << 29;
-                ret |= readLongByte () << 37;
+                ret |= readLongUnsignedByte () << 5;
+                ret |= readLongUnsignedByte () << 13;
+                ret |= readLongUnsignedByte () << 21;
+                ret |= readLongUnsignedByte () << 29;
+                ret |= readLongUnsignedByte () << 37;
                 break;
                 
             case 4:
-                ret |= readLongByte () << 5;
-                ret |= readLongByte () << 13;
-                ret |= readLongByte () << 21;
-                ret |= readLongByte () << 29;
+                ret |= readLongUnsignedByte () << 5;
+                ret |= readLongUnsignedByte () << 13;
+                ret |= readLongUnsignedByte () << 21;
+                ret |= readLongUnsignedByte () << 29;
                 break;
                 
             case 3:
-                ret |= readLongByte () << 5;
-                ret |= readLongByte () << 13;
-                ret |= readLongByte () << 21;
+                ret |= readLongUnsignedByte () << 5;
+                ret |= readLongUnsignedByte () << 13;
+                ret |= readLongUnsignedByte () << 21;
                 break;
                 
             case 2:
-                ret |= readLongByte () << 5;
-                ret |= readLongByte () << 13;
+                ret |= readLongUnsignedByte () << 5;
+                ret |= readLongUnsignedByte () << 13;
                 break;
                 
             case 1:
-                ret |= readLongByte () << 5;
+                ret |= readLongUnsignedByte () << 5;
                 break;
                 
             case 0:

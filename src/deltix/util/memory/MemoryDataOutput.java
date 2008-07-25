@@ -152,6 +152,10 @@ public class MemoryDataOutput {
         writeByte ((byte) v);
     }
     
+    public final void           writeByte (long v) {
+        writeByte ((byte) v);
+    }
+    
     public final void           writeByte (byte v) {
         makeRoom (1);
         mBuffer [mPos] = v;
@@ -159,9 +163,7 @@ public class MemoryDataOutput {
     }
 
     public final void           writeUnsignedByte (int v) {
-        makeRoom (1);
-        mBuffer [mPos] = (byte) v;
-        mPos++;
+        writeByte (v);
     }
 
     public final void           writeChar (char v) {

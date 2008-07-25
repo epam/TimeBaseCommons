@@ -75,6 +75,22 @@ public class MathUtil {
     }
 
     /**
+     *	Returns the ceiling of log<sub>2</sub> of the argument, i.e.
+     *	the smallest integer k such that 2<sup>k</sup> >= v.
+     */
+    public static int		log2 (long v) {
+    	int             ret = 0;
+    	long            cmp = 1;
+
+    	while (v > cmp) {
+            ret++;
+            cmp <<= 1;
+    	}
+
+    	return (ret);
+    }
+
+    /**
      *  Normalize the angle so that it is whithin the range of (-PI .. PI].
      */
     public static double    normalizeAnglePlusMinusPi (double a) {
