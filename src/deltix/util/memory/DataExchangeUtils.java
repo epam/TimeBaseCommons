@@ -171,10 +171,10 @@ public class DataExchangeUtils {
 
     /**
      * Java uses big-endian numbers encoding. This method parses little-endian encoded 40-bit (!) long.
-     * @see #readLong(byte[], int)
+     * @see #readLong(byte[])
      * @see #readLittleEndianLong(byte[])
      */
-    public static long readLittleEndianLong40(byte[] bytes, int i) {
+    public static long readLittleEndianLong40(byte[] bytes) {
         return
                 (0xFF & bytes[0])         +
                ((0xFF & bytes[1])  <<  8) +
@@ -199,6 +199,35 @@ public class DataExchangeUtils {
                ((0xFFL & bytes[7]) << 56);
     }
 
+    /**
+     * Java uses big-endian numbers encoding. This method parses little-endian encoded 40-bit (!) long.
+     * @see #readLong(byte[], int)
+     * @see #readLittleEndianLong(byte[])
+     */
+    public static long readLittleEndianLong40(byte[] bytes, int offset) {
+        return
+                (0xFF  & bytes[offset])         +
+               ((0xFF  & bytes[offset+1]) <<  8) +
+               ((0xFF  & bytes[offset+2]) << 16) +
+               ((0xFFL & bytes[offset+3]) << 24) +
+               ((0xFFL & bytes[offset+4]) << 32) ;
+    }
+
+    /**
+     * Java uses big-endian numbers encoding. This method parses little-endian encoded long.
+     * @see #readLong(byte[], int)
+     */
+    public static long      readLittleEndianLong (byte [] bytes, int offset) {
+        return
+                (0xFF  & bytes[offset])          +
+               ((0xFF  & bytes[offset+1]) <<  8) +
+               ((0xFF  & bytes[offset+2]) << 16) +
+               ((0xFFL & bytes[offset+3]) << 24) +
+               ((0xFFL & bytes[offset+4]) << 32) +
+               ((0xFFL & bytes[offset+5]) << 40) +
+               ((0xFFL & bytes[offset+6]) << 48) +
+               ((0xFFL & bytes[offset+7]) << 56) ;
+    }
 
     public static long    	readLong63 (byte [] bytes, int offset) {
         return (readLong (bytes, offset) << 1 >> 1);
