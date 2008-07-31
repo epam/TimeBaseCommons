@@ -1,5 +1,7 @@
 package deltix.util.memory;
 
+import sun.security.action.GetLongAction;
+
 /**
  *  Reads/writes primitive values from/to an array of bytes,
  *	in <b>precisely</b> the same format as DataInput/DataOutput.
@@ -7,7 +9,7 @@ package deltix.util.memory;
 public class DataExchangeUtils {
     public static final long        MAX_LONG48 = 0x00007FFFFFFFFFFFL;
     public static final long        MIN_LONG48 = 0xFFFF800000000000L;
-    
+
     public static int		readByte (byte [] bytes, int offset) {
         return (((int) bytes [offset]) & 0xFF);
     }
@@ -35,55 +37,55 @@ public class DataExchangeUtils {
     private static long		lb (byte [] bytes, int offset) {
         return (((long) bytes [offset]) & 0xFF);
     }
-	
+
     public static byte   	readByte7 (byte [] bytes, int offset) {
         return ((byte) (bytes [offset] << 25 >> 25));
     }
-    
+
     public static short   	readShort (byte [] bytes, int offset) {
         return ((short)
 			(readByte (bytes, offset) << 8 |
 			 readByte (bytes, offset + 1))
 		);
     }
-    
+
     public static short   	readShort15 (byte [] bytes, int offset) {
         return ((short) (readShort (bytes, offset) << 17 >> 17));
     }
-    
+
     public static int   	readUnsignedShort (byte [] bytes, int offset) {
         return (
 			(readByte (bytes, offset) << 8 |
 			 readByte (bytes, offset + 1))
 		);
     }
-    
+
     public static void   	writeShort (byte [] bytes, int offset, short s) {
 		writeByte (bytes, offset, s >>> 8);
 		writeByte (bytes, offset + 1, s);
     }
-    
+
     public static void   	writeShort15 (byte [] bytes, int offset, short s) {
         writeUnsignedShort (bytes, offset, s & 0x7FFF);
     }
-    
+
     public static void   	writeUnsignedShort (byte [] bytes, int offset, int s) {
 		writeByte (bytes, offset, s >>> 8);
 		writeByte (bytes, offset + 1, s);
     }
-    
+
     public static char   	readChar (byte [] bytes, int offset) {
         return ((char)
 			(readByte (bytes, offset) << 8 |
 			 readByte (bytes, offset + 1))
 		);
     }
-    
+
     public static void   	writeChar (byte [] bytes, int offset, char s) {
 		writeByte (bytes, offset, s >>> 8);
 		writeByte (bytes, offset + 1, s);
     }
-    
+
     public static int   	readInt (byte [] bytes, int offset) {
         return (
                 ((int) bytes [offset]) << 24 |
@@ -92,11 +94,11 @@ public class DataExchangeUtils {
                 readByte (bytes, offset + 3)
 		);
     }
-    
+
     public static int    	readInt31 (byte [] bytes, int offset) {
         return (readInt (bytes, offset) << 1 >> 1);
     }
-    
+
     public static int   	readIntInvertBytes (byte [] bytes, int offset) {
         return (
 			readByte (bytes, offset) |
@@ -105,40 +107,40 @@ public class DataExchangeUtils {
 			readByte (bytes, offset + 3) << 24
 		);
     }
-    
+
     public static void   	writeInt (byte [] bytes, int offset, int i) {
 		writeByte (bytes, offset, i >>> 24);
 		writeByte (bytes, offset + 1, i >>> 16);
 		writeByte (bytes, offset + 2, i >>> 8);
 		writeByte (bytes, offset + 3, i);
     }
-    
+
     public static void   	writeInt31 (byte [] bytes, int offset, int i) {
         writeInt (bytes, offset, i & 0x7FFFFFFF);
     }
-    
+
     public static void   	writeUnsignedInt (byte [] bytes, int offset, long i) {
 		b (bytes, offset, i >>> 24);
 		b (bytes, offset + 1, i >>> 16);
 		b (bytes, offset + 2, i >>> 8);
 		b (bytes, offset + 3, i);
     }
-    
+
     public static void   	writeIntInvertBytes (byte [] bytes, int offset, int i) {
 		writeByte (bytes, offset, i);
 		writeByte (bytes, offset + 1, i >>> 8);
 		writeByte (bytes, offset + 2, i >>> 16);
 		writeByte (bytes, offset + 3, i >>> 24);
     }
-    
+
     public static float   	readFloat (byte [] bytes, int offset) {
         return (Float.intBitsToFloat (readInt (bytes, offset)));
     }
-    
+
     public static void   	writeFloat (byte [] bytes, int offset, float f) {
 		writeInt (bytes, offset, Float.floatToIntBits (f));
     }
-    
+
     public static long  	readLong (byte [] bytes, int offset) {
         return (
 			((long) bytes [offset]) << 56 |
@@ -151,7 +153,7 @@ public class DataExchangeUtils {
 			readByte (bytes, offset + 7)
 		);
     }
-    
+
     /**
      *  Useful for compressing timestamps. 48 bits cover approximately
      *  years -2000 .. 6000, which is usually enough.
@@ -166,11 +168,42 @@ public class DataExchangeUtils {
 			readByte (bytes, offset + 5)
 		);
     }
-    
+
+    /**
+     * Java uses big-endian numbers encoding. This method parses little-endian encoded 40-bit (!) long.
+     * @see #readLong(byte[], int)
+     * @see #readLittleEndianLong(byte[])
+     */
+    public static long readLittleEndianLong40(byte[] bytes, int i) {
+        return
+                (0xFF & bytes[0])         +
+               ((0xFF & bytes[1])  <<  8) +
+               ((0xFF & bytes[2])  << 16) +
+               ((0xFFL & bytes[3]) << 24) +
+               ((0xFFL & bytes[4]) << 32);
+    }
+
+    /**
+     * Java uses big-endian numbers encoding. This method parses little-endian encoded long.
+     * @see #readLong(byte[], int)
+     */
+    public static long      readLittleEndianLong (byte [] bytes) {
+        return
+                (0xFF & bytes[0])         +
+               ((0xFF & bytes[1])  <<  8) +
+               ((0xFF & bytes[2])  << 16) +
+               ((0xFFL & bytes[3]) << 24) +
+               ((0xFFL & bytes[4]) << 32) +
+               ((0xFFL & bytes[5]) << 40) +
+               ((0xFFL & bytes[6]) << 48) +
+               ((0xFFL & bytes[7]) << 56);
+    }
+
+
     public static long    	readLong63 (byte [] bytes, int offset) {
         return (readLong (bytes, offset) << 1 >> 1);
     }
-    
+
     public static long  	readUnsignedInt (byte [] bytes, int offset) {
         return (
 			lb (bytes, offset + 4) << 24 |
@@ -179,7 +212,7 @@ public class DataExchangeUtils {
 			lb (bytes, offset + 7)
 		);
     }
-    
+
     public static void  	writeLong (byte [] bytes, int offset, long l) {
 		b (bytes, offset, l >>> 56);
 		b (bytes, offset + 1, l >>> 48);
@@ -190,18 +223,18 @@ public class DataExchangeUtils {
 		b (bytes, offset + 6, l >>> 8);
 		b (bytes, offset + 7, l);
     }
-    
+
     public static void  	writeLong63 (byte [] bytes, int offset, long l) {
         writeLong (bytes, offset, l & 0x7FFFFFFFFFFFFFFFL);
     }
-    
+
     /**
      *  Useful for compressing timestamps. 48 bits cover approximately
      *  years -2000 .. 6000, which is usually enough.
      */
     public static void  	writeLong48 (byte [] bytes, int offset, long l) {
         assert l <= MAX_LONG48 && l >= MIN_LONG48 : l;
-        
+
 		b (bytes, offset, l >>> 40);
 		b (bytes, offset + 1, l >>> 32);
 		b (bytes, offset + 2, l >>> 24);
@@ -209,12 +242,13 @@ public class DataExchangeUtils {
 		b (bytes, offset + 4, l >>> 8);
 		b (bytes, offset + 5, l);
     }
-    
+
     public static double   	readDouble (byte [] bytes, int offset) {
         return (Double.longBitsToDouble (readLong (bytes, offset)));
     }
-    
+
     public static void   	writeDouble (byte [] bytes, int offset, double d) {
         writeLong (bytes, offset, Double.doubleToLongBits (d));
-    }    
+    }
+
 }
