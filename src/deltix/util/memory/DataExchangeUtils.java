@@ -1,6 +1,6 @@
 package deltix.util.memory;
 
-import sun.security.action.GetLongAction;
+
 
 /**
  *  Reads/writes primitive values from/to an array of bytes,
