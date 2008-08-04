@@ -73,4 +73,41 @@ public class Test_DataExchangeUtils {
         return result;
     }
 
+//    @Test
+//    public void benchmark () {
+//
+//        byte [] bytes1 = new byte [] {(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF};
+//        byte [] bytes2 = new byte [] {(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF};
+//        byte [] bytes3 = new byte [] {(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF};
+//        byte [] bytes4 = new byte [] {(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF};
+//        long l1 = 0;
+//        final byte mask = (byte)0xCC;
+//        for (int i=0; i < 120000; i++) {
+//            bytes1[i%8] = mask;
+//            l1 += DataExchangeUtils.readLong(bytes1, 0);
+//        }
+//
+//        long l2 = 0;
+//        for (int i=0; i < 120000; i++) {
+//            bytes2[i%8] = mask;
+//            l2 += Test_DataExchangeUtils.getBigEndianLong(bytes2);
+//        }
+//
+//        long t0 = System.currentTimeMillis();
+//        for (int i=0; i < 15000000; i++) {
+//            bytes3[i%8] = mask;
+//            l1 += Test_DataExchangeUtils.getBigEndianLong(bytes3);
+//        }
+//
+//        long t1 = System.currentTimeMillis();
+//        for (int i=0; i < 15000000; i++) {
+//            bytes4[i%8] = mask;
+//            l2 += DataExchangeUtils.readLong(bytes4, 0);
+//        }
+//        long t2 = System.currentTimeMillis();
+//
+//
+//        System.out.println("Time1: " + (t1-t0) + " time2: " + (t2-t1) + " l1=" + l1 + " l2=" + l2);
+//    }
+
 }
