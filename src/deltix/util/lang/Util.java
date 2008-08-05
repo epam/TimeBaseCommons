@@ -651,6 +651,14 @@ public class Util {
         return (obj == null ? 1 : obj.hashCode ());
     }
 
+    public static int       hashCode (long value) {
+        return ((int) (value ^ (value >>> 32)));
+    }
+    
+    public static int       hashCode (double value) {
+        return (hashCode (Double.doubleToLongBits (value)));
+    }
+    
     /**
      *  Adds up hash codes of all array elements, plus array length.
      */
