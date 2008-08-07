@@ -171,7 +171,7 @@ public class DataExchangeUtils {
 
     /**
      * Java uses big-endian numbers encoding. This method parses little-endian encoded 40-bit (!) long.
-     * @see #readLong(byte[])
+     * @see #readLong(byte[], int)
      * @see #readLittleEndianLong(byte[])
      */
     public static long readLittleEndianLong40(byte[] bytes) {
