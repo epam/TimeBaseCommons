@@ -8,6 +8,9 @@ import java.util.zip.*;
 import deltix.util.lang.Util;
 import deltix.util.memory.MemoryDataInput;
 import deltix.util.memory.MemoryDataOutput;
+
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.regex.*;
 
@@ -16,10 +19,10 @@ import java.util.regex.*;
  */
 public class IOUtil {
     public static final String  CR = System.getProperty ("line.separator");
-    
+
     public static URL       createFileUrl (File f) {
         String          path = f.getAbsolutePath ().replace ('\\', '/');
-        
+
         try {
             if (path.length () > 1 && path.charAt (1) == ':')   // drive letter
                 return (new URL ("file:///" + path));
@@ -29,8 +32,8 @@ public class IOUtil {
             throw new UncheckedIOException (iox);
         }
     }
-    
-    public static void      force (FileChannel fc, boolean metaData) 
+
+    public static void      force (FileChannel fc, boolean metaData)
         throws IOException, InterruptedException
     {
         fc.force (metaData);
@@ -39,19 +42,19 @@ public class IOUtil {
         if (Thread.interrupted ())
             throw new InterruptedException ();
         else if (!fc.isOpen ())
-            throw new IOException ("FileChannel is closed.");    
+            throw new IOException ("FileChannel is closed.");
     }
-    
+
     public static void      rename (File from, File to) throws IOException {
         if (!from.renameTo (to))
             throw new IOException ("Failed to rename " + from + " -> " + to);
     }
-    
+
     public static void      delete (File f) throws IOException {
         if (!f.delete ())
             throw new IOException ("Failed to delete " + f);
     }
-    
+
     /**
      *  Deletes the specified file, and continues to attempt to delete its parent directories
      *  up the directory path, until the deletion fails, or the limit file is reached.
@@ -67,15 +70,15 @@ public class IOUtil {
     public static File      deleteWithEmptyParentPath (File f, File limit) {
         while (!f.equals (limit) && f.delete ())
             f = f.getParentFile ();
-        
+
         return (f);
     }
-    
+
     public static void      createNew (File f) throws IOException {
         if (!f.createNewFile ())
             throw new IOException ("Failed to create " + f);
     }
-    
+
     /**
      *  Output character <code>ch</code> <code>n</code> times to Writer
      *  <code>wr</code>.
@@ -84,7 +87,7 @@ public class IOUtil {
         for (int ii = 0; ii < n; ii++)
             wr.write (ch);
     }
-    
+
     /**
      *  Output character <code>ch</code> <code>n</code> times to PrintStream
      *  <code>ps</code>.
@@ -420,20 +423,20 @@ public class IOUtil {
         throws IOException, InterruptedException
     {
         BufferedReader      brd;
-        
+
         if (r instanceof BufferedReader)
             brd = (BufferedReader) r;
         else
             brd = new BufferedReader (r);
 
-        ArrayList <String>  lines = new ArrayList <String> ();        
+        ArrayList <String>  lines = new ArrayList <String> ();
 
         for (;;) {
             String          line = brd.readLine ();
 
             if (line == null)
                 break;
-            
+
             if (Thread.interrupted ())
                 throw new InterruptedException ();
 
@@ -470,7 +473,7 @@ public class IOUtil {
         try {
             for (String s : lines)
                 fw.println (s);
-            
+
             fw.close ();
         } finally {
             Util.close (fw);
@@ -553,9 +556,9 @@ public class IOUtil {
     public static LineNumberReader   openResourceAsReader (String relPath)
         throws FileNotFoundException
     {
-        return (new LineNumberReader (new InputStreamReader (openResourceAsStream (relPath))));                
+        return (new LineNumberReader (new InputStreamReader (openResourceAsStream (relPath))));
     }
-    
+
     /**
      *  Opens a resource as stream, but throws a FileNotFoundException
      *  if not found.
@@ -572,11 +575,11 @@ public class IOUtil {
         return (is);
     }
 
-    public static void          copyResource (String path, OutputStream os) 
+    public static void          copyResource (String path, OutputStream os)
         throws IOException, InterruptedException
     {
         InputStream     is = openResourceAsStream (path);
-        
+
         try {
             StreamPump.pump (is, os);
             is.close ();
@@ -584,19 +587,19 @@ public class IOUtil {
             Util.close (is);
         }
     }
-    
-    public static void          extractResource (String path, File dest) 
+
+    public static void          extractResource (String path, File dest)
         throws IOException, InterruptedException
     {
         OutputStream    os = new FileOutputStream (dest);
-        
+
         try {
             copyResource (path, os);
         } finally {
             Util.close (os);
         }
     }
-    
+
     public static Properties	readPropsFromClassPath (String relPath)
         throws IOException
     {
@@ -634,12 +637,12 @@ public class IOUtil {
         FileInputStream         fis = new FileInputStream (f);
         ArrayList <ZipEntry>    ret = new ArrayList <ZipEntry> ();
         Matcher                 m = null;
-        
+
         if (regex != null) {
             Pattern                 pat = Pattern.compile (regex);
             m = pat.matcher ("");
         }
-        
+
         try {
             ZipInputStream      zis = new ZipInputStream (fis);
 
@@ -651,34 +654,34 @@ public class IOUtil {
 
                 if (m != null) {
                     m.reset (zentry.getName ());
-                    
+
                     if (!m.matches ())
                         continue;
                 }
-                
+
                 ret.add (zentry);
             }
         } finally {
             Util.close (fis);
         }
-        
+
         return (ret.toArray (new ZipEntry [ret.size ()]));
     }
-    
-    public static void          extractZipStream (InputStream is, File destDir) 
+
+    public static void          extractZipStream (InputStream is, File destDir)
         throws IOException, InterruptedException
     {
         ZipInputStream      zis = new ZipInputStream (is);
-        
+
         for (;;) {
             ZipEntry        zentry = zis.getNextEntry ();
-            
+
             if (zentry == null)
                 break;
-            
+
             String          name = zentry.getName ();
             File            destFile = new File (destDir, name);
-            
+
             if (name.endsWith ("/"))
                 mkDirIfNeeded (destDir);
             else {
@@ -696,7 +699,7 @@ public class IOUtil {
             }
         }
     }
-    
+
     /**
      *	Checks if the file is present.
      *	@exception FileNotFoundException	If the file does not exists.
@@ -897,10 +900,10 @@ public class IOUtil {
             }
         }
         File [] fileList = from.listFiles(filter);
-        
+
         if (fileList == null)
             throw new FileNotFoundException (from.getPath ());
-        
+
         for (int i = 0; i < fileList.length; i++){
             File f = fileList [i];
             if ((excludeFilter == null)||(!excludeFilter.accept(to, f.getName()))){
@@ -1032,48 +1035,48 @@ public class IOUtil {
         public boolean accept(File pathname)
         {
             return pathname.isFile ();
-        }    
+        }
     }
-    
+
     /**
      *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
      *  that many characters in raw 2-byte form.
-     */    
+     */
     public static int      writeUnicode (CharSequence str, DataOutput out) throws IOException {
         int     strlen = str.length ();
-        
+
         if (strlen > 65535)
             throw new UTFDataFormatException ("string too long: " + strlen + " bytes");
-        
+
         out.writeShort ((short) strlen);
-        
+
         for (int ii = 0; ii < strlen; ii++)
             out.writeChar (str.charAt (ii));
-        
+
         return (strlen * 2 + 2);
     }
-    
+
     /**
      *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
      *  that many characters in raw 2-byte form.
-     */    
+     */
     public static int      writeUnicode (CharSequence str, MemoryDataOutput out) throws IOException {
         int     strlen = str.length ();
-        
+
         if (strlen > 65535)
             throw new UTFDataFormatException ("string too long: " + strlen + " bytes");
-        
+
         out.writeShort ((short) strlen);
-        
+
         for (int ii = 0; ii < strlen; ii++)
             out.writeChar (str.charAt (ii));
-        
+
         return (strlen * 2 + 2);
     }
-    
+
     /**
      *  Writes any CharSequence to DataOutput in a way identical to
-     *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly 
+     *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly
      *  by forcing the argument to be a String.
      */
     public static int      writeUTF (CharSequence str, DataOutput out) throws IOException {
@@ -1105,19 +1108,19 @@ public class IOUtil {
             out.writeByte((utflen >>> 8) & 0xFF);
             out.writeByte((utflen >>> 0) & 0xFF);
         }
-	
-        
+
+
         int i=0;
         for (i=0; i<strlen; i++) {
            c = str.charAt(i);
            if (!((c >= 0x0001) && (c <= 0x007F))) break;
            out.writeByte (c);
         }
-	
+
         for (;i < strlen; i++){
             c = str.charAt(i);
-            
-            if ((c >= 0x0001) && (c <= 0x007F)) 
+
+            if ((c >= 0x0001) && (c <= 0x007F))
                 out.writeByte (c);
             else if (c > 0x07FF) {
                 out.writeByte (0xE0 | ((c >> 12) & 0x0F));
@@ -1129,13 +1132,13 @@ public class IOUtil {
                 out.writeByte (0x80 | ((c >>  0) & 0x3F));
             }
         }
-        
+
         return utflen + 2;
     }
-    
+
     /**
      *  Writes any CharSequence to MemoryDataOutput in a way identical to
-     *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly 
+     *  DataOutputStream.writeUTF, which is groundlessly defined too narrowly
      *  by forcing the argument to be a String.
      */
     public static int      writeUTF (CharSequence str, MemoryDataOutput out) throws IOException {
@@ -1161,18 +1164,18 @@ public class IOUtil {
 
         out.writeByte((utflen >>> 8) & 0xFF);
         out.writeByte((utflen >>> 0) & 0xFF);
-        
+
         int i=0;
         for (i=0; i<strlen; i++) {
            c = str.charAt(i);
            if (!((c >= 0x0001) && (c <= 0x007F))) break;
            out.writeByte (c);
         }
-	
+
         for (;i < strlen; i++){
             c = str.charAt(i);
-            
-            if ((c >= 0x0001) && (c <= 0x007F)) 
+
+            if ((c >= 0x0001) && (c <= 0x007F))
                 out.writeByte (c);
             else if (c > 0x07FF) {
                 out.writeByte (0xE0 | ((c >> 12) & 0x0F));
@@ -1184,37 +1187,37 @@ public class IOUtil {
                 out.writeByte (0x80 | ((c >>  0) & 0x3F));
             }
         }
-        
+
         return utflen + 2;
     }
-    
+
     /**
-     *  Reads (appends) a UTF string to an Appendable (such as StringBuidler), 
+     *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
     public final static void readUTF(DataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
-        
+
         if (utflen == 0)
             return;
-        
+
         int c = -2;
         int char2, char3;
-        int count = 0;        
-        
+        int count = 0;
+
         for (;;) {
-            c = in.readByte ();    
-            if (c > 127) 
+            c = in.readByte ();
+            if (c > 127)
                 break;
-            
+
             count++;
             sb.append ((char) c);
-            
+
             if (count >= utflen)
                 return;
         }
         //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.        
+        //  unhandled escape character in variable c.
         for (;;) {
             switch (c >> 4) {
                 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
@@ -1222,7 +1225,7 @@ public class IOUtil {
                     count++;
                     sb.append ((char)c);
                     break;
-                    
+
                 case 12: case 13:
                     /* 110x xxxx   10xx xxxx*/
                     count += 2;
@@ -1232,11 +1235,11 @@ public class IOUtil {
                     char2 = in.readByte ();
                     if ((char2 & 0xC0) != 0x80)
                         throw new UTFDataFormatException(
-                            "malformed input around byte " + count); 
-                    sb.append ((char)(((c & 0x1F) << 6) | 
-                                                    (char2 & 0x3F)));  
+                            "malformed input around byte " + count);
+                    sb.append ((char)(((c & 0x1F) << 6) |
+                                                    (char2 & 0x3F)));
                     break;
-                    
+
                 case 14:
                     /* 1110 xxxx  10xx xxxx  10xx xxxx */
                     count += 3;
@@ -1252,47 +1255,125 @@ public class IOUtil {
                                                     ((char2 & 0x3F) << 6)  |
                                                     ((char3 & 0x3F) << 0)));
                     break;
-                    
+
                 default:
                     /* 10xx xxxx,  1111 xxxx */
                     throw new UTFDataFormatException(
                         "malformed input around byte " + count);
             }
-                        
+
             if (count >= utflen)
                 break;
-            
+
             c = in.readByte ();
-        }        
+        }
     }
 
     /**
-     *  Reads (appends) a UTF string to an Appendable (such as StringBuidler), 
+     *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
+     *  without clearing it first.
+     */
+    public final static void readUTF(ByteBuffer in, Appendable sb) throws BufferUnderflowException, IOException {
+        int utflen = 0xFFFF & in.getShort();
+
+        if (utflen == 0)
+            return;
+
+        int c = -2;
+        int char2, char3;
+        int count = 0;
+
+        for (;;) {
+            c = in.get ();
+            if (c > 127)
+                break;
+
+            count++;
+            sb.append ((char) c);
+
+            if (count >= utflen)
+                return;
+        }
+        //  If we are here, we have broken out of the previous loop and there is an
+        //  unhandled escape character in variable c.
+        for (;;) {
+            switch (c >> 4) {
+                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                    /* 0xxxxxxx*/
+                    count++;
+                    sb.append ((char)c);
+                    break;
+
+                case 12: case 13:
+                    /* 110x xxxx   10xx xxxx*/
+                    count += 2;
+                    if (count > utflen)
+                        throw new UTFDataFormatException(
+                            "malformed input: partial character at end");
+                    char2 = in.get ();
+                    if ((char2 & 0xC0) != 0x80)
+                        throw new UTFDataFormatException(
+                            "malformed input around byte " + count);
+                    sb.append ((char)(((c & 0x1F) << 6) |
+                                                    (char2 & 0x3F)));
+                    break;
+
+                case 14:
+                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+                    count += 3;
+                    if (count > utflen)
+                        throw new UTFDataFormatException(
+                            "malformed input: partial character at end");
+                    char2 = in.get ();
+                    char3 = in.get ();
+                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+                        throw new UTFDataFormatException(
+                            "malformed input around byte " + (count-1));
+                    sb.append ((char)(((c & 0x0F) << 12) |
+                                                    ((char2 & 0x3F) << 6)  |
+                                                    ((char3 & 0x3F) << 0)));
+                    break;
+
+                default:
+                    /* 10xx xxxx,  1111 xxxx */
+                    throw new UTFDataFormatException(
+                        "malformed input around byte " + count);
+            }
+
+            if (count >= utflen)
+                break;
+
+            c = in.get ();
+        }
+    }
+
+    /**
+     *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
     public final static void readUTF(MemoryDataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
-        
+
         if (utflen == 0)
             return;
-        
+
         int c = -2;
         int char2, char3;
-        int count = 0;        
-        
+        int count = 0;
+
         for (;;) {
-            c = in.readByte ();    
-            if (c > 127) 
+            c = in.readByte ();
+            if (c > 127)
                 break;
-            
+
             count++;
             sb.append ((char) c);
-            
+
             if (count >= utflen)
                 return;
         }
         //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.        
+        //  unhandled escape character in variable c.
         for (;;) {
             switch (c >> 4) {
                 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
@@ -1300,7 +1381,7 @@ public class IOUtil {
                     count++;
                     sb.append ((char)c);
                     break;
-                    
+
                 case 12: case 13:
                     /* 110x xxxx   10xx xxxx*/
                     count += 2;
@@ -1310,11 +1391,11 @@ public class IOUtil {
                     char2 = in.readByte ();
                     if ((char2 & 0xC0) != 0x80)
                         throw new UTFDataFormatException(
-                            "malformed input around byte " + count); 
-                    sb.append ((char)(((c & 0x1F) << 6) | 
-                                                    (char2 & 0x3F)));  
+                            "malformed input around byte " + count);
+                    sb.append ((char)(((c & 0x1F) << 6) |
+                                                    (char2 & 0x3F)));
                     break;
-                    
+
                 case 14:
                     /* 1110 xxxx  10xx xxxx  10xx xxxx */
                     count += 3;
@@ -1330,59 +1411,59 @@ public class IOUtil {
                                                     ((char2 & 0x3F) << 6)  |
                                                     ((char3 & 0x3F) << 0)));
                     break;
-                    
+
                 default:
                     /* 10xx xxxx,  1111 xxxx */
                     throw new UTFDataFormatException(
                         "malformed input around byte " + count);
             }
-                        
+
             if (count >= utflen)
                 break;
-            
+
             c = in.readByte ();
-        }        
+        }
     }
-    
-    public static long      addFileToZip (File f, ZipOutputStream zos, String path) 
+
+    public static long      addFileToZip (File f, ZipOutputStream zos, String path)
         throws IOException, InterruptedException
     {
         return (addFileToZip (f, zos, path, null));
     }
-    
+
     public static interface EntryListener {
         public void     entryAdded (ZipEntry e);
     }
-    
+
     public static long      addFileToZip (
-        File                    f, 
-        ZipOutputStream         zos, 
+        File                    f,
+        ZipOutputStream         zos,
         String                  path,
         EntryListener           listener
-    ) 
+    )
         throws IOException, InterruptedException
     {
         if (f.isDirectory ()) {
             File []         files = f.listFiles ();
             long            length = 0;
-            
+
             if (files != null) {
                 for (File ff : files)
                     length +=
                         addFileToZip (
-                            ff, 
-                            zos, 
+                            ff,
+                            zos,
                             path == null ? ff.getName () : path + '/' + ff.getName (),
                             listener
-                        );                
+                        );
             }
-            
+
             return (length);
         }
         else {
             ZipEntry        e = new ZipEntry (path);
             long            length = f.length ();
-            
+
             e.setTime (f.lastModified ());
             e.setSize (length);
 
@@ -1397,33 +1478,33 @@ public class IOUtil {
             }
 
             zos.closeEntry ();
-            
+
             if (listener != null)
                 listener.entryAdded (e);
-            
+
             return (length);
         }
     }
-    
+
     public static void      rezip (
-        ZipFile                 src, 
+        ZipFile                 src,
         ZipOutputStream         zos,
         String                  pathPrefix,
         boolean                 ignoreDuplicates
-    ) 
+    )
         throws IOException, InterruptedException
     {
         Enumeration <? extends ZipEntry>  entries = src.entries ();
-        
+
         while (entries.hasMoreElements ()) {
             ZipEntry        srcEntry = entries.nextElement ();
             String          name = srcEntry.getName ();
-            
+
             if (pathPrefix != null)
                 name = pathPrefix + name;
-            
+
             ZipEntry        e = new ZipEntry (name);
-            
+
             e.setTime (srcEntry.getTime ());
             e.setSize (srcEntry.getSize ());
 
@@ -1432,10 +1513,10 @@ public class IOUtil {
             } catch (ZipException x) {
                 if (ignoreDuplicates && x.getMessage ().startsWith ("duplicate entry"))
                     continue;
-                
+
                 throw x;
             }
-            
+
             InputStream     is = src.getInputStream (srcEntry);
 
             try {
@@ -1445,6 +1526,6 @@ public class IOUtil {
             }
 
             zos.closeEntry ();
-        }                
-    }    
+        }
+    }
 }
