@@ -1,7 +1,6 @@
 package deltix.util.io;
 
 import deltix.util.lang.Disposable;
-import java.io.*;
 
 /**
  *  A persistent object used to store structured data of some sort.
