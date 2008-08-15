@@ -1,5 +1,7 @@
 General Shell Commands:
 
+help                            Display help.
+
 set                             Display a list of settings, commonly controlled 
                                 by the set ... command.
 
