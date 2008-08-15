@@ -3,6 +3,20 @@ package deltix.util.lang;
 import java.util.StringTokenizer;
 
 public class StringUtils {
+    public static String [] splitAtWhitespace (String s) {
+        int     delim = 0;
+        int     argLength = s.length ();
+        
+        while (delim < argLength && !Character.isWhitespace (s.charAt (delim)))
+            delim++;
+
+        return (
+            new String [] {
+                s.substring (0, delim),
+                s.substring (delim).trim ()
+            }
+        );
+    }
     /**
      * Capitalizes first letter of each word in the buffer, and lowercases
      * each letter after the first of each word.

@@ -1,5 +1,6 @@
 package deltix.util.cmdline;
 
+import deltix.util.lang.StringUtils;
 import java.io.*;
 
 /**
@@ -29,18 +30,24 @@ public abstract class AbstractShell extends DefaultApplication {
             if (argLength == 0) 
                 doSet ();
             else {
-                int     delim = 0;
-
-                while (delim < argLength && !Character.isWhitespace (args.charAt (delim)))
-                    delim++;
-
-                String  option = args.substring (0, delim);
-                String  value = args.substring (delim).trim ();
-
-                set (option, value);
+                String []   split = StringUtils.splitAtWhitespace (args);
+                
+                set (split [0], split [1]);
             }
             
             return (true);
+        }
+        
+        if (key.equalsIgnoreCase ("exec")) {
+            FileReader  rd = new FileReader (args);
+            
+            try {
+                runScript (rd, false, true);
+            } finally {
+                rd.close ();
+            }
+            
+            return (true);        
         }
         
         return (false);
@@ -119,12 +126,19 @@ public abstract class AbstractShell extends DefaultApplication {
             }
         }
         
-        LineNumberReader    rd = 
-            new LineNumberReader (new InputStreamReader (System.in));
+        runScript (new InputStreamReader (System.in), true, false);                
+    }
+    
+    private void        runScript (Reader in, boolean showPrompt, boolean echo) 
+        throws IOException 
+    {
+        LineNumberReader    rd = new LineNumberReader (in);
         
         for (;;) {
-            System.err.print ("==> ");
-            System.err.flush ();
+            if (showPrompt) {
+                System.err.print ("==> ");
+                System.err.flush ();
+            }
             
             String      line = rd.readLine ();
 
@@ -137,6 +151,17 @@ public abstract class AbstractShell extends DefaultApplication {
             
             if (len == 0)
                 continue;
+            
+            if (line.charAt (0) == '#')
+                continue;
+            
+            if (echo) {
+                if (!showPrompt)
+                    System.err.print ("==> ");
+                
+                System.out.println (line);
+                System.out.flush ();
+            }
             
             int         ws = 0;
             
