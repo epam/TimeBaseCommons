@@ -3,6 +3,15 @@ General Shell Commands:
 set                             Display a list of settings, commonly controlled 
                                 by the set ... command.
 
+exec <file>                     Execute a script read from the specified file.
+                                Empty lines and comments (lines starting with #) 
+                                are ignored. Exit from a script file will exit
+                                the entire shell session.
+
+exit                            Quit the shell.
+
+quit                            Quit the shell.
+
 Shell Command-Line Options:
 
 -<option> <value>               Execute the "set" command.
