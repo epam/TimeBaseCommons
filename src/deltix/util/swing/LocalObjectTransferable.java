@@ -16,7 +16,9 @@ import java.io.Serializable;
  */
 public class LocalObjectTransferable<T> implements Transferable, ClipboardOwner, Serializable {
 
-	private T object;
+	private static final long serialVersionUID = 1L;
+    
+    private T object;
 	private DataFlavor dataFlavor;
 
     @SuppressWarnings ("unchecked")
@@ -49,7 +51,7 @@ public class LocalObjectTransferable<T> implements Transferable, ClipboardOwner,
 		return object;
 	}
 
-	public static DataFlavor getLocalObjectFlavor(Class clazz) {
+	public static DataFlavor getLocalObjectFlavor(Class<?> clazz) {
 		try {
 			return new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + ";class="+clazz.getName());
 		}
