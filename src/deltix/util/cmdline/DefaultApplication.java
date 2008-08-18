@@ -20,8 +20,8 @@ import org.xml.sax.SAXParseException;
  *	Usage:
  *<pre>
  *public class MyApp extends deltix.util.cmdline.DefaultApplication {
- *    protected MyApp (String [] args) { 
- *        super (args); 
+ *    protected MyApp (String [] args) {
+ *        super (args);
  *    }
  *
  *    protected void run () throws Throwable {
@@ -36,12 +36,12 @@ import org.xml.sax.SAXParseException;
  */
 public abstract class DefaultApplication {
     private String []                       mArgs;
-    private Map <String, IntegerArrayList>    mMap = 
+    private Map <String, IntegerArrayList>    mMap =
         new HashMap <String, IntegerArrayList> ();
-    
+
     protected DefaultApplication (String [] args) {
         ArrayList <String>      expArgs = new ArrayList <String> ();
-        
+
         if (args != null)
             for (int ii = 0; ii < args.length; ii++) {
                 String              arg = args [ii];
@@ -64,21 +64,21 @@ public abstract class DefaultApplication {
                 else
                     expArgs.add (arg);
             }
-            
+
     	mArgs = expArgs.toArray (new String [expArgs.size ()]);
-    	
+
     	for (int ii = 0; ii < mArgs.length; ii++) {
             String              arg = mArgs [ii];
             IntegerArrayList    index = mMap.get (arg);
-            
+
             if (index == null) {
                 index = new IntegerArrayList ();
                 mMap.put (arg, index);
             }
-            
+
     		index.add (ii);
         }
-    	
+
         //
         //  Do some default argument processing
         //
@@ -86,25 +86,25 @@ public abstract class DefaultApplication {
             for (int ii = 0; ii < mArgs.length; ii++) {
                 if (ii > 0)
                     System.out.print (" ");
-                
+
                 System.out.print (mArgs [ii]);
             }
-            
+
             System.out.println ();
         }
-        
+
         if (isArgSpecified ("-?") || isArgSpecified ("-help")) {
             printUsageAndExit ();
-        }        
+        }
     }
-    
+
     /**
      *	Returns the command line argument array.
      */
     public String []					getArgs () {
     	return (mArgs);
     }
-    
+
     /**
      *	Returns whether the specified argument was present on the
      *	command line.
@@ -114,107 +114,107 @@ public abstract class DefaultApplication {
     public boolean						isArgSpecified (String key) {
     	return (mMap.containsKey (key));
     }
-    
+
     /**
      *	Returns the position of the specified argument on the
      *	command line.
      *
      *	@param key		The argument being looked for.
-     *	@return			The 0-based index of the argument, 
+     *	@return			The 0-based index of the argument,
      *						or -1 if not found.
      */
     public int							findArg (String key) {
     	IntegerArrayList    index = mMap.get (key);
-        
+
     	if (index == null)
     		return (-1);
-        
-        if (index.size () == 1)    	
+
+        if (index.size () == 1)
     		return (index.get (0));
-        
+
         throw new IllegalArgumentException ("Argument " + key + " was specified more than once.");
     }
-    
+
     /**
      *	Returns the arguments following the specified key on the
      *	command line, which can be present more than once.
      *
      *	@param key		The argument being looked for.
-     *	@return			An array of arguments following <i>key</i>, 
+     *	@return			An array of arguments following <i>key</i>,
      *						or <i>null</i> if not found. The return value is
      *                      NEVER an empty array.
      */
     public String []					getArgValues (String key) {
     	IntegerArrayList    index = mMap.get (key);
-        
+
     	if (index == null)
     		return (null);
-        
+
         int                 num = index.size ();
         String []           ret = new String [num];
-        
+
         for (int ii = 0; ii < num; ii++) {
             int             pos = index.get (ii) + 1;
-            
+
             if (pos >= mArgs.length)
                 throw new IllegalArgumentException (
                     "Argument " + key + " must not be the last argument on the command line."
                 );
-            
+
             ret [ii] = mArgs [pos];
         }
-        
+
         return (ret);
     }
-    
+
     /**
      *	Returns the argument following the specified argument on the
      *	command line.
      *
      *	@param key		The argument being looked for.
-     *	@return			The next argument following <i>key</i>, 
-     *						or <i>null</i> if not found, or if 
+     *	@return			The next argument following <i>key</i>,
+     *						or <i>null</i> if not found, or if
      *						<i>key</i> was the last argument.
      */
     public String						getArgValue (String key) {
     	return (getArgValue (key, null));
     }
-    
+
     /**
      *	Returns the argument following the specified argument on the
-     *	command line, or default value, if the 
+     *	command line, or default value, if the
      *	former is not specified.
      *
      *	@param key		The argument being looked for.
-     *	@param defval	The value to return if the argument is not 
+     *	@param defval	The value to return if the argument is not
      *						specified.
-     *	@return			The next argument following <i>key</i>, 
+     *	@return			The next argument following <i>key</i>,
      *						or <i>null</i> if not found.
      */
     public String						getArgValue (String key, String defval) {
     	int			idx = findArg (key);
-        
+
         if (idx == -1)
     		return (defval);
-        
+
         if (idx + 1 >= mArgs.length)
             throw new IllegalArgumentException (
                 "Argument " + key + " must not be the last argument on the command line."
             );
-        
+
     	return (mArgs [idx + 1]);
     }
-    
+
     /**
-     *	Returns an integer argument, or default value, if the 
+     *	Returns an integer argument, or default value, if the
      *	former is not specified.
      *
      *	@param key		The argument being looked for.
-     *	@param defval	The value to return if the argument is not 
+     *	@param defval	The value to return if the argument is not
      *						specified.
-     *	@return			The integer value of the next argument 
-     *						following <i>key</i>, 
-     *						or the value of <i>defval</i> if not found, 
+     *	@return			The integer value of the next argument
+     *						following <i>key</i>,
+     *						or the value of <i>defval</i> if not found,
      *						or if <i>key</i> was the last argument.
      */
     public int			getIntArgValue (String key, int defval) {
@@ -224,14 +224,14 @@ public abstract class DefaultApplication {
     	else
     		return (Integer.parseInt (str));
     }
-    
+
     /**
-     *	Returns file argument, or null, if the 
+     *	Returns file argument, or null, if the
      *	key is not specified.
      *
      *	@param key		The argument being looked for.
-     *	@return			The file value of the next argument 
-     *						following <i>key</i>, 
+     *	@return			The file value of the next argument
+     *						following <i>key</i>,
      *						or <tt>null</tt> if the key is not found.
      */
     public File 			getFileArg (String key) {
@@ -241,17 +241,17 @@ public abstract class DefaultApplication {
     	else
     		return (new File (str));
     }
-    
+
     /**
-     *	Returns a long integer argument, or default value, if the 
+     *	Returns a long integer argument, or default value, if the
      *	former is not specified.
      *
      *	@param key		The argument being looked for.
-     *	@param defval	The value to return if the argument is not 
+     *	@param defval	The value to return if the argument is not
      *						specified.
-     *	@return			The integer value of the next argument 
-     *						following <i>key</i>, 
-     *						or the value of <i>defval</i> if not found, 
+     *	@return			The integer value of the next argument
+     *						following <i>key</i>,
+     *						or the value of <i>defval</i> if not found,
      *						or if <i>key</i> was the last argument.
      */
     public long			getLongArgValue (String key, long defval) {
@@ -261,17 +261,17 @@ public abstract class DefaultApplication {
     	else
     		return (Long.parseLong (str));
     }
-    
+
     /**
-     *	Returns a double argument, or default value, if the 
+     *	Returns a double argument, or default value, if the
      *	former is not specified.
      *
      *	@param key		The argument being looked for.
-     *	@param defval	The value to return if the argument is not 
+     *	@param defval	The value to return if the argument is not
      *						specified.
-     *	@return			The double value of the next argument 
-     *						following <i>key</i>, 
-     *						or the value of <i>defval</i> if not found, 
+     *	@return			The double value of the next argument
+     *						following <i>key</i>,
+     *						or the value of <i>defval</i> if not found,
      *						or if <i>key</i> was the last argument.
      */
     public double       getDoubleArgValue (String key, double defval) {
@@ -281,7 +281,7 @@ public abstract class DefaultApplication {
     	else
     		return (Double.parseDouble (str));
     }
-    
+
     /**
      *	Returns the argument following the specified argument on the
      *	command line. If it is not specified, an exception is thrown.
@@ -292,7 +292,7 @@ public abstract class DefaultApplication {
      *					If <i>key</i> is not present, or is the last
      *					argument on the command line.
      */
-    public String						getMandatoryArgValue (String key) 
+    public String						getMandatoryArgValue (String key)
     	throws IllegalArgumentException
     {
     	int			idx = findArg (key);
@@ -300,22 +300,22 @@ public abstract class DefaultApplication {
     		throw new IllegalArgumentException (
     			"Argument '" + key + "' is missing."
     		);
-    	
+
     	int			next = idx + 1;
-    	
+
     	if (next >= mArgs.length)
     		throw new IllegalArgumentException (
     			"Argument '" + key + "' must be followed by a value."
     		);
-    		
+
     	return (mArgs [idx + 1]);
     }
-    
+
     /**
      *	Override to do the work.
      */
     protected abstract void				run () throws Throwable;
-    
+
     /**
      *	Prints out a standardized diagnostic line. Handles
      *	known wrapper exceptions intelligently, such as,
@@ -336,9 +336,9 @@ public abstract class DefaultApplication {
 		}
 		else
 			System.err.print (">>> Error");
-		
+
 		Throwable   ux = Util.unwrap (x);
-		
+
 		System.err.println (": " + ux.getClass ().getName () + ": " + ux.getMessage ());
 
   		if (wantStackTrace)
@@ -349,12 +349,12 @@ public abstract class DefaultApplication {
      *	Prints out a standardized diagnostic line. Handles
      *	known wrapper exceptions intelligently, such as,
      *	for example, prints out the line number and position
-     *	if a SAXParseException is thrown. 
+     *	if a SAXParseException is thrown.
      */
     public void						handleException (Throwable x) {
 		printException (x, true);
     }
-    
+
     /**
      *	Call from a <code>main</code> method to run the application.
      *	This will handle exceptions, and make sure that if an
@@ -368,23 +368,23 @@ public abstract class DefaultApplication {
     		System.exit (1);
     	}
     }
-    
+
     public void                     printUsageAndExit () {
         try {
             printUsage ();
         } catch (Throwable x) {
             x.printStackTrace ();
         }
-        
+
         System.exit (0);
     }
-    
-    public void                     printUsage () 
+
+    public void                     printUsage ()
         throws IOException, InterruptedException
     {
         printUsage (System.out);
     }
-    
+
     protected long                  getDateArg (String key, long defValue) {
         String      arg = getArgValue (key);
 
@@ -403,7 +403,7 @@ public abstract class DefaultApplication {
             return (format.parse (arg).getTime ());
         } catch (ParseException px) {
             throw new IllegalArgumentException (
-    			"Bad " + key + " date: " + arg
+    			"Bad " + key + " date: " + arg + " (format: \"" + getDateFormatSpec() + "\")"
     		);
         }
     }
@@ -411,47 +411,51 @@ public abstract class DefaultApplication {
     protected String            getDefaultDateFormat () {
         return ("yyyy-MM-dd");
     }
-    
+
     protected TimeZone          getDefaultTimeZone () {
         return (GMT.TZ);
     }
-    
+
     protected DecimalFormat     createDecimalFormat () {
         return (new DecimalFormat (getArgValue ("-ff", "#,###.##")));
     }
 
     protected TimeZone          getTimeZone () {
         String          tzname = getArgValue ("-tz");
-                
+
         return (tzname == null ? getDefaultTimeZone () : TimeZone.getTimeZone (tzname));
     }
-    
+
+    protected String getDateFormatSpec () {
+        return getArgValue ("-tf", getDefaultDateFormat ());
+    }
+
     protected DateFormat        createDateFormat () {
-        DateFormat      format = new SimpleDateFormat (getArgValue ("-tf", getDefaultDateFormat ()));
+        DateFormat      format = new SimpleDateFormat (getDateFormatSpec());
 
         format.setTimeZone (getTimeZone ());
 
         return (format);
     }
-    
-    public void                 printUsage (OutputStream os) 
+
+    public void                 printUsage (OutputStream os)
         throws IOException, InterruptedException
     {
         boolean         somethingPrinted = false;
-        
+
         for (Class <?> myClass = getClass (); myClass != Object.class; myClass = myClass.getSuperclass ()) {
             String          path = myClass.getName ().replace ('.', '/') + "-usage.txt";
             InputStream     is = myClass.getClassLoader ().getResourceAsStream (path);
 
             if (is == null)
                 continue;
-            
+
             try {
                 StreamPump.pump (is, os);
             } finally {
                 Util.close (is);
             }
-            
+
             somethingPrinted = true;
         }
     }
