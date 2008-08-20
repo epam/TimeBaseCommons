@@ -3,9 +3,11 @@ package deltix.qsrv.hf.pub;
 import deltix.util.lang.Util;
 
 /**
+ * Pair { InstrumentType, symbol } that provides InstrumentIdentity.
  *
+ * Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead.
  */
-public class InstrumentKey 
+public class InstrumentKey
     implements InstrumentIdentity, Comparable <InstrumentIdentity>
 {
     public InstrumentType       instrumentType;
@@ -48,27 +50,32 @@ public class InstrumentKey
 
     public static int           compare (InstrumentIdentity id1, InstrumentIdentity id2) {
         int dif = id1.getType ().compareTo (id2.getType ());
-        
+
         if (dif != 0)
             return (dif);
-        
+
         return (Util.compare (id1.getSymbol (), id2.getSymbol (), false));
     }
 
     public static String        toString (InstrumentIdentity id) {
         return (id.getSymbol () + ":" + id.getType ());
     }
-    
+
+    /** Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead. */
     @Override
-    public boolean              equals (Object obj) {
+    public final boolean              equals (Object obj) {
+        // Must be the same as ConstantInstrumentKey.equals()
+
         if (!(obj instanceof InstrumentIdentity))
             return false;
 
         return (equals (this, (InstrumentIdentity) obj));
     }
 
+    /** Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead. */
     @Override
-    public int                  hashCode () {
+    public final int                  hashCode () {
+        // Must be the same as ConstantInstrumentKey.hashCode()
         return (hashCode (this));
     }
 
@@ -80,6 +87,6 @@ public class InstrumentKey
     public int                  compareTo (InstrumentIdentity o) {
         return (compare (this, o));
     }
-    
-    
+
+
 }
