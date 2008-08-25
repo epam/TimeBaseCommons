@@ -45,4 +45,13 @@ public class Icons {
 
      public static final Icon    QUERY =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/query.png");
+     
+     public static final Icon    SAVE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/save.png");
+     
+     public static final Icon    DATASOURCE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/datasource.png");
+     
+     public static final Icon    TABLE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/table.png");
 }
