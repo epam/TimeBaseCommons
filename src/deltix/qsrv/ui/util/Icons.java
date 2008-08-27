@@ -54,4 +54,30 @@ public class Icons {
      
      public static final Icon    TABLE =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/table.png");
+     
+     public static final Icon    SERVER =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/server.png");
+     
+     public static final Icon    MAXIMIZE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/maximize.gif");
+     
+     public static final Icon    OPEN =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/open.png");
+     
+     public static final Icon    PLUS2 =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus2.png");
+     
+     public static final Icon    MINUS =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/minus.png");
+     
+     public static final Icon    EXECUTE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute.png");
+     
+     public static final Icon    SUSPEND =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/suspend.png");
+     
+     public static final Icon    EXIT =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/exit.png");
+     
+     
 }
