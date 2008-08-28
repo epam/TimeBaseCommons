@@ -79,5 +79,11 @@ public class Icons {
      public static final Icon    EXIT =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/exit.png");
      
+     public static final Icon    COPY =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/copy.png");
+     
+     public static final Icon    NEW_FOLDER =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/newFolder.png");
+     
      
 }
