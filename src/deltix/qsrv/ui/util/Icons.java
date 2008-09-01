@@ -34,7 +34,7 @@ public class Icons {
     public static final Icon    PLUS =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus.gif");
 
-     public static final Icon    EXPANDE_ALL =
+     public static final Icon    EXPAND_ALL =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/expandall.png");
     
      public static final Icon    COLLAPSE_ALL =
@@ -87,6 +87,9 @@ public class Icons {
      
      public static final Icon    REFRESH =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/refresh.png");
+     
+     public static final Icon    FIND =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/find.png");
      
      
 }
