@@ -1,13 +1,15 @@
-package deltix.qsrv.ui.treeedit;
+package deltix.qsrv.ui.util;
+
+import java.util.*;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  */
 public class StringArrayTextArea extends JTextArea {
 
+    private static final long serialVersionUID = 1L;
+    
     public static final String DIVIDER = ";";
 
     public StringArrayTextArea(int rows, int columns) {
