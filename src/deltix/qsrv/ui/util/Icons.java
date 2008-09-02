@@ -91,5 +91,8 @@ public class Icons {
      public static final Icon    FIND =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/find.png");
      
+     public static final Icon    EXECUTE2 =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute.gif");
+     
      
 }
