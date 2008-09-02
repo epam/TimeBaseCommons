@@ -28,7 +28,7 @@ public class StringArrayTextArea extends JTextArea {
         for (int idx = 0; idx < values.length; idx++) {
             String s = values[idx];
             if (!s.isEmpty())
-                fill.add(s);
+                fill.add(s.trim());
         }
         return fill.toArray(new String[fill.size()]);
     }
