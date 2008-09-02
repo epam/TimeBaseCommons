@@ -14,6 +14,7 @@ public class StringArrayTextArea extends JTextArea {
 
     public StringArrayTextArea(int rows, int columns) {
         super(rows, columns);
+        setLineWrap(true);
     }
 
     public String[] getData() {
