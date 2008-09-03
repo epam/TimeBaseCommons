@@ -6,13 +6,13 @@ import java.io.*;
  *
  */
 public class RandomAccessFileStore implements AbstractDataStore {
-    protected final File            file;
-    protected RandomAccessFile      raf;
-    protected boolean               useLock = true;
-    private boolean                 mIsReadOnly;
-    private boolean                 mIsOpen;
-    private long                    mMinSize = 0;
-    private boolean                 mIsLocked = false;
+    protected final File                file;
+    protected RandomAccessFile          raf;
+    protected boolean                   useLock = true;
+    private boolean                     mIsReadOnly;
+    private boolean                     mIsOpen;
+    private long                        mMinSize = 0;
+    private FileLockSynchronizer.Lock   lock = null;
 
     public RandomAccessFileStore (File f) {
         file = f;
@@ -46,10 +46,8 @@ public class RandomAccessFileStore implements AbstractDataStore {
             raf = new RandomAccessFile (file, mIsReadOnly ? "r" : "rw");
             
             if (useLock) 
-                FileLockSynchronizer.lock(file, raf, mIsReadOnly);
+                lock = FileLockSynchronizer.acquire (file, raf, mIsReadOnly);
             
-            mIsLocked = true;
-
             setMinimumSizeNOW ();
         } catch (IOException iox) {
             throw new UncheckedIOException (iox);
@@ -114,12 +112,11 @@ public class RandomAccessFileStore implements AbstractDataStore {
         }
     }
 
-    private void releaseLock() {
-        if (mIsLocked) {
+    private void            releaseLock() {
+        if (lock != null) {
             try {
-                if (useLock)
-                    FileLockSynchronizer.release(file);
-                mIsLocked = false;
+                FileLockSynchronizer.release (lock);                
+                lock = null;
             }
             catch (IOException iox) {
                 throw new UncheckedIOException(iox);
