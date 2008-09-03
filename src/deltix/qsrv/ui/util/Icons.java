@@ -94,5 +94,8 @@ public class Icons {
      public static final Icon    EXECUTE2 =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute.gif");
      
+     public static final Icon    PREVIEW =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/preview.png");
+     
      
 }
