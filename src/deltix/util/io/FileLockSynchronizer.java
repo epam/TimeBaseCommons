@@ -5,7 +5,8 @@ import java.io.*;
 import java.nio.channels.*;
 
 /**
- *  A globally synchronized <b>readOnly</b> file acquire.
+ *  A globally synchronized file lock. Extends java.nio.channels.FileLock
+ *  functionality by managing locks acquired by threads within the same JVM.
  */
 public abstract class FileLockSynchronizer {
     private static final Map <String, LockSet>      locks = 
