@@ -108,7 +108,7 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
         mTree.expandPath(path);
     }
 
-    public final void reload() {
+    public void reload() {
         mChildrenUpdated = false;
         updateChildren();
         DefaultTreeModel model = (DefaultTreeModel) mTree.getModel();
