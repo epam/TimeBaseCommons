@@ -1,6 +1,7 @@
 package deltix.util.memory;
 
 import deltix.util.collections.generated.ByteArrayList;
+import deltix.util.io.ByteArrayOutputStreamEx;
 import deltix.util.io.UncheckedIOException;
 
 /**
@@ -33,6 +34,10 @@ public class MemoryDataInput {
         setBytes (list);
     }
     
+    public MemoryDataInput (ByteArrayOutputStreamEx buffer) {
+        setBytes (buffer);
+    }
+    
     public MemoryDataInput (MemoryDataOutput mout) {
         setBytes (mout);
     }
@@ -44,6 +49,12 @@ public class MemoryDataInput {
     }
     
     public final void       setBytes (ByteArrayList buffer) {
+        mBuffer = buffer.getInternalBuffer ();
+        mLimit = buffer.size ();
+        mPos = 0;
+    }
+    
+    public final void       setBytes (ByteArrayOutputStreamEx buffer) {
         mBuffer = buffer.getInternalBuffer ();
         mLimit = buffer.size ();
         mPos = 0;
