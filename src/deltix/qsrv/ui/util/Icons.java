@@ -97,5 +97,11 @@ public class Icons {
      public static final Icon    PREVIEW =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/preview.png");
      
+     public static final Icon    TOOLS =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/tools.png");
+     
+     public static final Icon    PATTERN =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/pattern.png");
+     
      
 }
