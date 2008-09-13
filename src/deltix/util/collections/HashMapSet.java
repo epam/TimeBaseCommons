@@ -10,6 +10,8 @@ public abstract class HashMapSet <K, V>
     implements MapSet <K, V> 
 {
     private HashMap <K, V>          keyMap;
+    private boolean                 keyMapUpToDate = true;
+    private boolean                 delayMapUpdate = true;
     
     public HashMapSet () {
         this (16);
@@ -18,6 +20,22 @@ public abstract class HashMapSet <K, V>
     public HashMapSet (int capacity) {
         super (capacity);
         keyMap = new HashMap <K, V> (capacity);
+    }
+    
+    private HashMap <K, V>      getKeyMap () {
+        if (!keyMapUpToDate) {
+            keyMap.clear ();
+            
+            for (V v : this)
+                keyMap.put (getKey (v), v);
+        }
+        
+        return (keyMap);
+    }
+    
+    private void                invalidateKeyMap () {
+        keyMapUpToDate = false;
+        keyMap.clear ();
     }
     
     public HashMapSet (Collection <V> copy) {
@@ -29,7 +47,7 @@ public abstract class HashMapSet <K, V>
     
     //  MapSet own methods
     public boolean              containsKey (K key) {
-        return (keyMap.containsKey (key));
+        return (getKeyMap ().containsKey (key));
     }
 
     public boolean              containsKeyOf (V value) {
@@ -37,15 +55,15 @@ public abstract class HashMapSet <K, V>
     }
     
     public V                    get (K key) {
-        return (keyMap.get (key));
+        return (getKeyMap ().get (key));
     }
 
     public Set <K>              keySet () {
-        return (keyMap.keySet ());
+        return (getKeyMap ().keySet ());
     }
 
     public V                    removeKey (K key) {
-        final V             v = keyMap.remove (key);
+        final V             v = getKeyMap ().remove (key);
         
         if (v != null)
             super.remove (v);
@@ -54,67 +72,86 @@ public abstract class HashMapSet <K, V>
     }
 
     public void                 keyChanged (V value) {
-        final V             v = keyMap.put (getKey (value), value);
-        
-        if (v != value)
-            throw new RuntimeException (value + " was not in the map");
+        if (delayMapUpdate) 
+            invalidateKeyMap ();
+        else {
+            final V             v = keyMap.put (getKey (value), value);
+
+            if (v != value)
+                throw new RuntimeException (value + " was not in the map");
+        }
     }
     
     public <T extends K> T []   keysToArray (T [] a) {
-        return (keyMap.keySet ().toArray (a));
+        return (getKeyMap ().keySet ().toArray (a));
     }
     
     //  Hooks into Set methods
     @Override
     public boolean              add (V v) {
-        final K             key = getKey (v);
-        
-        if (containsKey (key)) 
-            if (contains (v))
-                return (false);
-            else
-                throw new IllegalStateException (
-                    "Key was in, but object was out: " + key
-                );
-        else if (super.add (v)) {
-            keyMap.put (key, v);
-            return (true);
+        if (delayMapUpdate) {
+            invalidateKeyMap ();
+            return (super.add (v));
         }
-        else
-            throw new IllegalStateException ("Key was out, but object was in: " + key);
+        else {
+            final K             key = getKey (v);
+
+            if (containsKey (key)) 
+                if (contains (v))
+                    return (false);
+                else
+                    throw new IllegalStateException (
+                        "Key was in, but object was out: " + key
+                    );
+            else if (super.add (v)) {
+                keyMap.put (key, v);
+                return (true);
+            }
+            else
+                throw new IllegalStateException ("Key was out, but object was in: " + key);
+        }
     }
 
     @Override @SuppressWarnings ("unchecked")
     public boolean              remove (Object o) {
         final V             v = (V) o;
-        final K             key = getKey (v);
-        final V             removed = keyMap.remove (key);
         
-        if (removed != null) {            
-            if (!super.remove (o))
-                throw new IllegalStateException ("Key was in, but object was out: " + key);
-            
-            if (!removed.equals (o))
-                throw new IllegalStateException ("Key was in, but object was different: " + key);
-            
-            return (true);
+        if (delayMapUpdate) {            
+            invalidateKeyMap ();
+            return (super.remove (v));
         }
-        else if (contains (v))
-            throw new IllegalStateException ("Key was out, but object was in: " + key);
-        else
-            return (false);
+        else {
+            final K             key = getKey (v);
+            final V             removed = keyMap.remove (key);
+
+            if (removed != null) {            
+                if (!super.remove (o))
+                    throw new IllegalStateException ("Key was in, but object was out: " + key);
+
+                if (!removed.equals (o))
+                    throw new IllegalStateException ("Key was in, but object was different: " + key);
+
+                return (true);
+            }
+            else if (contains (v))
+                throw new IllegalStateException ("Key was out, but object was in: " + key);
+            else
+                return (false);
+        }
     }
 
     @Override
     public void                 clear () {
         super.clear ();
         keyMap.clear ();
+        keyMapUpToDate = true;
     }
 
     @Override @SuppressWarnings ("unchecked")
     public Object               clone () {        
         HashMapSet <K, V> newSet = (HashMapSet <K, V>) super.clone ();
-        newSet.keyMap = (HashMap <K, V>) keyMap.clone ();
+        newSet.keyMap = new HashMap <K, V> (size ());
+        newSet.keyMapUpToDate = false;
         return newSet;
     }   
 }
