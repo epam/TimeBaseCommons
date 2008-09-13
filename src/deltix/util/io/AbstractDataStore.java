@@ -31,4 +31,10 @@ public interface AbstractDataStore extends Disposable {
      *  Open the data store.
      */
     public void         open (boolean readOnly);
+    
+    /**
+     *  Returns a meaningful identification of this object,
+     *  such as a file path or url.
+     */
+    public String       getId ();
 }

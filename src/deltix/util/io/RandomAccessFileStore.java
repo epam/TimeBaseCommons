@@ -17,7 +17,11 @@ public class RandomAccessFileStore implements AbstractDataStore {
     public RandomAccessFileStore (File f) {
         file = f;
     }
-    
+
+    public String           getId () {
+        return (file.getPath ());
+    }
+        
     protected void          force (boolean metaData)
         throws IOException, InterruptedException
     {

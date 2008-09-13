@@ -40,7 +40,7 @@ public class MemoryDataOutput {
     /**
      *  Reset buffer with the size of 0.
      */
-    public final void           reset () {
+    public void             reset () {
         mPos = 0;
         mSize = 0;
     }
@@ -48,7 +48,7 @@ public class MemoryDataOutput {
     /**
      *  Reset buffer with initial size.
      */
-    public final void           reset (int size) {
+    public void             reset (int size) {
         mPos = 0;
         mSize = 0;
         makeRoom (size);
