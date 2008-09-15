@@ -20,7 +20,8 @@ public class Util {
         System.getProperty ("path.separator").equals (";");
     public static final String  NATIVE_LINE_BREAK =
         System.getProperty ("line.separator");
-    
+    public final static String[] EMPTY_STRING_ARRAY = {};
+
     public static void collectLocalFiles(String path, Collection<String> files) {
         File file = new File(path);
         if (file.isDirectory()) {
