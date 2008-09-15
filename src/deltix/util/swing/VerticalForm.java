@@ -13,7 +13,13 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     private GridBagConstraints      mC = new GridBagConstraints ();
     private Set <Component>         mSwitchComponents = new HashSet <Component> ();
     private int                     mLabelAncor = GridBagConstraints.NORTHWEST;
-    
+
+    public VerticalForm (int labelAnchor) {
+        this();
+        
+        mLabelAncor = labelAnchor;
+    }
+
     public VerticalForm () {
         super (new GridBagLayout ());
         
