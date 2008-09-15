@@ -103,5 +103,17 @@ public class Icons {
      public static final Icon    PATTERN =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/pattern.png");
      
+     public static final Icon    TAXONOMY =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/taxonomy.png");
+     
+     public static final Icon    CONSOLE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/console.png");
+     
+     public static final Icon    PROPERTIES =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/properties.png");
+     
+     public static final Icon    GROUP =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/group.png");
+     
      
 }
