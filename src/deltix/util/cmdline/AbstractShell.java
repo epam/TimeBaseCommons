@@ -1,5 +1,6 @@
 package deltix.util.cmdline;
 
+import deltix.util.Version;
 import deltix.util.lang.StringUtils;
 import java.io.*;
 
@@ -21,6 +22,11 @@ public abstract class AbstractShell extends DefaultApplication {
     protected boolean       doCommand (String key, String args) throws Exception {
         if (key.equalsIgnoreCase ("help") || key.equalsIgnoreCase ("?")) {
             printUsage (System.err);
+            return (true);
+        }
+        
+        if (key.equalsIgnoreCase ("version")) {
+            System.out.println ("Version " + Version.VERSION_STRING);
             return (true);
         }
         
