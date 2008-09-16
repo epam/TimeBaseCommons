@@ -5,5 +5,9 @@ package deltix.qsrv.hf.pub;
  */
 public enum InstrumentType {
     EQUITY,
-    OPTION
+    OPTION,
+    FUTURE,
+    BOND,
+    FX,
+    SPREAD // Equity Option Spreads
 }
