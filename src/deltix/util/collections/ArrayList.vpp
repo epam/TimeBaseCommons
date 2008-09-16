@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import deltix.util.collections.SafeArrays;
-import deltix.util.memory.MemorySizeEstimator;
+import deltix.util.memory.*;
 
 
 
@@ -59,7 +59,7 @@ public final class ${name}ArrayList
     private int size;
 
     public long              getSizeInMemory () {
-        return (OBJECT_OVERHEAD + elementData.length * ${size});
+        return (OBJECT_OVERHEAD + SIZE_OF_INT + SIZE_OF_POINTER + EstimatorUtils.getSizeInMemory(elementData));
     }
 
     /**
