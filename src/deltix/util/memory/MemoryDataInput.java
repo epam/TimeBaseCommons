@@ -379,4 +379,37 @@ public class MemoryDataInput {
         return (sb);
     }
 
+    public double       readScaledDouble () {
+        int                 header = readByte ();
+        
+        if (header == 0)
+            return (0);
+        
+        int                 exp = header & 0x0F;
+        
+        if (exp == 15)
+            return (readDouble ());
+        
+        int                 numBytes = (header >> 4) & 0x07;
+        long                lv = 0;
+        int                 shift = 0;
+        
+        while (numBytes > 0) {
+            lv |= (readLongUnsignedByte () << shift);
+            numBytes--;
+            shift += 8;
+        }
+            
+        double              scale = 1;
+        
+        while (exp > 0) {
+            scale *= 10;
+            exp--;
+        }
+        
+        if ((header & 0x80) != 0)
+            scale = -scale;
+        
+        return (lv / scale);
+    }
 }

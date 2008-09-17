@@ -77,4 +77,39 @@ public class Test_MemoryDataInputOutput {
             assertEquals (v, actual);
         }
     }
+    
+    @Test
+    public void     testScaledDouble () {
+        final double []                 testValues = {
+            0, 0.7, -0.2, 2.28, -997.82, 
+            666.234876, -234876747.6678,
+            0.23476890879672543765 /* out of exp range */
+        };
+        
+        out.reset ();
+        
+        for (double v : testValues) 
+            out.writeScaledDouble (v);
+        
+        in.setBytes (out);
+        
+        for (double v : testValues) {
+            double        actual = in.readScaledDouble ();
+            assertTrue ("Expected: " + v + "; got: " + actual, v == actual);
+        }
+        
+        out.reset ();
+        
+        for (double v : testValues) 
+            out.writeScaledDouble (v, 3);
+        
+        in.setBytes (out);
+        
+        for (double v : testValues) {
+            long        actual = Math.round (in.readScaledDouble () * 1000);
+            long        expected = Math.round (v * 1000);
+                
+            assertEquals (expected, actual);
+        }
+    }
 }

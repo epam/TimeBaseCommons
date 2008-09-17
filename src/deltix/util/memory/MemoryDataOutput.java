@@ -272,6 +272,128 @@ public class MemoryDataOutput {
         mPos += 4;
     }
     
+    public static final int     MAX_SCALE_EXP = 15;
+    
+    public final void           writeScaledDouble (double v, int precision) {
+        if (v == 0) {
+            writeByte (0);
+            return;
+        }
+            
+        int                 signBit;
+        
+        if (v < 0) {
+            signBit = 0x80;
+            v = -v;
+        }
+        else
+            signBit = 0;
+            
+        long                scale;
+        
+        switch (precision) {
+            case 0:     scale = 1;  break;
+            case 1:     scale = 10;  break;
+            case 2:     scale = 100;  break;
+            case 3:     scale = 1000;  break;
+            case 4:     scale = 10000;  break;
+            case 5:     scale = 100000;  break;
+            case 6:     scale = 1000000;  break;
+            case 7:     scale = 10000000;  break;
+            case 8:     scale = 100000000;  break;
+            case 9:     scale = 1000000000;  break;
+            case 10:    scale = 10000000000L;  break;
+            case 11:    scale = 100000000000L;  break;
+            case 12:    scale = 1000000000000L;  break;
+            case 13:    scale = 10000000000000L;  break;
+            case 14:    scale = 100000000000000L;  break;
+            default:    
+                throw new IllegalArgumentException ("Illegal precision: " + precision);            
+        }
+        
+        long                lv = Math.round (v * scale);
+        int                 exp = precision;
+        
+        while (exp > 1) {
+            if ((lv % 10) != 0)
+                break;
+            
+            lv = lv / 10;
+            exp--;
+        }
+
+        //  Discount leading zero bytes in x
+        makeRoom (1);
+
+        int                 headerPos = mPos++;
+        int                 numBytes = writeLongBytes (lv);
+        
+        mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
+    }
+
+    public final void           writeScaledDouble (double v) {
+        if (v == 0) {
+            writeByte (0);
+            return;
+        }
+            
+        int                 signBit;
+        
+        if (v < 0) {
+            signBit = 0x80;
+            v = -v;
+        }
+        else
+            signBit = 0;
+            
+        double              scale = 1;
+        int                 exp = 0;
+        long                lv;
+        
+        for (;;) {
+            lv = Math.round (v * scale);
+            
+            if (v == lv / scale)
+                break;
+            
+            exp++;
+                       
+            if (exp == MAX_SCALE_EXP) {
+                writeByte (0x0F);
+                writeDouble (v);
+                return;
+            }
+            
+            scale *= 10;
+        }
+        
+        //  Discount leading zero bytes in x
+        makeRoom (1);
+
+        int                 headerPos = mPos++;
+        int                 numBytes = writeLongBytes (lv);
+        
+        mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
+    }
+
+    /**
+     *  Writes out a long in LSBF order, and stops when all 
+     *  remaining bytes are 0.
+     * 
+     *  @param v The long to write.
+     *  @return  The number of bytes written, between 0 .. 8 inclusively.
+     */
+    public int                  writeLongBytes (long v) {
+        int                 addlPos = mPos;
+        
+        while (v != 0) {   
+            writeByte (v);
+            v = v >>> 8;
+        }
+        
+        return (mPos - addlPos);
+    }
+    
     public final byte []        toByteArray () {
         byte []     ret = new byte [mPos];
         System.arraycopy (mBuffer, 0, ret, 0, mPos);
