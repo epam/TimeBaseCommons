@@ -1,5 +1,7 @@
 package deltix.util.swing;
 
+import deltix.util.lang.Util;
+
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -19,7 +21,7 @@ public class LocalObjectTransferable<T> implements Transferable, ClipboardOwner,
 	private static final long serialVersionUID = 1L;
     
     private T object;
-	private DataFlavor dataFlavor;
+	private final DataFlavor[] dataFlavors;
 
     @SuppressWarnings ("unchecked")
 	public LocalObjectTransferable(T object) {
@@ -28,23 +30,28 @@ public class LocalObjectTransferable<T> implements Transferable, ClipboardOwner,
 
 	public LocalObjectTransferable(T object, Class<? extends T> clazz) {
 		this.object = object;
-		dataFlavor = getLocalObjectFlavor(clazz);
+        dataFlavors = new DataFlavor[]{getLocalObjectFlavor(clazz)};
 	}
 
-	public DataFlavor[] getTransferDataFlavors() {
-		return new DataFlavor[] {dataFlavor};
+    public LocalObjectTransferable(T object, Class<? extends T> clazz1, Class<? extends T> clazz2) {
+        this.object = object;
+        dataFlavors = new DataFlavor[]{getLocalObjectFlavor(clazz1), getLocalObjectFlavor(clazz2)};
+    }
+
+    public DataFlavor[] getTransferDataFlavors() {
+		return dataFlavors;
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return dataFlavor.equals(flavor);
+        return Util.indexOf(dataFlavors, flavor) != -1;
 	}
 
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
-		if ( dataFlavor.equals(flavor) ) {
-			return object;
-		}
-		throw new UnsupportedFlavorException(flavor);
+        if (isDataFlavorSupported(flavor)) {
+            return object;
+        }
+        throw new UnsupportedFlavorException(flavor);
 	}
 
 	public T getObject() {
