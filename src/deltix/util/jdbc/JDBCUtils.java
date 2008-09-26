@@ -5,9 +5,7 @@ import deltix.util.lang.Justification;
 import java.sql.*;
 import java.util.logging.*;
 import java.util.*;
-import java.io.*;
 
-import deltix.util.*;
 
 /**
  *
@@ -16,6 +14,57 @@ public class JDBCUtils {
     static ResourceBundle           RB = 
         ResourceBundle.getBundle ("deltix.util.jdbc.ui");
     
+    /**
+     *  Closes a JDBC Connection without throwing an exception.
+     *	Checks for null.
+     */
+    public static void			close (java.sql.Connection conn) {
+        if (conn != null)
+            try {
+                conn.close ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
+    /**
+     *  Rolls back any changes made in connection without throwing an exception.
+     *	Checks for null.
+     */
+    public static void			rollback (java.sql.Connection conn) {
+        if (conn != null)
+            try {
+                conn.rollback ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
+
+    /**
+     *  Closes a Statement without throwing an exception. Checks for null.
+     */
+    public static void			close (Statement stmt) {
+        if (stmt != null)
+            try {
+                stmt.close ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
+    /**
+     *  Closes a ResultSet without throwing an exception. Checks for null.
+     */
+    public static void			close (ResultSet rs) {
+        if (rs != null)
+            try {
+                rs.close ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
     /**
      *  Converts NaN to NULL
      */
@@ -231,34 +280,7 @@ public class JDBCUtils {
                 Util.LOGGER.log (Level.SEVERE, "Error while rolling back a transaction", x);
             }
     }
-    
-    public static void              close (Connection conn) {
-        if (conn != null)
-            try {
-                conn.close ();
-            } catch (Throwable x) {
-                Util.LOGGER.log (Level.SEVERE, "Error while closing a connection", x);
-            }
-    }
-    
-    public static void              close (Statement stmt) {
-        if (stmt != null)
-            try {
-                stmt.close ();
-            } catch (Throwable x) {
-                Util.LOGGER.log (Level.SEVERE, "Error while closing a statement", x);
-            }
-    }
-    
-    public static void              close (ResultSet rs) {
-        if (rs != null)
-            try {
-                rs.close ();
-            } catch (Throwable x) {
-                Util.LOGGER.log (Level.SEVERE, "Error while closing a result set", x);
-            }
-    }
-    
+        
     public static void              close (DataTransformer xf) {
         if (xf != null)
             try {

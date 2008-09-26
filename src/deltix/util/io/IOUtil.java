@@ -20,6 +20,30 @@ import java.util.regex.*;
 public class IOUtil {
     public static final String  CR = System.getProperty ("line.separator");
 
+    /**
+     *  Closes a Socket without throwing an exception. Checks for null.
+     */
+    public static void			close (Socket s) {
+        if (s != null)
+            try {
+                s.close ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
+    /**
+     *  Closes a ServerSocket without throwing an exception. Checks for null.
+     */
+    public static void			close (ServerSocket s) {
+        if (s != null)
+            try {
+                s.close ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
     public static URL       createFileUrl (File f) {
         String          path = f.getAbsolutePath ().replace ('\\', '/');
 

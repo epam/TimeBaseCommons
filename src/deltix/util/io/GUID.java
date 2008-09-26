@@ -39,7 +39,7 @@ public class GUID {
         } catch (IOException x) {
             throw new UncheckedIOException (x);
         } finally {
-            Util.close (socket);
+            IOUtil.close (socket);
         }
     }
     
