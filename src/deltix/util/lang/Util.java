@@ -37,31 +37,49 @@ public class Util {
             files.add(file.getAbsolutePath());
         }
     }
-    
+
+    public static void collectLocalFiles(String path, Collection<String> files, Filter<File> filter) {
+        File file = new File(path);
+        if (filter.accept(file)) {
+            if (file.isDirectory()) {
+                String[] children = file.list();
+                if (children == null) {
+                    // Either dir does not exist or is not a directory
+                } else {
+                    for (String filename : children) {
+                        collectLocalFiles(file.getAbsolutePath() + File.separator + filename, files, filter);
+                    }
+                }
+            } else {
+                files.add(file.getAbsolutePath());
+            }
+        }
+    }
+
     public static int           doubleUntilAtLeast (int a, int limit) {
         if (a == 0)
             return limit;
-        do 
+        do
             a = a << 1;
         while (a < limit);
         return (a);
-    }    
-    
+    }
+
     /**
      *  Returns the sign of a - b
      */
     public static int           compare (long a, long b) {
         long        diff = a - b;
-        
+
         if (diff < 0)
             return (-1);
-        
+
         if (diff > 0)
             return (1);
-        
+
         return (0);
     }
-    
+
     /**
      *  Returns the sign of a - b
      */
