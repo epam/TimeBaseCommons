@@ -5,7 +5,7 @@ import java.util.*;
 /**
  *  
  */
-public class CharSequenceToObjectMap <T> extends HashMap <CharSequence, T> {
+public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
     private CharSubSequence     mBuffer = new CharSubSequence ();
     
     public CharSequenceToObjectMap (int initialCapacity, float loadFactor) {
@@ -35,7 +35,6 @@ public class CharSequenceToObjectMap <T> extends HashMap <CharSequence, T> {
         return (super.get (mBuffer));
     }
     
-    @Override
     public T                    put (CharSequence key, T value) {
         return super.put (key.toString (), value);
     }        
