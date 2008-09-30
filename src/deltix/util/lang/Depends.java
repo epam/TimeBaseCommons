@@ -7,11 +7,11 @@ import java.lang.annotation.*;
  *
  * For example:
  * <pre>
- * @Depends ("../jaxb.index")
+ * &#64;Depends ("../jaxb.index")
  *
  * or
  *
- * @Depends ( {
+ * &#64;Depends ( {
  *   "deltix/qsrv/hf/framework/spring/spring-client-config.xml",
  *   "deltix/qsrv/hf/framework/spring/spring-common-config.xml"
  * })
