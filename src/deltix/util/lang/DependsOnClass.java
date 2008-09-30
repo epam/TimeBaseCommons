@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  *
  * For example:
  * <pre>
- * @DependsOnClass (org.apache.xbean.spring.context.ClassPathXmlApplicationContext.class)
+ * &#64;DependsOnClass (org.apache.xbean.spring.context.ClassPathXmlApplicationContext.class)
  * </pre>
  *
  * @See Depends
