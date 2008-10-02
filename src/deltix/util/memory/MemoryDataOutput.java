@@ -272,7 +272,18 @@ public class MemoryDataOutput {
         mPos += 4;
     }
     
-    public static final int     MAX_SCALE_EXP = 15;
+    public static final int         MAX_SCALE_EXP = 15;
+    
+    private static final long []    SCALES = new long [MAX_SCALE_EXP];
+    
+    static {
+        long v = 1;
+        
+        for (int ii = 0; ii < MAX_SCALE_EXP; ii++) {
+            SCALES [ii] = v;
+            v *= 10;
+        }
+    }
     
     public final void           writeScaledDouble (double v, int precision) {
         if (v == 0) {
@@ -289,28 +300,7 @@ public class MemoryDataOutput {
         else
             signBit = 0;
             
-        long                scale;
-        
-        switch (precision) {
-            case 0:     scale = 1;  break;
-            case 1:     scale = 10;  break;
-            case 2:     scale = 100;  break;
-            case 3:     scale = 1000;  break;
-            case 4:     scale = 10000;  break;
-            case 5:     scale = 100000;  break;
-            case 6:     scale = 1000000;  break;
-            case 7:     scale = 10000000;  break;
-            case 8:     scale = 100000000;  break;
-            case 9:     scale = 1000000000;  break;
-            case 10:    scale = 10000000000L;  break;
-            case 11:    scale = 100000000000L;  break;
-            case 12:    scale = 1000000000000L;  break;
-            case 13:    scale = 10000000000000L;  break;
-            case 14:    scale = 100000000000000L;  break;
-            default:    
-                throw new IllegalArgumentException ("Illegal precision: " + precision);            
-        }
-        
+        long                scale = SCALES [precision];
         long                lv = Math.round (v * scale);
         int                 exp = precision;
         
