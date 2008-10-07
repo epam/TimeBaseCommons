@@ -7,6 +7,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import com.jidesoft.tree.*;
+
 import deltix.util.collections.*;
 
 public abstract class AbstractTreeNode<T> implements TreeNode {
@@ -111,8 +113,13 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
     public void reload() {
         mChildrenUpdated = false;
         updateChildren();
-        DefaultTreeModel model = (DefaultTreeModel) mTree.getModel();
-        model.reload(this);
+        TreeModel model = mTree.getModel();
+        if (model instanceof FilterableTreeModel){
+            model = ((FilterableTreeModel)model).getActualModel();
+        }
+        if (model instanceof DefaultTreeModel){
+            ((DefaultTreeModel) model).reload(this);
+        }
     }
     
     public T getNodeObject() {
