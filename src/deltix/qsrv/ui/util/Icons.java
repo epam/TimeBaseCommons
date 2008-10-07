@@ -115,5 +115,14 @@ public class Icons {
      public static final Icon    GROUP =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/group.png");
      
+     public static final Icon    ENTITY =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/entity.gif");
+     
+     public static final Icon    SCROLL_UP =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_up.png");
+     
+     public static final Icon    SCROLL_DOWN =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_down.png");
+     
      
 }
