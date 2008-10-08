@@ -137,4 +137,14 @@ public class AbstractApp
         Thread.setDefaultUncaughtExceptionHandler (this);
         System.setProperty ("sun.awt.exception.handler", AppExceptionHandler.class.getName ());
     }
+
+    @Override
+    public void                 setTitle (String title) {
+        if (title.indexOf (Version.VERSION_STRING) < 0)
+            title = title + " - Version " + Version.VERSION_STRING;
+        
+        super.setTitle (title);
+    }
+    
+    
 }
