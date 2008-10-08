@@ -127,5 +127,8 @@ public class Icons {
      public static final Icon    DELETE =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/delete.png");
      
+     public static final Icon    LOGO =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/logo_small.png");  
+     
      
 }
