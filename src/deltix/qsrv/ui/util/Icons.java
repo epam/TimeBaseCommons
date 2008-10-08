@@ -124,5 +124,8 @@ public class Icons {
      public static final Icon    SCROLL_DOWN =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_down.png");
      
+     public static final Icon    DELETE =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/delete.png");
+     
      
 }
