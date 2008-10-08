@@ -1552,4 +1552,35 @@ public class IOUtil {
             zos.closeEntry ();
         }
     }
+
+    /** Replaces System properties defined in given file as "${property name}" into "{property value}" */
+    public static String replaceSystemProperties (File xmlFile) throws IOException, InterruptedException {
+        String xml = IOUtil.readTextFile(xmlFile);
+        return replaceSystemProperties(xmlFile, xml);
+    }
+
+    /** Replaces System properties defined in given string "${property name}" into "{property value}" */
+    public static String replaceSystemProperties(File xmlFile, String xml) throws IOException {
+        Pattern p = Pattern.compile("\\$\\{([^\\}]*)\\}");
+        Matcher m = p.matcher(xml);
+
+        StringBuffer result = new StringBuffer (xml.length()+128);
+
+        while (m.find()) {
+             String propertyName = m.group(1);
+             String propertyValue = System.getProperty(propertyName);
+             if (propertyValue != null) {
+                 // escape / and $ as they have special meaning for Matcher.appendReplacement()
+                 propertyValue = propertyValue.replace ("\\", "\\\\");
+                 propertyValue = propertyValue.replace ("$", "\\$");
+                 m.appendReplacement(result, propertyValue);
+             } else {
+                 throw new IOException ("Cannot find system property \"" + propertyName + "\" defined in " + xmlFile.getAbsolutePath());
+             }
+        }
+        m.appendTail(result);
+
+        return result.toString();
+    }
+
 }
