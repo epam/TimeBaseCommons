@@ -122,6 +122,18 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
         }
     }
     
+    public void nodeChanged() {
+        mChildrenUpdated = false;
+        updateChildren();
+        TreeModel model = mTree.getModel();
+        if (model instanceof FilterableTreeModel){
+            model = ((FilterableTreeModel)model).getActualModel();
+        }
+        if (model instanceof DefaultTreeModel){
+            ((DefaultTreeModel) model).nodeChanged(this);
+        }
+    }
+    
     public T getNodeObject() {
         return mNodeObject;
     }
