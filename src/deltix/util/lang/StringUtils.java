@@ -465,6 +465,21 @@ public class StringUtils {
         return -1;
     }
 
+    public static boolean   endsWith (CharSequence a, CharSequence b) {
+        int     alen = a.length ();
+        int     blen = b.length ();
+        int     offset = alen - blen;
+        
+        if (offset < 0)
+            return (false);
+        
+        for (int ii = 0; ii < blen; ii++) 
+            if (a.charAt (offset + ii) != b.charAt (ii))
+                return (false);
+        
+        return (true);
+    }
+    
     public static void main (String [] args) {
         byte []     b = args [0].getBytes();
 
