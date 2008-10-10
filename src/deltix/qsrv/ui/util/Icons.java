@@ -133,5 +133,8 @@ public class Icons {
      public static final Icon    GENERAL =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/general.png");  
      
+     public static final Icon    FILTER =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/filter.png");  
+     
      
 }
