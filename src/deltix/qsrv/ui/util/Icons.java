@@ -33,6 +33,12 @@ public class Icons {
     
     public static final Icon    PLUS =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus.gif");
+    
+    public static final Icon    PLUS2 =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus2.png");
+    
+    public static final Icon    PLUS3 =
+        SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus3.png");
 
      public static final Icon    EXPAND_ALL =
         SwingUtil.loadIcon ("deltix/qsrv/ui/util/expandall.png");
@@ -63,15 +69,19 @@ public class Icons {
      
      public static final Icon    OPEN =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/open.png");
-     
-     public static final Icon    PLUS2 =
-         SwingUtil.loadIcon ("deltix/qsrv/ui/util/plus2.png");
+    
      
      public static final Icon    MINUS =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/minus.png");
      
      public static final Icon    EXECUTE =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute.png");
+     
+     public static final Icon    EXECUTE2 =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute.gif");
+     
+     public static final Icon    EXECUTE3 =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute2.png");
      
      public static final Icon    SUSPEND =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/suspend.png");
@@ -91,8 +101,7 @@ public class Icons {
      public static final Icon    FIND =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/find.png");
      
-     public static final Icon    EXECUTE2 =
-         SwingUtil.loadIcon ("deltix/qsrv/ui/util/execute.gif");
+    
      
      public static final Icon    PREVIEW =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/preview.png");
@@ -135,6 +144,18 @@ public class Icons {
      
      public static final Icon    FILTER =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/filter.png");  
+     
+     public static final Icon    APPLY =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/apply.png");  
+     
+     public static final Icon    BALL_RED =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/ball_red.png");
+     
+     public static final Icon    BALL_GREEN =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/ball_green.png");
+     
+     public static final Icon    BALL_YELLOW =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/ball_yellow.png");
      
      
 }
