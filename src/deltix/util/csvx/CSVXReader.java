@@ -41,6 +41,12 @@ public class CSVXReader {
         return (new CSVXReader (new InputStreamReader (is), delimiter, true, path + ": "));
     }
     
+    public static CSVXReader            openResource (Class <?> cls, String path) 
+        throws IOException
+    {
+        return (openResource (cls, path, ','));
+    }
+    
     public CSVXReader (Reader rd, char delimiter, boolean closeReader, String diagPrefix) {
         mReader = rd;
         mCloseReader = closeReader;
