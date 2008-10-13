@@ -16,7 +16,12 @@ public class ByteCountingInputStream extends FilterInputStream {
     public long                 getNumBytesRead () {
         return (mNumBytesRead);
     }
-            
+     
+    public void                 setNumBytesRead (long num) {
+        mNumBytesRead = num;
+        numBytesChanged ();
+    }
+    
     public void                 numBytesChanged () {        
     }
     

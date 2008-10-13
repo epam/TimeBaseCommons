@@ -7,7 +7,10 @@ import java.io.*;
  *  Useful for buffering data being read from RandomAccessFiles.
  *  Override close () if necessary, default implementation does nothing!
  */
-public class RandomAccessFileToInputStreamAdapter extends InputStream {
+public class RandomAccessFileToInputStreamAdapter 
+    extends InputStream 
+    implements SeekCapable
+{
     private final RandomAccessFile      mIn;
     private long                        mMark = -1;
     
@@ -15,16 +18,32 @@ public class RandomAccessFileToInputStreamAdapter extends InputStream {
         mIn = in;
     }
     
+    public RandomAccessFileToInputStreamAdapter (File f) 
+        throws FileNotFoundException 
+    {
+        this (new RandomAccessFile (f, "r"));
+    }
+    
     protected RandomAccessFile  randomAccessFile () {
         return (mIn);
     }
 
+    public void                 seek (long position) throws IOException {
+        mIn.seek (position);
+    }
+    
+    public long                 getPosition () throws IOException {
+        return (mIn.getFilePointer ());
+    }
+    
+    @Override
     public int                  read (byte [] b, int off, int len) 
         throws IOException 
     {
         return (mIn.read (b, off, len));
     }
 
+    @Override
     public int                  read (byte [] b) 
         throws IOException 
     {
@@ -35,10 +54,12 @@ public class RandomAccessFileToInputStreamAdapter extends InputStream {
         return (mIn.read ());
     }
 
-    public void mark (int readlimit) {
+    @Override
+    public void                 mark (int readlimit) {
         super.mark(readlimit);
     }
 
+    @Override
     public int                  available () throws IOException {
         long        n = mIn.length () - mIn.getFilePointer ();
         
@@ -48,6 +69,7 @@ public class RandomAccessFileToInputStreamAdapter extends InputStream {
         return ((int) n);
     }
 
+    @Override
     public void                 reset () throws IOException {
         if (mMark < 0)
             throw new IOException ("mark () has not been called");
@@ -55,10 +77,12 @@ public class RandomAccessFileToInputStreamAdapter extends InputStream {
         mIn.seek (mMark);
     }
 
+    @Override
     public boolean              markSupported () {
         return (true);
     }
 
+    @Override
     public long                 skip (long n) throws IOException {
         if (n <= 0)
             return (0);

@@ -9,7 +9,10 @@ import java.io.*;
  *  Useful for buffering data being read from RandomAccessFiles.
  *  Override close () if necessary, default implementation does nothing!
  */
-public class RandomAccessFileToInputStreamAdapterMT extends InputStream {
+public class RandomAccessFileToInputStreamAdapterMT 
+    extends InputStream 
+    implements SeekCapable
+{
     protected final RandomAccessFile    raf;
     protected final Object              lock;
     private long                        offset;
@@ -26,6 +29,14 @@ public class RandomAccessFileToInputStreamAdapterMT extends InputStream {
         this.offset = offset;
     }
 
+    public long                 getPosition () {
+        return (offset);
+    }
+
+    public void                 seek (long position) {
+        offset = position;
+    }
+    
     /**
      *  Override to impose additional limit on file length.
      *  Default implementation returns <tt>Long.MAX_VALUE</tt>.

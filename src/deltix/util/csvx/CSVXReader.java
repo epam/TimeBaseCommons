@@ -5,6 +5,7 @@ import java.io.*;
 import deltix.util.lang.Util;
 import deltix.util.collections.*;
 import deltix.util.collections.generated.*;
+import deltix.util.io.*;
 import deltix.util.text.CharSequenceParser;
 import java.util.regex.*;
 
@@ -13,24 +14,23 @@ import java.util.regex.*;
  */
 public class CSVXReader {
     private String []                   mHeaders;
+    private SeekCapable                 mSeekCapable = null;
+    private BufferedInputStream         mBufferedStream = null;
+    private ByteCountingInputStream     mInputStream = null;
     private Reader                      mReader;
-    private final boolean               mCloseReader;
+    private boolean                     mCloseReader;
     private String                      mDiagPrefix;
     private boolean                     mEOF = false;
-    private int                         mPosition = 1;
     private int                         mLineNumber = 1;
+    private long                        mLineStartPosition = 0;
     private StringBuilder               mBuffer = new StringBuilder ();
     private IntegerArrayList            mInclStartIndexes = new IntegerArrayList ();
     private IntegerArrayList            mExclEndIndexes = new IntegerArrayList ();
     private boolean                     mLastCharWasCR = false;    
-    private CharSubSequence             mStockCharSequence = new CharSubSequence (mBuffer);
+    private CharSubSequence             mStockCharSequence = new CharSubSequence (mBuffer);    
+    private char                        mDelimiter;
     
-    private static final char           COMMA_DELIMITER = ',';
-    private static final char           TAB_DELIMITER = '\t';
-    
-    private final char                  mDelimiter;
-    
-    public static CSVXReader            openResource (Class <?> cls, String path) 
+    public static CSVXReader            openResource (Class <?> cls, String path, char delimiter) 
         throws IOException
     {
         InputStream         is = cls.getResourceAsStream (path);
@@ -38,14 +38,7 @@ public class CSVXReader {
         if (is == null)
             throw new FileNotFoundException (path);
         
-        return (new CSVXReader (new InputStreamReader (is), true, path + ": "));
-    }
-    
-    public CSVXReader (Reader rd, boolean closeReader, String diagPrefix) {
-        mReader = rd;
-        mCloseReader = closeReader;
-        mDiagPrefix = diagPrefix;
-        mDelimiter = ',';
+        return (new CSVXReader (new InputStreamReader (is), delimiter, true, path + ": "));
     }
     
     public CSVXReader (Reader rd, char delimiter, boolean closeReader, String diagPrefix) {
@@ -55,18 +48,37 @@ public class CSVXReader {
         mDelimiter = delimiter;
     }
     
-    public CSVXReader (File f, char delimiter) throws IOException {
-        mReader = new BufferedReader (new FileReader (f));
-        mCloseReader = true;
-        mDiagPrefix = f.getPath () + ": ";
+    public CSVXReader (
+        InputStream             is, 
+        char                    delimiter, 
+        boolean                 closeReader, 
+        String                  diagPrefix
+    )
+    {
+        /*
+        if (is instanceof SeekCapable) {
+            mSeekCapable = (SeekCapable) is;
+            mBuffer = new BufferedInputStream (is);
+        }
+        */
+        mInputStream = new ByteCountingInputStream (is);
+        mReader = new InputStreamReader (mInputStream);
+        mCloseReader = closeReader;
+        mDiagPrefix = diagPrefix;
         mDelimiter = delimiter;
     }
     
+    public CSVXReader (File f, char delimiter) throws IOException {
+        this (
+            new BufferedInputStream (new FileInputStream (f)),
+            delimiter, 
+            true,
+            f.getPath () + ": "
+        );
+    }
+    
     public CSVXReader (File f) throws IOException {
-        mReader = new BufferedReader (new FileReader (f));
-        mCloseReader = true;
-        mDiagPrefix = f.getPath () + ": ";
-        mDelimiter = ',';
+        this (f, ',');
     }
     
     private static final int            BEGIN = 1;
@@ -103,369 +115,183 @@ public class CSVXReader {
             mStockCharSequence = null;
         }
     }
-    
+
     public CharSequence                 getBuffer () {
         return (mBuffer);
     }
     
-    private boolean                      nextLineComma () throws IOException {
-        if (mEOF)
-            return (false);
-        
-        mBuffer.setLength (0);
-        mInclStartIndexes.clear ();
-        mExclEndIndexes.clear ();
-        
-        int         state = BEGIN;
-        int         start = 0;
-                
-        for (;;) {
-            int                 ch = mReader.read ();
-            
-            if (mLastCharWasCR && ch == 10)
-                continue;
-            
-            mLastCharWasCR = ch == 13;
-            
-            switch (state) {
-                case BEGIN:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            return (false);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            return (true);
-                            
-                        case COMMA_DELIMITER:
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = COMMA;
-                            break;
-                            
-                        case '"':                    
-                            start = mBuffer.length ();
-                            state = QUOTED_CELL;
-                            break;
-                            
-                        default:
-                            start = mBuffer.length ();
-                            mBuffer.append ((char) ch);
-                            state = UNQUOTED_CELL;
-                            break;
-                    }
-                    break;
-            
-                case COMMA:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            mInclStartIndexes.add (0);
-                            mExclEndIndexes.add (0);
-                            return (true);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mInclStartIndexes.add (0);
-                            mExclEndIndexes.add (0);
-                            return (true);
-                            
-                        case COMMA_DELIMITER :
-                            mInclStartIndexes.add (0);
-                            mExclEndIndexes.add (0);
-                            break;
-                            
-                        case '"':                    
-                            start = mBuffer.length ();
-                            state = QUOTED_CELL;
-                            break;
-                            
-                        default:
-                            start = mBuffer.length ();
-                            mBuffer.append ((char) ch);
-                            state = UNQUOTED_CELL;
-                            break;
-                    }
-                    break;
-
-                case QUOTED_CELL:
-                    switch (ch) {
-                        case -1:
-                            throw new EOFException (
-                                mDiagPrefix + "Unterminated cell at end of file"
-                            );
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mBuffer.append ('\n');
-                            break;
-                            
-                        case '"':                    
-                            state = QUOTED_QUOTE;
-                            break;
-                            
-                        default:
-                            mBuffer.append ((char) ch);
-                            break;
-                    }
-                    break;
-
-                case UNQUOTED_CELL:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            return (true);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = BEGIN;
-                            return (true);
-                            
-                        case COMMA_DELIMITER:
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = COMMA;
-                            break;
-                            
-                        default:              
-                            mBuffer.append ((char) ch);
-                            break;
-                    }
-                    break;
-                    
-                case QUOTED_QUOTE:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            return (true);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = BEGIN;
-                            return (true);
-                            
-                        case COMMA_DELIMITER:
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = COMMA;
-                            break;
-                            
-                        case '"':                    
-                            mBuffer.append ('"');
-                            state = QUOTED_CELL;
-                            break;
-                            
-                        default:
-                            mBuffer.append ((char) ch);
-                            state = UNQUOTED_CELL;
-                            break;
-                    }
-                    break;
-            }            
-        }
-    }
-    
-    private boolean                      nextLineTab () throws IOException {
-        if (mEOF)
-            return (false);
-        
-        mBuffer.setLength (0);
-        mInclStartIndexes.clear ();
-        mExclEndIndexes.clear ();
-        
-        int         state = BEGIN;
-        int         start = 0;
-                
-        for (;;) {
-            int                 ch = mReader.read ();
-            
-            if (mLastCharWasCR && ch == 10)
-                continue;
-            
-            mLastCharWasCR = ch == 13;
-            
-            switch (state) {
-                case BEGIN:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            return (false);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            return (true);
-                            
-                        case TAB_DELIMITER:
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = COMMA;
-                            break;
-                            
-                        case '"':                    
-                            start = mBuffer.length ();
-                            state = QUOTED_CELL;
-                            break;
-                            
-                        default:
-                            start = mBuffer.length ();
-                            mBuffer.append ((char) ch);
-                            state = UNQUOTED_CELL;
-                            break;
-                    }
-                    break;
-            
-                case COMMA:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            mInclStartIndexes.add (0);
-                            mExclEndIndexes.add (0);
-                            return (true);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mInclStartIndexes.add (0);
-                            mExclEndIndexes.add (0);
-                            return (true);
-                            
-                        case TAB_DELIMITER :
-                            mInclStartIndexes.add (0);
-                            mExclEndIndexes.add (0);
-                            break;
-                            
-                        case '"':                    
-                            start = mBuffer.length ();
-                            state = QUOTED_CELL;
-                            break;
-                            
-                        default:
-                            start = mBuffer.length ();
-                            mBuffer.append ((char) ch);
-                            state = UNQUOTED_CELL;
-                            break;
-                    }
-                    break;
-
-                case QUOTED_CELL:
-                    switch (ch) {
-                        case -1:
-                            throw new EOFException (
-                                mDiagPrefix + "Unterminated cell at end of file"
-                            );
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mBuffer.append ('\n');
-                            break;
-                            
-                        case '"':                    
-                            state = QUOTED_QUOTE;
-                            break;
-                            
-                        default:
-                            mBuffer.append ((char) ch);
-                            break;
-                    }
-                    break;
-
-                case UNQUOTED_CELL:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            return (true);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = BEGIN;
-                            return (true);
-                            
-                        case TAB_DELIMITER:
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = COMMA;
-                            break;
-                            
-                        default:              
-                            mBuffer.append ((char) ch);
-                            break;
-                    }
-                    break;
-                    
-                case QUOTED_QUOTE:
-                    switch (ch) {
-                        case -1:
-                            mEOF = true;
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            return (true);
-                            
-                        case 10:
-                        case 13:
-                            mLineNumber++;
-                            mPosition = 1;                           
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = BEGIN;
-                            return (true);
-                            
-                        case TAB_DELIMITER:
-                            mInclStartIndexes.add (start);
-                            mExclEndIndexes.add (mBuffer.length ());
-                            state = COMMA;
-                            break;
-                            
-                        case '"':                    
-                            mBuffer.append ('"');
-                            state = QUOTED_CELL;
-                            break;
-                            
-                        default:
-                            mBuffer.append ((char) ch);
-                            state = UNQUOTED_CELL;
-                            break;
-                    }
-                    break;
-            }            
-        }
-    }
-    
     public boolean                      nextLine () throws IOException {
+        if (mEOF)
+            return (false);
         
-        if (mDelimiter == ',')
-            return nextLineComma();
+        mBuffer.setLength (0);
+        mInclStartIndexes.clear ();
+        mExclEndIndexes.clear ();
         
-        return nextLineTab();
+        int         state = BEGIN;
+        int         start = 0;
+                
+        for (;;) {
+            int                 ch = mReader.read ();
+            
+            if (mLastCharWasCR && ch == 10)
+                continue;
+            
+            mLastCharWasCR = ch == 13;
+            
+            switch (state) {
+                case BEGIN:
+                    mLineStartPosition = 
+                        mInputStream == null ? -1 : mInputStream.getNumBytesRead () - 1;
+                    
+                    if (ch == mDelimiter) {
+                        mInclStartIndexes.add (start);
+                        mExclEndIndexes.add (mBuffer.length ());
+                        state = COMMA;
+                    }
+                    else
+                        switch (ch) {
+                            case -1:
+                                mEOF = true;
+                                return (false);
+
+                            case 10:
+                            case 13:
+                                mLineNumber++;
+                                return (true);
+
+                            case '"':                    
+                                start = mBuffer.length ();
+                                state = QUOTED_CELL;
+                                break;
+
+                            default:
+                                start = mBuffer.length ();
+                                mBuffer.append ((char) ch);
+                                state = UNQUOTED_CELL;
+                                break;
+                        }
+                    break;
+            
+                case COMMA:
+                    if (ch == mDelimiter) {
+                        mInclStartIndexes.add (0);
+                        mExclEndIndexes.add (0);
+                    }
+                    else
+                        switch (ch) {
+                            case -1:
+                                mEOF = true;
+                                mInclStartIndexes.add (0);
+                                mExclEndIndexes.add (0);
+                                return (true);
+
+                            case 10:
+                            case 13:
+                                mLineNumber++;
+                                mInclStartIndexes.add (0);
+                                mExclEndIndexes.add (0);
+                                return (true);
+
+                            case '"':                    
+                                start = mBuffer.length ();
+                                state = QUOTED_CELL;
+                                break;
+
+                            default:
+                                start = mBuffer.length ();
+                                mBuffer.append ((char) ch);
+                                state = UNQUOTED_CELL;
+                                break;
+                        }
+                    break;
+
+                case QUOTED_CELL:
+                    switch (ch) {
+                        case -1:
+                            throw new EOFException (
+                                mDiagPrefix + "Unterminated cell at end of file"
+                            );
+                            
+                        case 10:
+                        case 13:
+                            mLineNumber++;
+                            mBuffer.append ('\n');
+                            break;
+                            
+                        case '"':                    
+                            state = QUOTED_QUOTE;
+                            break;
+                            
+                        default:
+                            mBuffer.append ((char) ch);
+                            break;
+                    }
+                    break;
+
+                case UNQUOTED_CELL:
+                    if (ch == mDelimiter) {
+                        mInclStartIndexes.add (start);
+                        mExclEndIndexes.add (mBuffer.length ());
+                        state = COMMA;
+                    }
+                    else
+                        switch (ch) {
+                            case -1:
+                                mEOF = true;
+                                mInclStartIndexes.add (start);
+                                mExclEndIndexes.add (mBuffer.length ());
+                                return (true);
+
+                            case 10:
+                            case 13:
+                                mLineNumber++;
+                                mInclStartIndexes.add (start);
+                                mExclEndIndexes.add (mBuffer.length ());
+                                state = BEGIN;
+                                return (true);
+
+                            default:              
+                                mBuffer.append ((char) ch);
+                                break;
+                        }
+                    break;
+                    
+                case QUOTED_QUOTE:
+                    if (ch == mDelimiter) {
+                        mInclStartIndexes.add (start);
+                        mExclEndIndexes.add (mBuffer.length ());
+                        state = COMMA;
+                    }
+                    else
+                        switch (ch) {
+                            case -1:
+                                mEOF = true;
+                                mInclStartIndexes.add (start);
+                                mExclEndIndexes.add (mBuffer.length ());
+                                return (true);
+
+                            case 10:
+                            case 13:
+                                mLineNumber++;
+                                mInclStartIndexes.add (start);
+                                mExclEndIndexes.add (mBuffer.length ());
+                                state = BEGIN;
+                                return (true);
+
+                            case '"':                    
+                                mBuffer.append ('"');
+                                state = QUOTED_CELL;
+                                break;
+
+                            default:
+                                mBuffer.append ((char) ch);
+                                state = UNQUOTED_CELL;
+                                break;
+                        }
+                    break;
+            }            
+        }
     }
     
     public String []                    getHeaders () {
@@ -497,10 +323,35 @@ public class CSVXReader {
     public int                          getLineNumber () {
         return (mLineNumber);
     }
-    
-    public String                       getDiagPrefix () {
-        return (mDiagPrefix);
+
+    public boolean                      getCloseReader () {
+        return mCloseReader;
     }
+
+    public void                         setCloseReader (boolean closeReader) {
+        this.mCloseReader = closeReader;
+    }
+         
+    public long                         getLineOffset () {
+        return (mLineStartPosition);
+    }
+    
+    public char                         getDelimiter () {
+        return mDelimiter;
+    }
+
+    public void                         setDelimiter (char delimiter) {
+        this.mDelimiter = delimiter;
+    }
+
+    public String                       getDiagPrefix () {
+        return mDiagPrefix;
+    }
+
+    public void                         setDiagPrefix (String diagPrefix) {
+        this.mDiagPrefix = diagPrefix;
+    }
+            
     
     public String                       getDiagPrefixWithLineNumber () {
         return (mDiagPrefix + mLineNumber + ": ");
@@ -581,6 +432,8 @@ public class CSVXReader {
         long        t0 = System.currentTimeMillis ();
         
         while (csvp.nextLine ()) {
+            System.out.println ("Line " + csvp.getLineNumber () + " @" + csvp.getLineOffset ());
+            
             int     num = csvp.getNumCells ();
             
             for (int ii = 0; ii < num; ii++)
