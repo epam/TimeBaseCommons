@@ -2,23 +2,23 @@ package deltix.util.id;
 
 public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
 
-    private final int blockSize;
-    private int base;
-    private int id;
+    protected final int blockSize;
+    protected long base;
+    protected long id;
 
     protected HiLowIdentifierGenerator (int blockSize) {
         this.blockSize = blockSize;
-
-        base = aquireNextBlock(base, blockSize);
+        base = 0;
         id = 0;
+        base = aquireNextBlock();
     }
 
     @Override
-    public synchronized int next() {
+    public synchronized long next() {
         id++;
 
         if (id > blockSize) {
-            base = aquireNextBlock(base, blockSize);
+            base = aquireNextBlock();
             id = 0;
         }
 
@@ -26,7 +26,7 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
     }
 
     /** @return new base */
-    protected abstract int aquireNextBlock(int base, int blockSize);
+    protected abstract long aquireNextBlock();
 
 
 }
