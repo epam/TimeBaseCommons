@@ -66,7 +66,7 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
     }
  
     
-    TreePath getPath() {
+    public TreePath getPath() {
         int depth = 1;
         TreeNode node = this;
 
@@ -110,26 +110,30 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
         mTree.expandPath(path);
     }
 
+    protected DefaultTreeModel getDefaultTreeModel(){
+        TreeModel model = mTree.getModel();
+        if (model instanceof FilterableTreeModel){
+            model = ((FilterableTreeModel)model).getActualModel();
+        }
+        if (model instanceof DefaultTreeModel){
+            return (DefaultTreeModel) model;
+        }
+        return null;
+    }
+    
     public void reload() {
         mChildrenUpdated = false;
         updateChildren();
-        TreeModel model = mTree.getModel();
-        if (model instanceof FilterableTreeModel){
-            model = ((FilterableTreeModel)model).getActualModel();
-        }
-        if (model instanceof DefaultTreeModel){
-            ((DefaultTreeModel) model).reload(this);
-        }
+        
+        DefaultTreeModel model = getDefaultTreeModel();
+        if (model != null)
+            model.reload(this);
     }
     
     public void nodeChanged() {
-        TreeModel model = mTree.getModel();
-        if (model instanceof FilterableTreeModel){
-            model = ((FilterableTreeModel)model).getActualModel();
-        }
-        if (model instanceof DefaultTreeModel){
-            ((DefaultTreeModel) model).nodeChanged(this);
-        }
+        DefaultTreeModel model = getDefaultTreeModel();
+        if (model != null)
+            model.nodeChanged(this);
     }
     
     public T getNodeObject() {
