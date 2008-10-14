@@ -2,7 +2,7 @@ package deltix.util.csvx;
 
 import java.io.*;
 
-import deltix.util.lang.Util;
+import deltix.util.lang.*;
 import deltix.util.collections.*;
 import deltix.util.collections.generated.*;
 import deltix.util.io.*;
@@ -12,7 +12,7 @@ import java.util.regex.*;
 /**
  *
  */
-public class CSVXReader {
+public class CSVXReader implements Disposable {
     private String []                   mHeaders;
     private SeekCapable                 mSeekCapable = null;
     private BufferedInputStream         mBufferedStream = null;

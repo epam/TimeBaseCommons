@@ -1,9 +1,9 @@
 package deltix.util.jdbc;
 
+import deltix.util.csvx.CSVXReader;
 import java.io.*;
 import java.sql.*;
 
-import au.com.bytecode.opencsv.CSVReader;
 import deltix.util.lang.Util;
 
 /**
@@ -33,80 +33,67 @@ public class LoadCSV {
         if (dot >= 0)
             tableName = tableName.substring (0, dot);
             
-        FileReader                  rd = new FileReader (f);
+        CSVXReader                  csv = new CSVXReader (f);
+        PreparedStatement           ps = null;
         
         try {
-            load (tableName, rd);
-        } finally {
-            Util.close (rd);
-        }
-    }
-    
-    public void                 load (
-        String                      tableName,
-        Reader                      rd        
-    )
-        throws IOException, SQLException
-    {
-        CSVReader                   csv = new CSVReader (rd);
-        String []                   headers = csv.readNext ();
-        
-        if (headers == null)
-            throw new EOFException ("No headers in CSV file");
-        
-        StringBuilder               createSql = new StringBuilder ();
-        StringBuilder               insertSql = new StringBuilder ();
-        
-        createSql.append ("CREATE TABLE \"");
-        createSql.append (tableName);
-        createSql.append ("\" (");        
-        
-        insertSql.append ("INSERT INTO \"");
-        insertSql.append (tableName);
-        insertSql.append ("\" (");
-        
-        for (int ii = 0; ii < headers.length; ii++) {
-            String      col = headers [ii];
-            
-            if (ii > 0) {
-                createSql.append (", ");
-                insertSql.append (",");
+            csv.readHeaders ();
+
+            String []                   headers = csv.getHeaders ();
+
+            if (headers == null)
+                throw new EOFException ("No headers in CSV file");
+
+            StringBuilder               createSql = new StringBuilder ();
+            StringBuilder               insertSql = new StringBuilder ();
+
+            createSql.append ("CREATE TABLE \"");
+            createSql.append (tableName);
+            createSql.append ("\" (");        
+
+            insertSql.append ("INSERT INTO \"");
+            insertSql.append (tableName);
+            insertSql.append ("\" (");
+
+            for (int ii = 0; ii < headers.length; ii++) {
+                String      col = headers [ii];
+
+                if (ii > 0) {
+                    createSql.append (", ");
+                    insertSql.append (",");
+                }
+
+                createSql.append ("\"");
+                createSql.append (col);
+                createSql.append ("\" VARCHAR2 (2000)");
+
+                insertSql.append ("\"");
+                insertSql.append (col);
+                insertSql.append ("\"");
             }
-            
-            createSql.append ("\"");
-            createSql.append (col);
-            createSql.append ("\" VARCHAR2 (2000)");
-            
-            insertSql.append ("\"");
-            insertSql.append (col);
-            insertSql.append ("\"");
-        }
+
+            createSql.append (")");
+
+            insertSql.append (") VALUES (");
+
+            for (int ii = 0; ii < headers.length; ii++) {
+                if (ii > 0)
+                    insertSql.append (",");
+
+                insertSql.append ("?");
+            }
+
+            insertSql.append (")");
+
+            JDBCUtils.exec (mOutputConnection, createSql.toString ());
+
+            ps = mOutputConnection.prepareStatement (insertSql.toString ());
         
-        createSql.append (")");
-        
-        insertSql.append (") VALUES (");
-        
-        for (int ii = 0; ii < headers.length; ii++) {
-            if (ii > 0)
-                insertSql.append (",");
-            
-            insertSql.append ("?");
-        }
-        
-        insertSql.append (")");
-        
-        JDBCUtils.exec (mOutputConnection, createSql.toString ());
-               
-        PreparedStatement       ps = 
-            mOutputConnection.prepareStatement (insertSql.toString ());
-        
-        try {
             int                 batchCount = 0;
-            String []           line;
             
-            while ((line = csv.readNext ()) != null) {
+            while (csv.nextLine ()) {
                 for (int col = 0; col < headers.length; col++)
-                    ps.setString (col + 1, line [col]);
+                    ps.setString (col + 1, csv.getString (col));
                 
                 ps.addBatch ();
                 batchCount++;
@@ -128,6 +115,7 @@ public class LoadCSV {
             }
         } finally {
             JDBCUtils.close (ps);
+            Util.close (csv);
         }
     }
     
