@@ -74,6 +74,10 @@ public class CSVXReader implements Disposable {
         mDelimiter = delimiter;
     }
     
+    public CSVXReader (String f, char delimiter) throws IOException {
+        this (new File (f), delimiter);        
+    }
+    
     public CSVXReader (File f, char delimiter) throws IOException {
         this (
             new BufferedInputStream (new FileInputStream (f)),
@@ -81,6 +85,10 @@ public class CSVXReader implements Disposable {
             true,
             f.getPath () + ": "
         );
+    }
+    
+    public CSVXReader (String f) throws IOException {
+        this (new File (f));        
     }
     
     public CSVXReader (File f) throws IOException {

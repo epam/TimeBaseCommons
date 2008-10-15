@@ -11,10 +11,9 @@ public class Flater {
     public static void      deflateUnbuffered (InputStream is, OutputStream os) 
         throws IOException, InterruptedException    
     {
-        StreamPump.pump (
-            is,
-            new GZIPOutputStream (os, 1 << 16)
-        );
+        GZIPOutputStream    gzout = new GZIPOutputStream (os, 1 << 16);
+        StreamPump.pump (is, gzout);
+        gzout.finish ();
     }
     
     public static void      deflate (File from, File to) 
