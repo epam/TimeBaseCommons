@@ -63,7 +63,7 @@ public class MathUtil {
      *	the smallest integer k such that 2<sup>k</sup> >= v.
      */
     public static int		log2 (int v) {
-    	int		ret = 0;
+    	int             ret = 0;
     	int             cmp = 1;
 
     	while (v > cmp) {
@@ -84,6 +84,40 @@ public class MathUtil {
 
     	while (v > cmp) {
             ret++;
+            cmp <<= 1;
+    	}
+
+    	return (ret);
+    }
+
+    /**
+     *	Returns the number of bits set in the specified long.
+     */
+    public static int		countSetBits (long v) {
+    	int             ret = 0;
+    	long            cmp = 1;
+
+    	while (v >= cmp) {
+            if ((v & cmp) != 0)
+                ret++;
+            
+            cmp <<= 1;
+    	}
+
+    	return (ret);
+    }
+
+    /**
+     *	Returns the number of bits set in the specified int.
+     */
+    public static int		countSetBits (int v) {
+    	int             ret = 0;
+    	int             cmp = 1;
+
+    	while (v >= cmp) {
+            if ((v & cmp) != 0)
+                ret++;
+            
             cmp <<= 1;
     	}
 

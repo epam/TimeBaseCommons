@@ -24,6 +24,15 @@ public class CharSequenceSet extends HashSet <String> {
         super ();
     }
 
+    public CharSequenceSet (Set <String> unionMembers) {
+        addAll (unionMembers);
+    }
+
+    public CharSequenceSet (Set <String> a, Set <String> b) {
+        addAll (a);
+        addAll (b);
+    }
+
     public CharSequenceSet (Set <String> ... unionMembers) {
         for (Set <String> s : unionMembers)
             addAll (s);
