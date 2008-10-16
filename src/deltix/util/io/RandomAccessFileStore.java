@@ -97,8 +97,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
     public void             delete () {
         close ();
         
-        if (!file.delete ())
-            throw new UncheckedIOException ("Failed to delete " + file.getPath ());
+        IOUtil.deleteUnchecked (file);
     }
 
     public void             close () {

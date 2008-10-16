@@ -79,6 +79,11 @@ public class IOUtil {
             throw new IOException ("Failed to delete " + f);
     }
 
+    public static void      deleteUnchecked (File f) {
+        if (!f.delete ())
+            throw new UncheckedIOException ("Failed to delete " + f);
+    }
+
     /**
      *  Deletes the specified file, and continues to attempt to delete its parent directories
      *  up the directory path, until the deletion fails, or the limit file is reached.
