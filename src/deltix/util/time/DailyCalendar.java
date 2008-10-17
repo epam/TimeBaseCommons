@@ -1,7 +1,9 @@
 package deltix.util.time;
 
 import deltix.util.collections.generated.IntegerArrayList;
+import deltix.util.text.CharSequenceParser;
 import java.util.Arrays;
+import java.util.Calendar;
 
 /**
  *
@@ -90,6 +92,37 @@ public class DailyCalendar {
         return (day * 86400000L);
     }
     
+    public static int       ANSIDateToDayNumber (String dateText) {
+        return (ANSIDateToDayNumber (GMT.getCalendarInstance0 (), dateText));
+    }
+    
+    public static int       ANSIDateToDayNumber (Calendar cal, String dateText) {
+        int         year = CharSequenceParser.parseInt (dateText, 0, 4);
+        int         month = CharSequenceParser.parseInt (dateText, 5, 7);
+        int         day = CharSequenceParser.parseInt (dateText, 8, 10);
+            
+        cal.set (year, month - 1, day);
+        
+        return (DailyCalendar.gmtToDayNumber (cal.getTimeInMillis ()));
+    }
+    
+    public static String    dayNumberToANSIDate (int date) {
+        return (dayNumberToANSIDate (GMT.getCalendarInstance0 (), date));
+    }
+    
+    public static String    dayNumberToANSIDate (Calendar cal, int date) {
+        cal.setTimeInMillis (DailyCalendar.dayNumberToGMT (date));
+        
+        return (
+            String.format (
+                "%04d-%2d-%2d", 
+                cal.get (Calendar.YEAR),
+                cal.get (Calendar.MONTH) + 1,
+                cal.get (Calendar.DAY_OF_MONTH)
+            )
+        );
+    }
+        
     /**
      *  Converts a day number to day of week. 
      * 

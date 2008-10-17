@@ -22,8 +22,22 @@ public abstract class GMT {
         TF.setTimeZone (TZ);
     }
     
+    /**
+     *  Returns a GMT-zoned calendar set to current time.
+     */
     public static Calendar              getCalendarInstance () {
         return (Calendar.getInstance (TZ));
+    }
+    
+    /**
+     *  Returns a GMT-zoned calendar set to 0.
+     */
+    public static Calendar              getCalendarInstance0 () {
+        Calendar                    cal = getCalendarInstance ();
+        
+        cal.setTimeInMillis (0);
+        
+        return (cal);
     }
     
     public static String                formatDateTime (long t) {
