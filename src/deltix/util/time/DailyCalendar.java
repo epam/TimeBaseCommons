@@ -189,6 +189,10 @@ public class DailyCalendar {
         return (getIndex (day, Adjust.NONE));
     }
     
+    public boolean                  dayInRange (int day) {
+        return (day >= mDays.get (0) && day <= mDays.get (mDays.size () - 1));
+    }
+
     public int                      getIndex (int day, Adjust adj) {
         checkDay (day);
         
