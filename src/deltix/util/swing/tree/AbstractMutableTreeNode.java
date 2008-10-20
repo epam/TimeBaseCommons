@@ -1,60 +1,57 @@
 package deltix.util.swing.tree;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import com.jidesoft.plaf.basic.*;
 import com.jidesoft.tree.*;
 
-import deltix.util.collections.*;
-
-public abstract class AbstractTreeNode<T> implements TreeNode {
-    
-    protected AbstractTreeNode<?>                           mParent;
-    protected boolean                                       mChildrenUpdated = false;
-    protected java.util.List<AbstractTreeNode<?>>           mChildNodes;
-    
+public abstract class AbstractMutableTreeNode extends LazyMutableTreeNode {
+  
     protected static Locale                                 LOCALE = Locale.getDefault();
-    
-    protected T                                             mNodeObject;
     protected final JPopupMenu                              mMenu = new JPopupMenu();
     
     protected final JTree                                   mTree;
     
-    public AbstractTreeNode(T nodeObject, JTree tree) {
-        mNodeObject = nodeObject;
+    
+    public AbstractMutableTreeNode(Object userObject, boolean allowsChildren, JTree tree) {
+        super(userObject, allowsChildren);
         mTree = tree;
         createMenu();
     }
 
-    public AbstractTreeNode(AbstractTreeNode<?> parent, T nodeObject) {
-        mParent = parent;
-        mNodeObject = nodeObject;
-        mTree = parent.getTree();
+    public AbstractMutableTreeNode(Object userObject, JTree tree) {
+        super(userObject);
+        mTree = tree;
         createMenu();
     }
     
     protected void createMenu(){
     }
     
-    private JTree getTree(){
+    public final JTree getTree(){
         return mTree;
     }
     
-    public void  processKeyEvent(KeyEvent e){
-        //dummy function
+    protected final void updateChildren(){
+        synchronized (this) {
+            if (!_loaded) {
+                _loaded = true;
+                initChildren();
+            }
+        }
     }
     
+    public void reload(){
+        clear();
+        updateChildren();
+    }
     
-    abstract protected void updateChildren();
-
-    abstract public boolean isLeaf();
-
     public String getLabelText(){
-        return mNodeObject.toString();        
+        return userObject.toString();        
     }
 
     public Icon getIcon() {
@@ -65,8 +62,7 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
         return null;
     }
  
-    
-    public TreePath getPath() {
+    public TreePath getTreePath() {
         int depth = 1;
         TreeNode node = this;
 
@@ -97,93 +93,54 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
         return (new TreePath(path));
     }
     
-    final void select() {
+    protected TreeModel getActualModel(){
+        TreeModel model = mTree.getModel();
+        if (model instanceof FilterableTreeModel){
+            model = ((FilterableTreeModel)model).getActualModel();
+        }
+        return model;
+    }
+    
+    protected DefaultTreeModel getActualDefaultTreeModel(){
+        TreeModel model = getActualModel();
+        if (model instanceof DefaultTreeModel){
+            return (DefaultTreeModel)model;
+        }
+        return null;
+    }
+    
+    public final void  delete() {
+        DefaultTreeModel model = getActualDefaultTreeModel();
+        if (model != null){
+            model.removeNodeFromParent(this); 
+        }
+    }
+    
+    public void nodeChanged() {
+        DefaultTreeModel model = getActualDefaultTreeModel();
+        if (model != null){
+            model.nodeChanged(this); 
+        }
+    }
+    
+    public void nodeStructureChanged() {
+        DefaultTreeModel model = getActualDefaultTreeModel();
+        if (model != null){
+            model.nodeStructureChanged(this); 
+        }
+    }
+    
+    public final void select() {
         /**
          * Reset selection momentarily in order to force the reloading of the
          * node's form.
          */
         mTree.setSelectionPath(null);
-
-        TreePath path = getPath();
-
+        TreePath path = getTreePath();
         mTree.setSelectionPath(path);
         mTree.expandPath(path);
     }
 
-    private DefaultTreeModel getDefaultTreeModel(){
-        TreeModel model = mTree.getModel();
-        if (model instanceof FilterableTreeModel){
-            model = ((FilterableTreeModel)model).getActualModel();
-        }
-        if (model instanceof DefaultTreeModel){
-            return (DefaultTreeModel) model;
-        }
-        return null;
-    }
-    
-    public void reload() {
-        mChildrenUpdated = false;
-        updateChildren();
-        
-        DefaultTreeModel model = getDefaultTreeModel();
-        if (model != null)
-            model.reload(this);
-        
-    }
-    
-    public void nodeChanged() {
-        DefaultTreeModel model = getDefaultTreeModel();
-        if (model != null)
-            model.nodeChanged(this);
-    }
-    
-    public T getNodeObject() {
-        return mNodeObject;
-    }
-    
-    @Override
-    public TreeNode getChildAt(int idx) {
-        updateChildren();
-        return (mChildNodes.get(idx));
-    }
-
-    @Override
-    public int getChildCount() {
-        updateChildren();
-        return (mChildNodes == null ? 0 : mChildNodes.size());
-    }
-
-    @Override
-    public int getIndex(TreeNode treeNode) {
-        updateChildren();
-        if (mChildNodes == null)
-            return (-1);
-    
-        for (int ii = 0; ii < mChildNodes.size(); ii++)
-            if (mChildNodes.get(ii) == treeNode)
-                return (ii);
-    
-        return (-1);
-    }
-    
-    @Override
-    public Enumeration<?> children() {
-        updateChildren();
-        return (new ArrayEnumeration(mChildNodes.toArray()));
-    }
-
-    @Override
-    public boolean getAllowsChildren() {
-        updateChildren();
-        return (mChildNodes != null);
-    }
-
-    @Override
-    public TreeNode getParent() {
-        return (mParent);
-    }
-   
-    
     public JPopupMenu getMenu() {
         return mMenu;
     }
@@ -258,9 +215,9 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
                     row,
                     hasFocus);
 
-            if (node instanceof AbstractTreeNode) {
+            if (node instanceof AbstractMutableTreeNode) {
 
-                String tootip = ((AbstractTreeNode<?>) node).getTooltip();
+                String tootip = ((AbstractMutableTreeNode) node).getTooltip();
                 if (tootip != null)
                     setToolTipText(tootip);
             }
@@ -270,9 +227,8 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
              */
             label.setFont(mDefaultFont);
 
-            AbstractTreeNode<?> anode = (AbstractTreeNode<?>) node;
+            AbstractMutableTreeNode anode = (AbstractMutableTreeNode) node;
             return anode.render(selected, hasFocus, label);
         }
     }
-   
 }
