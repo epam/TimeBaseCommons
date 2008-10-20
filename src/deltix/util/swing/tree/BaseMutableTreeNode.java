@@ -9,7 +9,7 @@ import javax.swing.tree.*;
 import com.jidesoft.plaf.basic.*;
 import com.jidesoft.tree.*;
 
-public abstract class AbstractMutableTreeNode extends LazyMutableTreeNode {
+public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
   
     protected static Locale                                 LOCALE = Locale.getDefault();
     protected final JPopupMenu                              mMenu = new JPopupMenu();
@@ -17,13 +17,13 @@ public abstract class AbstractMutableTreeNode extends LazyMutableTreeNode {
     protected final JTree                                   mTree;
     
     
-    public AbstractMutableTreeNode(Object userObject, boolean allowsChildren, JTree tree) {
+    public BaseMutableTreeNode(Object userObject, boolean allowsChildren, JTree tree) {
         super(userObject, allowsChildren);
         mTree = tree;
         createMenu();
     }
 
-    public AbstractMutableTreeNode(Object userObject, JTree tree) {
+    public BaseMutableTreeNode(Object userObject, JTree tree) {
         super(userObject);
         mTree = tree;
         createMenu();
@@ -215,9 +215,9 @@ public abstract class AbstractMutableTreeNode extends LazyMutableTreeNode {
                     row,
                     hasFocus);
 
-            if (node instanceof AbstractMutableTreeNode) {
+            if (node instanceof BaseMutableTreeNode) {
 
-                String tootip = ((AbstractMutableTreeNode) node).getTooltip();
+                String tootip = ((BaseMutableTreeNode) node).getTooltip();
                 if (tootip != null)
                     setToolTipText(tootip);
             }
@@ -227,7 +227,7 @@ public abstract class AbstractMutableTreeNode extends LazyMutableTreeNode {
              */
             label.setFont(mDefaultFont);
 
-            AbstractMutableTreeNode anode = (AbstractMutableTreeNode) node;
+            BaseMutableTreeNode anode = (BaseMutableTreeNode) node;
             return anode.render(selected, hasFocus, label);
         }
     }

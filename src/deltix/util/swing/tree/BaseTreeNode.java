@@ -11,11 +11,11 @@ import com.jidesoft.tree.*;
 
 import deltix.util.collections.*;
 
-public abstract class AbstractTreeNode<T> implements TreeNode {
+public abstract class BaseTreeNode<T> implements TreeNode {
     
-    protected AbstractTreeNode<?>                           mParent;
+    protected BaseTreeNode<?>                           mParent;
     protected boolean                                       mChildrenUpdated = false;
-    protected java.util.List<AbstractTreeNode<?>>           mChildNodes;
+    protected java.util.List<BaseTreeNode<?>>           mChildNodes;
     
     protected static Locale                                 LOCALE = Locale.getDefault();
     
@@ -24,13 +24,13 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
     
     protected final JTree                                   mTree;
     
-    public AbstractTreeNode(T nodeObject, JTree tree) {
+    public BaseTreeNode(T nodeObject, JTree tree) {
         mNodeObject = nodeObject;
         mTree = tree;
         createMenu();
     }
 
-    public AbstractTreeNode(AbstractTreeNode<?> parent, T nodeObject) {
+    public BaseTreeNode(BaseTreeNode<?> parent, T nodeObject) {
         mParent = parent;
         mNodeObject = nodeObject;
         mTree = parent.getTree();
@@ -258,9 +258,9 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
                     row,
                     hasFocus);
 
-            if (node instanceof AbstractTreeNode) {
+            if (node instanceof BaseTreeNode) {
 
-                String tootip = ((AbstractTreeNode<?>) node).getTooltip();
+                String tootip = ((BaseTreeNode<?>) node).getTooltip();
                 if (tootip != null)
                     setToolTipText(tootip);
             }
@@ -270,7 +270,7 @@ public abstract class AbstractTreeNode<T> implements TreeNode {
              */
             label.setFont(mDefaultFont);
 
-            AbstractTreeNode<?> anode = (AbstractTreeNode<?>) node;
+            BaseTreeNode<?> anode = (BaseTreeNode<?>) node;
             return anode.render(selected, hasFocus, label);
         }
     }
