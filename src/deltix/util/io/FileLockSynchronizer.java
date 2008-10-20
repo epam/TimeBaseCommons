@@ -68,10 +68,16 @@ public abstract class FileLockSynchronizer {
         synchronized (locks) {
             LockSet                 lockSet = locks.get (canonicalPath);
             
-            if (readOnly ? lockSet instanceof ExclusiveLockSet : lockSet != null)
+            if (lockSet instanceof ExclusiveLockSet)
                 throw new IllegalStateException (
-                    canonicalPath + " is already locked by this process",
+                    canonicalPath + " is already write-locked by this process (lock attached)",
                     ((ExclusiveLockSet) lockSet).writer
+                );
+
+            if (!readOnly && lockSet != null)
+                throw new IllegalStateException (
+                    canonicalPath + " is already read-locked by this process (one lock attached)",
+                    ((SharedLockSet) lockSet).readers.iterator ().next ()
                 );
 
             Lock                    lock = new Lock (canonicalPath, file, readOnly);
