@@ -400,6 +400,10 @@ public class JDBCUtils {
             
             for (int ii = 0; ii < numColumns; ii++) {
                 String      value = rs.getString (ii + 1);
+                
+                if (value == null)
+                    value = "";
+                
                 row [ii] = value;
                 widths [ii] = value.length ();
             }
