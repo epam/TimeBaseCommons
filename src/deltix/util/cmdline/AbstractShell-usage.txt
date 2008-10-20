@@ -2,6 +2,8 @@ General Shell Commands:
 
 help                            Display help.
 
+showtime                        Display current time.
+
 version                         Dislpay product version.
 
 set                             Display a list of settings, commonly controlled 

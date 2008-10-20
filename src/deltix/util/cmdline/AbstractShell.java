@@ -25,6 +25,11 @@ public abstract class AbstractShell extends DefaultApplication {
             return (true);
         }
         
+        if (key.equalsIgnoreCase ("showtime")) {
+            System.out.println (new java.util.Date ());
+            return (true);
+        }
+        
         if (key.equalsIgnoreCase ("version")) {
             System.out.println ("Version " + Version.VERSION_STRING);
             return (true);
