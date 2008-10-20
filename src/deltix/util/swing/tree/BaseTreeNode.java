@@ -13,9 +13,9 @@ import deltix.util.collections.*;
 
 public abstract class BaseTreeNode<T> implements TreeNode {
     
-    protected BaseTreeNode<?>                           mParent;
+    protected BaseTreeNode<?>                               mParent;
     protected boolean                                       mChildrenUpdated = false;
-    protected java.util.List<BaseTreeNode<?>>           mChildNodes;
+    protected java.util.List<BaseTreeNode<?>>               mChildNodes;
     
     protected static Locale                                 LOCALE = Locale.getDefault();
     
