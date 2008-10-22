@@ -95,10 +95,21 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     
     protected TreeModel getActualModel(){
         TreeModel model = mTree.getModel();
-        if (model instanceof FilterableTreeModel){
-            model = ((FilterableTreeModel)model).getActualModel();
+        
+        FilterableTreeModel filterableTreeModel = getFilterableTreeModel();
+        if (filterableTreeModel != null){
+            model = filterableTreeModel.getActualModel();
         }
+      
         return model;
+    }
+    
+    protected FilterableTreeModel getFilterableTreeModel (){
+        TreeModel model = mTree.getModel();
+        if (model instanceof FilterableTreeModel){
+            return (FilterableTreeModel) model;
+        }
+        return null;
     }
     
     protected DefaultTreeModel getActualDefaultTreeModel(){
@@ -113,6 +124,33 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         DefaultTreeModel model = getActualDefaultTreeModel();
         if (model != null){
             model.removeNodeFromParent(this); 
+        }
+        refreshTree();
+    }
+    
+    private void refreshTree() {
+        FilterableTreeModel _displayTreeModel = getFilterableTreeModel();
+        if (_displayTreeModel != null) {
+
+            // save selection and expansion states
+            Enumeration<TreePath> enumeration = null;
+            TreePath[] selected = null;
+            if (getTree() != null) {
+                enumeration = TreeUtils.saveExpansionStateByTreePath(getTree());
+                selected = TreeUtils.saveSelection(getTree());
+            }
+
+            _displayTreeModel.refresh();
+
+            // restore selection and expansion states
+            if (getTree() != null) {
+                if (enumeration != null) {
+                    TreeUtils.loadExpansionStateByTreePath(getTree(), enumeration);
+                }
+                if (selected != null) {
+                    TreeUtils.loadSelection(getTree(), selected);
+                }
+            }
         }
     }
     
