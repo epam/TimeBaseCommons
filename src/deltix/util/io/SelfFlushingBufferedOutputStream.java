@@ -23,12 +23,12 @@ public class SelfFlushingBufferedOutputStream extends BufferedOutputStream {
                 synchronized (this) { 
                     interval = flushInterval;
                     
-                    try {                                                
-                        if (exception != null)
-                            flush ();                          
-                    } catch (Throwable x) {
-                        exception = x;
-                    }      
+                    if (exception == null)
+                        try {                                                
+                            flush ();
+                        } catch (Throwable x) {
+                            exception = x;
+                        }      
                 }
                 
                 try {
