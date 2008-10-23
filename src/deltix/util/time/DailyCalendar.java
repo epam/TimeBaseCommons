@@ -67,6 +67,7 @@ public class DailyCalendar {
         
         return (GMT.formatDate (dayNumberToGMT (day)));
     }
+    
     /**
      *  Converts a ms timestamp to the number of days (using GMT boundary)
      *  since 1/1/1970.
@@ -79,6 +80,15 @@ public class DailyCalendar {
             return ((int) (gmt / 86400000L));
         else
             return ((int) ((gmt - 86399999L) / 86400000L));
+    }
+    
+    /**
+     *  Returns current day number.
+     * 
+     *  @return     The number of days since 1/1/1970 GMT
+     */
+    public static int       currentDayNumber (long gmt) {
+        return (gmtToDayNumber (System.currentTimeMillis ()));
     }
     
     /**
