@@ -87,7 +87,7 @@ public class DailyCalendar {
      * 
      *  @return     The number of days since 1/1/1970 GMT
      */
-    public static int       currentDayNumber (long gmt) {
+    public static int       currentDayNumber () {
         return (gmtToDayNumber (System.currentTimeMillis ()));
     }
     
