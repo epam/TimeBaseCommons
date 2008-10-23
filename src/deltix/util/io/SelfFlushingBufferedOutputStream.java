@@ -100,9 +100,11 @@ public class SelfFlushingBufferedOutputStream extends BufferedOutputStream {
         
     @Override
     public void                     close () throws IOException {
-        flusher.interrupt ();
-        flusher = null;
-        flush ();
+        if (flusher != null) {
+            flusher.interrupt ();        
+            flusher = null;
+        }
+        
         super.close ();
     }    
 }
