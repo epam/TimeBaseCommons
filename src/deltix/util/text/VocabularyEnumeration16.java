@@ -48,7 +48,7 @@ class VocabularyEnumeration16
                 if (mCode [node] == 1)
                     return;     // Got one
             }
-            else if (pos == mCode [node + 2]) { // Up
+            else if (pos == (mCode [node + 2] & 0xFFFF)) { // Up
                 mDepth--;
 
                 if (mDepth == -1)
@@ -61,7 +61,7 @@ class VocabularyEnumeration16
                     continue;
                 
                 mDepth++;
-                mPath [mDepth] = downNode;
+                mPath [mDepth] = downNode & 0xFFFF;
                 mPositions [mDepth] = -2;
             }
         }
