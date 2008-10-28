@@ -20,6 +20,8 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
     public SharedFileHiLowIdentifierGenerator (String dir, String key, int blockSize) {
         super(key, blockSize);
         seqFile = new File (dir, "seq-"+key+".id");
+
+        seqFile.getAbsoluteFile().getParentFile().mkdirs();
     }
 
     @Override

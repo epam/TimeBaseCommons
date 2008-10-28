@@ -25,6 +25,7 @@ public final class FileHiLowIdentifierGenerator extends HiLowIdentifierGenerator
     {
         super(key, blockSize);
         seqFile = new File (dir, "seq-"+key+".id");
+        seqFile.getAbsoluteFile().getParentFile().mkdirs();
 
         raf = new RandomAccessFile(seqFile, "rw");
         channel = raf.getChannel();
