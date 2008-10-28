@@ -163,6 +163,12 @@ public class Icons {
      public static final Icon    EXPORT =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/export.png");
      
+     public static final Icon    HELP =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/help.png");
+     
+     public static final Icon    HELP2 =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/help2.png");
+     
      
      
 }
