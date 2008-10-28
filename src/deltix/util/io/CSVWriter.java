@@ -6,6 +6,9 @@ import java.io.*;
  *  Helper for writing correctly formatted CSV files.
  */
 public class CSVWriter extends FilterWriter {
+    private boolean             closeDelegate = true;
+    private boolean             flushEveryLine = false;
+    
     public CSVWriter (String f) throws IOException {
         this (new File (f));
     }
@@ -22,6 +25,22 @@ public class CSVWriter extends FilterWriter {
         this (new OutputStreamWriter (os));
     }
 
+    public boolean          getCloseDelegate () {
+        return closeDelegate;
+    }
+
+    public void             setCloseDelegate (boolean closeDelegate) {
+        this.closeDelegate = closeDelegate;
+    }
+
+    public boolean          getFlushEveryLine () {
+        return flushEveryLine;
+    }
+
+    public void             setFlushEveryLine (boolean flushEveryLine) {
+        this.flushEveryLine = flushEveryLine;
+    }
+    
     /**
      *  Writes out the specified CharSequence as a separate cell.
      * 
@@ -73,6 +92,9 @@ public class CSVWriter extends FilterWriter {
     public void             writeLine () throws IOException {
         synchronized (lock) {
             write ('\n');
+            
+            if (flushEveryLine)
+                flush ();
         }
     }
     
@@ -92,9 +114,20 @@ public class CSVWriter extends FilterWriter {
         synchronized (lock) {
             writeCells (args);            
             write ('\n');
+            
+            if (flushEveryLine)
+                flush ();
         }
     }
-    
+
+    @Override
+    public void             close () throws IOException {
+        if (closeDelegate)
+            super.close ();
+        else
+            super.flush ();
+    }    
+     
     /**
      *  Prints text to CSV cell, escaping it if necessary.
      * 
