@@ -15,6 +15,21 @@ public class RandomAccessFileToOutputStreamAdapterMT extends OutputStream {
     private long                                offset;
     
     public RandomAccessFileToOutputStreamAdapterMT (
+        RandomAccessFile                raf
+    )
+    {
+        this (raf, 0);
+    }
+    
+    public RandomAccessFileToOutputStreamAdapterMT (
+        RandomAccessFile                raf,
+        long                            offset
+    )
+    {
+        this (raf, raf, offset);
+    }
+    
+    public RandomAccessFileToOutputStreamAdapterMT (
         Object                          lock,
         RandomAccessFile                raf,
         long                            offset
@@ -25,6 +40,10 @@ public class RandomAccessFileToOutputStreamAdapterMT extends OutputStream {
         this.offset = offset;
     }
 
+    public long             getOffset () {
+        return (offset);
+    }
+    
     public void             seek (long offset) {
         this.offset = offset;
     }

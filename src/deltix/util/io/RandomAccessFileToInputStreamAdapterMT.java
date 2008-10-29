@@ -19,6 +19,21 @@ public class RandomAccessFileToInputStreamAdapterMT
     private long                        mark = -1;
 
     public RandomAccessFileToInputStreamAdapterMT (
+        RandomAccessFile                raf
+    )
+    {
+        this (raf, 0);
+    }
+    
+    public RandomAccessFileToInputStreamAdapterMT (
+        RandomAccessFile                raf,
+        long                            offset
+    )
+    {
+        this (raf, raf, offset);
+    }
+    
+    public RandomAccessFileToInputStreamAdapterMT (
         Object                          lock,
         RandomAccessFile                raf,
         long                            offset
