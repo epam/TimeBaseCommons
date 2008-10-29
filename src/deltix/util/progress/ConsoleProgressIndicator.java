@@ -55,6 +55,8 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
         
     public void                 show () {
         int newNumBars =
+            workDone > totalWork ?
+                width :
             totalWork == 0 ? 
                 0 :
                 (int) ((workDone / totalWork) * width + 0.5);
