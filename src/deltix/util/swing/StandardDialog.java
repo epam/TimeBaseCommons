@@ -21,6 +21,10 @@ public class StandardDialog extends JDialog {
         return (mStatus);
     }
     
+    protected final void                    setStatus (int status) {
+        mStatus = status;
+    }
+
     /**
      *  Child classes override for validation
      */
