@@ -85,30 +85,30 @@ public class Util {
      */
     public static int           compare (double a, double b) {
         double        diff = a - b;
-        
+
         if (diff < 0)
             return (-1);
-        
+
         if (diff > 0)
             return (1);
-        
+
         return (0);
     }
-    
+
     /**
      *  Compare two CharSequences for equality. A null equals null.
      */
     public static boolean       equals (CharSequence s1, CharSequence s2) {
         return (compare (s1, s2, true) == 0);
     }
-    
+
     /**
      *  Compare two CharSequences for equality. A null equals null.
      */
     public static boolean       equals (CharSequence s1, CharSequence s2, int maxLength) {
         return (compare (s1, s2, maxLength, true) == 0);
     }
-    
+
     /**
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
@@ -120,7 +120,7 @@ public class Util {
     public static int           compare (CharSequence s1, CharSequence s2, boolean fast) {
         return (compare (s1, s2, 0, fast));
     }
-    
+
     /**
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
@@ -132,8 +132,8 @@ public class Util {
      *                  When false, performs lexicographic comparison.
      */
     public static int           compare (
-        CharSequence                s1, 
-        CharSequence                s2, 
+        CharSequence                s1,
+        CharSequence                s2,
         int                         maxLength,
         boolean                     fast
     )
@@ -150,53 +150,53 @@ public class Util {
         else {
             int         len1 = s1.length ();
             int         len2 = s2.length ();
-            
+
             if (maxLength > 0) {
                 if (maxLength < len1)
                     len1 = maxLength;
-                
+
                 if (maxLength < len2)
                     len2 = maxLength;
             }
-                
+
             int         diff = len1 - len2;
-            
+
             if (fast && diff != 0)
                 return (diff);
-            
+
             int         minLength = diff > 0 ? len2 : len1;
-            
+
             for (int ii = 0; ii < minLength; ii++) {
                 int     cdiff = s1.charAt (ii) - s2.charAt (ii);
-                
+
                 if (cdiff != 0)
                     return (cdiff);
             }
-            
+
             return (diff);
         }
     }
-    
+
     public static <T extends Comparable <T>> T  max (T a, T b) {
         if (a == null)
             return (b);
-        
+
         if (b == null)
             return (a);
-        
+
         return (a.compareTo (b) > 0 ? a : b);
     }
-        
+
     public static <T extends Comparable <T>> T  min (T a, T b) {
         if (a == null)
             return (b);
-        
+
         if (b == null)
             return (a);
-        
+
         return (a.compareTo (b) < 0 ? a : b);
     }
-        
+
     public static void      writeNullableString (String s, DataOutput os)
         throws IOException
     {
@@ -218,8 +218,8 @@ public class Util {
     /**
      *  Loads and instantiates the specified class using the no-argument constructor
      */
-    public static Object    newInstance (String className, Object ... args) 
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException, 
+    public static Object    newInstance (String className, Object ... args)
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException,
             IllegalArgumentException, NoSuchMethodException, InvocationTargetException
     {
         Class<?>    c = Class.forName (className);
@@ -230,7 +230,7 @@ public class Util {
         Constructor      cons = c.getConstructor (paramTypes);
         return (cons.newInstance (args));
     }
-    
+
     /**
      *  Call a static method of the specified class. Figure out the method
      *  signature from the types of the supplied arguments (which must not contain
@@ -288,10 +288,10 @@ public class Util {
     public static Object    callConstructor (
         String                  className,
         Object ...              args
-    ) 
+    )
         throws ClassNotFoundException, NoSuchMethodException,
-            InstantiationException, IllegalAccessException, 
-            IllegalArgumentException, InvocationTargetException        
+            InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException
     {
         Class<?>    c = Class.forName (className);
         Class []    paramTypes = new Class [args.length];
@@ -325,7 +325,7 @@ public class Util {
 
             result = nested;
         }
-        
+
         return result;
     }
 
@@ -374,7 +374,7 @@ public class Util {
     public static void			handleException (Exception x) {
         LOGGER.log (Level.SEVERE, "Ignoring (but Logging) Exception ...", x);
     }
-   
+
     /**
      *  Closes a Closeable without throwing an exception. Checks for null.
      */
@@ -397,17 +397,17 @@ public class Util {
         int							len1,
         byte [] 					arr2,
         int							off2,
-        int							len2   
+        int							len2
     )
     {
         int		diff = arraycomp (arr1, off1, arr2, off2, Math.min (len1, len2));
-        
+
         if (diff != 0)
             return (diff);
-        
+
         return (len1 - len2);
     }
-    
+
     /**
      *	Returns the difference between the specified segments of
      *	arr1 and arr2, MSBF.
@@ -438,17 +438,17 @@ public class Util {
         int							len1,
         byte [] 					arr2,
         int							off2,
-        int							len2   
+        int							len2
     )
     {
         int		diff = arrayucomp (arr1, off1, arr2, off2, Math.min (len1, len2));
-        
+
         if (diff != 0)
             return (diff);
-        
+
         return (len1 - len2);
     }
-    
+
     /**
      *	Returns the difference between the specified segments of
      *	arr1 and arr2, MSBF, comparing bytes' unsigned values.
@@ -464,13 +464,13 @@ public class Util {
         for (int ii = 0; ii < len; ii++) {
             int    b1 = ((int) arr1 [off1 + ii]) & 0xFF;
             int    b2 = ((int) arr2 [off2 + ii]) & 0xFF;
-            
+
             int     diff = b1 - b2;
-            
-            if (diff != 0) 
+
+            if (diff != 0)
                 return (diff);
         }
-        
+
         return (0);
     }
 
@@ -525,11 +525,11 @@ public class Util {
     public static int       hashCode (long value) {
         return ((int) (value ^ (value >>> 32)));
     }
-    
+
     public static int       hashCode (double value) {
         return (hashCode (Double.doubleToLongBits (value)));
     }
-    
+
     /**
      *  Adds up hash codes of all array elements, plus array length.
      */
@@ -544,7 +544,7 @@ public class Util {
 
         return (ret);
     }
-    
+
     public static <T extends Comparable <T>> int    xcompare (T o1, T o2) {
         if (o1 == null)
             if (o2 == null)
@@ -557,7 +557,7 @@ public class Util {
             return (o1.compareTo (o2));
     }
 
-    
+
     /**
      * Method identical to "obj1.equals(obj2)", it also handles <code>null</code> values.
      */
@@ -913,7 +913,7 @@ public class Util {
 
         return (-1);
     }
-    
+
     /**
      *  Find an element in the specified array that equals to the specified element
      *  and return its index, or -1 if not found.
@@ -921,7 +921,7 @@ public class Util {
     public static boolean           contains (Object [] array, Object elem) {
         return (indexOf (array, elem) >= 0);
     }
-    
+
     /**
      *  Find the index of the minimum element. Returns -1 if array is empty.
      */
@@ -930,13 +930,13 @@ public class Util {
 
         if (len == 0)
             return (-1);
-        
+
         int                             idx = 0;
         T                               minmax = array [0];
-        
+
         for (int ii = 1; ii < len; ii++) {
             T                           cur = array [ii];
-            
+
             if (comp.compare (cur, minmax) * order > 0) {
                 minmax = cur;
                 idx = ii;
@@ -945,7 +945,7 @@ public class Util {
 
         return (idx);
     }
-    
+
     /**
      *  Find the index of the minimum element. Returns -1 if array is empty.
      */
@@ -954,13 +954,13 @@ public class Util {
 
         if (len == 0)
             return (-1);
-        
+
         int                             idx = 0;
         T                               minmax = array [0];
-        
+
         for (int ii = 1; ii < len; ii++) {
             T                           cur = array [ii];
-            
+
             if (cur.compareTo (minmax) * order > 0) {
                 minmax = cur;
                 idx = ii;
@@ -969,10 +969,10 @@ public class Util {
 
         return (idx);
     }
-    
+
     public static void          format (
         StringBuffer                out,
-        Object                      obj, 
+        Object                      obj,
         Justification               j,
         int                         width,
         String                      clip
@@ -981,56 +981,56 @@ public class Util {
         String                      s = obj.toString ();
         int                         length = s.length ();
         int                         diff = width - length;
-        
+
         if (diff < 0) {
             int                     clipLength = clip.length ();
             int                     showLength = width - clipLength;
-            
+
             if (showLength > 0) {
                 out.append (s, 0, showLength);
                 showLength = 0;
             }
-            
+
             out.append (clip, 0, clipLength + showLength);
         }
         else {
             int                     lpad, rpad;
-            
+
             switch (j) {
                 case LEFT:      lpad = diff;    rpad = 0;   break;
                 case RIGHT:     rpad = diff;    lpad = 0;   break;
                 case CENTER:    lpad = diff / 2;    rpad = diff - lpad; break;
                 default:    throw new RuntimeException ("Unrecognized: " + j);
             }
-            
+
             for (int ii = 0; ii < lpad; ii++)
                 out.append (" ");
-            
+
             out.append (s);
-            
+
             for (int ii = 0; ii < rpad; ii++)
                 out.append (" ");
-        }        
+        }
     }
-    
+
     /**
      *  Creates a string that is a copy of the specified char sequence
      *  without calling CharSequence.toString ().
      */
-    public static String               toString (CharSequence cs) {        
+    public static String               toString (CharSequence cs) {
         return (new StringBuilder (cs).toString ());
     }
-    
+
     /**
      *  Replicates the String.hashCode () logic for arbitrary CharSequence instances
      */
-    public static int               hashCode (CharSequence cs) {        
+    public static int               hashCode (CharSequence cs) {
         int         len = cs.length ();
         int         hc = 0;
-        
-        for (int i = 0; i < len; i++) 
-            hc = 31 * hc + cs.charAt (i);        
-        
+
+        for (int i = 0; i < len; i++)
+            hc = 31 * hc + cs.charAt (i);
+
         return (hc);
     }
 }
