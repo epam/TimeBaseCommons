@@ -38,6 +38,25 @@ public class CharSequenceSet extends HashSet <String> {
             addAll (s);
     }
 
+    /**
+     *  Create a new CharSequenceSet which is a union of the incoming sets.
+     *  Incoming sets are allowed to be null, which is considered equivalent to 
+     *  an empty set. This method returns null if and only if both incoming 
+     *  arguments are null.
+     */
+    public static CharSequenceSet unionCopy (CharSequenceSet a, CharSequenceSet b) {
+        if (a == null)
+            if (b == null)
+                return (null);
+            else
+                return (new CharSequenceSet (b));
+        else
+            if (b == null)
+                return (new CharSequenceSet (a));
+            else
+                return (new CharSequenceSet (a, b));
+    }
+    
     public boolean              addCharSequence (CharSequence e) {
         if (containsCharSequence (e))
             return (false);
