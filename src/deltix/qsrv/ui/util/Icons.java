@@ -169,6 +169,8 @@ public class Icons {
      public static final Icon    HELP2 =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/help2.png");
      
+     public static final Icon    GEAR_TIME =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/gear_time.png");
      
      
 }
