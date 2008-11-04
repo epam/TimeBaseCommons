@@ -74,11 +74,11 @@ public class DateFormatDetector {
         String          dateFormat;
         
         if ((m = SLASH_DATE_PATTERN_MDY.matcher (text)).matches ()) 
-            dateFormat = "M/d/y";
+            dateFormat = "MM/dd/yyyy";
         else if ((m = SLASH_DATE_PATTERN_YMD.matcher (text)).matches ()) 
-            dateFormat = "y/M/d";
+            dateFormat = "yyyy/MM/dd";
         else if ((m = DASH_DATE_PATTERN.matcher (text)).matches ())
-            dateFormat = "y-M-d";
+            dateFormat = "yyyy-MM-dd";
         else if ((m = NSEP_DATE_PATTERN.matcher (text)).matches ()) 
             dateFormat = "yyyyMMdd";
         else
