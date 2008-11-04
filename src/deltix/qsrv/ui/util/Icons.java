@@ -101,8 +101,6 @@ public class Icons {
      public static final Icon    FIND =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/find.png");
      
-    
-     
      public static final Icon    PREVIEW =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/preview.png");
      
@@ -171,6 +169,9 @@ public class Icons {
      
      public static final Icon    GEAR_TIME =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/gear_time.png");
+     
+     public static final Icon    GEAR_TIME_16x16 =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/gear_time_16x16.png");
      
      
 }
