@@ -48,6 +48,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     public void reload(){
         clear();
         updateChildren();
+        refreshTree();
     }
     
     public String getLabelText(){
