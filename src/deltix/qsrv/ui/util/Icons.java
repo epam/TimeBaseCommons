@@ -173,5 +173,8 @@ public class Icons {
      public static final Icon    GEAR_TIME_16x16 =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/gear_time_16x16.png");
      
+     public static final Icon    BAR_CHART =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/bar_chart.png");
+     
      
 }
