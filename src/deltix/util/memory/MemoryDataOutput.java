@@ -285,12 +285,31 @@ public class MemoryDataOutput {
         }
     }
     
-    public final void           writeScaledDouble (double v, int precision) {
+    private final boolean       writeSpecialScaledDouble (double v) {
         if (v == 0) {
             writeByte (0);
-            return;
+            return (true);
         }
-            
+        else if (Double.isNaN (v)) {
+            writeByte (0x1F);
+            return (true);
+        }
+        else if (v == Double.NEGATIVE_INFINITY) {
+            writeByte (0x2F);
+            return (true);
+        }
+        else if (v == Double.POSITIVE_INFINITY) {
+            writeByte (0x3F);
+            return (true);
+        }
+        else
+            return (false);
+    }
+    
+    public final void           writeScaledDouble (double v, int precision) {
+        if (writeSpecialScaledDouble (v))
+            return;
+        
         int                 signBit;
         
         if (v < 0) {
@@ -322,11 +341,9 @@ public class MemoryDataOutput {
     }
 
     public final void           writeScaledDouble (double v) {
-        if (v == 0) {
-            writeByte (0);
+        if (writeSpecialScaledDouble (v))
             return;
-        }
-            
+                    
         int                 signBit;
         
         if (v < 0) {

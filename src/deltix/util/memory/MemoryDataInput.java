@@ -379,16 +379,27 @@ public class MemoryDataInput {
         return (sb);
     }
 
+    private static final double []    SCALES = new double [MemoryDataOutput.MAX_SCALE_EXP];
+    
+    static {
+        long v = 1;
+        
+        for (int ii = 0; ii < MemoryDataOutput.MAX_SCALE_EXP; ii++) {
+            SCALES [ii] = v;
+            v *= 10;
+        }
+    }
+    
     public double       readScaledDouble () {
         int                 header = readByte ();
         
-        if (header == 0)
-            return (0);
-        
-        int                 exp = header & 0x0F;
-        
-        if (exp == 15)
-            return (readDouble ());
+        switch (header) {
+            case 0x00:      return (0);
+            case 0x1F:      return (Double.NaN);
+            case 0x2F:      return (Double.NEGATIVE_INFINITY);
+            case 0x3F:      return (Double.POSITIVE_INFINITY);
+            case 0x0F:      return (readDouble ());
+        }
         
         int                 numBytes = (header >> 4) & 0x07;
         long                lv = 0;
@@ -399,13 +410,8 @@ public class MemoryDataInput {
             numBytes--;
             shift += 8;
         }
-            
-        double              scale = 1;
         
-        while (exp > 0) {
-            scale *= 10;
-            exp--;
-        }
+        double              scale = SCALES [header & 0x0F];
         
         if ((header & 0x80) != 0)
             scale = -scale;

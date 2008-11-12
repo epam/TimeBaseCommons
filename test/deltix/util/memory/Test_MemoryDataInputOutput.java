@@ -83,7 +83,10 @@ public class Test_MemoryDataInputOutput {
         final double []                 testValues = {
             0, 0.7, -0.2, 2.28, -997.82, 
             666.234876, -234876747.6678,
-            0.23476890879672543765 /* out of exp range */
+            0.23476890879672543765, //out of exp range
+            Double.NaN,
+            Double.POSITIVE_INFINITY,
+            Double.NEGATIVE_INFINITY
         };
         
         out.reset ();
@@ -95,7 +98,11 @@ public class Test_MemoryDataInputOutput {
         
         for (double v : testValues) {
             double        actual = in.readScaledDouble ();
-            assertTrue ("Expected: " + v + "; got: " + actual, v == actual);
+            
+            if (Double.isNaN (v))
+                assertTrue ("!Double.isNaN (" + actual + ")", Double.isNaN (actual));
+            else
+                assertEquals (v, actual);
         }
         
         out.reset ();
@@ -106,10 +113,16 @@ public class Test_MemoryDataInputOutput {
         in.setBytes (out);
         
         for (double v : testValues) {
-            long        actual = Math.round (in.readScaledDouble () * 1000);
-            long        expected = Math.round (v * 1000);
-                
-            assertEquals (expected, actual);
+            double          read = in.readScaledDouble ();
+            
+            if (Double.isNaN (v))
+                assertTrue ("!Double.isNaN (" + read + ")", Double.isNaN (read));
+            else {
+                long        actual = Math.round (read * 1000);
+                long        expected = Math.round (v * 1000);
+
+                assertEquals (expected, actual);
+            }
         }
     }
 }
