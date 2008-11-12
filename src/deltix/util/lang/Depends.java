@@ -17,7 +17,7 @@ import java.lang.annotation.*;
  * })
  * </pre>
  *
- * @See DependsClass
+ * @see DependsClass
  */
 @Documented
 @Retention (RetentionPolicy.CLASS)

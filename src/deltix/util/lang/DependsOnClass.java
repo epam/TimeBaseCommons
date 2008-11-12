@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * &#64;DependsOnClass (org.apache.xbean.spring.context.ClassPathXmlApplicationContext.class)
  * </pre>
  *
- * @See Depends
+ * @see Depends
  */
 @Documented
 @Retention (RetentionPolicy.CLASS)
