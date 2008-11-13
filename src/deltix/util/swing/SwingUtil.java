@@ -29,6 +29,12 @@ public abstract class SwingUtil {
      *  Marks components that call setDeepEnabled from their own setEnabled method
      */
     public interface DeepEnabler { }
+    
+    
+    /**
+     * Marks components that using as selector  
+     */
+    public interface HorizontalFillOnlyField { }
 
     static final ResourceBundle     RB = ResourceBundle.getBundle ("deltix/util/swing/ui");
     

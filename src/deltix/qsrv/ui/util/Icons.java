@@ -176,5 +176,11 @@ public class Icons {
      public static final Icon    BAR_CHART =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/bar_chart.png");
      
+     public static final Icon    APPLICATION_SERVER =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/application_server.png");
+     
+     public static final Icon    DOMAIN =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/domain.png");
+     
      
 }
