@@ -75,12 +75,12 @@ public class IOUtil {
     }
 
     public static void      delete (File f) throws IOException {
-        if (!f.delete ())
+        if (! deleteFileOrDir(f))
             throw new IOException ("Failed to delete " + f);
     }
 
     public static void      deleteUnchecked (File f) {
-        if (!f.delete ())
+        if (! deleteFileOrDir(f))
             throw new UncheckedIOException ("Failed to delete " + f);
     }
 
@@ -101,6 +101,28 @@ public class IOUtil {
             f = f.getParentFile ();
 
         return (f);
+    }
+
+    /**
+     * Recursively deletes given directory and all its content
+     *
+     * @return  <code>true</code> if and only if the directory is
+     *          successfully deleted; <code>false</code> otherwise
+     */
+    public static boolean deleteFileOrDir(File file) {
+        if(file == null)
+            return false;
+        if(!file.exists())
+            return true;
+        if(file.isDirectory()) {
+            File items[] = file.listFiles();
+            if(items != null) {
+                for(File item : items)
+                    if( ! deleteFileOrDir(item))
+                        return false;
+            }
+        }
+        return file.delete();
     }
 
     public static void      createNew (File f) throws IOException {
