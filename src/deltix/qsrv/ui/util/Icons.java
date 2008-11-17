@@ -182,5 +182,8 @@ public class Icons {
      public static final Icon    DOMAIN =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/domain.png");
      
+     public static final Icon    KEY_ADD =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/key_add.png");
+     
      
 }

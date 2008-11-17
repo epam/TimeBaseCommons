@@ -4,8 +4,6 @@ import java.util.*;
 
 import javax.swing.*;
 
-import com.sun.org.apache.bcel.internal.generic.*;
-
 /**
  */
 public class StringArrayTextArea extends JTextArea {
