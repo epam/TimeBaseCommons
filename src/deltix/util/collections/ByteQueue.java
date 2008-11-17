@@ -16,7 +16,8 @@ public class ByteQueue {
     }
     
     public void                 offer (byte value) {
-        assert size < capacity;
+        assert size < capacity :
+            "size: " + size + "; capacity: " + capacity;
         
         buffer [tail] = value;
         
@@ -28,7 +29,8 @@ public class ByteQueue {
     }
     
     public void                 offer (byte [] src, int offset, int length) {
-        assert size + length < capacity;
+        assert size + length <= capacity :
+            "size: " + size + "; length: " + length + "; capacity: " + capacity;
         
         int                 end = tail + length;
         int                 excess = end - capacity;
@@ -51,7 +53,7 @@ public class ByteQueue {
     }
     
     public byte                 poll () {
-        assert size > 0;
+        assert size > 0 : "size: " + size;
         
         byte                value = buffer [head];
         
@@ -65,7 +67,7 @@ public class ByteQueue {
     }
     
     public void                 poll (byte [] dest, int offset, int length) {
-        assert size >= length;
+        assert size >= length : "size: " + size + "; length: " + length;
         
         int                 end = head + length;
         int                 excess = end - capacity;
@@ -88,12 +90,12 @@ public class ByteQueue {
     }
     
     public void                 skip (int length) {
-        assert size >= length;
+        assert size >= length : "size: " + size + "; length: " + length;
         
         size -= length;
         head += length;
         
-        if (head > capacity)
+        if (head >= capacity)
             head -= capacity;
     }
     

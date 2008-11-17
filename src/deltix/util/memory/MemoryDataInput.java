@@ -16,6 +16,12 @@ public class MemoryDataInput {
     private int             mLimit;
     private StringBuilder   mStringBuilder;
         
+    public MemoryDataInput (int capacity) {
+        mBuffer = new byte [capacity];
+        mLimit = 0;
+        mPos = 0;
+    }
+    
     public MemoryDataInput () {
         mBuffer = null;
         mLimit = 0;
@@ -69,6 +75,11 @@ public class MemoryDataInput {
     public final void       setBytes (MemoryDataOutput out) {
         mBuffer = out.getBuffer ();
         mLimit = out.getSize ();
+        mPos = 0;
+    }
+    
+    public final void       reset (int newSize) {
+        mLimit = newSize;
         mPos = 0;
     }
     
