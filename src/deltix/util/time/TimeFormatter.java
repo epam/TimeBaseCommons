@@ -1,6 +1,7 @@
 package deltix.util.time;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Thread-safe and fast time formatter.
@@ -40,6 +41,7 @@ public final class TimeFormatter {
      * @return time formatted like "00:00:00"
      */
     public static String formatTimeOfDay (long timeInMilliseconds) {
+    	assert timeInMilliseconds <= TimeUnit.HOURS.toMillis(99) : timeInMilliseconds;
     	return formatTimeOfDayFromSeconds (timeInMilliseconds / 1000);
     }
 
