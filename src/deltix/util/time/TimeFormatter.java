@@ -41,7 +41,6 @@ public final class TimeFormatter {
      * @return time formatted like "00:00:00"
      */
     public static String formatTimeOfDay (long timeInMilliseconds) {
-    	assert timeInMilliseconds <= TimeUnit.HOURS.toMillis(99) : timeInMilliseconds;
     	return formatTimeOfDayFromSeconds (timeInMilliseconds / 1000);
     }
 
