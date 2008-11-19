@@ -171,7 +171,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         refreshTree ( );
     }
 
-    private void refreshTree ( ) {
+    public final void refreshTree ( ) {
         FilterableTreeModel _displayTreeModel = getFilterableTreeModel ( );
         if (_displayTreeModel != null) {
 
