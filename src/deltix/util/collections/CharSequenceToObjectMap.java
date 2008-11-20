@@ -38,4 +38,8 @@ public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
     public T                    put (CharSequence key, T value) {
         return super.put (key.toString (), value);
     }        
+    
+    public T                    put (CharSequence key, int start, int end, T value) {
+        return super.put (key.subSequence (start, end).toString (), value);
+    }        
 }
