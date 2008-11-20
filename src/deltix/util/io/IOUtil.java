@@ -44,6 +44,15 @@ public class IOUtil {
             }
     }
 
+    public static void          close (ZipFile f) {
+        if (f != null)
+            try {
+                f.close ();
+            } catch (Exception x) {
+                Util.handleException (x);
+            }
+    }
+
     public static URL       createFileUrl (File f) {
         String          path = f.getAbsolutePath ().replace ('\\', '/');
 
