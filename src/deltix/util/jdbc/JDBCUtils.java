@@ -384,7 +384,7 @@ public class JDBCUtils {
         List <Object []>    rows = new ArrayList <Object []> ();
         String []           headers = null;
         int []              widths = new int [numColumns];
-        
+
         if (printHeaders) {
             headers = new String [numColumns];
             
@@ -394,7 +394,9 @@ public class JDBCUtils {
                 widths [ii] = label.length ();
             }
         }
-        
+        else
+            Arrays.fill(widths, 0);
+
         while (rs.next ()) {
             Object []       row = new Object [numColumns];
             
@@ -405,7 +407,9 @@ public class JDBCUtils {
                     value = "";
                 
                 row [ii] = value;
-                widths [ii] = value.length ();
+                final int len = value.length();
+                if (len > widths[ii])
+                    widths[ii] = len;
             }
             
             rows.add (row);
