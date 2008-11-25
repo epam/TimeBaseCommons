@@ -14,6 +14,11 @@ public class WordMatcherBuilder implements WordMatcher {
     public WordMatcherBuilder () {
     }
     
+    public WordMatcherBuilder (Collection <? extends CharSequence> css) {
+        for (CharSequence cs : css)
+            add (cs);
+    }
+    
     public WordMatcherBuilder (Collection <? extends CharSequence> ... adds) {
         for (Collection <? extends CharSequence> c : adds)
             for (CharSequence cs : c)

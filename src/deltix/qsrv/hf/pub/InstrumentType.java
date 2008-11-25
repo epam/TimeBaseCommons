@@ -8,6 +8,5 @@ public enum InstrumentType {
     OPTION,
     FUTURE,
     BOND,
-    FX,
-    SPREAD // Equity Option Spreads
+    FX
 }
