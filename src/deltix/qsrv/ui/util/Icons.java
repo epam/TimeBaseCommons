@@ -128,6 +128,9 @@ public class Icons {
      public static final Icon    SCROLL_UP =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_up.png");
      
+     public static final Icon    SCROLL_SELECT =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_select.png");
+     
      public static final Icon    SCROLL_DOWN =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_down.png");
      
@@ -185,5 +188,26 @@ public class Icons {
      public static final Icon    KEY_ADD =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/key_add.png");
      
+     public static final Icon    RESULTSET_FIRST =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/resultset_first.png");
+     
+     public static final Icon    RESULTSET_LAST =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/resultset_last.png");
+
+     
+     public static final Icon    RESULTSET_NEXT =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/resultset_next.png");
+
+     
+     public static final Icon    RESULTSET_PREVIOUS =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/resultset_previous.png");
+     
+     
+     public static final Icon    ZOOM_IN =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/zoom_in.png");
+     
+     
+     public static final Icon    ZOOM_OUT =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/zoom_out.png");
      
 }
