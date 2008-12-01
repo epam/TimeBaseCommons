@@ -210,4 +210,10 @@ public class Icons {
      public static final Icon    ZOOM_OUT =
          SwingUtil.loadIcon ("deltix/qsrv/ui/util/zoom_out.png");
      
+     public static final Icon    LOCK =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/lock.png");
+     
+     public static final Icon    UNLOCK =
+         SwingUtil.loadIcon ("deltix/qsrv/ui/util/unlock.png");
+     
 }
