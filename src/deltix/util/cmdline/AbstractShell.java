@@ -141,7 +141,7 @@ public abstract class AbstractShell extends DefaultApplication {
     }
 
     protected void        runScript (Reader in, boolean showPrompt, boolean echo)
-        throws IOException
+        throws IOException, InterruptedException
     {
         LineNumberReader    rd = new LineNumberReader (in);
 
@@ -186,6 +186,8 @@ public abstract class AbstractShell extends DefaultApplication {
 
             String      cmdargs = line.substring (ws).trim ();
 
+            if (Thread.interrupted())
+                throw new InterruptedException();
             runCommand (key, cmdargs);
         }
     }

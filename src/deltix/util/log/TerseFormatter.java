@@ -30,7 +30,7 @@ public class TerseFormatter extends Formatter {
         // time
         long time = record.getMillis();
         if (time != 0) {
-            sbuf.append (TimeFormatter.formatTimeOfDay(time));
+            sbuf.append (TimeFormatter.formatTimeOfDayGMT(time));
             sbuf.append (' ');
         }
 
