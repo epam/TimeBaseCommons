@@ -213,6 +213,19 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 		}
 	}
 
+	public final void insertNodeInto ( BaseMutableTreeNode node ) {
+		DefaultTreeModel model = getActualDefaultTreeModel ( );
+		if (model != null) {
+			model.insertNodeInto ( node,
+			                       this,
+			                       this.getChildCount ( ) );
+		} else {
+			reload ( );
+		}
+
+		add ( node );
+	}
+
 	public final void select ( ) {
 		/**
 		 * Reset selection momentarily in order to force the reloading of the
