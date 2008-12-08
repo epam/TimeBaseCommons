@@ -176,7 +176,7 @@ public class JideAbstractApp extends DefaultDockableBarDockableHolder
         System.setProperty ("sun.awt.exception.handler", AppExceptionHandler.class.getName ());
     }
     
-    protected static JScrollPane createScrollPane(Component component) {
+    public static JScrollPane createScrollPane(Component component) {
         JScrollPane pane = new JideScrollPane(component);
         pane.setVerticalScrollBarPolicy(JideScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         return pane;
