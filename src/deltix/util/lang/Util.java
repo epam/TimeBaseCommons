@@ -281,7 +281,28 @@ public class Util {
     }
 
     /**
-     *  Call a static method of the specified class. Figure out the method
+     *  Call a constructor of the specified class. Figure out the method
+     *  signature from the types of the supplied arguments (which must not contain
+     *  null elements).
+     */
+    public static Object    callConstructor (
+        Class<?>                clazz,
+        Object ...              args
+    )
+        throws ClassNotFoundException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException
+    {
+        Class []    paramTypes = new Class [args.length];
+        for (int ii = 0; ii < args.length; ii++)
+            paramTypes [ii] = args [ii].getClass ();
+
+        Constructor      m = clazz.getConstructor (paramTypes);
+        return (m.newInstance (args));
+    }
+
+    /**
+     *  Call a constructor of the specified class. Figure out the method
      *  signature from the types of the supplied arguments (which must not contain
      *  null elements).
      */
@@ -294,12 +315,7 @@ public class Util {
             IllegalArgumentException, InvocationTargetException
     {
         Class<?>    c = Class.forName (className);
-        Class []    paramTypes = new Class [args.length];
-        for (int ii = 0; ii < args.length; ii++)
-            paramTypes [ii] = args [ii].getClass ();
-
-        Constructor      m = c.getConstructor (paramTypes);
-        return (m.newInstance (args));
+        return callConstructor(c, args);
     }
 
     /**
