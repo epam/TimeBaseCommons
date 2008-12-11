@@ -1,5 +1,7 @@
 package deltix.qsrv.hf.metadata;
 
+import deltix.util.lang.Util;
+
 import javax.tools.*;
 import java.util.List;
 import java.util.Arrays;
@@ -25,14 +27,26 @@ class CompilerUtil {
         SpecialJavaFileManager fileManager = new SpecialJavaFileManager(sjfm, cl);
 
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
-        DiagnosticListener<JavaFileObject> dianosticListener = null;
+        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
         Writer out = new PrintWriter(System.err);
         JavaCompiler.CompilationTask compile = javac.getTask(out, fileManager, dianosticListener, null, null, compilationUnits);
-        boolean res = compile.call();
-        if (res)
+        boolean ok = compile.call();
+
+        final boolean hasDiagnostic = dianosticListener.getDiagnostics().size() > 0;
+        StringBuilder sb = null;
+        if (hasDiagnostic) {
+            sb = new StringBuilder();
+            for (Diagnostic<? extends JavaFileObject> s : dianosticListener.getDiagnostics()) {
+                sb.append(s).append(Util.NATIVE_LINE_BREAK);
+            }
+            if (ok)
+                Util.LOGGER.warning(sb.toString());
+        }
+
+        if (ok)
             return cl.findClass(className);
         else
-            throw new RuntimeException("compilation failed");
+            throw new RuntimeException("compilation failed:\n" + (sb != null ? sb.toString() : ""));
     }
 
     private static class MemorySource extends SimpleJavaFileObject {
