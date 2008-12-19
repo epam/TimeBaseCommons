@@ -19,16 +19,39 @@ import java.net.URI;
  */
 class CompilerUtil {
 
-    static Class<?> compileClass(String className, String code) throws ClassNotFoundException {
-        JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
+    private static CompilerUtil instance = null;
 
-        StandardJavaFileManager sjfm = javac.getStandardFileManager(null, null, null);
-        SpecialClassLoader cl = new SpecialClassLoader();
-        SpecialJavaFileManager fileManager = new SpecialJavaFileManager(sjfm, cl);
+    private JavaCompiler javac = null;
+    private StandardJavaFileManager sjfm;
+    private SpecialJavaFileManager fileManager;
 
+    private ClassLoader parentLoader;
+    private SpecialClassLoader cl;
+
+    static Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
+        if (instance == null)
+            instance = new CompilerUtil();
+        return instance.compileClassImpl(className, code, loader);
+    }
+
+    private void init(ClassLoader loader) {
+        if (javac == null) {
+            javac = ToolProvider.getSystemJavaCompiler();
+            sjfm = javac.getStandardFileManager(null, null, null);
+        }
+
+        if (cl == null || parentLoader != loader) {
+            parentLoader = loader;
+            cl = new SpecialClassLoader(loader);
+            fileManager = new SpecialJavaFileManager(sjfm, cl);
+        }
+    }
+
+    private Class<?> compileClassImpl(String className, String code, ClassLoader loader) throws ClassNotFoundException {
+        init(loader);
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
-        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
         Writer out = new PrintWriter(System.err);
+        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
         JavaCompiler.CompilationTask compile = javac.getTask(out, fileManager, dianosticListener, null, null, compilationUnits);
         boolean ok = compile.call();
 
@@ -118,6 +141,10 @@ class CompilerUtil {
 
     private static class SpecialClassLoader extends ClassLoader {
         private Map<String, MemoryByteCode> m = new HashMap<String, MemoryByteCode>();
+
+        private SpecialClassLoader(ClassLoader parent) {
+            super(parent);
+        }
 
         protected Class<?> findClass(String name) throws ClassNotFoundException {
             MemoryByteCode mbc = m.get(name);
