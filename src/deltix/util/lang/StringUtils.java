@@ -480,6 +480,14 @@ public class StringUtils {
         return (true);
     }
     
+    public static final boolean equals ( String one,
+	                                     String two ) {
+		if (one == null) {
+			return two == null || two.equals ( one );
+		}
+		return one == two || one.equals ( two );
+	}
+    
     public static void main (String [] args) {
         byte []     b = args [0].getBytes();
 
@@ -487,6 +495,7 @@ public class StringUtils {
     }
 
 
+    
 }
 
 
