@@ -47,8 +47,12 @@ public abstract class GMT {
     }
     
     public static String                formatDateTimeMillis (long t) {
+        return (formatDateTimeMillis (new Date (t)));
+    }
+    
+    public static String                formatDateTimeMillis (Date t) {
         synchronized (DTFX) {
-            return (DTFX.format (new Date (t)));
+            return (DTFX.format (t));
         }
     }
     

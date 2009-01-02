@@ -222,13 +222,7 @@ public class Util {
         throws ClassNotFoundException, InstantiationException, IllegalAccessException,
             IllegalArgumentException, NoSuchMethodException, InvocationTargetException
     {
-        Class<?>    c = Class.forName (className);
-        Class []    paramTypes = new Class [args.length];
-        for (int ii = 0; ii < args.length; ii++)
-            paramTypes [ii] = args [ii].getClass ();
-
-        Constructor      cons = c.getConstructor (paramTypes);
-        return (cons.newInstance (args));
+        return (newInstance (Class.forName (className), args));
     }
 
     /**
@@ -252,7 +246,8 @@ public class Util {
         for (int ii = 0; ii < args.length; ii++)
             paramTypes [ii] = args [ii].getClass ();
 
-        Method      m = c.getMethod (methodName, paramTypes);
+        Method      m = c.getDeclaredMethod (methodName, paramTypes);
+        m.setAccessible (true);
         return (m.invoke (null, args));
     }
 
@@ -264,7 +259,7 @@ public class Util {
     public static Object    callNonStaticMethod (
         Object                  object,
         String                  methodName,
-        Object []               args
+        Object ...              args
     )
         throws
             ClassNotFoundException,
@@ -276,7 +271,8 @@ public class Util {
         for (int ii = 0; ii < args.length; ii++)
             paramTypes [ii] = args [ii].getClass ();
 
-        Method      m = object.getClass ().getMethod (methodName, paramTypes);
+        Method      m = object.getClass ().getDeclaredMethod (methodName, paramTypes);
+        m.setAccessible (true);
         return (m.invoke (object, args));
     }
 
@@ -285,7 +281,7 @@ public class Util {
      *  signature from the types of the supplied arguments (which must not contain
      *  null elements).
      */
-    public static Object    callConstructor (
+    public static Object    newInstance (
         Class<?>                clazz,
         Object ...              args
     )
@@ -293,36 +289,44 @@ public class Util {
             InstantiationException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException
     {
-        Class []    paramTypes = new Class [args.length];
-        for (int ii = 0; ii < args.length; ii++)
-            paramTypes [ii] = args [ii].getClass ();
+        Constructor         m;
+        int                 numArgs = args.length;
+        
+        if (numArgs == 0)
+            m = clazz.getDeclaredConstructor ();
+        else {
+            Class <?> []    paramTypes = new Class [numArgs];
+            
+            for (int ii = 0; ii < numArgs; ii++)
+                paramTypes [ii] = args [ii].getClass ();
 
-        Constructor      m = clazz.getConstructor (paramTypes);
+            m = clazz.getDeclaredConstructor (paramTypes);
+        }
+        
+        m.setAccessible (true);
         return (m.newInstance (args));
     }
 
-    /**
-     *  Call a constructor of the specified class. Figure out the method
-     *  signature from the types of the supplied arguments (which must not contain
-     *  null elements).
-     */
-    public static Object    callConstructor (
-        String                  className,
+    public static Object    newInstanceNoX (
+        Class<?>                clazz,
         Object ...              args
     )
-        throws ClassNotFoundException, NoSuchMethodException,
-            InstantiationException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException
     {
-        Class<?>    c = Class.forName (className);
-        return callConstructor(c, args);
+        try {                        
+            return (newInstance (clazz, args));
+        } catch (RuntimeException x) {
+            throw x;
+        } catch (Error x) {
+            throw x;
+        } catch (Throwable other) {
+            throw new RuntimeException (clazz.getName () + " instantiation failed", other);
+        }
     }
-
+    
     /**
      *	Gets to the bottom of the exception.
      */
     public static Throwable		unwrap (Throwable ex) {
-
         Throwable result = ex;
         while (result != null) {
             Throwable nested;
