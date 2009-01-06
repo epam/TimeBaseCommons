@@ -33,6 +33,7 @@ import org.xml.sax.SAXParseException;
  *    }
  *}
  *</pre>
+ * </p>
  */
 public abstract class DefaultApplication {
     private String []                       mArgs;
