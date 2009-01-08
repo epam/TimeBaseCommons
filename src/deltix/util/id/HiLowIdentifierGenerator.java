@@ -34,5 +34,5 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
     /** @return new base */
     protected abstract long aquireNextBlock();
 
-
+ 
 }

@@ -26,6 +26,10 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
 
     @Override
     protected long aquireNextBlock() {
+        return aquireNextBlock (1);
+    }
+
+    private long aquireNextBlock(long base) {
         RandomAccessFile raf = null;
         FileChannel channel = null;
         FileLock lock = null;
@@ -37,8 +41,8 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
                 lock = channel.lock();
 
                 long nextBlock;
-                if (seqFile.length() == 0) {
-                    nextBlock = 1;
+                if (seqFile.length() == 0 || base != 1) {
+                    nextBlock = base;
                 } else {
                     nextBlock = raf.readLong() + blockSize;
                 }
@@ -66,5 +70,8 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
         }
 
     }
-
+    
+    public void setBase (long base) {
+        aquireNextBlock (base);
+    }
 }
