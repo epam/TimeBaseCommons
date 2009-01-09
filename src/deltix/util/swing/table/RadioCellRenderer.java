@@ -8,8 +8,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import sun.swing.*;
-
 public class RadioCellRenderer extends JRadioButton implements TableCellRenderer {
 	// We need a place to store the color the JLabel should be returned
 	// to after its foreground and background colors have been set
@@ -35,12 +33,8 @@ public class RadioCellRenderer extends JRadioButton implements TableCellRenderer
 		    dropLocation.getRow ( ) == row &&
 		    dropLocation.getColumn ( ) == column) {
 
-			fg = DefaultLookup.getColor ( this,
-			                              ui,
-			                              "Table.dropCellForeground" );
-			bg = DefaultLookup.getColor ( this,
-			                              ui,
-			                              "Table.dropCellBackground" );
+			fg = UIManager.getColor ("Table.dropCellForeground" );
+			bg = UIManager.getColor ( "Table.dropCellBackground" );
 
 			isSelected = true;
 		}
@@ -51,9 +45,7 @@ public class RadioCellRenderer extends JRadioButton implements TableCellRenderer
 		} else {
 			Color background = unselectedBackground != null ? unselectedBackground : table.getBackground ( );
 			if (background == null || background instanceof javax.swing.plaf.UIResource) {
-				Color alternateColor = DefaultLookup.getColor ( this,
-				                                                ui,
-				                                                "Table.alternateRowColor" );
+				Color alternateColor = UIManager.getColor ("Table.alternateRowColor" );
 				if (alternateColor != null && row % 2 == 0)
 					background = alternateColor;
 			}
