@@ -43,6 +43,34 @@ public class MathUtil {
     }
 
     /**
+     *	Returns 1, -1, or 0 depending on the difference between arguments.
+     */
+    public static int		compare (int x, int y) {
+        return (x > y ? 1 : x < y ? -1 : 0);
+    }
+
+    /**
+     *	Returns 1, -1, or 0 depending on the difference between arguments.
+     */
+    public static int		compare (float x, float y) {
+        return (x > y ? 1 : x < y ? -1 : 0);
+    }
+
+    /**
+     *	Returns 1, -1, or 0 depending on the difference between arguments.
+     */
+    public static int		compare (double x, double y) {
+        return (x > y ? 1 : x < y ? -1 : 0);
+    }
+
+    /**
+     *	Returns 1, -1, or 0 depending on the difference between arguments.
+     */
+    public static int		compare (long x, long y) {
+        return (x > y ? 1 : x < y ? -1 : 0);
+    }
+
+    /**
      *	Returns the fractional part of the argument. Result is negative if
      *	the argument is negative.
      */
