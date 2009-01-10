@@ -39,12 +39,17 @@ public abstract class EstimatorUtils implements MemorySizeEstimator {
     public static long       getSizeInMemory (MemorySizeEstimator obj) {
         return (obj == null ? 0 : obj.getSizeInMemory ());
     }
-    
+
+    /**
+     *  Conservative estimate of string size - assumes the string does not
+     *  share its value with any other string.
+     */
     public static int       getSizeInMemory (String s) {
         return (
             s == null ? 
                 0 : 
-                ((45 + s.length () * SIZE_OF_CHAR) / 8) * 8
+                OBJECT_OVERHEAD + SIZE_OF_POINTER + 3 * SIZE_OF_INT +
+                    ARRAY_OVERHEAD + s.length () * SIZE_OF_CHAR
         );
     }
     
