@@ -13,6 +13,12 @@ import java.lang.reflect.Array;
 
 /** Set of usefull methods */
 public class Util {
+    public static boolean       IS64BIT =
+        "64".equals (System.getProperty ("sun.arch.data.model"));
+
+    public static boolean       IS32BIT =
+        "32".equals (System.getProperty ("sun.arch.data.model"));
+
     public static final String  LOGGER_NAME = "deltix.util";
     public static final Logger  LOGGER = Logger.getLogger (LOGGER_NAME);
     public static final Timer   GLOBAL_TIMER = new Timer ("Global Timer", true);
