@@ -29,16 +29,17 @@ public class TeraByteOutputStream extends OutputStream {
     public TeraByteOutputStream (long maxTotalSize, int bufferSize) {
         this.maxTotalSize = maxTotalSize;
         this.bufferSize = bufferSize;
+        this.buffers = new byte [(int) ((maxTotalSize + bufferSize - 1) / bufferSize)][];
         
-        buffers = new byte [(int) ((maxTotalSize + bufferSize - 1) / bufferSize)][];
-        
-        reset ();
+        alloc ();
     }
     
     public void         reset () {
-        numBuffers = 0;
-        Arrays.fill (buffers, null);
-        alloc ();
+        Arrays.fill (buffers, 1, numBuffers, null);
+        numBuffers = 1;
+        curBuffer = buffers [0];
+        curCount = 0;
+        avail = bufferSize;
     }
 
     private void        alloc () {
