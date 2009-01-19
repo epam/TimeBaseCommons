@@ -22,7 +22,7 @@ public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
     
     @Override
     public final T              get (Object key) {
-        return (get ((CharSequence) mBuffer));
+        return (get ((CharSequence) key));
     }
 
     public final T              get (CharSequence key) {
@@ -41,5 +41,27 @@ public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
     
     public T                    put (CharSequence key, int start, int end, T value) {
         return super.put (key.subSequence (start, end).toString (), value);
-    }        
+    }
+
+    @Override
+    public boolean              containsKey (Object key) {
+        mBuffer.set ((CharSequence) key);
+        return super.containsKey (mBuffer);
+    }
+
+    public boolean              containsKey (CharSequence key, int start, int end) {
+        mBuffer.set (key, start, end);
+        return super.containsKey (mBuffer);
+    }
+
+    @Override
+    public T                    remove (Object key) {
+        mBuffer.set ((CharSequence) key);
+        return super.remove (mBuffer);
+    }
+
+    public T                    remove (CharSequence key, int start, int end) {
+        mBuffer.set (key, start, end);
+        return super.remove (mBuffer);
+    }
 }
