@@ -1,5 +1,9 @@
 package deltix.util.collections;
 
+import deltix.util.collections.generated.ObjectHashMapBase.KeyNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -48,5 +52,38 @@ public class Test_CharSequenceMaps {
         assertEquals (b, map.get (wrap ("SUN")));
         assertEquals (c, map.remove (wrap ("MOON")));
         assertEquals (map.size (), 1);
+    }
+    
+    @Test
+    public void         bigIntegerMap () throws KeyNotFoundException {
+        int                         n = 8000;
+        Map <String, Integer>       check = new HashMap <String, Integer> (n);
+        CharSequenceToIntegerMap    map = new CharSequenceToIntegerMap (); // Make it grow
+        Random                      rnd = new Random (2009);
+        
+        for (int ii = 0; ii < n; ii++) {
+            int                     u = rnd.nextInt (Integer.MAX_VALUE);
+            
+            sb.setLength (0);
+            
+            while (u != 0) {
+                sb.append ((char) ('A' + (u % 26)));
+                u = u / 26;
+            }
+            
+            map.put (sb, ii);
+            check.put (sb.toString (), ii);
+        }
+        
+        assertEquals (map.size (), check.size ());
+        assertFalse (map.containsKey (""));
+        
+        for (Map.Entry <String, Integer> e : check.entrySet ()) {
+            assertTrue (map.containsKey (e.getKey ()));
+            assertEquals (e.getValue ().intValue (), map.get (e.getKey ()));
+            assertEquals (e.getValue ().intValue (), map.remove (e.getKey ()));
+        }
+        
+        assertEquals (map.size (), 0);
     }
 }
