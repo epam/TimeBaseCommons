@@ -123,13 +123,12 @@ public class MathUtil {
      */
     public static int		countSetBits (long v) {
     	int             ret = 0;
-    	long            cmp = 1;
 
-    	while (v >= cmp) {
-            if ((v & cmp) != 0)
+    	while (v != 0) {
+            if ((v & 1) != 0)
                 ret++;
-            
-            cmp <<= 1;
+
+            v >>>= 1;
     	}
 
     	return (ret);
@@ -140,13 +139,12 @@ public class MathUtil {
      */
     public static int		countSetBits (int v) {
     	int             ret = 0;
-    	int             cmp = 1;
-
-    	while (v >= cmp) {
-            if ((v & cmp) != 0)
+    	
+    	while (v != 0) {
+            if ((v & 1) != 0)
                 ret++;
             
-            cmp <<= 1;
+            v >>>= 1;
     	}
 
     	return (ret);
