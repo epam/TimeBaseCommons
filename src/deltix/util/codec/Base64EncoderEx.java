@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 /**
  */
 public class Base64EncoderEx {
-    public static String            CHARSET    = "UTF-8";
+    public static final String            CHARSET    = "UTF-8";
 
     public static String encode(byte[] bytes) throws IOException {
         StringWriter stringWriter = new StringWriter();

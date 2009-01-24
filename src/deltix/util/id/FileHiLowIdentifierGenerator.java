@@ -21,10 +21,16 @@ public final class FileHiLowIdentifierGenerator extends HiLowIdentifierGenerator
     private final FileLock lock;
 
     public FileHiLowIdentifierGenerator (String dir, String key, int blockSize)
+	    throws IOException
+	{
+    	this (dir, key, blockSize, 1);
+	}
+
+    public FileHiLowIdentifierGenerator (String dir, String key, int blockSize, long startId)
         throws IOException
     {
-        super(key, blockSize);
-        seqFile = new File (dir, "seq-"+key+".id");
+        super(key, blockSize, startId);
+        seqFile = new File (dir, "seq-block-"+key+".id");
         seqFile.getAbsoluteFile().getParentFile().mkdirs();
 
         raf = new RandomAccessFile(seqFile, "rw");
@@ -38,13 +44,14 @@ public final class FileHiLowIdentifierGenerator extends HiLowIdentifierGenerator
 
             long nextBlock;
             if (seqFile.length() == 0) {
-                nextBlock = 1;
+                nextBlock = startId;
             } else {
-                nextBlock = raf.readLong() + blockSize;
+            	String lastBlock = raf.readLine();
+                nextBlock = Long.parseLong(lastBlock) + blockSize;
             }
 
             raf.seek(0L);
-            raf.writeLong (nextBlock);
+            raf.write(Long.toString(nextBlock).getBytes());
 
             return nextBlock;
 

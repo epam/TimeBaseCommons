@@ -86,10 +86,11 @@ public class AnnotationReader implements AttributeReader
                     cp.constantToString (cp.getConstant (in.readShort ()))
                 );
                 
-            case '@':
+            case '@':  
+                return readAnnotation (in, cp);
             default:
-				throw new UnsupportedOperationException("tag = " + (char) tag);
-		}
+                throw new UnsupportedOperationException("tag = " + (char) tag);
+	      }
 	}
 }
 

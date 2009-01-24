@@ -69,7 +69,7 @@ public class SimplestNamespaceContext implements NamespaceContext {
         if (namespaceURI.equals (XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) // xmlns
         	prefix = XSI_PREFIX;
         
-        if (prefix == null)
+        if (prefix != null)
             result.add (prefix);
         
         return result.iterator();

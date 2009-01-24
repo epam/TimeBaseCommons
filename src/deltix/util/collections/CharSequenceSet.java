@@ -93,7 +93,7 @@ public class CharSequenceSet extends HashSet <String> {
         return (super.contains (mBuffer));
     }
 
-    public void readObject (ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject (ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         mBuffer = new CharSubSequence ();
     }

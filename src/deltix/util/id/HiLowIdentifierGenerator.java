@@ -1,22 +1,26 @@
 package deltix.util.id;
 
+
 public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
 
     protected final int blockSize;
+    protected final long startId; 
     protected final String key;
-    protected long base;
-    protected long id;
+    private long base;
+    private long id;
 
+    
     /**
      * @param key Unique key for this generator instance.
      * @param blockSize number of
      */
-    protected HiLowIdentifierGenerator (String key, int blockSize) {
+    protected HiLowIdentifierGenerator (String key, int blockSize, long startId) {
         this.key = key;
         this.blockSize = blockSize;
+        this.startId = startId;
+        
         base = 0;
         id = blockSize;
-        base = 0;
     }
 
     @Override

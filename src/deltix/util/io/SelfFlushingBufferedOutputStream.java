@@ -5,7 +5,7 @@ import java.io.*;
 /**
  *
  */
-public class SelfFlushingBufferedOutputStream extends BufferedOutputStream {
+public final class SelfFlushingBufferedOutputStream extends BufferedOutputStream { //Class is final because constructor creates a thread
     private int                     flushInterval = 1;
     private Throwable               exception = null;
     
@@ -20,7 +20,7 @@ public class SelfFlushingBufferedOutputStream extends BufferedOutputStream {
             for (;;) {
                 int     interval;
                 
-                synchronized (this) { 
+                synchronized (SelfFlushingBufferedOutputStream.this) { 
                     interval = flushInterval;
                     
                     if (exception == null)
@@ -60,6 +60,8 @@ public class SelfFlushingBufferedOutputStream extends BufferedOutputStream {
     }
     
     private void                    checkException () throws IOException {
+    	assert Thread.holdsLock(this);
+    	
         if (exception != null) {
             Throwable   x = exception;
             
@@ -79,7 +81,7 @@ public class SelfFlushingBufferedOutputStream extends BufferedOutputStream {
     }
 
     @Override
-    public synchronized void        flush () throws IOException {
+    public final synchronized void        flush () throws IOException {
         checkException ();
         super.flush ();
     }

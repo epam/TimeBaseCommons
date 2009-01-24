@@ -18,18 +18,18 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
     private final File seqFile;
 
     public SharedFileHiLowIdentifierGenerator (String dir, String key, int blockSize) {
-        super(key, blockSize);
-        seqFile = new File (dir, "seq-"+key+".id");
+        this(dir, key, blockSize, 1);
+    }
+    
+    public SharedFileHiLowIdentifierGenerator (String dir, String key, int blockSize, long startId) {
+        super(key, blockSize, startId);
+        seqFile = new File (dir, "seq-block-"+key+".id");
 
         seqFile.getAbsoluteFile().getParentFile().mkdirs();
     }
 
     @Override
     protected long aquireNextBlock() {
-        return aquireNextBlock (1);
-    }
-
-    private long aquireNextBlock(long base) {
         RandomAccessFile raf = null;
         FileChannel channel = null;
         FileLock lock = null;
@@ -41,14 +41,15 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
                 lock = channel.lock();
 
                 long nextBlock;
-                if (seqFile.length() == 0 || base != 1) {
-                    nextBlock = base;
+                if (seqFile.length() == 0) {
+                    nextBlock = startId;
                 } else {
-                    nextBlock = raf.readLong() + blockSize;
+                	String lastBlock = raf.readLine();
+                    nextBlock = Long.parseLong(lastBlock) + blockSize;
                 }
 
                 raf.seek(0L);
-                raf.writeLong (nextBlock);
+                raf.write(Long.toString(nextBlock).getBytes());
 
                 return nextBlock;
 
@@ -71,7 +72,4 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
 
     }
     
-    public void setBase (long base) {
-        aquireNextBlock (base);
-    }
 }

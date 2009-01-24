@@ -3,7 +3,6 @@ package deltix.util.lang;
 import java.io.*;
 import java.net.*;
 import java.security.*;
-import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
 import java.rmi.RemoteException;
@@ -13,10 +12,10 @@ import java.lang.reflect.Array;
 
 /** Set of usefull methods */
 public class Util {
-    public static boolean       IS64BIT =
+    public static final boolean       IS64BIT =
         "64".equals (System.getProperty ("sun.arch.data.model"));
 
-    public static boolean       IS32BIT =
+    public static final boolean       IS32BIT =
         "32".equals (System.getProperty ("sun.arch.data.model"));
 
     public static final String  LOGGER_NAME = "deltix.util";

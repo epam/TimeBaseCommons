@@ -170,7 +170,7 @@ public class IntervalCalculator {
         switch (unit) {
             case WEEK:          // Leave day alone, post-processing required!
             case DAY:
-                hour = 23;
+                hour = 23; 
                 
             case HOUR:
                 minute = 59;
