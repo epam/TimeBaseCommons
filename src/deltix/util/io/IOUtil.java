@@ -1492,7 +1492,8 @@ public class IOUtil {
     }
 
     public static interface EntryListener {
-        public void     entryAdded (ZipEntry e);
+        public void     entryAdded (ZipEntry e)
+            throws IOException, InterruptedException;
     }
 
     public static long      addFileToZip (
