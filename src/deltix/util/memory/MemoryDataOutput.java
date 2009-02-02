@@ -1,5 +1,7 @@
 package deltix.util.memory;
 
+import deltix.qsrv.hf.pub.md.IntegerDataType;
+
 /**
  *  Equivalent of DataOutputStream wrapped around
  *  ByteArrayOutputStream optimized for extreme performance. This class uses
@@ -216,10 +218,13 @@ public class MemoryDataOutput {
      *  Writes an unsigned int in the smallest possible number of bytes.
      */
     public final void           writePackedUnsignedInt (int v) {
+        // make shift to store NULL in 1 byte
+        v = (v == IntegerDataType.PUINT30_NULL) ? 0 : v + 1;
+
         if ((v & 0xC0000000) != 0)
             throw new IllegalArgumentException ("High 2 bits must be 0; v=" + v);
         
-        makeRoom (1);   
+        makeRoom (1);
         
         int         pos = mPos++;
         int         addlPos = mPos;
@@ -240,11 +245,14 @@ public class MemoryDataOutput {
      *  Writes an unsigned long in the smallest possible number of bytes.
      */
     public final void           writePackedUnsignedLong (long v) {
+        // make shift to store NULL in 1 byte
+        v = (v == IntegerDataType.PUINT61_NULL) ? 0 : v + 1;
+
         if ((v & 0xE000000000000000L) != 0)
             throw new IllegalArgumentException ("High 3 bits must be 0; v=" + v);
-        
-        makeRoom (1);   
-        
+
+        makeRoom (1);
+
         int         pos = mPos++;
         int         addlPos = mPos;
         int         low5bits = ((int) v) & 0x1F;

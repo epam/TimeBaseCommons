@@ -3,6 +3,7 @@ package deltix.util.memory;
 import deltix.util.collections.generated.ByteArrayList;
 import deltix.util.io.ByteArrayOutputStreamEx;
 import deltix.util.io.UncheckedIOException;
+import deltix.qsrv.hf.pub.md.IntegerDataType;
 
 /**
  *  Equivalent of DataInputStream wrapped around
@@ -237,7 +238,10 @@ public class MemoryDataInput {
             case 0:
                 break;               
         }
-        
+
+        // make back shift
+        ret = (ret == 0) ? IntegerDataType.PUINT61_NULL : ret - 1;
+
         return (ret);
     }
 
@@ -266,6 +270,9 @@ public class MemoryDataInput {
                 break;               
         }
         
+        // make back shift
+        ret = (ret == 0) ? IntegerDataType.PUINT30_NULL : ret - 1;
+
         return (ret);
     }
 
