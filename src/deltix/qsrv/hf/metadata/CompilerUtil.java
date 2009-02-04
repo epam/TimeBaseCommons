@@ -37,6 +37,8 @@ class CompilerUtil {
     private void init(ClassLoader loader) {
         if (javac == null) {
             javac = ToolProvider.getSystemJavaCompiler();
+            if (javac == null)
+                javac = getCompiler4IKVM(loader);
             sjfm = javac.getStandardFileManager(null, null, null);
         }
 
@@ -159,6 +161,32 @@ class CompilerUtil {
 
         public void addClass(String name, MemoryByteCode mbc) {
             m.put(name, mbc);
+        }
+    }
+
+    private static final String defaultJavaCompilerName
+            = "com.sun.tools.javac.api.JavacTool";
+
+    private static JavaCompiler getCompiler4IKVM(ClassLoader loader) {
+        try {
+            String jre_home = System.getProperty("java.home");
+            if (jre_home == null || jre_home.endsWith("virtual-ikvm-home"))
+                jre_home = System.getenv("JAVA_HOME");
+            if (jre_home == null)
+                throw new RuntimeException("Neither the JAVA_HOME environment, nor the java.home system property is set");
+            if (new File(jre_home, "jre").exists())
+                jre_home += "/jre";
+            System.setProperty("sun.boot.class.path", jre_home + "/lib/rt.jar");
+
+            String class_path = System.getProperty("java.class.path");
+            if (class_path == null || class_path.length() == 0)
+                class_path = System.getenv("CLASSPATH");
+            System.setProperty("java.class.path", class_path);
+
+            Class<?> clazz = Class.forName(defaultJavaCompilerName, true, loader);
+            return (JavaCompiler) clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
