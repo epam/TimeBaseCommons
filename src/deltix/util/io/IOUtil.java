@@ -732,7 +732,8 @@ public class IOUtil {
         throws IOException, InterruptedException
     {
         ZipInputStream      zis = new ZipInputStream (is);
-
+        byte []             buffer = new byte [4096];
+        
         for (;;) {
             ZipEntry        zentry = zis.getNextEntry ();
 
@@ -742,24 +743,57 @@ public class IOUtil {
             String          name = zentry.getName ();
             File            destFile = new File (destDir, name);
 
-            if (name.endsWith ("/"))
-                mkDirIfNeeded (destDir);
-            else {
+            if (!name.endsWith ("/")) {
                 mkParentDirIfNeeded (destFile);
 
-                FileOutputStream    fos = new FileOutputStream (destFile);
-
-                try {
-                    StreamPump.pump (zis, fos);
-                    fos.close ();
-                    fos = null;
-                } finally {
-                    Util.close (fos);
-                }
+                copyToFile (zis, destFile, zentry.getSize (), buffer);
             }
         }
     }
 
+    public static void  copyToFile (InputStream is, File destFile)
+        throws IOException, InterruptedException
+    {
+        copyToFile (is, destFile, 0);
+    }
+
+    public static void  copyToFile (InputStream is, File destFile, long size)
+        throws IOException, InterruptedException
+    {
+        byte []             buffer = new byte [4096];
+        
+        copyToFile (is, destFile, size, buffer);
+    }
+    
+    public static void  copyToFile (InputStream is, File destFile, long size, byte [] buffer)
+        throws IOException, InterruptedException
+    {        
+        RandomAccessFile    out = new RandomAccessFile (destFile, "rw");
+
+        try {
+            if (size < 0)
+                size = 0;
+
+            out.setLength (size);   // prevent fragmentation
+
+            for (;;) {
+                if (Thread.interrupted ())
+                    throw new InterruptedException ();
+
+                int     n = is.read (buffer);
+
+                if (n < 0)
+                    break;
+
+                out.write (buffer, 0, n);
+            }
+
+            out.close ();
+        } finally {
+            Util.close (out);
+        }
+    }
+    
     /**
      *	Checks if the file is present.
      *	@exception FileNotFoundException	If the file does not exists.
