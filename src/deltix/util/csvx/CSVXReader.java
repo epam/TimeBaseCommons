@@ -55,6 +55,14 @@ public class CSVXReader implements Disposable {
     }
     
     public CSVXReader (
+        InputStream             is,         
+        String                  diagPrefix
+    )
+    {
+        this (is, ',', true, diagPrefix);
+    }
+    
+    public CSVXReader (
         InputStream             is, 
         char                    delimiter, 
         boolean                 closeReader, 

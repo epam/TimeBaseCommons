@@ -254,16 +254,12 @@ public class IOUtil {
         throws IOException, InterruptedException
     {
         FileInputStream		in = null;
-        FileOutputStream	out = null;
-
+        
         try {
             in = new FileInputStream (src);
-            out = new FileOutputStream (dest);
-
-            StreamPump.pump (in, out);
+            copyToFile (in, dest, src.length ());
         } finally {
             Util.close (in);
-            Util.close (out);
         }
     }
 
