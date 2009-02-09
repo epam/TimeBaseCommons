@@ -18,6 +18,9 @@ public class DateFormatDetector {
     private static final Pattern    DASH_DATE_PATTERN = 
         Pattern.compile ("([^\\d]*)\\d\\d\\d\\d-\\d\\d?-\\d\\d?(.*)");
     
+    private static final Pattern    DASH_DATE_PATTERN2 = 
+        Pattern.compile ("([^\\d]*)\\d\\d?-\\d\\d?-\\d\\d\\d\\d(.*)");
+    
     private static final Pattern    NSEP_DATE_PATTERN = 
         Pattern.compile ("([^\\d]*)\\d\\d\\d\\d\\d\\d\\d\\d(.*)");
 
@@ -79,6 +82,8 @@ public class DateFormatDetector {
             dateFormat = "yyyy/MM/dd";
         else if ((m = DASH_DATE_PATTERN.matcher (text)).matches ())
             dateFormat = "yyyy-MM-dd";
+        else if ((m = DASH_DATE_PATTERN2.matcher (text)).matches ())
+            dateFormat = "MM-dd-yyyy";
         else if ((m = NSEP_DATE_PATTERN.matcher (text)).matches ()) 
             dateFormat = "yyyyMMdd";
         else
@@ -102,11 +107,13 @@ public class DateFormatDetector {
         StringBuilder   timeFormat = new StringBuilder (limit);
         
         if ((m = SLASH_DATE_PATTERN_MDY.matcher (text)).matches ()) 
-            dateFormat = "M/d/y";
+            dateFormat = "MM/dd/yyyy";
         else if ((m = SLASH_DATE_PATTERN_YMD.matcher (text)).matches ()) 
-            dateFormat = "y/M/d";
+            dateFormat = "yyyy/MM/dd";
         else if ((m = DASH_DATE_PATTERN.matcher (text)).matches ())
-            dateFormat = "y-M-d";
+            dateFormat = "yyyy-MM-dd";
+        else if ((m = DASH_DATE_PATTERN2.matcher (text)).matches ())
+            dateFormat = "MM-dd-yyyy";
         else if ((m = NSEP_DATE_PATTERN.matcher (text)).matches ()) 
             dateFormat = "yyyyMMdd";
         else
@@ -253,7 +260,9 @@ public class DateFormatDetector {
                     "15:34",
                     "x'2008-04-02 23:44",
                     "20080402 1200", 
-                    "2008040212:00"
+                    "2008040212:00",
+                    "02-04-2009 19:53:39.205" ,
+                    "02-04-2009"
                 };
         
         for (String s : args) {            
