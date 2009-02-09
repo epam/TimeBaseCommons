@@ -361,7 +361,7 @@ public abstract class BasicIOUtil {
         InputStream		is = openResourceAsStream (relPath);
 
         try {
-            return (readFromReader (new InputStreamReader (is)));
+            return (readFromStream (is));
         } finally {
             Util.close (is);
         }

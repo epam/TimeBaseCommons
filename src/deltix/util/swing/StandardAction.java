@@ -1,5 +1,6 @@
 package deltix.util.swing;
 
+import deltix.util.io.UncheckedIOException;
 import javax.swing.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -75,11 +76,15 @@ public abstract class StandardAction extends AbstractAction {
         } catch (MissingResourceException x) {
             imageResourcePath = packPath + "/" + nameKey + "." + imageType;
         }
-        
-        putValue (
-            SMALL_ICON,
-            SwingUtil.loadIcon (imageResourcePath)
-        );
+
+        try {
+            putValue (
+                SMALL_ICON,
+                SwingUtil.loadIcon (imageResourcePath)
+            );
+        } catch (UncheckedIOException iox) {
+            // Ignore
+        }
 
         // kbd accelerator (hot key)
         try {

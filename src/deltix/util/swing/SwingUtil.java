@@ -1,9 +1,10 @@
 package deltix.util.swing;
 
-import deltix.qsrv.ui.treeedit.DomainAttributePersistentConfigurationPanel;
+import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Util;
 import deltix.util.io.StreamPump;
 
+import deltix.util.io.UncheckedIOException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -73,31 +74,28 @@ public abstract class SwingUtil {
     }
 
     public static Image			loadImage (String relPath) {
-        InputStream			is =
-                Util.class.getClassLoader ().getResourceAsStream (relPath);
-
-        if (is == null)
-            return (null);
-
-        try {
-            return (loadImage (is));
-        } catch (Throwable x) {
-            Util.LOGGER.log (
-                Level.WARNING, 
-                "Failed to read image from relative path " + relPath,
-                x
-            );
-            return (null);
-        } finally {
-            Util.close (is);
-        }        
+        return (
+            loadImageAndCloseStream (
+                Util.class.getClassLoader ().getResourceAsStream (relPath),
+                relPath
+            )
+        );
     }
     
+	public static Image			loadImage (Class <?> cls, String relPath) {
+        return (
+            loadImageAndCloseStream (
+                cls.getResourceAsStream (relPath),
+                cls + "/" + relPath
+            )
+        );
+    }
+
 	public static Image			loadImage (File file) throws IOException {
 		InputStream			is = new FileInputStream (file);
 
 		try {
-			return (loadImage (is));
+			return (loadImageAndCloseStream (is, file.getPath ()));
 		} catch (Throwable x) {
 			Util.LOGGER.log (
                 Level.WARNING, 
@@ -110,18 +108,25 @@ public abstract class SwingUtil {
 		}        
     }
     
-	public static Image			loadImage (InputStream is)
-		throws InterruptedException, IOException
-	{
+	public static Image			loadImageAndCloseStream (InputStream is, String diag) {
+        if (is == null)
+            throw new UncheckedIOException (diag);
+        
     	ByteArrayOutputStream	baos = new ByteArrayOutputStream (100000);
 
-    	try {
-	    	StreamPump.pump (is, baos);
-        } finally {
-        	Util.close (is);
-        }
+        try {
+            try {
+                StreamPump.pump (is, baos);
+            } catch (IOException x) {
+                throw new UncheckedIOException (x);
+            } finally {
+                Util.close (is);
+            }
 
-		return (loadImage (baos.toByteArray ()));
+            return (loadImage (baos.toByteArray ()));
+        } catch (InterruptedException x) {
+            throw new UncheckedInterruptedException (x);
+        }
 	}
 
 	public static Image			loadImage (byte [] bytes)
