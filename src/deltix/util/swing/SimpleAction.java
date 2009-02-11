@@ -1,6 +1,7 @@
 package deltix.util.swing;
 
 import java.lang.reflect.*;
+import java.awt.*;
 import java.awt.event.*;
 
 /**
@@ -18,7 +19,7 @@ import java.awt.event.*;
  *</pre>
  */
 public final class SimpleAction extends StandardAction {
-    private static final Class []   NO_ARGS_SIG = { };
+    private static final Class<?> []   NO_ARGS_SIG = { };
 
     private Object      mObject;
     private Method      mMethod;
@@ -82,11 +83,17 @@ public final class SimpleAction extends StandardAction {
     /**
      *  Same as above, but allows for specifying delegateClass.
      */
-    public SimpleAction (Class delegateClass, Object delegate, String nameKey) {
+    public SimpleAction (Class<?> delegateClass, Object delegate, String nameKey) {
         this (delegateClass, delegate, nameKey, "gif");
     }
 
+    private void setCursor ( Cursor cursor ) {
+		if (mObject instanceof Component)
+			((Component) mObject).setCursor ( cursor );
+	}
+    
     public void         actionPerformed (ActionEvent e) {
+    	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             mMethod.invoke (mObject, (Object []) null);
         } catch (IllegalAccessException iax) {
@@ -101,6 +108,9 @@ public final class SimpleAction extends StandardAction {
                 throw ((Error) cause);
             else
                 throw new RuntimeException (cause);
+        }
+        finally{
+        	setCursor(Cursor.getDefaultCursor());
         }
     }
 }
