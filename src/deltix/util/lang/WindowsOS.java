@@ -1,6 +1,5 @@
 package deltix.util.lang;
 
-import deltix.util.io.RegexFilenameFilter;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
@@ -9,6 +8,12 @@ import java.util.Arrays;
  *
  */
 public class WindowsOS {
+    public static final boolean     IS_X64 =
+        "AMD64".equalsIgnoreCase (System.getenv ("PROCESSOR_ARCHITECTURE"));
+    
+    public static final boolean     IS_X86 =
+        "X86".equalsIgnoreCase (System.getenv ("PROCESSOR_ARCHITECTURE"));
+
     public static final String      getSystemDrive () {
         String      sysdrive = System.getenv ("C:");
         
