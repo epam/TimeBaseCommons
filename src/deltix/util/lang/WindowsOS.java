@@ -41,6 +41,33 @@ public class WindowsOS {
         return (pf);
     }
     
+    public static final String      getAllUsersProfile () {
+        String      pf = System.getenv ("ALLUSERSPROFILE");
+
+        if (pf == null)
+            pf = getSystemDrive () + "\\Documents and Settings\\All Users";
+
+        return (pf);
+    }
+
+    public static final String      getUserName () {
+        String      pf = System.getenv ("USERNAME");
+
+        if (pf == null)
+            pf = "Administrator";
+
+        return (pf);
+    }
+
+    public static final String      getUserProfile () {
+        String      pf = System.getenv ("USERPROFILE");
+
+        if (pf == null)
+            pf = getSystemDrive () + "\\Documents and Settings\\" + getUserName ();
+
+        return (pf);
+    }
+
     public static final File       getDotNetHome () {
         return (getDotNetHome (-1));
     }
