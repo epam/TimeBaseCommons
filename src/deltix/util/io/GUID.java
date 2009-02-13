@@ -62,29 +62,30 @@ public class GUID {
         
         out.write (addressBytes);
     }
-    
-    public String               toStringWithLocalIPAddress () {
-        StringBuilder       s = new StringBuilder ();
-        
+
+    public static void          appendLocalIPAddressToString (StringBuilder s) {
         InetAddress         addr;
-        
+
         try {
             addr = InetAddress.getLocalHost ();
         } catch (UnknownHostException x) {
             throw new UncheckedIOException (x);
         }
-        
+
         byte []             addressBytes = addr.getAddress ();
 
         for (byte b : addressBytes) {
-            s.append (((int) b) & 0xFF);
-            s.append ('_');
+            s.append (String.format ("%02x", b & 0xFF));
         }
+    }
+
+    public String               toStringWithLocalIPAddress () {
+        StringBuilder       s = new StringBuilder ();
         
-        s.append (port);
-        s.append ('_');
-        s.append (time);
-        
+        appendLocalIPAddressToString (s);
+        s.append (String.format ("%016x", time));
+        s.append (String.format ("%04x", port));
+
         return (s.toString ());
     }
     
