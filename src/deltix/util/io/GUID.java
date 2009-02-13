@@ -1,6 +1,5 @@
 package deltix.util.io;
 
-import deltix.util.lang.Util;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.io.UncheckedIOException;
 import java.io.*;
@@ -50,6 +49,7 @@ public class GUID {
         dos.flush ();
     }
     
+    @Override
     public String               toString () {
         return (port + "_" + time);
     }
@@ -87,7 +87,5 @@ public class GUID {
         s.append (String.format ("%04x", port));
 
         return (s.toString ());
-    }
-    
-
+    }    
 }
