@@ -6,13 +6,12 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
-import deltix.util.*;
 
 /**
  *
  */
 public class DisposableResourceTracker implements Disposable {
-    private static HashSet <DisposableResourceTracker>  mOpenResources =
+    private static final HashSet <DisposableResourceTracker>  mOpenResources =
         new HashSet <DisposableResourceTracker> ();
     
     private Disposable              mResource;
@@ -34,7 +33,21 @@ public class DisposableResourceTracker implements Disposable {
             mOpenResources.add (this);
         }
     }
-    
+
+    public Disposable               getResource () {
+        return mResource;
+    }
+
+    public static DisposableResourceTracker []  getOpenResources () {
+        synchronized (mOpenResources) {
+            return (mOpenResources.toArray (new DisposableResourceTracker [mOpenResources.size ()]));
+        }
+    }
+
+    public static void              dumpOpenResources () {
+        dumpOpenResources (System.out);
+    }
+
     public static void              dumpOpenResources (PrintStream ps) {
         synchronized (mOpenResources) {
             for (DisposableResourceTracker dtt : mOpenResources) 
@@ -45,7 +58,38 @@ public class DisposableResourceTracker implements Disposable {
     public void                     dump (PrintStream ps) {
         mCreationStackTrace.printStackTrace (ps);
     }
-    
+
+    public String                   dumpToString () {
+        StringWriter    swr = new StringWriter ();
+        PrintWriter     pwr = new PrintWriter (swr);
+
+        dump (pwr);
+
+        pwr.close ();
+        return (swr.toString ());
+    }
+
+    public static String            dumpOpenResourcesToString () {
+        StringWriter    swr = new StringWriter ();
+        PrintWriter     pwr = new PrintWriter (swr);
+
+        dumpOpenResources (pwr);
+
+        pwr.close ();
+        return (swr.toString ());
+    }
+
+    public static void              dumpOpenResources (PrintWriter ps) {
+        synchronized (mOpenResources) {
+            for (DisposableResourceTracker dtt : mOpenResources)
+                dtt.dump (ps);
+        }
+    }
+
+    public void                     dump (PrintWriter ps) {
+        mCreationStackTrace.printStackTrace (ps);
+    }
+
     public void                     close () {
         synchronized (mOpenResources) {
             mOpenResources.remove (this);
@@ -54,6 +98,7 @@ public class DisposableResourceTracker implements Disposable {
         mCreationStackTrace = null;
     }
     
+    @Override
     protected void                  finalize () 
         throws Throwable 
     {
