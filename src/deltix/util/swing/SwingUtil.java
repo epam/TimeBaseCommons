@@ -9,9 +9,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -128,6 +126,20 @@ public abstract class SwingUtil {
             throw new UncheckedInterruptedException (x);
         }
 	}
+
+    public static void          invisibleDisable (JComponent c) {
+        for (MouseListener l : c.getMouseListeners ())
+            c.removeMouseListener (l);
+
+        for (MouseMotionListener l : c.getMouseMotionListeners ())
+            c.removeMouseMotionListener (l);
+
+        for (MouseWheelListener l : c.getMouseWheelListeners ())
+            c.removeMouseWheelListener (l);
+
+        for (KeyListener l : c.getKeyListeners ())
+            c.removeKeyListener (l);
+    }
 
 	public static Image			loadImage (byte [] bytes)
 		throws InterruptedException
