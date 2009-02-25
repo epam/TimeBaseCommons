@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 
 
-public class SimpleIdentifierGenerator implements IdentifierGenerator {
+public class SimpleIdentifierGenerator implements ResettableIdentifierGenerator {
 
 	private long nextID = 1;
 
@@ -21,6 +21,11 @@ public class SimpleIdentifierGenerator implements IdentifierGenerator {
 	@Override
 	public synchronized long next() {
 		return base + (nextID++);
+	}
+
+	@Override
+	public synchronized void setNext(long nextID) {
+		this.nextID = nextID - base;
 	}
 
 }

@@ -29,7 +29,7 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
     }
 
     @Override
-    protected long aquireNextBlock() {
+    protected long aquireNextBlock(long resetNextBlock) {
         RandomAccessFile raf = null;
         FileChannel channel = null;
         FileLock lock = null;
@@ -40,12 +40,16 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
                 channel = raf.getChannel();
                 lock = channel.lock();
 
-                long nextBlock;
-                if (seqFile.length() == 0) {
-                    nextBlock = startId;
+                final long nextBlock;
+                if (resetNextBlock != 0) {
+                	nextBlock = resetNextBlock;                	
                 } else {
-                	String lastBlock = raf.readLine();
-                    nextBlock = Long.parseLong(lastBlock) + blockSize;
+	                if (seqFile.length() == 0) {
+	                    nextBlock = startId;
+	                } else {
+	                	String lastBlock = raf.readLine();
+	                    nextBlock = Long.parseLong(lastBlock) + blockSize;
+	                }
                 }
 
                 raf.seek(0L);

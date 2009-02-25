@@ -1,7 +1,7 @@
 package deltix.util.id;
 
 
-public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
+public abstract class HiLowIdentifierGenerator implements ResettableIdentifierGenerator {
 
     protected final int blockSize;
     protected final long startId; 
@@ -28,7 +28,7 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
         id++;
 
         if (id >= blockSize) {
-            base = aquireNextBlock();
+            base = aquireNextBlock(0);
             id = 0;
         }
 
@@ -36,7 +36,12 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
     }
 
     /** @return new base */
-    protected abstract long aquireNextBlock();
+    protected abstract long aquireNextBlock(long resetNextBlock);
 
- 
+
+    @Override
+    public void setNext (long nextId) {
+    	id = 0;
+    	aquireNextBlock(nextId);
+    }
 }

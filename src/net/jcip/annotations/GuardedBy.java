@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
  * </li>
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 public @interface GuardedBy {
   String value();
 }

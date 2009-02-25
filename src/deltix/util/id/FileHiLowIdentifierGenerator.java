@@ -7,6 +7,8 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
+import deltix.temp.NetBeansDebugMain;
+
 /**
  * HiLowIdentifierGenerator that uses file storage in given directory to persist last allocated block.
  * This keep file storage locked during application up time, disallowing access from another process.
@@ -39,15 +41,20 @@ public final class FileHiLowIdentifierGenerator extends HiLowIdentifierGenerator
     }
 
     @Override
-    protected long aquireNextBlock() {
+    protected long aquireNextBlock(long resetNextBlock) {
         try {
 
-            long nextBlock;
-            if (seqFile.length() == 0) {
-                nextBlock = startId;
+            final long nextBlock;
+            
+            if (resetNextBlock != 0) {
+            	nextBlock = resetNextBlock;
             } else {
-            	String lastBlock = raf.readLine();
-                nextBlock = Long.parseLong(lastBlock) + blockSize;
+                if (seqFile.length() == 0) {
+                    nextBlock = startId;
+                } else {
+                	String lastBlock = raf.readLine();
+                    nextBlock = Long.parseLong(lastBlock) + blockSize;
+                }
             }
 
             raf.seek(0L);
