@@ -278,7 +278,7 @@ public final class TimeFormatter {
      * @see #parseDurationInSeconds(String)
      *
      */
-    public static int parseTimeOfDay (String text)
+    public static int parseTimeOfDay (CharSequence text)
         throws TimeOfDayParseException
     {
         /// See test.td.util.time.Test_SimpleTimeOfDayFormat for JUnit test of this method
@@ -473,7 +473,7 @@ public final class TimeFormatter {
 
     @SuppressWarnings("serial")
 	public static final class TimeOfDayParseException extends NumberFormatException {
-        public TimeOfDayParseException (String message, String text, int position) {
+        public TimeOfDayParseException (String message, CharSequence text, int position) {
             super (message + " (" + text + " at position " + position +')');
         }
     }

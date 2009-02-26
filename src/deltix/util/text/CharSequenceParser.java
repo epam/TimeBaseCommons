@@ -23,6 +23,33 @@ public abstract class CharSequenceParser {
     private static final int    FLOAT_NORM_EXP =            FLOAT_BIAS_EXP + FLOAT_MANTISSA_WIDTH;
     private static final int    FLOAT_OVERFLOW_BITMASK =    ~FLOAT_MANTISSA_BITMASK - FLOAT_ASSUMED_BIT;
     
+    public static boolean parseBoolean (CharSequence sc) {
+        final int result = Util.xequals("true", sc) ? 1 :
+                Util.xequals("false", sc) ? 0 : -1;
+        if (result == -1)
+            throw new IllegalArgumentException(String.valueOf(sc));
+        else
+            return (result == 1);
+    }
+
+    public static byte  parseByte(CharSequence sc) {
+        final int result = parseInt(sc);
+        if (result < Byte.MIN_VALUE || result > Byte.MAX_VALUE)
+            //throw new IllegalArgumentException(String.valueOf(sc));
+        throw new NumberFormatException("Value out of range. Value:\"" + sc + "\" Radix:10");
+        else
+            return (byte) result;
+    }
+
+    public static short parseShort(CharSequence sc) {
+        final int result = parseInt(sc);
+        if (result < Short.MIN_VALUE || result > Short.MAX_VALUE)
+            //throw new IllegalArgumentException(String.valueOf(sc));
+        throw new NumberFormatException("Value out of range. Value:\"" + sc + "\" Radix:10");
+        else
+            return (short) result;
+    }
+
     public static int   parseInt (CharSequence sc) {
         return (parseInt (sc, 0, sc.length ()));
     }
