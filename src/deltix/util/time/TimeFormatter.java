@@ -111,7 +111,7 @@ public final class TimeFormatter {
      * @param text input string (e.g. "0:12" or "00:12:00")
      * @return number of seconds in duration
      *
-     * @see #parseTimeOfDay(String)
+     * @see #parseTimeOfDay(CharSequence)
      */
     public static int parseDurationInSeconds (String text)
         throws DurationParseException
