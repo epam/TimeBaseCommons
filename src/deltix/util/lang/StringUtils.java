@@ -1,6 +1,7 @@
 package deltix.util.lang;
 
 import java.util.StringTokenizer;
+import java.text.DecimalFormat;
 
 public class StringUtils {
     public static String [] splitAtWhitespace (String s) {
@@ -480,7 +481,7 @@ public class StringUtils {
         return (true);
     }
     
-    public static final boolean equals ( String one,
+    public static boolean equals ( String one,
 	                                     String two ) {
 		if (one == null) {
 			return two == null || two.equals ( one );
@@ -494,8 +495,32 @@ public class StringUtils {
         System.out.println (parseDecimalLong (b, 0, b.length));
     }
 
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 
-    
+    static {
+        DECIMAL_FORMAT.setMaximumIntegerDigits(309);
+        DECIMAL_FORMAT.setMaximumFractionDigits(10);
+    }
+
+    public static String toDecimalString(float value) {
+        final float abs = Math.abs(value);
+        if (10e-3 < abs && abs < 10e7)
+            return Float.toString(value);
+        else
+            synchronized (DECIMAL_FORMAT) {
+                return DECIMAL_FORMAT.format(value);
+            }
+    }
+
+    public static String toDecimalString(double value) {
+        final double abs = Math.abs(value);
+        if (10e-3 < abs && abs < 10e7)
+            return Double.toString(value);
+        else
+            synchronized (DECIMAL_FORMAT) {
+                return DECIMAL_FORMAT.format(value);
+            }
+    }
 }
 
 
