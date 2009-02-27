@@ -41,10 +41,9 @@ public class JSQLPlus {
         String		connect = args [2];
         File		file = new File (args [3]);
 
-        oracle.jdbc.driver.OracleDriver.class.getName ();
+        ORACLE.loadDriver ();
 
-        Connection  conn = null; //tmp
-            //DriverManager.getConnection (connect, user, pwd);
+        Connection  conn = DriverManager.getConnection (connect, user, pwd);
 
         ScriptExecutionEnvironment  env = new ScriptExecutionEnvironment ();
         
