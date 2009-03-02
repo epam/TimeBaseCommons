@@ -86,5 +86,15 @@ public class GUID {
         s.append (String.format ("%04x", port));
 
         return (s.toString ());
-    }    
+    }
+
+    public String               toStringWithPrefix (String prefix) {
+        StringBuilder       s = new StringBuilder ();
+
+        s.append(prefix);
+        s.append (String.format ("%016x", time));
+        s.append (String.format ("%04x", port));
+
+        return (s.toString ());
+    }
 }
