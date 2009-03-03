@@ -49,6 +49,13 @@ public class DataExchangeUtils {
 		);
     }
 
+    public static short   	readShortInvertBytes (byte [] bytes, int offset) {
+        return ((short)
+			(readByte (bytes, offset) |
+			 readByte (bytes, offset + 1) << 8)
+		);
+    }
+
     public static short   	readShort15 (byte [] bytes, int offset) {
         return ((short) (readShort (bytes, offset) << 17 >> 17));
     }
