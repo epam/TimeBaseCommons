@@ -148,10 +148,42 @@ public class StringUtils {
             out.append ('A' + n);
     }
     
+    public static String        escapeJavaString (CharSequence str) {
+        StringBuilder       out = new StringBuilder ();
+
+        int sz = str.length();
+        for (int i = 0; i < sz; i++) {
+            char ch = str.charAt (i);
+
+            switch (ch) {
+                case '\b':  out.append ("\\b"); break;
+                case '\n':  out.append ("\\n"); break;
+                case '\t':  out.append ("\\t"); break;
+                case '\f':  out.append ("\\f"); break;
+                case '\r':  out.append ("\\r"); break;
+                case '"':   out.append ("\\\""); break;
+                case '\'':  out.append ("\\\'"); break;
+                case '\\':  out.append ("\\\\"); break;
+                default:
+                    if (ch >= 32 && ch <= 0x7F)
+                        out.append (ch);
+                    else {
+                        out.append("\\u");
+                        hex (ch >>> 12, out);
+                        hex (ch >>> 8, out);
+                        hex (ch >>> 4, out);
+                        hex (ch, out);
+                    }
+                    break;
+            }
+        }
+        return (out.toString ());
+    }
+
     /**
      *  
      */
-    public static String        escapeJavaStringLiteral (String str) {
+    public static String        escapeJavaStringLiteral (CharSequence str) {
         StringBuilder       out = new StringBuilder ();
         
         out.append ('\"');

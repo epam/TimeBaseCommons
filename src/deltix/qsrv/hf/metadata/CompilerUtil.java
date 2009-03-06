@@ -54,6 +54,7 @@ class CompilerUtil {
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
         DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
+        //Iterable<String> options = Arrays.asList("-verbose");
         JavaCompiler.CompilationTask compile = javac.getTask(out, fileManager, dianosticListener, null, null, compilationUnits);
         boolean ok = compile.call();
 
