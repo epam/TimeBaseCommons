@@ -1,10 +1,6 @@
 package deltix.util.text;
 
-import deltix.util.csvx.*;
 import deltix.util.io.IOUtil;
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
 import org.junit.*;
    
 public class WordMatcherPerfTest {    

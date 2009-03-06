@@ -1,7 +1,8 @@
 package deltix.util.text;
 
+/*  ##UTILS## */
+
 import deltix.util.io.IOUtil;
-import java.io.*;
 import java.util.Enumeration;
 import org.junit.*;
 import static org.junit.Assert.*;

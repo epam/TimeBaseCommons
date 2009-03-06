@@ -1,12 +1,12 @@
 package deltix.util.time;
 
+/*  ##UTILS## */
+
 import java.util.StringTokenizer;
 
 import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
 
 import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Test_TimeFormatter {
 
