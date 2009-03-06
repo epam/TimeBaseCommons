@@ -54,6 +54,9 @@ public class JarClassLoader extends AbstractClassLoader {
             if (name.endsWith (".class")) {
                 try {
                     classes.add (loadClass (resourcePathToClassName (name)));
+                } catch (NoClassDefFoundError x) {
+                    // Skip
+                    x.printStackTrace();
                 } catch (ClassNotFoundException x) {
                     // Skip
                 }
