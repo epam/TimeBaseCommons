@@ -150,4 +150,6 @@ public class Icons {
 
 	public static final Icon ABSTRACT_CLASS     = SwingUtil.loadIcon ( "deltix/qsrv/ui/util/abstractClass.png" );
 
+    public static final Icon TEMPLATE_RCD     = SwingUtil.loadIcon ( "deltix/qsrv/ui/util/templateSource.png" );    
+
 }
