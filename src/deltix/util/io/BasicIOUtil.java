@@ -277,7 +277,9 @@ public abstract class BasicIOUtil {
     public static void          mkParentDirIfNeeded (File f)
         throws FileNotFoundException
     {
-        mkDirIfNeeded (f.getParentFile ());
+        File     pd = f.getParentFile ();
+        if (pd != null)
+            mkDirIfNeeded (pd);
     }
 
     public static void          mkDirIfNeeded (File f)
