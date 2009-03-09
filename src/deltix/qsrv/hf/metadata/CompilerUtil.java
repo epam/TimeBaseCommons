@@ -28,7 +28,7 @@ class CompilerUtil {
     private ClassLoader parentLoader;
     private SpecialClassLoader cl;
 
-    static Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
+    static synchronized Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
         if (instance == null)
             instance = new CompilerUtil();
         return instance.compileClassImpl(className, code, loader);
