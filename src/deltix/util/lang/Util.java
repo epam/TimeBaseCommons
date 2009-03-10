@@ -7,8 +7,10 @@ import java.util.*;
 import java.util.logging.*;
 import java.rmi.RemoteException;
 import org.xml.sax.SAXException;
+
+import deltix.qsrv.hf.framework.feed.AbstractFeedProviderFactory;
+
 import java.lang.reflect.*;
-import java.lang.reflect.Array;
 
 /** Set of usefull methods */
 public class Util {
@@ -1057,5 +1059,13 @@ public class Util {
             hc = 31 * hc + cs.charAt (i);
 
         return (hc);
+    }
+
+    public static String getShortClassName(Class<?> clazz) {
+        String classname = clazz.getName();
+        int afterLastDot = classname.lastIndexOf('.') + 1;
+        if (afterLastDot > 0 && afterLastDot > classname.length())
+            classname = classname.substring(afterLastDot);
+        return classname;
     }
 }
