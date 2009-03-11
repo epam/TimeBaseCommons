@@ -275,12 +275,14 @@ public class MemoryDataOutput {
     public static final int         MAX_SCALE_EXP = 15;
     
     private static final long []    SCALES = new long [MAX_SCALE_EXP];
+    private static final double []  DSCALES = new double [MAX_SCALE_EXP];
     
     static {
         long v = 1;
         
         for (int ii = 0; ii < MAX_SCALE_EXP; ii++) {
             SCALES [ii] = v;
+            DSCALES [ii] = v;
             v *= 10;
         }
     }
@@ -345,22 +347,26 @@ public class MemoryDataOutput {
             return;
                     
         int                 signBit;
-        
+        double              x;
+
         if (v < 0) {
             signBit = 0x80;
-            v = -v;
+            x = -v;
         }
-        else
+        else {
             signBit = 0;
-            
-        double              scale = 1;
+            x = v;
+        }
+
         int                 exp = 0;
         long                lv;
         
         for (;;) {
-            lv = Math.round (v * scale);
+            double          scale = DSCALES [exp];
+
+            lv = Math.round (x * scale);
             
-            if (v == lv / scale)
+            if (x == lv / scale)
                 break;
             
             exp++;
@@ -370,8 +376,6 @@ public class MemoryDataOutput {
                 writeDouble (v);
                 return;
             }
-            
-            scale *= 10;
         }
         
         //  Discount leading zero bytes in x

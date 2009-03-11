@@ -86,6 +86,7 @@ public class Test_MemoryDataInputOutput {
             0, 0.7, -0.2, 2.28, -997.82, 
             666.234876, -234876747.6678,
             0.23476890879672543765, //out of exp range
+            -0.8499999999999943,
             Double.NaN,
             Double.POSITIVE_INFINITY,
             Double.NEGATIVE_INFINITY
@@ -103,8 +104,10 @@ public class Test_MemoryDataInputOutput {
             
             if (Double.isNaN (v))
                 assertTrue ("!Double.isNaN (" + actual + ")", Double.isNaN (actual));
+            else if (Double.isInfinite (v))
+                assertTrue (v == actual);
             else
-                assertEquals (v, actual);
+                assertEquals (v, actual, v * 1E-16);
         }
         
         out.reset ();
