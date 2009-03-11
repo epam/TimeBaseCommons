@@ -8,8 +8,6 @@ import java.util.logging.*;
 import java.rmi.RemoteException;
 import org.xml.sax.SAXException;
 
-import deltix.qsrv.hf.framework.feed.AbstractFeedProviderFactory;
-
 import java.lang.reflect.*;
 
 /** Set of usefull methods */
