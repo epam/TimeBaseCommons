@@ -1059,11 +1059,4 @@ public class Util {
         return (hc);
     }
 
-    public static String getShortClassName(Class<?> clazz) {
-        String classname = clazz.getName();
-        int afterLastDot = classname.lastIndexOf('.') + 1;
-        if (afterLastDot > 0 && afterLastDot > classname.length())
-            classname = classname.substring(afterLastDot);
-        return classname;
-    }
 }
