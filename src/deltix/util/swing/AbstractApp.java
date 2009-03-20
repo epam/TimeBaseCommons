@@ -15,7 +15,7 @@ public class AbstractApp
     implements UncaughtExceptionHandler
 {    
     public AbstractApp () {
-        this (EXIT_ON_CLOSE);        
+        this (DO_NOTHING_ON_CLOSE);
     }
     
     public AbstractApp (int defaultCloseOperation) {
