@@ -155,7 +155,7 @@ public class ProcessHelper {
 	 *	@exception InterruptedException	
 	 *					When <code>Process.waitFor ()</code> throws it.
 	 */
-    public static int           execAndWait (String [] cmd) 
+    public static int           execAndWait (String ... cmd) 
     	throws IOException, InterruptedException
     {
     	return (execAndWait (cmd, null));
