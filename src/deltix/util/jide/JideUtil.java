@@ -7,6 +7,7 @@ import java.util.logging.*;
 import javax.swing.*;
 
 import com.jidesoft.dialog.*;
+import com.jidesoft.swing.*;
 
 import deltix.util.lang.*;
 
@@ -14,6 +15,25 @@ import deltix.util.lang.*;
  *  Colleciton of static utilities
  */
 public abstract class JideUtil { 
+	
+	  public static JideButton newZeroMarginButton ( Action action ) {
+		JideButton btn = new JideButton ( action );
+
+		btn.setMargin ( new Insets ( 0,
+		                             0,
+		                             0,
+		                             0 ) );
+
+		return (btn);
+	}
+
+	public static JideButton newZeroMarginNoTextButton ( Action action ) {
+		JideButton btn = newZeroMarginButton ( action );
+
+		btn.setText ( "" );
+
+		return (btn);
+	}
     
    public static void		    staticHandle (
         Component                   parent, 
