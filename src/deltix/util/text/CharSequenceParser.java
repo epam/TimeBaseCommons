@@ -33,19 +33,25 @@ public abstract class CharSequenceParser {
     }
 
     public static byte  parseByte(CharSequence sc) {
-        final int result = parseInt(sc);
+        return (parseByte(sc, 0, sc.length ()));
+    }
+    
+    public static byte  parseByte(CharSequence sc, final int startIncl, final int endExcl) {
+        final int result = parseInt(sc, startIncl, endExcl);
         if (result < Byte.MIN_VALUE || result > Byte.MAX_VALUE)
-            //throw new IllegalArgumentException(String.valueOf(sc));
-        throw new NumberFormatException("Value out of range. Value:\"" + sc + "\" Radix:10");
+            throw new NumberFormatException ("Value out of range: " + result);
         else
             return (byte) result;
     }
 
     public static short parseShort(CharSequence sc) {
-        final int result = parseInt(sc);
+        return (parseShort(sc, 0, sc.length ()));
+    }
+
+    public static short parseShort(CharSequence sc, final int startIncl, final int endExcl) {
+        final int result = parseInt(sc, startIncl, endExcl);
         if (result < Short.MIN_VALUE || result > Short.MAX_VALUE)
-            //throw new IllegalArgumentException(String.valueOf(sc));
-        throw new NumberFormatException("Value out of range. Value:\"" + sc + "\" Radix:10");
+            throw new NumberFormatException ("Value out of range: " + result);
         else
             return (short) result;
     }
@@ -77,25 +83,33 @@ public abstract class CharSequenceParser {
         }
         
         for (;;) {
-            int             digit = ch - '0';
-            
-            if (digit < 0 || digit > 9)
-                throw new NumberFormatException (
-                    "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ()
-                );
-            
-            if (value > INT_MAX_VALUE_DIV_10)
-                throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
-            
-            value = value * 10 + digit;
-            
-            if (value < 0)  // Overflow
-                throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
-            
+            if (ch != ',') {
+                int             digit = ch - '0';
+
+                if (digit < 0 || digit > 9)
+                    throw new NumberFormatException (
+                        "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ()
+                    );
+
+                if (value < -INT_MAX_VALUE_DIV_10)
+                    throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
+
+                value = value * 10 - digit;
+
+                if (value > 0)  // Overflow
+                    throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
+            }
+
             pos++;
             
-            if (pos == endExcl)
-                return (negative ? -value : value);
+            if (pos == endExcl) {
+                if (negative)
+                    return (value);
+                else if (value == Integer.MIN_VALUE)
+                    throw new NumberFormatException ("Integer (4-byte) too large: " + sc);
+                else
+                    return (-value);
+            }
             
             ch = sc.charAt (pos);
         }                
@@ -128,24 +142,32 @@ public abstract class CharSequenceParser {
         }
         
         for (;;) {
-            int             digit = ch - '0';
-            
-            if (digit < 0 || digit > 9)
-                throw new NumberFormatException (
-                    "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
-            
-            if (value > LONG_MAX_VALUE_DIV_10)
-                throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
-            
-            value = value * 10 + digit;
-            
-            if (value < 0)  // Overflow
-                throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
+            if (ch != ',') {
+                int             digit = ch - '0';
+
+                if (digit < 0 || digit > 9)
+                    throw new NumberFormatException (
+                        "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
+
+                if (value < -LONG_MAX_VALUE_DIV_10)
+                    throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
+
+                value = value * 10 - digit;
+
+                if (value > 0)  // Overflow
+                    throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
+            }
             
             pos++;
             
-            if (pos == endExcl)
-                return (negative ? -value : value);
+            if (pos == endExcl) {
+                if (negative)
+                    return (value);
+                else if (value == Long.MIN_VALUE)
+                    throw new NumberFormatException ("Long integer (8-byte) too large: " + sc);
+                else
+                    return (-value);
+            }
             
             ch = sc.charAt (pos);
         }                
@@ -183,35 +205,36 @@ public abstract class CharSequenceParser {
         }
         
         for (;;) {
-            if (!dotSeen && ch == '.') 
-                dotSeen = true;
-            else {            
-                final int       digit = ch - '0';
-
-                if (digit < 0 || digit > 9) {
-                    if (Util.equals (sc, "NaN"))
-                        return (Double.NaN);
-                    
-                    throw new NumberFormatException (
-                        "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
-                }
-                
-                if (overflow) {
-                    //  Stop shifting the numerator
-                    if (!dotSeen)
-                        denominator *= 0.1;
-                }
+            if (ch != ',') {
+                if (!dotSeen && ch == '.')
+                    dotSeen = true;
                 else {
-                    numerator = numerator * 10 + digit;
+                    final int       digit = ch - '0';
 
-                    if (dotSeen)
-                        denominator *= 10;
+                    if (digit < 0 || digit > 9) {
+                        if (Util.equals (sc, "NaN"))
+                            return (Double.NaN);
 
-                    if (numerator >= DOUBLE_ASSUMED_BIT)
-                        overflow = true;
+                        throw new NumberFormatException (
+                            "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
+                    }
+
+                    if (overflow) {
+                        //  Stop shifting the numerator
+                        if (!dotSeen)
+                            denominator *= 0.1;
+                    }
+                    else {
+                        numerator = numerator * 10 + digit;
+
+                        if (dotSeen)
+                            denominator *= 10;
+
+                        if (numerator >= DOUBLE_ASSUMED_BIT)
+                            overflow = true;
+                    }
                 }
             }
-            
             pos++;
             
             if (pos == endExcl)
@@ -280,35 +303,37 @@ public abstract class CharSequenceParser {
         }
         
         for (;;) {
-            if (!dotSeen && ch == '.') 
-                dotSeen = true;
-            else {            
-                final int       digit = ch - '0';
-
-                if (digit < 0 || digit > 9) {
-                    if (Util.equals (sc, "NaN"))
-                        return (Float.NaN);                    
-                    
-                    throw new NumberFormatException (
-                        "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
-                }
-                
-                if (overflow) {
-                    //  Stop shifting the numerator
-                    if (!dotSeen)
-                        denominator *= 0.1;
-                }
+            if (ch != ',') {
+                if (!dotSeen && ch == '.')
+                    dotSeen = true;
                 else {
-                    numerator = numerator * 10 + digit;
+                    final int       digit = ch - '0';
 
-                    if (dotSeen)
-                        denominator *= 10;
+                    if (digit < 0 || digit > 9) {
+                        if (Util.equals (sc, "NaN"))
+                            return (Float.NaN);
 
-                    if (numerator >= FLOAT_ASSUMED_BIT)
-                        overflow = true;
+                        throw new NumberFormatException (
+                            "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
+                    }
+
+                    if (overflow) {
+                        //  Stop shifting the numerator
+                        if (!dotSeen)
+                            denominator *= 0.1;
+                    }
+                    else {
+                        numerator = numerator * 10 + digit;
+
+                        if (dotSeen)
+                            denominator *= 10;
+
+                        if (numerator >= FLOAT_ASSUMED_BIT)
+                            overflow = true;
+                    }
                 }
             }
-            
+
             pos++;
             
             if (pos == endExcl)

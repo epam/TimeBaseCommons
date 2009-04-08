@@ -7,7 +7,7 @@ import java.util.Enumeration;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-public class WordMatcherTest {
+public class Test_WordMatcher {
     private WordMatcherBuilder                  wm;
     private String []                           words;
     
