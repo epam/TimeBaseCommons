@@ -15,7 +15,7 @@ public class Test_MemoryDataInputOutput {
         out = new MemoryDataOutput (1); 
         in = new MemoryDataInput ();
     }
-    
+
     @Test
     public void     testPackedUnsignedLong () {
         out.reset ();
@@ -89,26 +89,17 @@ public class Test_MemoryDataInputOutput {
             -0.8499999999999943,
             Double.NaN,
             Double.POSITIVE_INFINITY,
-            Double.NEGATIVE_INFINITY
+            Double.NEGATIVE_INFINITY,
+            845.18,
+            -844.9899999999999,
+            -845.18,
+            -845.8199999999999,
+            0.0
         };
-        testScaledDouble(testValues);
+        testScaledDouble (testValues);
     }
 
-    @Test
-    @Ignore // due to #4796 
-    public void     testScaledDouble2 () {
-        final double []                 testValues = {
-                845.18,
-                -844.9899999999999,
-                -845.18,
-                -845.8199999999999,
-                0.0
-        };
-        testScaledDouble(testValues);
-    }
-
-    private void     testScaledDouble (final double []                 testValues) {
-
+    private void     testScaledDouble (final double [] testValues) {
         out.reset ();
         
         for (double v : testValues) 

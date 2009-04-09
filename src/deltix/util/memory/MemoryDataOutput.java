@@ -333,11 +333,20 @@ public class MemoryDataOutput {
             exp--;
         }
 
+        // Prevent 8-byte significand from being written
+        if ((lv & 0xFF00000000000000L) != 0) {
+            writeByte (0x0F);
+            writeDouble (v);
+            return;
+        }
+
         //  Discount leading zero bytes in x
         makeRoom (1);
 
         int                 headerPos = mPos++;
         int                 numBytes = writeLongBytes (lv);
+
+        assert numBytes < 8;
         
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
     }
@@ -365,7 +374,14 @@ public class MemoryDataOutput {
             double          scale = DSCALES [exp];
 
             lv = Math.round (x * scale);
-            
+
+            // Prevent 8-byte significand from being written
+            if ((lv & 0xFF00000000000000L) != 0) {
+                writeByte (0x0F);
+                writeDouble (v);
+                return;
+            }
+
             if (x == lv / scale)
                 break;
             
@@ -383,6 +399,8 @@ public class MemoryDataOutput {
 
         int                 headerPos = mPos++;
         int                 numBytes = writeLongBytes (lv);
+
+        assert numBytes < 8;
         
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
     }
