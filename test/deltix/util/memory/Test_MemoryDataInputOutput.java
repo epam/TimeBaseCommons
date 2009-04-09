@@ -83,7 +83,7 @@ public class Test_MemoryDataInputOutput {
     @Test
     public void     testScaledDouble () {
         final double []                 testValues = {
-            0, 0.7, -0.2, 2.28, -997.82, 
+            0, 0.7, -0.2, 2.28, -997.82,
             666.234876, -234876747.6678,
             0.23476890879672543765, //out of exp range
             -0.8499999999999943,
@@ -91,7 +91,24 @@ public class Test_MemoryDataInputOutput {
             Double.POSITIVE_INFINITY,
             Double.NEGATIVE_INFINITY
         };
-        
+        testScaledDouble(testValues);
+    }
+
+    @Test
+    @Ignore // due to #4796 
+    public void     testScaledDouble2 () {
+        final double []                 testValues = {
+                845.18,
+                -844.9899999999999,
+                -845.18,
+                -845.8199999999999,
+                0.0
+        };
+        testScaledDouble(testValues);
+    }
+
+    private void     testScaledDouble (final double []                 testValues) {
+
         out.reset ();
         
         for (double v : testValues) 
