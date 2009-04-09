@@ -6,6 +6,9 @@ import java.io.*;
 import java.util.logging.Level;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Element;
 
 /**
@@ -46,6 +49,31 @@ public class HTML {
             }
         }
         
+        return (swr.toString ());
+    }
+
+    public String               getContent () {
+        if (mContent == null)
+            return ("");
+
+        StringWriter                swr = new StringWriter ();
+        StreamResult                result = new StreamResult(swr);
+        TransformerFactory          transfac = TransformerFactory.newInstance ();
+
+        try {
+            Transformer                 trans = transfac.newTransformer ();
+
+            trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            for (Element e : mContent) {
+                DOMSource   source = new DOMSource(e);
+                trans.transform(source, result);
+            }
+        } catch (TransformerException x) {
+            throw new RuntimeException (x);
+        }
+
         return (swr.toString ());
     }
 }
