@@ -6,7 +6,7 @@ import java.io.*;
  *  Counts bytes that pass through.
  */
 public class ByteCountingOutputStream extends FilterOutputStream {
-    private long                    mNumBytesWritten = 0;
+    private volatile long                    mNumBytesWritten = 0;
     
     public ByteCountingOutputStream (OutputStream os) {
         super (os);
