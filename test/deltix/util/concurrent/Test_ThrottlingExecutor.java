@@ -2,8 +2,8 @@ package deltix.util.concurrent;
 
 /*  ##UTILS## */
 
+import deltix.util.concurrent.ThrottlingExecutor.Task;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -12,11 +12,10 @@ import static org.junit.Assert.*;
  */
 public class Test_ThrottlingExecutor {
     private final Random                    random = new Random (2009);
-    private BlockingQueue <Runnable>        queue;
     private long                            usedTime;
     
-    class TestTask implements Runnable {
-        public void         run () {
+    class TestTask implements Task {
+        public boolean         run () {
             long                t1 = System.currentTimeMillis ();
             int                 t = random.nextInt (30) + 15;
 
@@ -36,24 +35,26 @@ public class Test_ThrottlingExecutor {
             if (!Boolean.getBoolean ("quiet"))
                 System.out.printf ("%,16d %16d %16d\n", t1, t, dt);
             
-            queue.offer (this);
+            return (true);
         }
     }
 
     @Test
     public void             go () throws InterruptedException {
         double                  desiredRatio = 0.07;
+
+        if (!Boolean.getBoolean ("quiet"))
+            System.out.println ("Target: " + desiredRatio);
+
         ThrottlingExecutor      exe = new ThrottlingExecutor ("Test", desiredRatio);
 
         exe.start ();
-
-        queue = exe.getQueue ();
 
         Thread.sleep (100);
 
         long            startTime = System.currentTimeMillis ();
 
-        queue.offer (new TestTask ());
+        exe.getQueue ().offer (new TestTask ());
 
         Thread.sleep (10000);
 
@@ -62,14 +63,15 @@ public class Test_ThrottlingExecutor {
 
         double          totalTime = System.currentTimeMillis () - startTime;
         double          actualRatio = usedTime / totalTime;
-
+        double          dev = Math.abs (actualRatio - desiredRatio);
+        
         if (!Boolean.getBoolean ("quiet"))
-            System.out.println (actualRatio);
+            System.out.println ("Actual: " + actualRatio + "; d=" + (dev * 100) + "%");
 
         assertTrue (
-            "Desired ratio: " + desiredRatio +
+            "Target ratio: " + desiredRatio +
                 " is too different from actual: " + actualRatio,
-            Math.abs (actualRatio - desiredRatio) < 0.02
+             dev < 0.02
         );
     }
 }
