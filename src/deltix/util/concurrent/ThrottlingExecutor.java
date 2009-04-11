@@ -129,10 +129,11 @@ public class ThrottlingExecutor extends Thread {
 
                     if (s > maxSleepInterval)
                         s = maxSleepInterval;
-
+/*
                     System.out.printf ("%tT.%<tL: worked for %d; will sleep for %d; qsize: %d\n",
                         System.currentTimeMillis (), duration, s, queue.size ()
                     );
+ */
                     Thread.sleep (s);
                 }
             }
