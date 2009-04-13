@@ -1,7 +1,7 @@
 package deltix.util.collections;
 
 /**
- *
+ * Fixed size circular buffer of byte values
  */
 public class ByteQueue {
     private final int           capacity;

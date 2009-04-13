@@ -28,4 +28,12 @@ public class SimpleIdentifierGenerator implements ResettableIdentifierGenerator 
 		this.nextID = nextID - base;
 	}
 
+    @Override
+    public synchronized void markUsed (long usedId) {
+    	long nextId =  base + nextID;
+    	if (nextId <= usedId) {
+    		setNext (usedId + 1);
+    	}
+    }
+
 }

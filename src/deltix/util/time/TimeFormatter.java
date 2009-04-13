@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
  */
 public final class TimeFormatter {
 
-    private final static long SECONDS_IN_DAY = 24*60*60;
+    private final static long SECONDS_IN_DAY 		= TimeUnit.DAYS.toSeconds(1);
+    private final static long MILLISECONDS_IN_DAY 	= TimeUnit.DAYS.toMillis(1);
 
     /** Offset of local time zone from GMT (in milliseconds) */
     private final static long MILLIS_GMT_OFFSET;
@@ -55,47 +56,126 @@ public final class TimeFormatter {
      */
     public static String formatTimeOfDayFromSeconds (long seconds) {
     	char [] timebuf = new char [] { '0', '0', ':', '0', '0', ':', '0', '0' };
-        int secondsInDay = (int) (seconds % SECONDS_IN_DAY);
-
-        int     s = secondsInDay % 60;
-        int     m = (secondsInDay / 60) % 60;
-        int     h = secondsInDay / 3600;
-
-        // H low
-        int foo = h % 10;
-        if (foo > 0)
-            timebuf [1] += foo;
-
-        // H high
-        foo = h / 10;
-        if (foo > 0)
-            timebuf [0] += foo;
-
-        // M low
-        foo = m % 10;
-        if (foo > 0)
-            timebuf [4] += foo;
-
-        // M high
-        foo = m / 10;
-        if (foo > 0)
-            timebuf [3] += foo;
-
-        // S low
-        foo = s % 10;
-        if (foo > 0)
-            timebuf [7] += foo;
-
-        // S high
-        foo = s  / 10;
-        if (foo > 0)
-            timebuf [6] += foo;
-
+    	
+    	if (seconds != 0) {
+    		
+	        int secondsInDay = (int) (seconds % SECONDS_IN_DAY);
+	
+	        int     s = secondsInDay % 60;
+	        int     m = (secondsInDay / 60) % 60;
+	        int     h = secondsInDay / 3600;
+	
+	        // H low
+	        int foo = h % 10;
+	        if (foo > 0)
+	            timebuf [1] += foo;
+	
+	        // H high
+	        foo = h / 10;
+	        if (foo > 0)
+	            timebuf [0] += foo;
+	
+	        // M low
+	        foo = m % 10;
+	        if (foo > 0)
+	            timebuf [4] += foo;
+	
+	        // M high
+	        foo = m / 10;
+	        if (foo > 0)
+	            timebuf [3] += foo;
+	
+	        // S low
+	        foo = s % 10;
+	        if (foo > 0)
+	            timebuf [7] += foo;
+	
+	        // S high
+	        foo = s  / 10;
+	        if (foo > 0)
+	            timebuf [6] += foo;
+    	}
         return new String (timebuf);
     }
 
+    /**
+     * Fast and thread-safe method for printing current time of day in local time zone.
+     *
+     * @param millis duration in milliseconds, cannot be negative or exceed 24 hours
+     * @return duration formatted like "12:34:45"
+     *
+     * @see #formatTimeOfDay(long)
+     * @see #formatTimeOfDayGMT(long)
+     */
+    public static String formatDurationWithMilliseconds (long millis) {
+    	char [] timebuf = new char [] { '0', '0', ':', '0', '0', ':', '0', '0' , '.', '0', '0', '0' };
 
-
+    	if (millis != 0) {
+    		 
+	    	if (millis < 0 || millis >= MILLISECONDS_IN_DAY) 
+	    		return "OUT-OF-BOUNDS";
+	    	
+	    	
+	    	final int ms = (int) (millis % 1000L);
+	    	
+	    	final int     secondsInDay = (int) millis / 1000;
+	    	final int     s = secondsInDay % 60;
+	    	final int     m = (secondsInDay / 60) % 60;
+	    	final int     h = secondsInDay / 3600;
+	
+	        int foo;
+	        
+	        // H high
+	        foo = h / 10;
+	        if (foo > 0)
+	            timebuf [0] += foo;
+	
+	        // H low
+	        foo = h % 10;
+	        if (foo > 0)
+	            timebuf [1] += foo;
+	
+	        // M high
+	        
+	        foo = m / 10;
+	        if (foo > 0)
+	            timebuf [3] += foo;
+	
+	        // M low
+	        foo = m % 10;
+	        if (foo > 0)
+	            timebuf [4] += foo;
+	
+	
+	        // S high
+	        foo = s  / 10;
+	        if (foo > 0)
+	            timebuf [6] += foo;
+	
+	        // S low
+	        foo = s % 10;
+	        if (foo > 0)
+	            timebuf [7] += foo;
+	
+	        
+	        // MS high
+	        foo = ms / 100;
+	        if (foo > 0)
+	            timebuf [9] += foo;
+	
+	        // MS med
+	        foo = (ms  / 10 ) % 10;
+	        if (foo > 0)
+	            timebuf [10] += foo;
+	
+	        // MS low
+	        foo = ms % 10;
+	        if (foo > 0)
+	            timebuf [11] += foo;
+	
+    	}
+        return new String (timebuf);
+    }    
     /**
      * <p>Thread-Safe method to parse duration.
      *    <u>No trailing or leading spaces are allowed.</u>

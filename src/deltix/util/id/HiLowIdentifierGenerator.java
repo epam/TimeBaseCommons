@@ -40,8 +40,16 @@ public abstract class HiLowIdentifierGenerator implements ResettableIdentifierGe
 
 
     @Override
-    public void setNext (long nextId) {
+    public synchronized void setNext (long nextId) {
     	id = 0;
     	aquireNextBlock(nextId);
+    }
+    
+    @Override
+    public synchronized void markUsed (long usedId) {
+    	long nextId =  base + id;
+    	if (nextId <= usedId) {
+    		setNext (usedId + 1);
+    	}
     }
 }

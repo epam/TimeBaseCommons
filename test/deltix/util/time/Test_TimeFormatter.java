@@ -1,7 +1,6 @@
 package deltix.util.time;
 
 /*  ##UTILS## */
-
 import java.util.StringTokenizer;
 
 import junit.framework.Assert;
@@ -22,16 +21,37 @@ public class Test_TimeFormatter {
 		assertFormat(3601 * 1000, "01:00:01");
 		assertFormat(3601 * 1000, "01:00:01");
 		
-                assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
+        assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
+	}
+
+	@Test
+	public void simpleNegative1() {
+		
+		Assert.assertEquals(TimeFormatter.formatTimeOfDayFromSeconds((-1250L) / 1000), "00:00:00");
+		Assert.assertEquals(TimeFormatter.formatTimeOfDayFromSeconds((-12500L) / 1000), "00:00:00");
 	}
 	
+	
+	
+	@Test
+	public void simpleMSTest() {
+		assertFormatMS(0, "00:00:00.000");
+		assertFormatMS(1, "00:00:00.001");
+		assertFormatMS(123, "00:00:00.123");
+		assertFormatMS(1234, "00:00:01.234");
+		assertFormatMS(12345, "00:00:12.345");
+	}
+
+
     @Test
 	public void simpleOneDayTruncation() {
+    	assertFormat(-1L, "00:00:00");
 		assertFormat(MILLIS_PER_DAY, "00:00:00");
 		assertFormat(MILLIS_PER_DAY+1, "00:00:00");
 		assertFormat(MILLIS_PER_DAY+1000, "00:00:01");
 		assertFormat(5*MILLIS_PER_DAY+1000, "00:00:01");
 	}
+		
 	
 
 	private static void assertFormat(long time, String expected) {
@@ -39,6 +59,10 @@ public class Test_TimeFormatter {
 		Assert.assertEquals(expected, actual);
 	}
 
+	private static void assertFormatMS(long time, String expected) {
+		String actual = TimeFormatter.formatDurationWithMilliseconds(time);
+		Assert.assertEquals(expected, actual);
+	}	
 	@Test
 	public void testBadCasesTime() {
 		assertBad(null);

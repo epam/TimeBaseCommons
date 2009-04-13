@@ -1,14 +1,14 @@
 package deltix.util.collections;
 
 /**
- *
+ * Fixed size circular buffer of double values
  */
 public class DoubleQueue {
     private final int           mCapacity;
     private int                 mSize = 0;
     private int                 mHead = 0;
     private int                 mTail = 0;
-    private double []           mBuffer;
+    private final double []     mBuffer;
     
     public DoubleQueue (int capacity) {
         mCapacity = capacity;
