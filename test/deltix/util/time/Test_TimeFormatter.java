@@ -1,11 +1,12 @@
 package deltix.util.time;
 
-/*  ##UTILS## */
 import java.util.StringTokenizer;
 
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 
 import org.junit.Test;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Test_TimeFormatter {
 
@@ -25,33 +26,24 @@ public class Test_TimeFormatter {
 	}
 
 	@Test
-	public void simpleNegative1() {
-		
-		Assert.assertEquals(TimeFormatter.formatTimeOfDayFromSeconds((-1250L) / 1000), "00:00:00");
-		Assert.assertEquals(TimeFormatter.formatTimeOfDayFromSeconds((-12500L) / 1000), "00:00:00");
-	}
-	
-	
-	
-	@Test
 	public void simpleMSTest() {
 		assertFormatMS(0, "00:00:00.000");
 		assertFormatMS(1, "00:00:00.001");
 		assertFormatMS(123, "00:00:00.123");
 		assertFormatMS(1234, "00:00:01.234");
 		assertFormatMS(12345, "00:00:12.345");
+		
+		
 	}
-
-
+	
     @Test
 	public void simpleOneDayTruncation() {
-    	assertFormat(-1L, "00:00:00");
-		assertFormat(MILLIS_PER_DAY, "00:00:00");
-		assertFormat(MILLIS_PER_DAY+1, "00:00:00");
-		assertFormat(MILLIS_PER_DAY+1000, "00:00:01");
-		assertFormat(5*MILLIS_PER_DAY+1000, "00:00:01");
+		assertFormat(-1L, "OUT-OF-BOUNDS");
+		assertFormat(MILLIS_PER_DAY, "OUT-OF-BOUNDS");
+		assertFormat(MILLIS_PER_DAY+1, "OUT-OF-BOUNDS");
+		assertFormat(MILLIS_PER_DAY+1000, "OUT-OF-BOUNDS");
+		assertFormat(5*MILLIS_PER_DAY+1000, "OUT-OF-BOUNDS");
 	}
-		
 	
 
 	private static void assertFormat(long time, String expected) {
