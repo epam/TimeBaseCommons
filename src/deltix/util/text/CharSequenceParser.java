@@ -23,14 +23,14 @@ public abstract class CharSequenceParser {
     private static final int    FLOAT_NORM_EXP =            FLOAT_BIAS_EXP + FLOAT_MANTISSA_WIDTH;
     private static final int    FLOAT_OVERFLOW_BITMASK =    ~FLOAT_MANTISSA_BITMASK - FLOAT_ASSUMED_BIT;
     
-    public static boolean parseBoolean (CharSequence sc) {
-        final int result = Util.xequals("true", sc) ? 1 :
-                Util.xequals("false", sc) ? 0 : -1;
-        if (result == -1)
-            throw new IllegalArgumentException(String.valueOf(sc));
-        else
-            return (result == 1);
-    }
+    public static boolean parseBoolean ( CharSequence sc ) {
+		if ("true".contentEquals ( sc )) {
+			return true;
+		} else if ("false".contentEquals ( sc )) {
+			return false;
+		}
+		throw new IllegalArgumentException ( String.valueOf ( sc ) );
+	}
 
     public static byte  parseByte(CharSequence sc) {
         return (parseByte(sc, 0, sc.length ()));
