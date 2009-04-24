@@ -8,7 +8,10 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 
 /**
- *  Specialized logger for high-performance situations.
+ *  Specialized logger for high-performance situations. Capable of logging about 
+ *  4 million messages per second. Flushes itself every 50 milliseconds,
+ *  and flushes the log when JVM shuts down. Logs to current folder, but creates a new file
+ *  for every JVM session.
  */
 public class QuickLogger {
     static long                             dayStart;
