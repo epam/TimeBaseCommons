@@ -8,16 +8,20 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 
 /**
- *  Specialized logger for high-performance situations. Capable of logging about 
- *  4 million messages per second. Flushes itself every 50 milliseconds,
+ *  Specialized logger for high-performance situations. Capable of logging about
+ *  400,000 messages per second. Flushes itself every 50 milliseconds,
  *  and flushes the log when JVM shuts down. Logs to current folder, but creates a new file
  *  for every JVM session.
  */
 public class QuickLogger {
+    static final Object                     lock = new Object ();
     static long                             dayStart;
     static Writer                           writer;
 
-    static {
+    private static void     init () {
+        if (writer != null)
+            return;
+
         long                                t = System.currentTimeMillis ();
 
         dayStart = t - (t % 86400000) - TimeZone.getDefault ().getOffset (t);
@@ -85,21 +89,23 @@ public class QuickLogger {
 
     public static void      log (String id, String event, String message) {
         try {
-            synchronized (writer) {
+            synchronized (lock) {
+                init ();
+
                 writeTime ();
 
-                writer.write (": ");
-
-                if (id != null)
+                if (id != null) {
+                    writer.write ('\t');
                     writer.write (id);
+                }
 
                 if (event != null) {
-                    writer.write ('.');
+                    writer.write ('\t');
                     writer.write (event);
                 }
 
                 if (message != null) {
-                    writer.write (": ");
+                    writer.write ('\t');
                     writer.write (message);
                 }
                 
