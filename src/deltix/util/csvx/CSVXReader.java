@@ -141,7 +141,36 @@ public class CSVXReader implements Disposable {
     public CharSequence                 getBuffer () {
         return (mBuffer);
     }
-    
+
+    public String                       getLine () {
+        StringWriter        swr = new StringWriter ();
+
+        try {
+            writeLineTo (new CSVWriter (swr));
+        } catch (IOException iox) {
+            throw new RuntimeException ("unexpected", iox);
+        }
+        
+        return (swr.toString ());
+    }
+
+    public void                         writeLineTo (CSVWriter writer) 
+        throws IOException
+    {
+        int         n = getNumCells ();
+
+        if (n != 0) {
+            writer.writeCell (getCell (0));
+
+            for (int ii = 1; ii < n; ii++) {
+                writer.writeSeparator ();
+                writer.writeCell (getCell (ii));
+            }
+        }
+
+        writer.writeLine ();
+    }
+
     public boolean                      nextLine () throws IOException {
         if (mEOF)
             return (false);
@@ -421,6 +450,10 @@ public class CSVXReader implements Disposable {
         return (getString (idx, false));
     }
     
+    public String                       getSubstring (int idx, int begin, int end) {
+        return (getString (idx).substring (begin, end));
+    }
+
     public double                       getDouble (int idx) {
         return (CharSequenceParser.parseDouble (getCell (idx, true)));
     }
