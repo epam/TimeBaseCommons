@@ -8,11 +8,18 @@ import java.util.Arrays;
  *
  */
 public class WindowsOS {
-    public static final boolean     IS_X64 =
-        "AMD64".equalsIgnoreCase (System.getenv ("PROCESSOR_ARCHITECTURE"));
-    
-    public static final boolean     IS_X86 =
-        "X86".equalsIgnoreCase (System.getenv ("PROCESSOR_ARCHITECTURE"));
+    public static final boolean     IS_X64;
+    public static final boolean     IS_X86;
+
+    static {
+        String      PROC_ID = System.getenv ("PROCESSOR_IDENTIFIER");
+
+        IS_X64 =
+            PROC_ID != null &&
+            (PROC_ID.contains ("AMD64") || PROC_ID.contains ("EM64T"));
+
+        IS_X86 = !IS_X64;
+    }
 
     public static final String      getSystemDrive () {
         String      sysdrive = System.getenv ("C:");
