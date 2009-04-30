@@ -6,33 +6,26 @@ import java.util.concurrent.TimeUnit;
 
 public class SimpleIdentifierGenerator implements ResettableIdentifierGenerator {
 
-	private long nextID = 1;
-
-	private final int base;
+	private long nextID;
 
     public SimpleIdentifierGenerator () {
-        this((int) (System.currentTimeMillis() % TimeUnit.DAYS.toMillis(1)));
+        this( System.currentTimeMillis() % TimeUnit.DAYS.toMillis(1));
     }
 
-    public SimpleIdentifierGenerator(int base) {
-	    this.base = base;
+    public SimpleIdentifierGenerator(long base) {
+	    this.nextID = base;
 	}
 
 	@Override
 	public synchronized long next() {
-		return base + (nextID++);
+		return nextID++;
 	}
 
-	@Override
-	public synchronized void setNext(long nextID) {
-		this.nextID = nextID - base;
-	}
 
     @Override
     public synchronized void markUsed (long usedId) {
-    	long nextId =  base + nextID;
-    	if (nextId <= usedId) {
-    		setNext (usedId + 1);
+    	if (nextID <= usedId) {
+    		this.nextID = usedId + 1;
     	}
     }
 

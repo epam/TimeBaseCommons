@@ -39,8 +39,7 @@ public abstract class HiLowIdentifierGenerator implements ResettableIdentifierGe
     protected abstract long aquireNextBlock(long resetNextBlock);
 
 
-    @Override
-    public synchronized void setNext (long nextId) {
+    private synchronized void setNext (long nextId) {
     	id = 0;
     	aquireNextBlock(nextId);
     }
