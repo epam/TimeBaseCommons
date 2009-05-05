@@ -29,4 +29,10 @@ public class SimpleIdentifierGenerator implements ResettableIdentifierGenerator 
     	}
     }
 
+    @Override
+    public synchronized void setNext (long nextId) {
+    	if (nextID < nextId) {
+    		this.nextID = nextId;
+    	}
+    }     
 }

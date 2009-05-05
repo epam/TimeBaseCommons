@@ -13,19 +13,14 @@ import java.nio.channels.FileLock;
  *
  * @see FileHiLowIdentifierGenerator
  */
-public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGenerator {
+public final class SharedFileHiLowIdentifierGenerator extends FileBasedHiLowIdentifierGenerator {
 
-    private final File seqFile;
-
-    public SharedFileHiLowIdentifierGenerator (String dir, String key, int blockSize) {
-        this(dir, key, blockSize, 1);
+    public SharedFileHiLowIdentifierGenerator (String key, int blockSize) {
+        this(key, blockSize, 1);
     }
     
-    public SharedFileHiLowIdentifierGenerator (String dir, String key, int blockSize, long startId) {
+    public SharedFileHiLowIdentifierGenerator (String key, int blockSize, long startId) {
         super(key, blockSize, startId);
-        seqFile = new File (dir, "seq-block-"+key+".id");
-
-        seqFile.getAbsoluteFile().getParentFile().mkdirs();
     }
 
     @Override
@@ -36,7 +31,7 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
         try {
 
             try {
-                raf = new RandomAccessFile(seqFile, "rw");
+                raf = new RandomAccessFile(file, "rw");
                 channel = raf.getChannel();
                 lock = channel.lock();
 
@@ -44,7 +39,7 @@ public final class SharedFileHiLowIdentifierGenerator extends HiLowIdentifierGen
                 if (resetNextBlock != 0) {
                 	nextBlock = resetNextBlock;                	
                 } else {
-	                if (seqFile.length() == 0) {
+	                if (file.length() == 0) {
 	                    nextBlock = startId;
 	                } else {
 	                	String lastBlock = raf.readLine();

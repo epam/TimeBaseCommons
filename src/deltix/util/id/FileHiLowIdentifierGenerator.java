@@ -15,27 +15,24 @@ import deltix.temp.NetBeansDebugMain;
  *
  * @see SharedFileHiLowIdentifierGenerator
  */
-public final class FileHiLowIdentifierGenerator extends HiLowIdentifierGenerator implements Closeable {
+public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifierGenerator implements Closeable {
 
-    private final File seqFile;
     private final RandomAccessFile raf;
     private final FileChannel channel;
     private final FileLock lock;
 
-    public FileHiLowIdentifierGenerator (String dir, String key, int blockSize)
+    public FileHiLowIdentifierGenerator (String key, int blockSize)
 	    throws IOException
 	{
-    	this (dir, key, blockSize, 1);
+    	this (key, blockSize, 1);
 	}
 
-    public FileHiLowIdentifierGenerator (String dir, String key, int blockSize, long startId)
+    public FileHiLowIdentifierGenerator (String key, int blockSize, long startId)
         throws IOException
     {
         super(key, blockSize, startId);
-        seqFile = new File (dir, "seq-block-"+key+".id");
-        seqFile.getAbsoluteFile().getParentFile().mkdirs();
 
-        raf = new RandomAccessFile(seqFile, "rw");
+        raf = new RandomAccessFile(file, "rw");
         channel = raf.getChannel();
         lock = channel.lock();
     }
@@ -49,7 +46,7 @@ public final class FileHiLowIdentifierGenerator extends HiLowIdentifierGenerator
             if (resetNextBlock != 0) {
             	nextBlock = resetNextBlock;
             } else {
-                if (seqFile.length() == 0) {
+                if (file.length() == 0) {
                     nextBlock = startId;
                 } else {
                 	String lastBlock = raf.readLine();
