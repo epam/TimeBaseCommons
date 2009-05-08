@@ -49,6 +49,7 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
                 if (file.length() == 0) {
                     nextBlock = startId;
                 } else {
+                	raf.seek(0L);
                 	String lastBlock = raf.readLine();
                     nextBlock = Long.parseLong(lastBlock) + blockSize;
                 }
