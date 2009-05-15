@@ -25,4 +25,15 @@ public enum InstrumentType {
     	
         throw new IllegalArgumentException ("Unknown InstrumentType code: " + code);
     }
+
+    public String               toQOTypeString () {
+        switch (this) {
+            case EQUITY:    return "Stock";
+            case OPTION:    return "Option";
+            case FUTURE:    return "Futures";
+            case BOND:      return "Bond";
+            case FX:        return "Currency";
+            default:        throw new IllegalArgumentException (name ());
+        }
+    }
 }
