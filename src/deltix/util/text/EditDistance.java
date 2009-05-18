@@ -50,7 +50,7 @@ public class EditDistance {
     		for (int j = 1; j <= l2; j++) {
     			int		diag = mtx [i - 1][j - 1];
 
-        		if (s1.charAt (i -1 ) != s2.charAt (j - 1))
+        		if (s1.charAt (i - 1) != s2.charAt (j - 1))
         			diag = diag + 1;
 
         		mtx [i][j] =
