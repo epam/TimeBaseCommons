@@ -11,6 +11,10 @@ public class Test_TimeZoneUtils {
     public static final TimeZone    NYTZ = TimeZone.getTimeZone ("America/New_York");
     public static final DateFormat  DF = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
 
+    static {
+        DF.setTimeZone (NYTZ);
+    }
+    
     /**
      *  Check TimeZoneUtils.getMidnightOn against DateFormat/Calendar
      */
