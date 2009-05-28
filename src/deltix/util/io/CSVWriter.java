@@ -12,9 +12,17 @@ public class CSVWriter extends FilterWriter {
     public CSVWriter (String f) throws IOException {
         this (new File (f));
     }
+
+    public CSVWriter (String f, boolean append) throws IOException {
+        this (new File (f), append);
+    }
     
     public CSVWriter (File f) throws IOException {
-        super (new BufferedWriter (new FileWriter (f)));
+        this (f, false);
+    }
+
+    public CSVWriter (File f, boolean append) throws IOException {
+        super (new BufferedWriter (new FileWriter (f, append)));
     }
     
     public CSVWriter (Writer out) {
