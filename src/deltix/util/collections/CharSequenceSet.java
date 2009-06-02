@@ -56,7 +56,23 @@ public class CharSequenceSet extends HashSet <String> {
             else
                 return (new CharSequenceSet (a, b));
     }
-    
+
+    /**
+     *  Create a new CharSequenceSet which is a subtraction of the incoming sets.
+     *  Incoming sets are not allowed to be null.
+     */
+    public static CharSequenceSet subtractionCopy(CharSequenceSet a, CharSequenceSet b) {
+        if (b.isEmpty())
+            return a != null ? new CharSequenceSet(a) : null;
+        else {
+            final CharSequenceSet result = new CharSequenceSet(a);
+            for (String s : b) {
+                result.removeCharSequence(s);
+            }
+            return result;
+        }
+    }
+
     public boolean              addCharSequence (CharSequence e) {
         if (containsCharSequence (e))
             return (false);
