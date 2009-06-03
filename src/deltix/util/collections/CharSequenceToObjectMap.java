@@ -54,6 +54,11 @@ public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
         return super.containsKey (mBuffer);
     }
 
+    public boolean              containsKey (CharSequence key) {
+        mBuffer.set (key);
+        return super.containsKey (mBuffer);
+    }
+
     @Override
     public T                    remove (Object key) {
         mBuffer.set ((CharSequence) key);
@@ -62,6 +67,11 @@ public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
 
     public T                    remove (CharSequence key, int start, int end) {
         mBuffer.set (key, start, end);
+        return super.remove (mBuffer);
+    }
+
+    public T                    remove (CharSequence key) {
+        mBuffer.set (key);
         return super.remove (mBuffer);
     }
 }
