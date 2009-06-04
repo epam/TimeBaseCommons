@@ -57,30 +57,30 @@ public class MemoryDataInput {
     public final void       setBytes (ByteArrayList buffer) {
         mBuffer = buffer.getInternalBuffer ();
         mLimit = buffer.size ();
-        mPos = 0;
+        mStart = mPos = 0;
     }
     
     public final void       setBytes (ByteArrayOutputStreamEx buffer) {
         mBuffer = buffer.getInternalBuffer ();
         mLimit = buffer.size ();
-        mPos = 0;
+        mStart = mPos = 0;
     }
     
     public final void       setBytes (byte [] buffer) {
         mBuffer = buffer;
         mLimit = buffer.length;
-        mPos = 0;
+        mStart = mPos = 0;
     }
     
     public final void       setBytes (MemoryDataOutput out) {
         mBuffer = out.getBuffer ();
         mLimit = out.getSize ();
-        mPos = 0;
+        mStart = mPos = 0;
     }
     
     public final void       reset (int newSize) {
         mLimit = newSize;
-        mPos = 0;
+        mStart = mPos = 0;
     }
     
     public final byte []    getBytes () {
