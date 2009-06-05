@@ -40,6 +40,53 @@ public class DisconnectableImpl implements Disconnectable {
         );
     }
 
+    public static class LinearIntervalAdjuster implements ReconnectIntervalAdjuster {
+        private final long      increment;
+        private final long      limit;
+
+        public LinearIntervalAdjuster (long increment, long limit) {
+            this.increment = increment;
+            this.limit = limit;
+        }
+
+        public long         nextInterval (
+            int                 numAttempts,
+            long                timeSinceDisconnected,
+            long                lastInterval
+        )
+        {
+            long    next = lastInterval + increment;
+            return (next > limit ? limit : next);
+        }        
+    }
+
+    public static class ExpIntervalAdjuster implements ReconnectIntervalAdjuster {
+        private final long      limit;
+        private final double    factor;
+
+        public ExpIntervalAdjuster (double factor, long limit) {
+            if (factor < 1)
+                throw new IllegalArgumentException ("factor: " + factor);
+
+            this.limit = limit;
+            this.factor = factor;
+        }
+
+        public long         nextInterval (
+            int                 numAttempts,
+            long                timeSinceDisconnected,
+            long                lastInterval
+        )
+        {
+            if (lastInterval >= limit)
+                return (limit);
+            
+            long    next = (long) (lastInterval * factor);
+
+            return (next > limit ? limit : next);
+        }
+    }
+
     private volatile DisconnectEventListener    listener = null;
     private volatile long                       initialReconnectInterval = 5000;
     private volatile ReconnectIntervalAdjuster  adjuster = null;
@@ -63,6 +110,9 @@ public class DisconnectableImpl implements Disconnectable {
 
     @GuardedBy ("this")
     private TimerTask                           reconnectTask;
+
+    @GuardedBy ("this")
+    private String                              lastExceptionAsString;
 
     public void                             setDisconnectEventListener (
         DisconnectEventListener                 listener
@@ -127,8 +177,14 @@ public class DisconnectableImpl implements Disconnectable {
                 reconnectTask.cancel ();
 
             isConnected = true;
+            lastExceptionAsString = null;
         }
-        
+
+        Logger          lg = logger;
+
+        if (lg != null)
+            lg.log (logLevel, "Connected");
+
         DisconnectEventListener     lnr = listener;
 
         if (lnr != null)
@@ -141,12 +197,21 @@ public class DisconnectableImpl implements Disconnectable {
             timeDisconnected = System.currentTimeMillis ();
         }
 
+        Logger          lg = logger;
+
+        if (lg != null)
+            lg.log (logLevel, "Disconnected");
+
         DisconnectEventListener     lnr = listener;
 
         if (lnr != null)
             lnr.onDisconnected ();       
     }
 
+    public synchronized boolean             isConnected () {
+        return (isConnected);
+    }
+    
     private synchronized void               tryReconnect () throws Exception {
         reconnectTask = null;
         
@@ -161,10 +226,18 @@ public class DisconnectableImpl implements Disconnectable {
                         this
                     );
             } catch (Exception x) {
+                String          check = x.toString ();
                 Logger          lg = logger;
 
-                if (lg != null)
-                    lg.log (logLevel, "Reconnect failed", x);
+                if (lg != null) {
+                    //  Prevent verbose output
+                    if (check.equals (lastExceptionAsString))
+                        lg.log (logLevel, "Reconnect failed due to: " + lastExceptionAsString);
+                    else {
+                        lg.log (logLevel, "Reconnect failed", x);
+                        lastExceptionAsString = check;
+                    }
+                }
 
                 reschedule = true;
             }
@@ -203,6 +276,11 @@ public class DisconnectableImpl implements Disconnectable {
             };
 
         Util.GLOBAL_TIMER.schedule (reconnectTask, currentReconnectInterval);
+
+        Logger          lg = logger;
+
+        if (lg != null)
+            lg.log (logLevel, "Next reconnect in " + currentReconnectInterval + " ms");
     }
 
     public synchronized void                scheduleReconnect () {
