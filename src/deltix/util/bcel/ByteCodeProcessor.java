@@ -11,7 +11,7 @@ import org.apache.bcel.classfile.*;
  */
 public class ByteCodeProcessor {
     protected Map <String, JavaClass>   classes =
-        new HashMap <String, JavaClass> ();
+        new TreeMap <String, JavaClass> ();
 
     protected void                  processClass (
         JavaClass                       jc,
