@@ -21,8 +21,9 @@ import java.awt.event.*;
 public final class SimpleAction extends StandardAction {
     private static final Class<?> []   NO_ARGS_SIG = { };
 
-    private Object      mObject;
-    private Method      mMethod;
+    private Object      	mObject;
+    private Method      	mMethod;
+    private final String	mNameKey;
 
     /**
      *  Constructs a StandardAction which will call a method of the
@@ -32,6 +33,7 @@ public final class SimpleAction extends StandardAction {
      */
     public SimpleAction (Object delegate, String nameKey, String imageType) {
         super (delegate.getClass (), nameKey, imageType);
+        mNameKey = nameKey;
         mObject = delegate;
 
         Class<?>       c = mObject.getClass ();
@@ -63,6 +65,7 @@ public final class SimpleAction extends StandardAction {
      */
     public SimpleAction (Class<?> delegateClass, Object delegate, String nameKey, String imageType) {
         super (delegateClass, nameKey, imageType);
+        mNameKey = nameKey;
         mObject = delegate;
 
         try {
@@ -113,4 +116,9 @@ public final class SimpleAction extends StandardAction {
         	setCursor(Cursor.getDefaultCursor());
         }
     }
+
+	public final String getNameKey ( ) {
+    	return mNameKey;
+    }
+    
 }
