@@ -14,12 +14,29 @@ public class ByteCodeProcessor {
         new TreeMap <String, JavaClass> ();
 
     protected void                  processClass (
-        JavaClass                       jc,
-        String                          fileName
+        JavaClass                       jc
     )
         throws IOException
     {
         classes.put (jc.getClassName (), jc);
+    }
+
+    public void                     processClass (InputStream is, String fileName)
+        throws IOException
+    {
+        processClass (new ClassParser (is, fileName).parse ());
+    }
+
+    public void                     processClass (File f)
+        throws IOException
+    {
+        InputStream     is = new FileInputStream (f);
+
+        try {
+            processClass (is, f.getPath ());
+        } finally {
+            is.close();
+        }
     }
 
     public void                     processJar (File f)
@@ -40,9 +57,7 @@ public class ByteCodeProcessor {
                     try {
                         is = jf.getInputStream (e);
 
-                        JavaClass   jc = new ClassParser (is, fileName).parse ();
-                        
-                        processClass (jc, fileName);
+                        processClass (is, fileName);
                     } finally {
                         is.close();
                     }
