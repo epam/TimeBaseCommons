@@ -14,9 +14,7 @@ public class WindowsOS {
     static {
         String      PROC_ID = System.getenv ("PROCESSOR_IDENTIFIER");
 
-        IS_X64 =
-            PROC_ID != null &&
-            (PROC_ID.contains ("AMD64") || PROC_ID.contains ("EM64T"));
+        IS_X64 = PROC_ID != null && PROC_ID.contains ("64");
 
         IS_X86 = !IS_X64;
     }
