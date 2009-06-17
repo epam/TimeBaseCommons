@@ -7,9 +7,7 @@ import java.net.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.util.*;
 import java.util.logging.*;
-import javax.swing.*;
 
 
 public class ImageLoader {    
@@ -25,7 +23,9 @@ public class ImageLoader {
         return (image);
     }
     
-	public static Image			loadImage (String relPath) throws IOException {
+	public static Image			loadImage (String relPath) 
+        throws FileNotFoundException
+    {
 		InputStream			is =
 			IOUtil.openResourceAsStream (relPath);
 

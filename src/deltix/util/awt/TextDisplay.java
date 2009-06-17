@@ -21,7 +21,23 @@ public class TextDisplay {
     {
         return (new Dimension (fm.stringWidth (text), fm.getAscent () + fm.getDescent ()));
     }
-    
+
+    public static void          centerText (
+        Graphics                    g,
+        String                      text,
+        int                         x,
+        int                         y
+    )
+    {
+        FontMetrics                 fm = g.getFontMetrics ();
+
+        int			asc = fm.getAscent ();
+    	int			desc = fm.getDescent();
+        int         h = asc + desc;
+
+        g.drawString (text, x - fm.stringWidth (text) / 2, y + h / 2 - desc);
+    }
+
 	/**
 	 *	Sets up the text to be displayed at the given point.
 	 *
