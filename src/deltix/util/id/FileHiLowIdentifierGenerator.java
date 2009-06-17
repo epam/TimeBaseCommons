@@ -34,7 +34,10 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
 
         raf = new RandomAccessFile(file, "rw");
         channel = raf.getChannel();
-        lock = channel.lock();
+
+        lock = channel.tryLock();
+        if (lock == null)
+            throw new RuntimeException("Another program holds lock for file " + file.getAbsolutePath());
     }
 
     @Override
