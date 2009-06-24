@@ -1,6 +1,7 @@
 package deltix.util.swing;
 
 import deltix.util.io.UncheckedIOException;
+import deltix.util.lang.SafeResourceBundle;
 import javax.swing.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -51,7 +52,7 @@ public abstract class StandardAction extends AbstractAction {
         String          packName = className.substring (0, dot);
         String          packPath = packName.replace ('.', '/');        
         String          packFull = packPath + ".actions";
-        ResourceBundle  rb = ResourceBundle.getBundle (packFull);
+        ResourceBundle  rb = SafeResourceBundle.getBundle (packFull);
         
         try {
             putValue (NAME, rb.getString (nameKey));
