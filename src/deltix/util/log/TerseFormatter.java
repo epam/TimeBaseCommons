@@ -25,7 +25,7 @@ public class TerseFormatter extends Formatter {
 
         // (!) THIS CLASS IS INSTALLED AS JAVA EXTENSION - PLEASE AVOID ADDING ANY DEPENDENCIES.
 
-        StringBuffer sbuf = new StringBuffer ();
+        StringBuilder sbuf = new StringBuilder();
 
         // time
         long time = record.getMillis();
