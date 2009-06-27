@@ -287,15 +287,15 @@ public class Util {
      *  signature from the types of the supplied arguments (which must not contain
      *  null elements).
      */
-    public static Object    newInstance (
-        Class<?>                clazz,
+    public static <T> T    newInstance (
+        Class <T>               clazz,
         Object ...              args
     )
         throws ClassNotFoundException, NoSuchMethodException,
             InstantiationException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException
     {
-        Constructor         m;
+        Constructor <T>     m;
         int                 numArgs = args.length;
         
         if (numArgs == 0)
