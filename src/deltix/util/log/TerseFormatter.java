@@ -30,7 +30,7 @@ public class TerseFormatter extends Formatter {
         // time
         long time = record.getMillis();
         if (time != 0) {
-            sbuf.append (TimeFormatter.formatTimeOfDayGMT(time));
+            sbuf.append (formatTimestamp(time));
             sbuf.append (' ');
         }
 
@@ -54,6 +54,10 @@ public class TerseFormatter extends Formatter {
 
         sbuf.append('\n');
         return sbuf.toString();
+    }
+
+    protected String formatTimestamp(long time) {
+        return TimeFormatter.formatTimeOfDayGMT(time);
     }
 
     /** Prints stack trace of given throwable, unwraps any ChainedException */
