@@ -21,13 +21,13 @@ import javax.swing.tree.TreeModel;
 
 public class TreeEditorPanel extends JSplitPane {
     protected final Action EDIT_ACTION =
-        new SimpleAction (TreeEditorPanel.class, this, "edit");
+        new SimpleAction (this, "edit");
     
     protected final Action SAVE_ACTION =
-        new SimpleAction (TreeEditorPanel.class, this, "save");
+        new SimpleAction (this, "save");
     
     protected final Action CANCEL_ACTION =
-        new SimpleAction (TreeEditorPanel.class, this, "cancel");
+        new SimpleAction (this, "cancel");
     
     public static final Border      HEADER_BORDER =
         BorderFactory.createCompoundBorder (

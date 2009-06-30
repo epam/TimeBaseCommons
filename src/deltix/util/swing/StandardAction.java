@@ -42,71 +42,79 @@ public abstract class StandardAction extends AbstractAction {
      *
      *  @param nameKey  Used to look up the action properties.
      */
-    public StandardAction (Class forClass, String nameKey, String imageType) {
+    public StandardAction (Class forClass, String nameKey) {
+        setUpAction (this, forClass, nameKey);
+    }
+
+    public static final String []   IMAGE_EXTENSIONS = { ".gif", ".jpg", ".png" };
+    
+    public static void      setUpAction (Action action, Class <?> forClass, String nameKey) {
         String          className = forClass.getName ();
         int             dot = className.lastIndexOf ('.');
-        
+
         if (dot < 0)
             dot = 0;
-        
+
         String          packName = className.substring (0, dot);
-        String          packPath = packName.replace ('.', '/');        
-        String          packFull = packPath + ".actions";
-        ResourceBundle  rb = SafeResourceBundle.getBundle (packFull);
-        
+        String          packPath = packName.replace ('.', '/');
+
+        setUpAction (action, packPath, nameKey);
+    }
+
+    public static void      setUpAction (Action action, String resPath, String nameKey) {
+        ResourceBundle  rb = SafeResourceBundle.getBundle (resPath + "/actions");
+
         try {
-            putValue (NAME, rb.getString (nameKey));
+            action.putValue (NAME, rb.getString (nameKey));
         } catch (MissingResourceException mrx) {
             //  Ignore the name
         }
-        
+
         try {
-            putValue (SHORT_DESCRIPTION, rb.getString (nameKey + ".tt"));
+            action.putValue (SHORT_DESCRIPTION, rb.getString (nameKey + ".tt"));
         } catch (MissingResourceException mrx) {
             Util.LOGGER.log (
-                Level.WARNING, 
-                "Missing tooltip for " + nameKey + " in " + packFull,
+                Level.WARNING,
+                "Missing tooltip for action " + nameKey,
                 mrx
-            );            
-        }
-        
-        String          imageResourcePath = null;
-        
-        try {
-            imageResourcePath = rb.getString (nameKey + ".img");
-        } catch (MissingResourceException x) {
-            imageResourcePath = packPath + "/" + nameKey + "." + imageType;
-        }
-
-        try {
-            putValue (
-                SMALL_ICON,
-                SwingUtil.loadIcon (imageResourcePath)
             );
-        } catch (UncheckedIOException iox) {
-            // Ignore
         }
 
+        Icon            icon = null;
+
+        try {
+            String      imageResourcePath = rb.getString (nameKey + ".img");
+            icon = SwingUtil.loadIcon (imageResourcePath);
+        } catch (MissingResourceException x) {
+            boolean     ok = false;
+
+            for (String ext : IMAGE_EXTENSIONS) {
+                String      imageResourcePath = resPath + "/" + nameKey + ext;
+
+                try {
+                    icon = SwingUtil.loadIcon (imageResourcePath);
+                    break;
+                } catch (UncheckedIOException iox) {
+                    // Ignore
+                }
+            }
+        }
+
+        if (icon != null)
+            action.putValue (SMALL_ICON, icon);
+            
         // kbd accelerator (hot key)
         try {
-            putValue (ACCELERATOR_KEY, KeyStroke.getKeyStroke(rb.getString (nameKey + ".key")));
+            action.putValue (ACCELERATOR_KEY, KeyStroke.getKeyStroke(rb.getString (nameKey + ".key")));
         } catch (MissingResourceException mrx) {
             //  Ignore the missing hotkey
         }
 
         // mnemonic
         try {
-            putValue (MNEMONIC_KEY,  new Integer(rb.getString (nameKey + ".mnemonic").charAt(0)));
+            action.putValue (MNEMONIC_KEY,  new Integer(rb.getString (nameKey + ".mnemonic").charAt(0)));
         } catch (MissingResourceException mrx) {
             //  Ignore the missing mnemonic
         }
-
-    }
-    
-    /**
-     *  Same as above, hardcodes image type to <tt>gif</tt>.
-     */
-    public StandardAction (Class forClass, String nameKey) {
-        this (forClass, nameKey, "gif");
     }
 }

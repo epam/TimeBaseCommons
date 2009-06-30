@@ -31,8 +31,8 @@ public final class SimpleAction extends StandardAction {
      *
      *  @exception RuntimeException     If such a method was not found.
      */
-    public SimpleAction (Object delegate, String nameKey, String imageType) {
-        super (delegate.getClass (), nameKey, imageType);
+    public SimpleAction (Object delegate, String nameKey) {
+        super (delegate.getClass (), nameKey);
         mNameKey = nameKey;
         mObject = delegate;
 
@@ -54,40 +54,6 @@ public final class SimpleAction extends StandardAction {
                 "Did not find public void " + nameKey + " () in class " +
                 mObject.getClass () + " or any of its ancestors."
             );
-    }
-
-    /**
-     *  Constructs a StandardAction which will call a method of the
-     *  supplied delegateClass on the supplied object, whose name is identical
-     *  to the name key.
-     *
-     *  @exception RuntimeException     If such a method was not found.
-     */
-    public SimpleAction (Class<?> delegateClass, Object delegate, String nameKey, String imageType) {
-        super (delegateClass, nameKey, imageType);
-        mNameKey = nameKey;
-        mObject = delegate;
-
-        try {
-            mMethod = delegateClass.getDeclaredMethod (nameKey, NO_ARGS_SIG);
-            mMethod.setAccessible (true);
-        } catch (NoSuchMethodException x) {
-            throw new RuntimeException (x.toString ());
-        }
-    }
-
-    /**
-     *  Same as above, but hardcodes image type to <tt>gif</tt>.
-     */
-    public SimpleAction (Object delegate, String nameKey) {
-        this (delegate, nameKey, "gif");
-    }
-
-    /**
-     *  Same as above, but allows for specifying delegateClass.
-     */
-    public SimpleAction (Class<?> delegateClass, Object delegate, String nameKey) {
-        this (delegateClass, delegate, nameKey, "gif");
     }
 
     private void setCursor ( Cursor cursor ) {
