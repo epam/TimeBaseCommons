@@ -43,11 +43,14 @@ public abstract class StandardAction extends AbstractAction {
      *  @param nameKey  Used to look up the action properties.
      */
     public StandardAction (Class forClass, String nameKey) {
+        key = nameKey;
         setUpAction (this, forClass, nameKey);
     }
 
     public static final String []   IMAGE_EXTENSIONS = { ".gif", ".jpg", ".png" };
-    
+
+    private final String    key;
+
     public static void      setUpAction (Action action, Class <?> forClass, String nameKey) {
         String          className = forClass.getName ();
         int             dot = className.lastIndexOf ('.');
@@ -116,5 +119,10 @@ public abstract class StandardAction extends AbstractAction {
         } catch (MissingResourceException mrx) {
             //  Ignore the missing mnemonic
         }
+    }
+
+    @Override
+    public String toString () {
+        return getClass ().getSimpleName () + ":" + key;
     }
 }
