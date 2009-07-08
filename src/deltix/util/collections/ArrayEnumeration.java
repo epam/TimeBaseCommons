@@ -3,8 +3,7 @@ package deltix.util.collections;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
-public class ArrayEnumeration implements Enumeration {
-
+public class ArrayEnumeration <T> implements Enumeration <T> {
     private Object[] mArray;
     private int mIdx;
     private boolean mHasNext;
@@ -19,15 +18,16 @@ public class ArrayEnumeration implements Enumeration {
         return mHasNext;
     }
 
-    public Object nextElement() {
+    public T nextElement() {
 
         if (mHasNext) {
             Object o = mArray[mIdx];
             mIdx++;
             mHasNext = (mIdx < mArray.length);
-            return o;
-        } else throw new NoSuchElementException("No Elements left in Enumeration");
-
+            return (T) o;
+        } 
+        else
+            throw new NoSuchElementException("No Elements left in Enumeration");
     }
 
 }
