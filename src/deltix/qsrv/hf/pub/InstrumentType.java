@@ -4,15 +4,20 @@ package deltix.qsrv.hf.pub;
  *  Type of financial instrument
  */
 public enum InstrumentType {
-    EQUITY('S'),
-    OPTION('O'),
-    FUTURE('F'),
-    BOND('B'),
-    FX('X');
-    
+    EQUITY('S', "Stock"),
+    OPTION('O', "Option"),
+    FUTURE('F', "Futures"),
+    BOND('B', "Bond"),
+    FX('X', "Currency"),
+    INDEX('I', "Index"),
+    ETF('F', "ETF"),
+    CUSTOM('C', "Custom");
+
+
     private final char code;
+    private final String qoType;
     
-    InstrumentType (int code) { this.code = (char)code; }
+    private InstrumentType (int code, String qoType) { this.code = (char)code; this.qoType = qoType; }
          
     public char toChar () { return code; }  
          
@@ -22,18 +27,23 @@ public enum InstrumentType {
     	if (code == FUTURE.code) return FUTURE;
     	if (code == BOND.code)   return BOND;
     	if (code == FX.code)     return FX;
+    	if (code == INDEX.code)  return INDEX;
+        if (code == ETF.code)    return ETF;
+        if (code == CUSTOM.code) return CUSTOM;
     	
         throw new IllegalArgumentException ("Unknown InstrumentType code: " + code);
     }
 
     public String               toQOTypeString () {
-        switch (this) {
-            case EQUITY:    return "Stock";
-            case OPTION:    return "Option";
-            case FUTURE:    return "Futures";
-            case BOND:      return "Bond";
-            case FX:        return "Currency";
-            default:        throw new IllegalArgumentException (name ());
+        return qoType;
+    }
+
+    public static InstrumentType fromQOTypeString (String qoType) {
+        for (InstrumentType instrumentType : values()) {
+            if (instrumentType.qoType.equalsIgnoreCase(qoType))
+                return instrumentType;
         }
+
+        throw new IllegalArgumentException("Unknown InstrumentType qoType: " + qoType);
     }
 }
