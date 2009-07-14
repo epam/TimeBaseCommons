@@ -1,5 +1,6 @@
 package deltix.util.io;
 
+import deltix.util.lang.SortedProperties;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -593,7 +594,7 @@ public abstract class BasicIOUtil {
     public static Properties	readPropsFromFile (File file)
         throws IOException
     {
-        Properties		props = new Properties ();
+        Properties		props = new SortedProperties ();
         FileInputStream	fis = new FileInputStream (file);
 
         try {
@@ -659,7 +660,7 @@ public abstract class BasicIOUtil {
     public static Properties	readPropsFromClassPath (String relPath)
         throws IOException
     {
-        Properties		props = new Properties ();
+        Properties		props = new SortedProperties ();
         InputStream		is = openResourceAsStream (relPath);
 
         try {
