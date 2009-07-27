@@ -96,6 +96,22 @@ public class CSVXReader extends TextReader {
         return (swr.toString ());
     }
 
+    private static final String []      EMPTY = { };
+
+    public String []                    getCells () {
+        int         n = getNumCells ();
+
+        if (n == 0)
+            return (EMPTY);
+
+        String []   ret = new String [n];
+
+        for (int ii = 0; ii < n; ii++)
+            ret [ii] = getString (ii);
+
+        return (ret);
+    }
+
     public void                         writeLineTo (CSVWriter writer) 
         throws IOException
     {
