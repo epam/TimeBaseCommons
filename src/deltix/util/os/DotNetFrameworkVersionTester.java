@@ -13,12 +13,14 @@ public class DotNetFrameworkVersionTester {
 		return (existing.compareTo ( required ) >= 0);
 	}
 
-	public static boolean checkDotNetVersionRegistryKeyExistance( String version ) {
+	public static boolean checkDotNetVersionRegistryKeyExistance ( String version ) {
 		String[] versions = getDotNetVersions ( );
-		for (String vers : versions) {
-			if (compareVersion ( vers,
-			                     version ))
-				return true;
+		if (versions != null) {
+			for (String vers : versions) {
+				if (compareVersion ( vers,
+				                     version ))
+					return true;
+			}
 		}
 		return false;
 	}
@@ -68,7 +70,7 @@ public class DotNetFrameworkVersionTester {
 		}
 	}
 
-    static class StreamReader extends Thread {
+	static class StreamReader extends Thread {
 		private InputStream  is;
 		private StringWriter sw;
 
@@ -93,7 +95,7 @@ public class DotNetFrameworkVersionTester {
 	}
 
 	public static void main ( String s[] ) {
-		System.out.println ( "DotNET v2.0 is installed: " + checkDotNetVersionRegistryKeyExistance( "2.0" ) );
+		System.out.println ( "DotNET v2.0 is installed: " + checkDotNetVersionRegistryKeyExistance ( "2.0" ) );
 		System.out.println ( "Installed DotNET versions : " );
 		String[] versions = getDotNetVersions ( );
 		for (String version : versions)
