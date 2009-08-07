@@ -6,7 +6,7 @@ import java.util.TimeZone;
  *
  */
 public abstract class TimeZoneUtils {
-    private static final long           D = 86400000;
+    public static final long            D = 86400000;
 
     public static long                  getMidnightOn (TimeZone tz, final long absTime) {
         /**
