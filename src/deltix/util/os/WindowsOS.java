@@ -51,8 +51,20 @@ public class WindowsOS {
 
         if (pf == null)
             pf = getSystemDrive () + "\\Documents and Settings\\All Users";
+        
+        if (!new File ( pf ).exists ( ))
+            pf = getPublic ( );
 
         return (pf);
+    }
+    
+    public static final String      getPublic () {
+        String      p = System.getenv ("PUBLIC");
+
+        if (p == null)
+            p = getSystemDrive () + "\\Users\\Public";
+
+        return (p);
     }
 
     public static final String      getUserName () {
@@ -72,7 +84,7 @@ public class WindowsOS {
 
         return (pf);
     }
-
+    
     public static final File       getDotNetHome () {
         return (getDotNetHome (-1));
     }
@@ -126,6 +138,8 @@ public class WindowsOS {
     }
     
     public static void main (String [] args) throws Exception {
+        System.out.println ( System.getProperty("os.name") );
+        System.out.println ( System.getenv ("PUBLIC") );
         System.out.println (getDotNetHome ());
     }
 }
