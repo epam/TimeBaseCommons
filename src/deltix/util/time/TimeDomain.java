@@ -13,6 +13,6 @@ public interface TimeDomain {
     public void         setTimeZone (TimeZone tz);
     
     public long         transform (long t, boolean snapOutOfRange);
-    
+
     public long         reverse (long t);
 }
