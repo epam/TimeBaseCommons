@@ -57,6 +57,23 @@ public class TimeDomain {
         return (NOT_FOUND | pos);
     }
 
+    /**
+     *  Return interval index to which cumulative open time t belongs.
+     */
+    private int             searchOpen (long t) {
+        if (t < 0)
+            return (-1);
+
+        int     n = cumTimes.size ();
+
+        int     pos = Arrays.binarySearch (cumTimes.getInternalBuffer (), 0, n, t);
+
+        if (pos < 0)
+            pos = -pos - 1;
+       
+        return (pos);
+    }
+
     private void            insert (int idx, long open, long close) {
         openTimes.add (idx, open);
         closeTimes.add (idx, close);        
@@ -219,5 +236,28 @@ public class TimeDomain {
         }
 
         return (openTimes.getLong (pos) + t - getCumTimeUpTo (pos));
+    }
+
+    /**
+     *
+     * @param from      From time in open space
+     * @param to        To time in open space
+     * @return Array of boundary times in cumulative open space (corresponding to
+     *          the open time of each boundary interval).
+     */
+    public long []          getBoundaries (long from, long to) {
+        int         a = searchOpen (from);
+        int         b = searchOpen (to);
+        int         n = b - a;
+
+        if (n == 0)
+            return (null);
+
+        long []     boundaries = new long [n];
+
+        for (int ii = 0; ii < n; ii++)
+            boundaries [ii] = cumTimes.getLong (a + ii);
+                
+        return (boundaries);
     }
 }
