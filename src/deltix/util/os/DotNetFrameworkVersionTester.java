@@ -6,7 +6,7 @@ import java.util.*;
 public class DotNetFrameworkVersionTester {
 
 	private static final String REGQUERY_UTIL = "reg query ";
-	private static final String DOT_NET_CMD   = REGQUERY_UTIL + "\"HKLM\\SOFTWARE\\Microsoft\\.NETFramework\\policy";
+	private static final String DOT_NET_CMD   = REGQUERY_UTIL + "HKLM\\SOFTWARE\\Microsoft\\.NETFramework\\policy";
 
 	public static boolean compareVersion ( String existing,
 	                                       String required ) {
@@ -66,7 +66,8 @@ public class DotNetFrameworkVersionTester {
 			}
 			return resultArray.toArray ( new String[resultArray.size ( )] );
 		} catch (Exception e) {
-			return null;
+            throw new RuntimeException(e);
+			//return null;
 		}
 	}
 
