@@ -10,6 +10,7 @@ import java.util.Arrays;
 public class WindowsOS {
     public static final boolean     IS_X64;
     public static final boolean     IS_X86;
+    public static final boolean     IS_VISTA;
 
     static {
         String      PROC_ID = System.getenv ("PROCESSOR_IDENTIFIER");
@@ -17,6 +18,9 @@ public class WindowsOS {
         IS_X64 = PROC_ID != null && PROC_ID.contains ("64");
 
         IS_X86 = !IS_X64;
+        
+        String osName = System.getProperty ( "os.name" );
+        IS_VISTA = osName.startsWith ( "Windows Vista" );
     }
 
     public static final String      getSystemDrive () {
@@ -51,10 +55,7 @@ public class WindowsOS {
 
         if (pf == null)
             pf = getSystemDrive () + "\\Documents and Settings\\All Users";
-        
-        if (!new File ( pf ).exists ( ))
-            pf = getPublic ( );
-
+    
         return (pf);
     }
     
@@ -138,8 +139,6 @@ public class WindowsOS {
     }
     
     public static void main (String [] args) throws Exception {
-        System.out.println ( System.getProperty("os.name") );
-        System.out.println ( System.getenv ("PUBLIC") );
         System.out.println (getDotNetHome ());
     }
 }
