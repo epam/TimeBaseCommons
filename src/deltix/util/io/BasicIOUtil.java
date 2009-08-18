@@ -740,7 +740,9 @@ public abstract class BasicIOUtil {
             String          name = zentry.getName ();
             File            destFile = new File (destDir, name);
 
-            if (!name.endsWith ("/")) {
+            if (name.endsWith ("/")) 
+                mkDirIfNeeded (destFile);
+            else {
                 mkParentDirIfNeeded (destFile);
 
                 copyToFile (zis, destFile, zentry.getSize (), buffer);
