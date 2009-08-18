@@ -73,6 +73,25 @@ public abstract class JideUtil {
         dialog.pack();
         dialog.setVisible(true);
     }
+
+    public static void          showErrorMessage(
+            Component                  parent,
+            String                     caption,
+            String                     title,
+            String                     message) {
+
+         JideOptionPane optionPane = new JideOptionPane(
+                "Click \"Details\" button to see more information ... ",
+                JOptionPane.ERROR_MESSAGE,
+                JideOptionPane.CLOSE_OPTION);
+        optionPane.setTitle(title);
+        optionPane.setDetails(message);
+
+        JDialog dialog = optionPane.createDialog(parent, caption);
+        dialog.setResizable(true);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
         
     public static void		    staticHandle (
         Component                   parent, 
