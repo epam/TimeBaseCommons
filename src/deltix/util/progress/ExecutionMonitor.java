@@ -6,13 +6,6 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by IntelliJ IDEA.
- * User: KarpovichA
- * Date: Aug 17, 2009
- * Time: 12:31:43 PM
- * To change this template use File | Settings | File Templates.
- */
 public class ExecutionMonitor implements IExecutionMonitor {
 
     private ArrayList<ExecutionMonitor> children = new ArrayList<ExecutionMonitor>();
@@ -26,8 +19,7 @@ public class ExecutionMonitor implements IExecutionMonitor {
 
     private CountDownLatch counter;
 
-    public ExecutionMonitor() {
-        setStartTime();
+    public ExecutionMonitor() {        
     }
 
     public double getProgress() {
@@ -43,17 +35,14 @@ public class ExecutionMonitor implements IExecutionMonitor {
         return startTime;
     }
 
-    public synchronized void setStartTime(long time) {
-        startTime = time;
-    }
-
-    public synchronized void setStartTime() {
+    public void start() {
+        counter = new CountDownLatch(children.size() + 1);
         startTime = System.currentTimeMillis();
     }
 
-    public synchronized boolean isAborted() {
-        return isAborted;
-    }
+//    public synchronized boolean isAborted() {
+//        return isAborted;
+//    }
 
     public synchronized void abort() {
         isAborted = true;
@@ -62,7 +51,8 @@ public class ExecutionMonitor implements IExecutionMonitor {
             for (ExecutionMonitor child : children)
                 child.abort();
         }
-
+        if (hasParent())
+            parent.abort();
     }
 
     public synchronized void onComplete(ExecutionMonitor child) {
@@ -77,16 +67,14 @@ public class ExecutionMonitor implements IExecutionMonitor {
             onComplete(null);
     }
 
-    public boolean waitForComplete(long timeout) {
-        counter = new CountDownLatch(children.size() + 1);
-
+    public boolean await(long timeout) {
         try {
             long time = 0;
             while (time <= timeout) {
                 time += 1000;
                 if (counter.await(Math.min(1000, timeout - time), TimeUnit.MILLISECONDS))
                     return true;
-                if (isAborted())
+                if (getStatus() == ExecutionStatus.Aborted)
                     return false;
             }
             return false;
@@ -104,16 +92,15 @@ public class ExecutionMonitor implements IExecutionMonitor {
         this.weight = weight;
     }
 
-    public synchronized void addMonitor(IExecutionMonitor monitor) {
-        // TODO: refactor
-        children.add((ExecutionMonitor) monitor);
-        ((ExecutionMonitor) monitor).parent = this;
+    public synchronized void addMonitor(ExecutionMonitor monitor) {
+        children.add(monitor);
+        monitor.parent = this;
     }
 
     private synchronized void updateProgress()
     {
-        if (startTime == 0)
-            setStartTime();
+        if (startTime == 0) // not started 
+            return;
 
         double minProgress = -1;
 
@@ -163,5 +150,16 @@ public class ExecutionMonitor implements IExecutionMonitor {
 
     private boolean hasParent() {
         return parent != null;
+    }
+
+    public synchronized ExecutionStatus getStatus() {
+        if (isAborted)
+            return ExecutionStatus.Aborted;
+        if (counter != null && counter.getCount() > 0)
+            return ExecutionStatus.Running;
+        if (counter != null && counter.getCount() == 0)
+            return ExecutionStatus.Completed;
+
+        return ExecutionStatus.None;
     }
 }
