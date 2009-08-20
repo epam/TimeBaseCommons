@@ -44,9 +44,9 @@ public class SimpleStringCodec {
             char        ch = s.charAt (ii);
             
             if (ch == open || ch == close || shouldEscape (ch)) {
-                out.append ('_');
+                out.append (open);
                 out.append ((int) ch);
-                out.append ('_');
+                out.append (close);
             }
             else
                 out.append (ch);
