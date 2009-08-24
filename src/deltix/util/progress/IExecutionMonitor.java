@@ -11,4 +11,5 @@ public interface IExecutionMonitor {
     ExecutionStatus getStatus();
 
     boolean await(long timeout);
+    boolean await();
 }

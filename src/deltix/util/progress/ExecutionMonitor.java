@@ -45,14 +45,18 @@ public class ExecutionMonitor implements IExecutionMonitor {
 //    }
 
     public synchronized void abort() {
+        if (isAborted)
+            return;
+
         isAborted = true;
-        
-        if (hasChildren()) {
+
+        if (hasParent()) {
+            parent.abort();
+        }
+        else if (hasChildren()) {
             for (ExecutionMonitor child : children)
                 child.abort();
         }
-        if (hasParent())
-            parent.abort();
     }
 
     public synchronized void onComplete(ExecutionMonitor child) {
@@ -65,6 +69,20 @@ public class ExecutionMonitor implements IExecutionMonitor {
             parent.onComplete(this);
         else
             onComplete(null);
+    }
+
+    public boolean await() {
+         try {
+            while (true) {
+                if (counter.await(1000, TimeUnit.MILLISECONDS))
+                    return true;
+                if (getStatus() == ExecutionStatus.Aborted)
+                    return false;
+            }
+
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 
     public boolean await(long timeout) {
