@@ -22,10 +22,10 @@ public final class SelfFlushingBufferedOutputStream extends BufferedOutputStream
                 
                 synchronized (SelfFlushingBufferedOutputStream.this) { 
                     interval = flushInterval;
-                    
-                    if (exception == null)
-                        try {                                                
-                            flush ();
+
+                    if (exception == null && count > 0)
+                        try {
+                            flush ();                            
                         } catch (Throwable x) {
                             exception = x;
                         }      
