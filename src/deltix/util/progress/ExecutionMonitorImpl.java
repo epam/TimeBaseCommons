@@ -1,15 +1,13 @@
 package deltix.util.progress;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
-
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class ExecutionMonitor implements IExecutionMonitor {
+public class ExecutionMonitorImpl implements ExecutionMonitor {
 
-    private ArrayList<ExecutionMonitor> children = new ArrayList<ExecutionMonitor>();
-    private ExecutionMonitor parent;
+    private ArrayList<ExecutionMonitorImpl> children = new ArrayList<ExecutionMonitorImpl>();
+    private ExecutionMonitorImpl parent;
 
     private double progress;
     private long startTime = 0;
@@ -19,7 +17,7 @@ public class ExecutionMonitor implements IExecutionMonitor {
 
     private CountDownLatch counter;
 
-    public ExecutionMonitor() {        
+    public ExecutionMonitorImpl() {
     }
 
     public double getProgress() {
@@ -54,12 +52,12 @@ public class ExecutionMonitor implements IExecutionMonitor {
             parent.abort();
         }
         else if (hasChildren()) {
-            for (ExecutionMonitor child : children)
+            for (ExecutionMonitorImpl child : children)
                 child.abort();
         }
     }
 
-    public synchronized void onComplete(ExecutionMonitor child) {
+    public synchronized void onComplete(ExecutionMonitorImpl child) {
         counter.countDown();
     }
 
@@ -110,7 +108,7 @@ public class ExecutionMonitor implements IExecutionMonitor {
         this.weight = weight;
     }
 
-    public synchronized void addMonitor(ExecutionMonitor monitor) {
+    public synchronized void addMonitor(ExecutionMonitorImpl monitor) {
         children.add(monitor);
         monitor.parent = this;
     }
@@ -127,7 +125,7 @@ public class ExecutionMonitor implements IExecutionMonitor {
             progress = 0;
             double totalWeight = 0;
 
-            for (ExecutionMonitor child : children)
+            for (ExecutionMonitorImpl child : children)
             {
                 if (minProgress == -1 || child.progress < minProgress)
                     minProgress = child.progress;
