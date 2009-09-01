@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package deltix.data.redsky.util.collection;
+package deltix.util.collections;
 
 /**
  *
@@ -18,7 +18,7 @@ public interface CircularQueue<E> {
      * if no space is currently available.
      *
      * <p>This implementation returns <tt>true</tt> if <tt>offer</tt> succeeds,
-     * else throws an <tt>IllegalStateException</tt>.
+     * else throws an <tt>IllegalStateException</tt>.</p>
      *
      * @param e the element to add
      * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})

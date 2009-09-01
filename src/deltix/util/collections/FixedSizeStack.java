@@ -1,4 +1,4 @@
-package deltix.data.redsky.util.collection;
+package deltix.util.collections;
 
 public final class FixedSizeStack<E> {
 

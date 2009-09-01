@@ -1,65 +1,64 @@
-package deltix.data.redsky.util.collection;
+package deltix.util.collections;
 
 /**
  *
  * @author PaharelauK
  */
-public class CircularBoundedQueue<E> implements CircularQueue<E>{
-
-
+public class SynchronizedCircularBoundedQueue<E> implements CircularQueue<E>{ 
+    
+    
     /** The queued items  */
     private final E[] mItems;
-
+    
     /** items index for next take, poll or remove */
     private int mTakeIndex = 0;
-
+    
     /** items index for next put, offer, or add. */
     private int mPutIndex = 0;
-
+    
     /** Number of items in the queue */
     private int mCount;
-
-    private final int mCapacity;
-
-
+    
+  
     @SuppressWarnings("unchecked")
-    public CircularBoundedQueue(int capacity) {
+    public SynchronizedCircularBoundedQueue(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException();
         }
-        mCapacity = capacity;
         this.mItems = (E[]) new Object[capacity];
     }
-
+    
     // Internal helper methods
 
     /**
      * Circularly increment i.
      */
-    private final int inc(int i) {
-        return (++i == mCapacity) ? 0 : i;
+    final int inc(int i) {
+        return (++i == mItems.length) ? 0 : i;
     }
 
     /**
      * Inserts element at current put position.
      */
-    private final void insert(E x) {
+    private void insert(E x) {
         mItems[mPutIndex] = x;
         mPutIndex = inc(mPutIndex);
         ++mCount;
+        notifyAll();
     }
 
     /**
      * Extracts element at current take position.
      */
-    private final E extract() {
+    private E extract() {
         E x = mItems[mTakeIndex];
         mItems[mTakeIndex] = null;
         mTakeIndex = inc(mTakeIndex);
         --mCount;
+        notifyAll();
         return x;
     }
-
+    
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
@@ -67,10 +66,10 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
      * if no space is currently available.
      *
      * <p>This implementation returns <tt>true</tt> if <tt>offer</tt> succeeds,
-     * else throws an <tt>IllegalStateException</tt>.
+     * else throws an <tt>IllegalStateException</tt>.</p>
      *
      * @param e the element to add
-     * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})
+     * @return <tt>true</tt> (as specified by {@link Collection#add})
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to capacity restrictions
      * @throws ClassCastException if the class of the specified element
@@ -80,7 +79,7 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
      * @throws IllegalArgumentException if some property of this element
      *         prevents it from being added to this queue
      */
-    public final boolean add(E e) {
+    public boolean add(E e) {
         if (offer(e)) {
             return true;
         } else {
@@ -97,38 +96,63 @@ public class CircularBoundedQueue<E> implements CircularQueue<E>{
      *
      * @throws NullPointerException if the specified element is null
      */
-    private final boolean offer(E e) {
+    public synchronized boolean offer(E e) {
         if (e == null) {
             throw new NullPointerException();
         }
-        if (mCount == mCapacity) {
+        if (mCount == mItems.length) {
             return false;
         } else {
             insert(e);
             return true;
         }
     }
+    
+    /**
+     * Inserts the specified element at the tail of this queue, waiting
+     * for space to become available if the queue is full.
+     */
+    public synchronized void put(E e) throws InterruptedException {
+        if (e == null) {
+            throw new NullPointerException();
+        }
+        try {
+            while (mCount == mItems.length) {
+                wait();
+            }
+        } catch (InterruptedException ie) {
+            notifyAll();
+            throw ie;
+        }
+        insert(e);
+    }
+    
 
-
-    public final E remove(){
-        if (mCount == 0)
-             return null;
+    public synchronized E take() throws InterruptedException {
+        try {
+            while (mCount == 0) {
+                wait();
+            }
+        } catch (InterruptedException ie) {
+            notifyAll();
+            throw ie;
+        }
         E x = extract();
         return x;
     }
+
+    public E remove() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    
 
     /**
      * Returns the number of elements in this queue.
      *
      * @return the number of elements in this queue
      */
-    public final int count() {
+    public synchronized int size() {
         return mCount;
     }
-
-    public int capacity() {
-        return mCapacity;
-    }
-
-
 }
