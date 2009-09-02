@@ -12,323 +12,324 @@ import com.jidesoft.tree.*;
 
 public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
-	public static Locale LOCALE = Locale.getDefault ( );
+    public static Locale LOCALE = Locale.getDefault ( );
 
-	public static final Object findTreeNode ( JTree tree,
-	                                          Object userObject ) {
-		Object root = tree.getModel ( ).getRoot ( );
-		// Traverse tree from root
-		return findTreeNode ( tree,
-		                      new TreePath ( root ),
-		                      userObject );
-	}
+    public static final Object findTreeNode ( final JTree tree,
+                                              final Object userObject ) {
+        final Object root = tree.getModel ( ).getRoot ( );
+        // Traverse tree from root
+        return findTreeNode ( tree,
+                              new TreePath ( root ),
+                              userObject );
+    }
 
-	public static final Object findTreeNode ( JTree tree,
-	                                          TreePath parent,
-	                                          Object userObject ) {
-		// Traverse children
-		Object node = parent.getLastPathComponent ( );
+    public static final Object findTreeNode ( final JTree tree,
+                                              final TreePath parent,
+                                              final Object userObject ) {
+        // Traverse children
+        final Object node = parent.getLastPathComponent ( );
 
-		if (node instanceof BaseMutableTreeNode
-		        && JideSwingUtilities.equals ( userObject,
-		                                       ((BaseMutableTreeNode) node).getUserObject ( ) )) {
-			return node;
-		}
+        if (node instanceof BaseMutableTreeNode
+            && JideSwingUtilities.equals ( userObject,
+                                           ((BaseMutableTreeNode) node).getUserObject ( ) )) {
+            return node;
+        }
 
-		if (tree.getModel ( ).getChildCount ( node ) >= 0) {
-			for (int i = 0; i < tree.getModel ( ).getChildCount ( node ); i++) {
-				Object n = tree.getModel ( ).getChild ( node,
-				                                        i );
-				TreePath path = parent.pathByAddingChild ( n );
-				Object result = findTreeNode ( tree,
-				                               path,
-				                               userObject );
-				if (result != null) {
-					return result;
-				}
-			}
-		}
-		return null;
-	}
+        if (tree.getModel ( ).getChildCount ( node ) >= 0) {
+            for (int i = 0; i < tree.getModel ( ).getChildCount ( node ); i++) {
+                final Object n = tree.getModel ( ).getChild ( node,
+                                                              i );
+                final TreePath path = parent.pathByAddingChild ( n );
+                final Object result = findTreeNode ( tree,
+                                                     path,
+                                                     userObject );
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
 
-	protected final JPopupMenu mMenu = new JPopupMenu ( );
+    protected final JPopupMenu _menu = new JPopupMenu ( );
 
-	protected final JTree      mTree;
+    protected final JTree      _tree;
 
-	public BaseMutableTreeNode ( Object userObject,
-	                             boolean allowsChildren,
-	                             JTree tree ) {
-		super ( userObject,
-		        allowsChildren );
-		mTree = tree;
-		createMenu ( );
-	}
+    public BaseMutableTreeNode ( final Object userObject,
+                                 final boolean allowsChildren,
+                                 final JTree tree ) {
+        super ( userObject,
+                allowsChildren );
+        _tree = tree;
+        createMenu ( );
+    }
 
-	public BaseMutableTreeNode ( Object userObject,
-	                             JTree tree ) {
-		super ( userObject );
-		mTree = tree;
-		createMenu ( );
-	}
+    public BaseMutableTreeNode ( final Object userObject,
+                                 final JTree tree ) {
+        super ( userObject );
+        _tree = tree;
+        createMenu ( );
+    }
 
-	protected void createMenu ( ) {
-	}
+    protected void createMenu ( ) {
+    }
 
-	public final JTree getTree ( ) {
-		return mTree;
-	}
+    public final JTree getTree ( ) {
+        return _tree;
+    }
 
-	protected final void updateChildren ( ) {
-		synchronized (this) {
-			if (!_loaded) {
-				_loaded = true;
-				initChildren ( );
-			}
-		}
-	}
+    protected final void updateChildren ( ) {
+        synchronized (this) {
+            if (!_loaded) {
+                _loaded = true;
+                initChildren ( );
+            }
+        }
+    }
 
-	public void reload ( ) {
-		clear ( );
-		updateChildren ( );
-		refreshTree ( );
-	}
+    public void reload ( ) {
+        clear ( );
+        updateChildren ( );
+        refreshTree ( );
+    }
 
-	public String getLabelText ( ) {
-		return userObject.toString ( );
-	}
+    public String getLabelText ( ) {
+        return userObject.toString ( );
+    }
 
-	public Icon getIcon ( ) {
-		return null;
-	}
+    public Icon getIcon ( ) {
+        return null;
+    }
 
-	protected String getTooltip ( ) {
-		return null;
-	}
+    protected String getTooltip ( ) {
+        return null;
+    }
 
-	public TreePath getTreePath ( ) {
-		int depth = 1;
-		TreeNode node = this;
+    public TreePath getTreePath ( ) {
+        int depth = 1;
+        TreeNode node = this;
 
-		for (;;) {
-			TreeNode next = node.getParent ( );
+        for (;;) {
+            final TreeNode next = node.getParent ( );
 
-			if (next == null)
-				break;
+            if (next == null)
+                break;
 
-			depth++;
-			node = next;
-		}
+            depth++;
+            node = next;
+        }
 
-		Object[] path = new Object[depth];
+        final Object[] path = new Object[depth];
 
-		node = this;
+        node = this;
 
-		for (;;) {
-			depth--;
-			path[depth] = node;
+        for (;;) {
+            depth--;
+            path[depth] = node;
 
-			if (depth == 0)
-				break;
+            if (depth == 0)
+                break;
 
-			node = node.getParent ( );
-		}
+            node = node.getParent ( );
+        }
 
-		return (new TreePath ( path ));
-	}
+        return (new TreePath ( path ));
+    }
 
-	protected TreeModel getActualModel ( ) {
-		TreeModel model = mTree.getModel ( );
+    protected TreeModel getActualModel ( ) {
+        TreeModel model = _tree.getModel ( );
 
-		FilterableTreeModel filterableTreeModel = getFilterableTreeModel ( );
-		if (filterableTreeModel != null) {
-			model = filterableTreeModel.getActualModel ( );
-		}
+        final FilterableTreeModel filterableTreeModel = getFilterableTreeModel ( );
+        if (filterableTreeModel != null) {
+            model = filterableTreeModel.getActualModel ( );
+        }
 
-		return model;
-	}
+        return model;
+    }
 
-	protected FilterableTreeModel getFilterableTreeModel ( ) {
-		TreeModel model = mTree.getModel ( );
-		if (model instanceof FilterableTreeModel) {
-			return (FilterableTreeModel) model;
-		}
-		return null;
-	}
+    protected FilterableTreeModel getFilterableTreeModel ( ) {
+        final TreeModel model = _tree.getModel ( );
+        if (model instanceof FilterableTreeModel) {
+            return (FilterableTreeModel) model;
+        }
+        return null;
+    }
 
-	protected DefaultTreeModel getActualDefaultTreeModel ( ) {
-		TreeModel model = getActualModel ( );
-		if (model instanceof DefaultTreeModel) {
-			return (DefaultTreeModel) model;
-		}
-		return null;
-	}
+    protected DefaultTreeModel getActualDefaultTreeModel ( ) {
+        final TreeModel model = getActualModel ( );
+        if (model instanceof DefaultTreeModel) {
+            return (DefaultTreeModel) model;
+        }
+        return null;
+    }
 
-	public final void delete ( ) {
-		DefaultTreeModel model = getActualDefaultTreeModel ( );
-		if (model != null) {
-			model.removeNodeFromParent ( this );
-		}
-		refreshTree ( );
-	}
+    public final void delete ( ) {
+        final DefaultTreeModel model = getActualDefaultTreeModel ( );
+        if (model != null) {
+            model.removeNodeFromParent ( this );
+        }
+        refreshTree ( );
+    }
 
-	public final void refreshTree ( ) {
-		FilterableTreeModel _displayTreeModel = getFilterableTreeModel ( );
-		if (_displayTreeModel != null) {
+    public final void refreshTree ( ) {
+        final FilterableTreeModel _displayTreeModel = getFilterableTreeModel ( );
+        if (_displayTreeModel != null) {
 
-			// save selection and expansion states
-			Enumeration<TreePath> enumeration = null;
-			TreePath[] selected = null;
-			if (getTree ( ) != null) {
-				enumeration = TreeUtils.saveExpansionStateByTreePath ( getTree ( ) );
-				selected = TreeUtils.saveSelection ( getTree ( ) );
-			}
+            // save selection and expansion states
+            Enumeration<TreePath> enumeration = null;
+            TreePath[] selected = null;
+            if (getTree ( ) != null) {
+                enumeration = TreeUtils.saveExpansionStateByTreePath ( getTree ( ) );
+                selected = TreeUtils.saveSelection ( getTree ( ) );
+            }
 
-			_displayTreeModel.refresh ( );
+            _displayTreeModel.refresh ( );
 
-			// restore selection and expansion states
-			if (getTree ( ) != null) {
-				if (enumeration != null) {
-					TreeUtils.loadExpansionStateByTreePath ( getTree ( ),
-					                                         enumeration );
-				}
-				if (selected != null) {
-					TreeUtils.loadSelection ( getTree ( ),
-					                          selected );
-				}
-			}
-		}
-	}
+            // restore selection and expansion states
+            if (getTree ( ) != null) {
+                if (enumeration != null) {
+                    TreeUtils.loadExpansionStateByTreePath ( getTree ( ),
+                                                             enumeration );
+                }
+                if (selected != null) {
+                    TreeUtils.loadSelection ( getTree ( ),
+                                              selected );
+                }
+            }
+        }
+    }
 
-	public void nodeChanged ( ) {
-		DefaultTreeModel model = getActualDefaultTreeModel ( );
-		if (model != null) {
-			model.nodeChanged ( this );
-		}
-	}
+    public void nodeChanged ( ) {
+        final DefaultTreeModel model = getActualDefaultTreeModel ( );
+        if (model != null) {
+            model.nodeChanged ( this );
+        }
+    }
 
-	public void nodeStructureChanged ( ) {
-		DefaultTreeModel model = getActualDefaultTreeModel ( );
-		if (model != null) {
-			model.nodeStructureChanged ( this );
-		}
-	}
+    public void nodeStructureChanged ( ) {
+        final DefaultTreeModel model = getActualDefaultTreeModel ( );
+        if (model != null) {
+            model.nodeStructureChanged ( this );
+        }
+    }
 
-	public final void insertNodeInto ( BaseMutableTreeNode node ) {
-		DefaultTreeModel model = getActualDefaultTreeModel ( );
-		if (model != null) {
-			model.insertNodeInto ( node,
-			                       this,
-			                       this.getChildCount ( ) );
-		} else {
-			reload ( );
-		}
+    public final void insertNodeInto ( final BaseMutableTreeNode node ) {
+        final DefaultTreeModel model = getActualDefaultTreeModel ( );
+        if (model != null) {
+            model.insertNodeInto ( node,
+                                   this,
+                                   this.getChildCount ( ) );
+        } else {
+            reload ( );
+        }
 
-		add ( node );
-	}
+        add ( node );
+    }
 
-	public final void select ( ) {
-		/**
-		 * Reset selection momentarily in order to force the reloading of the
-		 * node's form.
-		 */
-		mTree.setSelectionPath ( null );
-		TreePath path = getTreePath ( );
-		mTree.setSelectionPath ( path );
-		mTree.expandPath ( path );
-	}
+    public final void select ( ) {
+        /**
+         * Reset selection momentarily in order to force the reloading of the
+         * node's form.
+         */
+        _tree.setSelectionPath ( null );
+        final TreePath path = getTreePath ( );
+        _tree.setSelectionPath ( path );
+        _tree.expandPath ( path );
+    }
 
-	public JPopupMenu getMenu ( ) {
-		return mMenu;
-	}
+    public JPopupMenu getMenu ( ) {
+        return _menu;
+    }
 
-	/**
-	 * Return the font for the label to display.
-	 */
-	protected Font getFont ( Font defFont ) {
-		return (defFont);
-	}
+    /**
+     * Return the font for the label to display.
+     */
+    protected Font getFont ( final Font defFont ) {
+        return (defFont);
+    }
 
-	/**
-	 * Return the color for the label to display, or null.
-	 */
-	protected Color getColor ( ) {
-		return (null);
-	}
+    /**
+     * Return the color for the label to display, or null.
+     */
+    protected Color getColor ( ) {
+        return (null);
+    }
 
-	/**
-	 * User can override this method instead of {@link #configureLabel}, to
-	 * realize the full power of JTree.
-	 */
-	private JComponent render ( boolean selected,
-	                            boolean hasFocus,
-	                            JLabel defaultRendering ) {
-		configureLabel ( defaultRendering,
-		                 selected,
-		                 hasFocus );
-		return (defaultRendering);
-	}
+    /**
+     * User can override this method instead of {@link #configureLabel}, to
+     * realize the full power of JTree.
+     */
+    private JComponent render ( final boolean selected,
+                                final boolean hasFocus,
+                                final JLabel defaultRendering ) {
+        configureLabel ( defaultRendering,
+                         selected,
+                         hasFocus );
+        return (defaultRendering);
+    }
 
-	/**
-	 * User can override this method instead of {@link #getColor},
-	 * {@link #getFont}, {@link #getLabelText} and {@link #getIcon}. Default
-	 * implementation sets the above properties in the label.
-	 */
-	public void configureLabel ( JLabel label,
-	                             boolean selected,
-	                             boolean hasFocus ) {
+    /**
+     * User can override this method instead of {@link #getColor},
+     * {@link #getFont}, {@link #getLabelText} and {@link #getIcon}. Default
+     * implementation sets the above properties in the label.
+     */
+    public void configureLabel ( final JLabel label,
+                                 final boolean selected,
+                                 final boolean hasFocus ) {
 
-		Color c = getColor ( );
-		Font f = getFont ( label.getFont ( ) );
+        final Color c = getColor ( );
+        final Font f = getFont ( label.getFont ( ) );
 
-		if (c != null)
-			label.setForeground ( c );
+        if (c != null)
+            label.setForeground ( c );
 
-		if (f != null)
-			label.setFont ( f );
+        if (f != null)
+            label.setFont ( f );
 
-		Icon icon = getIcon ( );
+        final Icon icon = getIcon ( );
 
-		label.setIcon ( icon );
-		label.setDisabledIcon ( icon );
-		label.setText ( getLabelText ( ) );
-	}
+        label.setIcon ( icon );
+        label.setDisabledIcon ( icon );
+        label.setText ( getLabelText ( ) );
+    }
 
-	public static class NodeRenderer extends DefaultTreeCellRenderer {
+    public static class NodeRenderer extends DefaultTreeCellRenderer {
 
-		private Font mDefaultFont = getFont ( );
+        private final Font _defaultFont = getFont ( );
 
-		public Component getTreeCellRendererComponent ( JTree jTree,
-		                                                Object node,
-		                                                boolean selected,
-		                                                boolean expanded,
-		                                                boolean leaf,
-		                                                int row,
-		                                                boolean hasFocus ) {
+        @Override
+        public Component getTreeCellRendererComponent ( final JTree jTree,
+                                                        final Object node,
+                                                        final boolean selected,
+                                                        final boolean expanded,
+                                                        final boolean leaf,
+                                                        final int row,
+                                                        final boolean hasFocus ) {
 
-			JLabel label = (JLabel) super.getTreeCellRendererComponent ( jTree,
-			                                                             node,
-			                                                             selected,
-			                                                             expanded,
-			                                                             leaf,
-			                                                             row,
-			                                                             hasFocus );
+            final JLabel label = (JLabel) super.getTreeCellRendererComponent ( jTree,
+                                                                               node,
+                                                                               selected,
+                                                                               expanded,
+                                                                               leaf,
+                                                                               row,
+                                                                               hasFocus );
 
-			if (node instanceof BaseMutableTreeNode) {
+            if (node instanceof BaseMutableTreeNode) {
 
-				String tootip = ((BaseMutableTreeNode) node).getTooltip ( );
-				if (tootip != null)
-					setToolTipText ( tootip );
-			}
+                final String tootip = ((BaseMutableTreeNode) node).getTooltip ( );
+                if (tootip != null)
+                    setToolTipText ( tootip );
+            }
 
-			/**
-			 * Reset font because it may have been tweaked
-			 */
-			label.setFont ( mDefaultFont );
+            /**
+             * Reset font because it may have been tweaked
+             */
+            label.setFont ( _defaultFont );
 
-			BaseMutableTreeNode anode = (BaseMutableTreeNode) node;
-			return anode.render ( selected,
-			                      hasFocus,
-			                      label );
-		}
-	}
+            final BaseMutableTreeNode anode = (BaseMutableTreeNode) node;
+            return anode.render ( selected,
+                                  hasFocus,
+                                  label );
+        }
+    }
 }
