@@ -1,11 +1,14 @@
 package deltix.util.time;
 
+import deltix.qsrv.pxml.StringIntervalAdapter;
 import deltix.util.text.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Represents an interval (also known as time span in some systems), which
  * can be added to, or subtracted from, a date. This class is immutable.
  */
+@XmlJavaTypeAdapter (StringIntervalAdapter.class)
 public abstract class Interval {
     public static final Interval    ZERO = null;
     public static final Interval DAY = Interval.parseQQL("1D");
