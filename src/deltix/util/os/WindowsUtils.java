@@ -1,7 +1,6 @@
 package deltix.util.os;
 
 import java.io.*;
-import java.util.prefs.*;
 
 public class WindowsUtils {
 

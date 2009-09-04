@@ -1,8 +1,7 @@
 package deltix.util.os;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
 
 /**
  *
@@ -64,8 +63,8 @@ public class WindowsOS {
 
         if (p == null)
             p = getSystemDrive () + "\\Users\\Public";
-
         return (p);
+        
     }
 
     public static final String      getUserName () {
