@@ -6,7 +6,8 @@ package deltix.util.text;
 public class SimpleStringCodec {
     public static final SimpleStringCodec    DEFAULT_INSTANCE = 
         new SimpleStringCodec ();
-    
+
+    private boolean             caseInsensitive = true;
     private final char          open;
     private final char          close;
     
@@ -24,7 +25,7 @@ public class SimpleStringCodec {
     }
         
     public boolean                  shouldEscape (char ch) {
-        return (!Character.isLetterOrDigit (ch));
+        return ch == open || ch == close || (!Character.isLetterOrDigit(ch));
     }
     
     public final String             encode (String s) {
@@ -40,16 +41,37 @@ public class SimpleStringCodec {
         StringBuilder                   out
     )
     {
-        for (int ii = start; ii < length; ii++) {
-            char        ch = s.charAt (ii);
-            
-            if (ch == open || ch == close || shouldEscape (ch)) {
+        for (int i = start; i < length; i++) {
+            char        ch = s.charAt (i);
+
+            if (shouldEscape (ch)) {
                 out.append (open);
-                out.append ((int) ch);
+                out.append((int)ch);
                 out.append (close);
             }
-            else
-                out.append (ch);
+            else {
+
+                if (Character.isUpperCase(ch)) {
+                    out.append(open);
+                    out.append(close);
+                    //
+                    for (;i < length;) {
+                        char next = s.charAt (i);
+                        if (!shouldEscape(next) && Character.isUpperCase(next)) {
+                            out.append(Character.toLowerCase(next));
+                            i++;
+                        }
+                        else {
+                            i--;
+                            break;
+                        }
+                    }
+                    out.append(close);
+                }
+                else {
+                    out.append (ch);
+                }
+            }
         }
     }
     
@@ -66,25 +88,38 @@ public class SimpleStringCodec {
         StringBuilder                   out
     )
     {
-        for (int ii = start; ii < length; ) {
-            char        ch = s.charAt (ii++);
+        for (int i = start; i < length; ) {
+            char        ch = s.charAt (i++);
                          
             if (ch == open) {
                 int v = 0;
 
-                for (;;) {
-                    ch = s.charAt (ii++);
+                if (s.charAt (i+1) == close) {
+                    i++;
+                    for (;;) {
+                        ch = s.charAt (i++);
 
-                    if (ch == close)
-                        break;
+                        if (ch == close)
+                            break;
 
-                    if (!Character.isDigit (ch))
-                        throw new RuntimeException (s.subSequence (0, length).toString ());
-
-                    v = v * 10 + (ch - '0');
+                        out.append (Character.toUpperCase(ch));
+                    }
                 }
+                else {
+                    for (;;) {
+                        ch = s.charAt (i++);
 
-                out.append ((char) v);
+                        if (ch == close)
+                            break;
+
+                        if (!Character.isDigit (ch))
+                            throw new RuntimeException (s.subSequence (0, length).toString ());
+
+                        v = v * 10 + (ch - '0');
+                    }
+
+                    out.append ((char) v);
+                }
             }
             else
                 out.append (ch);
