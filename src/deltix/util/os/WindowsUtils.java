@@ -65,15 +65,15 @@ public class WindowsUtils {
     // FIXME: do not delete - for a future use
     static native String getSpecialFolderPath ( int csidl );
 
-    public static String regQuery ( int hive,
-                                    String keyName,
-                                    String valueName ) {
+    public static String regQuery ( final int hive,
+                                    final String keyName,
+                                    final String valueName ) {
 
         try {
-            return WindowsRegistry.getKeySz ( hive,
-                                              keyName,
-                                              valueName );
-        } catch (BackingStoreException e) {
+            return WindowsRegistry.readString ( hive,
+                                                keyName,
+                                                valueName );
+        } catch (final Throwable e) {
             return null;
         }
     }
@@ -135,7 +135,7 @@ public class WindowsUtils {
         return commonommonProgramsPath != null ? new File ( commonommonProgramsPath ) : null;
     }
 
-    public static void main ( String[] args ) {
+    public static void main ( final String[] args ) {
         System.out.println ( "User Desktop directory : "
                              + regQueryCurrentUserDesktopPath ( ) );
 
