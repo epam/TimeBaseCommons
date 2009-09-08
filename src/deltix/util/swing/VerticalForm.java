@@ -10,9 +10,9 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         public double       getVerticalWeight ();
     }
     
-    private GridBagConstraints      mC = new GridBagConstraints ();
-    private Set <Component>         mSwitchComponents = new HashSet <Component> ();
-    private int                     mLabelAncor = GridBagConstraints.WEST;
+    protected GridBagConstraints mC                = new GridBagConstraints ( );
+    protected Set<Component>     mSwitchComponents = new HashSet<Component> ( );
+    protected int                mLabelAncor       = GridBagConstraints.WEST;
 
 //    public VerticalForm (int labelAnchor) {
 //        this();
@@ -74,7 +74,7 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         mC.gridy++;
     }
     
-    private void        setWeightAndFill (JComponent comp) {
+    protected void      setWeightAndFill (JComponent comp) {
         if (comp instanceof FileField || 
             comp instanceof SwingUtil.HorizontalFillOnlyField) {
             mC.weightx = 1;
