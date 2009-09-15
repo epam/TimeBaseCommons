@@ -15,6 +15,14 @@ public class ByteQueue {
         buffer = new byte [capacity];
     }
     
+    public void                 offer (int value) {
+        offer ((byte) value);
+    }
+
+    public void                 offer (long value) {
+        offer ((byte) value);
+    }
+
     public void                 offer (byte value) {
         assert size < capacity :
             "size: " + size + "; capacity: " + capacity;
@@ -65,7 +73,26 @@ public class ByteQueue {
         
         return (value);
     }
-    
+
+    /**
+     *  Equivalent to (head + offset) % capacity for 0 &lt;= offset &lt; capacity
+     *  but a bit faster.
+     */
+    private int                 logicalToInternal (int srcOffset) {
+        int     ret = head + srcOffset;
+
+        if (ret >= capacity)
+            ret -= capacity;
+
+        return (ret);
+    }
+
+    public byte                 get (int srcOffset) {
+        assert srcOffset < size : "srcOffset: " + srcOffset + "; size: " + size;
+
+        return (buffer [logicalToInternal (srcOffset)]);
+    }
+
     public void                 poll (byte [] dest, int offset, int length) {
         assert size >= length : "size: " + size + "; length: " + length;
         
@@ -74,21 +101,42 @@ public class ByteQueue {
         
         if (excess > 0) {
             int             n = capacity - head;
-            
-            System.arraycopy (buffer, head, dest, offset, n);
-            
-            head = length - n;
-            
-            System.arraycopy (buffer, 0, dest, offset + n, head);
+
+            if (dest != null) {
+                System.arraycopy (buffer, head, dest, offset, n);
+                System.arraycopy (buffer, 0, dest, offset + n, excess);
+            }
+
+            head = excess;            
         }
         else {
-            System.arraycopy (buffer, head, dest, offset, length);
+            if (dest != null)
+                System.arraycopy (buffer, head, dest, offset, length);
+            
             head = excess == 0 ? 0 : end;
         }
         
         size -= length;
     }
     
+    public void                 get (int srcOffset, byte [] dest, int destOffset, int length) {
+        assert srcOffset + length <= size :
+            "size: " + size + "; srcOffset: " + srcOffset + "; length: " + length;
+
+        int                 start = logicalToInternal (srcOffset);
+        int                 end = start + length;
+        int                 excess = end - capacity;
+
+        if (excess > 0) {
+            int             n = capacity - start;
+
+            System.arraycopy (buffer, start, dest, destOffset, n);
+            System.arraycopy (buffer, 0, dest, destOffset + n, excess);
+        }
+        else
+            System.arraycopy (buffer, start, dest, destOffset, length);
+    }
+
     public void                 skip (int length) {
         assert size >= length : "size: " + size + "; length: " + length;
         
@@ -123,5 +171,21 @@ public class ByteQueue {
     
     public final int            capacity () {
         return (capacity);
-    }  
+    }
+
+    public byte []              getBuffer () {
+        return buffer;
+    }
+
+    public int                  getHead () {
+        return head;
+    }
+
+    public int                  getTail () {
+        return tail;
+    }
+
+    public int                  getCapacity () {
+        return capacity;
+    }
 }

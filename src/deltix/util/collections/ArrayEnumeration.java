@@ -18,8 +18,8 @@ public class ArrayEnumeration <T> implements Enumeration <T> {
         return mHasNext;
     }
 
+    @SuppressWarnings ("unchecked")
     public T nextElement() {
-
         if (mHasNext) {
             Object o = mArray[mIdx];
             mIdx++;
