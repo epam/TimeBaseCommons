@@ -34,13 +34,14 @@ public class TickFormatter extends Formatter{
         String message = formatMessage(record);
         sb.append(record.getLevel().getLocalizedName());
         sb.append(": ");
-        sb.append(message);
-        
+        if (message != null)
+            sb.append(message);
+
         sb.append(lineSeparator);
          
         if (record.getThrown() != null) {
             String          msg = record.getThrown().getLocalizedMessage ();
-            sb.append("Reason: ").append(msg);
+            sb.append("Reason: ").append(msg != null ? msg : record.getThrown());
             sb.append(lineSeparator);
         }
         
