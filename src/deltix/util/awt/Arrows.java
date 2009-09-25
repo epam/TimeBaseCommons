@@ -112,4 +112,104 @@ public class Arrows {
         retYs [1] = py;
         retYs [2] = ry;
     }
+
+    public static void      makeFilledHorizontalArrow (
+        int                     left,
+        int                     right,
+        int                     y,
+        int                     thickness,
+        int                     headLength,
+        int                     headWidth,
+        boolean                 leftArrow,
+        boolean                 rightArrow,
+        Polygon                 p
+    )
+    {
+        p.reset ();
+
+        int                     t2 = thickness / 2;
+        int                     hw2 = headWidth / 2;
+        int                     bottomIn = y - t2;
+        int                     topIn = y + t2;
+        int                     bottomOut = y - hw2;
+        int                     topOut = y + hw2;
+        
+        if (leftArrow) {
+            int                 x = left + headLength;
+
+            p.addPoint (x, bottomIn);
+            p.addPoint (x, bottomOut);
+            p.addPoint (left, y);
+            p.addPoint (x, topOut);
+            p.addPoint (x, topIn);
+        }
+        else {
+            p.addPoint (left, bottomIn);
+            p.addPoint (left, topIn);
+        }
+
+        if (rightArrow) {
+            int                 x = right - headLength;
+
+            p.addPoint (x, topIn);
+            p.addPoint (x, topOut);
+            p.addPoint (right, y);
+            p.addPoint (x, bottomOut);
+            p.addPoint (x, bottomIn);
+        }
+        else {
+            p.addPoint (right, topIn);
+            p.addPoint (right, bottomIn);
+        }
+    }
+
+    public static void      makeFilledVerticalArrow (
+        int                     x,
+        int                     top,
+        int                     bottom,
+        int                     thickness,
+        int                     headLength,
+        int                     headWidth,
+        boolean                 topArrow,
+        boolean                 bottomArrow,
+        Polygon                 p
+    )
+    {
+        p.reset ();
+
+        int                     t2 = thickness / 2;
+        int                     hw2 = headWidth / 2;
+        int                     leftIn = x - t2;
+        int                     rightIn = x + t2;
+        int                     leftOut = x - hw2;
+        int                     rightOut = x + hw2;
+
+        if (topArrow) {
+            int                 y = top + headLength;
+
+            p.addPoint (leftIn, y);
+            p.addPoint (leftOut, y);
+            p.addPoint (x, top);
+            p.addPoint (rightOut, y);
+            p.addPoint (rightIn, y);
+        }
+        else {
+            p.addPoint (leftIn, top);
+            p.addPoint (rightIn, top);
+        }
+
+        if (bottomArrow) {
+            int                 y = bottom - headLength;
+
+            p.addPoint (rightIn, y);
+            p.addPoint (rightOut, y);
+            p.addPoint (x, bottom);
+            p.addPoint (leftOut, y);
+            p.addPoint (leftIn, y);
+        }
+        else {
+            p.addPoint (rightIn, bottom);
+            p.addPoint (leftIn, bottom);
+        }
+    }
 }
