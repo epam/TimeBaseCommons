@@ -3,6 +3,7 @@ package deltix.util.progress;
 public interface ExecutionMonitor {
 
     long getStartTime();
+    long getEndTime();
 
     double getProgress();
 

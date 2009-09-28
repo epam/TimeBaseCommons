@@ -11,6 +11,7 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
 
     private double progress;
     private long startTime = 0;
+    private long endTime = 0;
     private long weight = 1;
 
     private boolean isAborted = false;
@@ -33,6 +34,10 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
         return startTime;
     }
 
+    public synchronized long getEndTime() {
+        return endTime;
+    }
+
     public void start() {
         counter = new CountDownLatch(children.size() + 1);
         startTime = System.currentTimeMillis();
@@ -47,6 +52,7 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
             return;
 
         isAborted = true;
+        endTime = System.currentTimeMillis();
 
         if (hasParent()) {
             parent.abort();
@@ -59,9 +65,11 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
 
     public synchronized void onComplete(ExecutionMonitorImpl child) {
         counter.countDown();
+        if (counter.getCount() == 0)
+            endTime = System.currentTimeMillis();
     }
 
-    public synchronized void setComplete() {
+    public synchronized void setComplete() {        
         setProgress(1.0);
         if (hasParent())
             parent.onComplete(this);
