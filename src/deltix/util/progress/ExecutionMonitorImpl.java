@@ -137,11 +137,11 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
             {
                 if (minProgress == -1 || child.progress < minProgress)
                     minProgress = child.progress;
-                progress += (int)(child.progress * child.weight);
+                progress += (child.progress * child.weight);
                 totalWeight += child.weight;
             }
 
-            progress = (int)(progress / totalWeight);
+            progress = (progress / totalWeight);
             //if (!CalculateMinChildEstimatedTime)
             minProgress = progress;
         }
