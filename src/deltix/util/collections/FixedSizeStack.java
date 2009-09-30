@@ -28,4 +28,11 @@ public final class FixedSizeStack<E> {
         return elements.length;
     }
 
+    public boolean isEmpty () {
+        return count == 0;
+    }
+
+    public boolean isFull () {
+        return count == elements.length;
+    }
 }
