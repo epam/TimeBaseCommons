@@ -163,7 +163,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         return null;
     }
 
-    public final void delete ( ) {
+    public void delete ( ) {
         final DefaultTreeModel model = getActualDefaultTreeModel ( );
         if (model != null) {
             model.removeNodeFromParent ( this );
