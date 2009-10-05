@@ -329,6 +329,22 @@ public class Util {
         }
     }
     
+    public static Object    newInstanceNoX (
+        String                  className,
+        Object ...              args
+    )
+    {
+        try {
+            return (newInstance (className, args));
+        } catch (RuntimeException x) {
+            throw x;
+        } catch (Error x) {
+            throw x;
+        } catch (Throwable other) {
+            throw new RuntimeException (className + " instantiation failed", other);
+        }
+    }
+
     /**
      *	Gets to the bottom of the exception.
      */
@@ -1060,4 +1076,31 @@ public class Util {
         return (hc);
     }
 
+    public static Class <?>         toBoxed (Class <?> c) {
+        if (c == boolean.class)
+            return (Boolean.class);
+
+        if (c == char.class)
+            return (Character.class);
+
+        if (c == byte.class)
+            return (Byte.class);
+
+        if (c == short.class)
+            return (Short.class);
+
+        if (c == int.class)
+            return (Integer.class);
+
+        if (c == long.class)
+            return (Long.class);
+
+        if (c == float.class)
+            return (Float.class);
+
+        if (c == double.class)
+            return (Double.class);
+
+        return (c);
+    }
 }

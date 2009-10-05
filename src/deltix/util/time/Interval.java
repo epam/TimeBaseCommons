@@ -18,7 +18,20 @@ public abstract class Interval {
 
     protected Interval () {
     }
-    
+
+    public static Interval          create (long num, TimeUnit unit) {
+        if (unit.isFixedSize ())
+            return (new FixedInterval (num, unit));
+        else {
+            int     intNum = (int) num;
+
+            if (intNum != num)
+                throw new IllegalArgumentException (num + ": too large");
+
+            return (new MonthlyInterval (intNum, unit));
+        }
+    }
+
     /**
      * Parse a QQL string.
      * @param text  The QQL representation of the interval.
@@ -32,16 +45,7 @@ public abstract class Interval {
         long        num = CharSequenceParser.parseLong (text, 0, end - 1);
         TimeUnit    unit = TimeUnit.fromSuffix (text.charAt (end - 1));
         
-        if (unit.isFixedSize ())
-            return (new FixedInterval (num, unit));
-        else {
-            int     intNum = (int) num;
-            
-            if (intNum != num)
-                throw new IllegalArgumentException (text.toString ());
-            
-            return (new MonthlyInterval (intNum, unit));               
-        }
+        return (create (num, unit));
     }
     
     /**
