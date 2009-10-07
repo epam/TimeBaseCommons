@@ -8,5 +8,9 @@ package deltix.qsrv.hf.framework;
  */  
 public interface Disconnectable {
 
-    void setDisconnectEventListener(DisconnectEventListener listener);
+    void addDisconnectEventListener(DisconnectEventListener listener);
+
+    void removeDisconnectEventListener(DisconnectEventListener listener);
+
+    boolean isConnected();
 }
