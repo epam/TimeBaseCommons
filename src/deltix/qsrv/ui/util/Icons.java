@@ -84,8 +84,10 @@ public class Icons {
     public static final Icon UNLOCK             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/unlock.png");
     public static final Icon CHART              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/chart.png");
     public static final Icon CLASS              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/class.png");
+    public static final Icon ENUM               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/enum.png");
     public static final Icon FIELD              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/field.png");
     public static final Icon STATIC             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/static.png");
     public static final Icon ABSTRACT_CLASS     = SwingUtil.loadIcon ("deltix/qsrv/ui/util/abstractClass.png");
+    public static final Icon STATIC_CONST       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/static_co.gif");
     public static final Icon TEMPLATE_RCD       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/templateSource.png");
 }
