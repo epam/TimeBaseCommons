@@ -92,9 +92,9 @@ public class SimpleStringCodec {
             char        ch = s.charAt (i++);
                          
             if (ch == open) {
-                int v = 0;
+                int v = 0; 
 
-                if (s.charAt (i+1) == close) {
+                if (s.charAt (i) == close) {
                     i++;
                     for (;;) {
                         ch = s.charAt (i++);
