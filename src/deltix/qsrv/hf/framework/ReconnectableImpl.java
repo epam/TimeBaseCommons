@@ -276,4 +276,9 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         currentReconnectInterval = initialReconnectInterval;
         scheduleTask ();
     }
+
+    public synchronized void                cancelReconnect () {
+        if (reconnectTask != null)
+            reconnectTask.cancel ();
+    }
 }
