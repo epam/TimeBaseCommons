@@ -90,4 +90,5 @@ public class Icons {
     public static final Icon ABSTRACT_CLASS     = SwingUtil.loadIcon ("deltix/qsrv/ui/util/abstractClass.png");
     public static final Icon STATIC_CONST       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/static_co.gif");
     public static final Icon TEMPLATE_RCD       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/templateSource.png");
+    public static final Icon SHORTCUT           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/shortcut.gif");
 }
