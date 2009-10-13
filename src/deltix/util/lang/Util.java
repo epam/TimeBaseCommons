@@ -313,8 +313,8 @@ public class Util {
         return (m.newInstance (args));
     }
 
-    public static Object    newInstanceNoX (
-        Class<?>                clazz,
+    public static <T> T    newInstanceNoX (
+        Class <T>               clazz,
         Object ...              args
     )
     {
@@ -1074,6 +1074,15 @@ public class Util {
             hc = 31 * hc + cs.charAt (i);
 
         return (hc);
+    }
+
+    public static boolean           isBoxedPrimitive (Class <?> c) {
+        return (
+            c == Boolean.class || c == Character.class ||
+            c == Byte.class || c == Short.class ||
+            c == Integer.class || c == Long.class ||
+            c == Float.class || c == Double.class
+        );
     }
 
     public static Class <?>         toBoxed (Class <?> c) {
