@@ -1,4 +1,4 @@
-package deltix.util.swing;
+package deltix.util.swing.shapes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -169,6 +169,7 @@ public class Arrow extends JComponent {
         mStroke = value;
     }
     
+    @Override
     public void     paint (Graphics g) {
         int             w = getWidth ();
         int             h = getHeight ();

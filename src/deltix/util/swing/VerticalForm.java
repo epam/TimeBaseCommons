@@ -1,5 +1,6 @@
 package deltix.util.swing;
 
+import deltix.util.swing.shapes.Line;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;

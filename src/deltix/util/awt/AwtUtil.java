@@ -49,5 +49,80 @@ public class AwtUtil {
                          Math.min((int)(g/factor), 255),
                          Math.min((int)(b/factor), 255));
     }
-    
+
+    /**
+     *  Draw a 3d barrel ("database symbol") using specified colors and
+     *  current stroke. Supply null for color if line or background fill is not
+     *  desired. This method does not restore current color in the graphics
+     *  context.
+     */
+    public static void  draw3DBarrel (
+        Graphics2D          g2,
+        int                 left,
+        int                 top,
+        int                 width,
+        int                 height,
+        int                 ovalHeight,
+        Color               bgColor,
+        Color               lineColor        
+    )
+    {
+        int         w1 = width - 1;
+        int         h1 = height - 1;
+        int         bottom1 = top + h1;
+        int         halfDepth = ovalHeight / 2;
+        int         h1a2 = h1 - halfDepth;
+
+        if (bgColor != null) {
+            g2.setColor (bgColor);
+            g2.fillOval (left, top, w1, ovalHeight);
+            g2.fillOval (left, bottom1 - ovalHeight, w1, ovalHeight);
+            g2.fillRect (left, top + halfDepth, width, height - ovalHeight);
+        }
+
+        if (lineColor != null) {
+            g2.setColor (lineColor);
+            g2.drawLine (left, top + halfDepth, 0, h1a2);
+            g2.drawLine (left + w1, top + halfDepth, w1, h1a2);
+            g2.drawOval (left, top, w1, ovalHeight);
+            g2.drawArc (left, bottom1 - ovalHeight, w1, ovalHeight, 0, -180);
+        }
+    }
+
+    public static void  draw3DBox (
+        Graphics2D          g2,
+        int                 left,
+        int                 top,
+        int                 width,
+        int                 height,
+        int                 dx,
+        int                 dy,
+        Color               bgColor,
+        Color               lineColor
+    )
+    {
+        int         bx = width - dx;
+        int         bx1 = bx - 1;
+        int         h1 = height - 1;
+        int         w1 = width - 1;
+        int         lw1 = left + w1;
+        int         lbx1 = left + bx1;
+        int         toph1 = top + h1;
+        int         topdy = top + dy;
+        int []      xs = { left, left + dx, lw1, lw1, lbx1, left };
+        int []      ys = { topdy, top, top, toph1 - dy, toph1, toph1 };
+
+        if (bgColor != null) {
+            g2.setColor (bgColor);
+            g2.fillPolygon (xs, ys, 6);
+        }
+
+        if (lineColor != null) {
+            g2.setColor (lineColor);
+            g2.drawPolygon (xs, ys, 6);
+            g2.drawLine (lbx1, topdy, lw1, top);
+            g2.drawLine (lbx1, topdy, left, top + dy);
+            g2.drawLine (lbx1, topdy, lbx1, toph1);
+        }
+    }
 }

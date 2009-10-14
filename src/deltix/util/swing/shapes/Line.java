@@ -1,4 +1,4 @@
-package deltix.util.swing;
+package deltix.util.swing.shapes;
 
 import javax.swing.*;
 import java.awt.*;
