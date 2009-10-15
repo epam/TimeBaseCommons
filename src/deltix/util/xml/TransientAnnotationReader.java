@@ -1,4 +1,4 @@
-package deltix.qsrv.comm.xml;
+package deltix.util.xml;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

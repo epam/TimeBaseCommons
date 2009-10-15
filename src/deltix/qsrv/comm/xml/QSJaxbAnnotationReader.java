@@ -1,5 +1,6 @@
 package deltix.qsrv.comm.xml;
 
+import deltix.util.xml.TransientAnnotationReader;
 import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
 import deltix.util.lang.IKVMUtil;
 

@@ -7,7 +7,7 @@ public class SimpleStringCodec {
     public static final SimpleStringCodec    DEFAULT_INSTANCE = 
         new SimpleStringCodec ();
 
-    private boolean             caseInsensitive = true;
+    private boolean             escapeUppercase;
     private final char          open;
     private final char          close;
     
@@ -16,12 +16,13 @@ public class SimpleStringCodec {
     }
     
     public SimpleStringCodec (char openClose) {
-        this (openClose, openClose);
+        this (openClose, openClose, true);
     }
 
-    public SimpleStringCodec (char open, char close) {
+    public SimpleStringCodec (char open, char close, boolean escapeUppercase) {
         this.open = open;
         this.close = close;
+        this.escapeUppercase = escapeUppercase;
     }
         
     public boolean                  shouldEscape (char ch) {
@@ -49,29 +50,25 @@ public class SimpleStringCodec {
                 out.append((int)ch);
                 out.append (close);
             }
-            else {
-
-                if (Character.isUpperCase(ch)) {
-                    out.append(open);
-                    out.append(close);
-                    //
-                    for (;i < length;) {
-                        char next = s.charAt (i);
-                        if (!shouldEscape(next) && Character.isUpperCase(next)) {
-                            out.append(Character.toLowerCase(next));
-                            i++;
-                        }
-                        else {
-                            i--;
-                            break;
-                        }
+            else if (escapeUppercase && Character.isUpperCase(ch)) {
+                out.append(open);
+                out.append(close);
+                //
+                for (;i < length;) {
+                    char next = s.charAt (i);
+                    if (!shouldEscape(next) && Character.isUpperCase(next)) {
+                        out.append(Character.toLowerCase(next));
+                        i++;
                     }
-                    out.append(close);
+                    else {
+                        i--;
+                        break;
+                    }
                 }
-                else {
-                    out.append (ch);
-                }
+                out.append(close);
             }
+            else
+                out.append (ch);
         }
     }
     
