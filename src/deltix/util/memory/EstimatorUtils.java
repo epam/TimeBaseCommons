@@ -45,12 +45,14 @@ public abstract class EstimatorUtils implements MemorySizeEstimator {
      *  share its value with any other string.
      */
     public static int       getSizeInMemory (String s) {
-        return (
-            s == null ? 
-                0 : 
-                OBJECT_OVERHEAD + SIZE_OF_POINTER + 3 * SIZE_OF_INT +
-                    ARRAY_OVERHEAD + s.length () * SIZE_OF_CHAR
-        );
+        if (s == null)
+            return SIZE_OF_POINTER;
+
+        if (s == s.intern())
+            return SIZE_OF_POINTER;
+
+        return OBJECT_OVERHEAD + SIZE_OF_POINTER + 3 * SIZE_OF_INT +   // 3 = sizeof int fields {substring.from + substring.length + hashcode }
+               ARRAY_OVERHEAD + s.length () * SIZE_OF_CHAR;
     }
     
     public static long       getSizeInMemory (Object obj) {

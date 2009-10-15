@@ -98,4 +98,13 @@ public abstract class Interval {
         sb.append (getUnit ().getSuffix ());
         return (sb.toString ());
     }
+
+    public static long toMilliseconds(String intervalText) {
+        Interval interval = Interval.parseQQL(intervalText);
+        if (interval.getUnit().isVariableSize()) {
+            return interval.getNumUnits() * interval.getUnit().getSizeInMonths() *
+                   deltix.util.time.TimeUnit.DAY.getSizeInMilliseconds();
+        }
+        return interval.getNumUnits() * interval.getUnit().getSizeInMilliseconds();
+    }
 }
