@@ -92,14 +92,14 @@ public class TransientAnnotationReader extends AbstractInlineAnnotationReaderImp
     /// Classes
 
     public boolean hasClassAnnotation(Class clazz, Class<? extends Annotation> annotationType) {
-        if (transientClasses.contains(clazz))
+        if (transientClasses.contains(clazz) && XmlTransient.class.isAssignableFrom(annotationType))
             return true;
         return delegate.hasClassAnnotation(clazz, annotationType);
     }
 
     @SuppressWarnings("unchecked")
     public <A extends Annotation> A getClassAnnotation(Class<A> annotationType, Class clazz, Locatable srcPos) {
-        if (transientClasses.contains(clazz))
+        if (transientClasses.contains(clazz)&& XmlTransient.class.isAssignableFrom(annotationType))
             return (A) XML_TRANSIENT_ANNOTATION;
 
         //return LocatableAnnotation.create(((Class<?>) clazz).getAnnotation(annotationType), srcPos);
