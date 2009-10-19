@@ -7,6 +7,15 @@ import java.util.*;
  *
  */
 public class SafeResourceBundle {
+    public static ResourceBundle    getBundle (Class cls, String rbname) {
+        String      s = cls.getName ();
+        String      n = cls.getSimpleName ();
+
+        assert s.endsWith (n);
+
+        return (getBundle (s.substring (0, s.length () - n.length ()) + rbname));
+    }
+
     public static ResourceBundle    getBundle (String baseName) {
         try {
             return (ResourceBundle.getBundle (baseName));
