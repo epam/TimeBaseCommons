@@ -241,7 +241,7 @@ public class IntervalCalculator {
         }
         else if (cmd.equals ("+")) {
             long            t = GMT.parseDateTimeMillis (args [1]).getTime ();
-            Interval        interval = Interval.parseQQL (args [2]);
+            Interval        interval = Interval.valueOf (args [2]);
             
             t = ic.normalize (t, interval.getUnit ());
             
@@ -253,7 +253,7 @@ public class IntervalCalculator {
         }
         else if (cmd.equals ("-")) {
             long            t = GMT.parseDateTimeMillis (args [1]).getTime ();
-            Interval        interval = Interval.parseQQL (args [2]);
+            Interval        interval = Interval.valueOf (args [2]);
             
             t = ic.normalize (t, interval.getUnit ());
             

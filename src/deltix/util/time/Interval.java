@@ -11,10 +11,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlJavaTypeAdapter (StringIntervalAdapter.class)
 public abstract class Interval {
     public static final Interval    ZERO = null;
-    public static final Interval DAY = Interval.parseQQL("1D");
-    public static final Interval HOUR = Interval.parseQQL("1H");
-    public static final Interval MINUTE = Interval.parseQQL("1I");
-    public static final Interval SECOND = Interval.parseQQL("1S");
+    public static final Interval DAY = Interval.valueOf("1D");
+    public static final Interval HOUR = Interval.valueOf("1H");
+    public static final Interval MINUTE = Interval.valueOf("1I");
+    public static final Interval SECOND = Interval.valueOf("1S");
 
     protected Interval () {
     }
@@ -32,11 +32,15 @@ public abstract class Interval {
         }
     }
 
+    public static Interval          valueOf (String text) {
+        return (valueOf ((CharSequence) text));
+    }
+
     /**
      * Parse a QQL string.
      * @param text  The QQL representation of the interval.
      */
-    public static Interval          parseQQL (CharSequence text) {
+    public static Interval          valueOf (CharSequence text) {
         int         end = text.length ();
         
         if (end < 2)
@@ -100,7 +104,7 @@ public abstract class Interval {
     }
 
     public static long toMilliseconds(String intervalText) {
-        Interval interval = Interval.parseQQL(intervalText);
+        Interval interval = Interval.valueOf(intervalText);
         if (interval.getUnit().isVariableSize()) {
             return interval.getNumUnits() * interval.getUnit().getSizeInMonths() *
                    deltix.util.time.TimeUnit.DAY.getSizeInMilliseconds();
