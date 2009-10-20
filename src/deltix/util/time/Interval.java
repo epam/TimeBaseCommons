@@ -103,11 +103,10 @@ public abstract class Interval {
         return (sb.toString ());
     }
 
-    public static long toMilliseconds(String intervalText) {
-        Interval interval = Interval.valueOf(intervalText);
+    public static long toMilliseconds(Interval interval) {
         if (interval.getUnit().isVariableSize()) {
             return interval.getNumUnits() * interval.getUnit().getSizeInMonths() *
-                   deltix.util.time.TimeUnit.DAY.getSizeInMilliseconds();
+                   deltix.util.time.TimeUnit.DAY.getSizeInMilliseconds() * 30;
         }
         return interval.getNumUnits() * interval.getUnit().getSizeInMilliseconds();
     }
