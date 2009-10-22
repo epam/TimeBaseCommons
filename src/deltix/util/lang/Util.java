@@ -1112,4 +1112,13 @@ public class Util {
 
         return (c);
     }
+
+    public static String            getPackagePrefix (Class <?> cls) {
+        String      qname = cls.getName ();
+        String      sname = cls.getSimpleName ();
+
+        assert qname.endsWith (sname);
+
+        return (qname.substring (0, qname.length () - sname.length ()));
+    }
 }
