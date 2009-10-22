@@ -1,13 +1,11 @@
 package deltix.util.time;
 
+import junit.framework.Assert;
+import org.junit.Test;
+
 import java.util.StringTokenizer;
 
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
-
-import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
+/*  ##UTILS## */
 public class Test_TimeFormatter {
 
 	private final static long MILLIS_PER_DAY = 24*60*60*1000L;
@@ -38,11 +36,11 @@ public class Test_TimeFormatter {
 	
     @Test
 	public void simpleOneDayTruncation() {
-		assertFormat(-1L, "OUT-OF-BOUNDS");
-		assertFormat(MILLIS_PER_DAY, "OUT-OF-BOUNDS");
-		assertFormat(MILLIS_PER_DAY+1, "OUT-OF-BOUNDS");
-		assertFormat(MILLIS_PER_DAY+1000, "OUT-OF-BOUNDS");
-		assertFormat(5*MILLIS_PER_DAY+1000, "OUT-OF-BOUNDS");
+		assertFormat(-1L, "00:00:00");
+		assertFormat(MILLIS_PER_DAY, "00:00:00");
+		assertFormat(MILLIS_PER_DAY+1, "00:00:00");
+		assertFormat(MILLIS_PER_DAY+1000, "00:00:01");
+		assertFormat(5*MILLIS_PER_DAY+1000, "00:00:01");
 	}
 	
 
