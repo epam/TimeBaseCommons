@@ -429,6 +429,32 @@ public class Util {
             }
     }
 
+
+    /**
+     *	@return true if two arrays contain identical bytes
+     */
+    public static boolean			arrayequals (
+        byte [] 					arr1,
+        int							off1,
+        int							len1,
+        byte [] 					arr2,
+        int							off2,
+        int							len2
+    )
+    {
+        if (len1 != len2)
+            return false;
+
+        if (arr1 == arr2 && off1 == off2)
+            return true;
+
+        for (int i=0; i<len1; i++)
+            if (arr1[i+off1] != arr2[i+off2])
+                return false;
+
+        return true;
+    }
+
     /**
      *	Returns the difference between the specified segments of
      *	arr1 and arr2, MSBF.
