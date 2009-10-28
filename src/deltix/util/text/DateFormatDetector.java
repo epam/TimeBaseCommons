@@ -49,6 +49,10 @@ public class DateFormatDetector {
     }
     
     public static String        getDateFormatStringFor (CharSequence text) {
+        
+        if (text == null)
+            return null;
+        
         int             limit = text.length ();
         StringBuilder   timeFormat = new StringBuilder (limit);        
         int             suffixStart = getDateFormatStringFor (text, timeFormat);
