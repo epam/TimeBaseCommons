@@ -18,7 +18,7 @@ public class MemoryDataOutput {
         mBuffer = new byte [capacity];
     }
     
-    private final void          makeRoom (int space) {
+    public final void          makeRoom (int space) {
         int         requiredSize = mPos + space;
         
         if (mSize < requiredSize)
