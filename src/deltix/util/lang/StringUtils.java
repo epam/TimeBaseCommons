@@ -18,6 +18,14 @@ public class StringUtils {
             }
         );
     }
+
+    public static String join(String separator, String ... items) {
+        StringBuffer    sb = new StringBuffer ();
+        for (String item : items) {
+            sb.append(sb.length() > 0 ? separator : "").append(item);
+        }
+        return sb.toString();
+    }
     /**
      * Capitalizes first letter of each word in the buffer, and lowercases
      * each letter after the first of each word.

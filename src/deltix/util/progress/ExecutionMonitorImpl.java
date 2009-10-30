@@ -8,6 +8,7 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
 
     private ArrayList<ExecutionMonitorImpl> children = new ArrayList<ExecutionMonitorImpl>();
     private ExecutionMonitorImpl parent;
+    private Throwable error;
 
     private double progress;
     private long startTime = 0;
@@ -47,7 +48,7 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
 //        return isAborted;
 //    }
 
-    public synchronized void abort() {
+    public synchronized void abort(Throwable error) {
         if (isAborted)
             return;
 
@@ -55,11 +56,12 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
         endTime = System.currentTimeMillis();
 
         if (hasParent()) {
-            parent.abort();
+            parent.abort(error);
         }
-        else if (hasChildren()) {
+        else {
+            this.error = error;
             for (ExecutionMonitorImpl child : children)
-                child.abort();
+                child.abort(error);
         }
     }
 
@@ -178,7 +180,7 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
 
     public synchronized ExecutionStatus getStatus() {
         if (isAborted)
-            return ExecutionStatus.Aborted;
+            return error == null ? ExecutionStatus.Aborted : ExecutionStatus.Failed;
         if (counter != null && counter.getCount() > 0)
             return ExecutionStatus.Running;
         if (counter != null && counter.getCount() == 0)

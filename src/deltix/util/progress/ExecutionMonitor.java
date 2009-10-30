@@ -7,7 +7,7 @@ public interface ExecutionMonitor {
 
     double getProgress();
 
-    void abort();
+    void abort(Throwable error);
 
     ExecutionStatus getStatus();
 
