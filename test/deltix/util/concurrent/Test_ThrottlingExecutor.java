@@ -41,7 +41,9 @@ public class Test_ThrottlingExecutor {
 
     @Test(timeout = 90000)
     public void             go () throws InterruptedException {
-        double                  desiredRatio = 0.07;
+
+        boolean cruiseControlMode = Boolean.getBoolean("deltix.test.mode");
+        double                  desiredRatio = cruiseControlMode ? 0.50 : 0.07;
 
         if (!Boolean.getBoolean ("quiet"))
             System.out.println ("Target: " + desiredRatio);
