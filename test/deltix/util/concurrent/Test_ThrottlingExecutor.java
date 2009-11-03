@@ -39,7 +39,7 @@ public class Test_ThrottlingExecutor {
         }
     }
 
-    @Test
+    @Test(timeout = 90000)
     public void             go () throws InterruptedException {
         double                  desiredRatio = 0.07;
 
