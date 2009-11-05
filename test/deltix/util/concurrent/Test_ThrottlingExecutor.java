@@ -43,10 +43,12 @@ public class Test_ThrottlingExecutor {
     public void             go () throws InterruptedException {
 
         boolean cruiseControlMode = Boolean.getBoolean("deltix.test.mode");
-        double                  desiredRatio = cruiseControlMode ? 0.50 : 0.07;
+        double                  desiredRatio = cruiseControlMode ? 0.25 : 0.07;   // when executed together with other tests CPU usage much higher
 
         if (!Boolean.getBoolean ("quiet"))
             System.out.println ("Target: " + desiredRatio);
+
+        Thread.sleep (100);
 
         ThrottlingExecutor      exe = new ThrottlingExecutor ("Test", desiredRatio);
 
