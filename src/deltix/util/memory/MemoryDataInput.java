@@ -94,6 +94,10 @@ public class MemoryDataInput {
         return (mPos - mStart);
     }
     
+    public final int        getStart () {
+        return (mStart);
+    }
+
     public final int        getLength () {
         return (mLimit - mStart);
     }
