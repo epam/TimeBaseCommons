@@ -65,6 +65,10 @@ public class ExecutionMonitorImpl implements ExecutionMonitor {
         }
     }
 
+    public Throwable getError() {
+        return error;
+    }
+
     public synchronized void onComplete(ExecutionMonitorImpl child) {
         counter.countDown();
         if (counter.getCount() == 0)

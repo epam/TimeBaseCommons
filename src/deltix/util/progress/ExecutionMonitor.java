@@ -6,6 +6,7 @@ public interface ExecutionMonitor {
     long getEndTime();
 
     double getProgress();
+    Throwable getError();
 
     void abort(Throwable error);
 
