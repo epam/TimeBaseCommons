@@ -5,12 +5,14 @@ import java.util.*;
 import java.util.logging.*;
 
 import deltix.custom.statestreet.fxa.utils.*;
+import deltix.util.collections.*;
 import deltix.util.csvx.*;
 import deltix.util.lang.*;
 
 public class CurrencyCodeList {
 
     public static List<CurrencyCode> CURRENCY_CODE_LIST;
+    public static TwoWayMap          CURRENCY_CODE_MAP;
 
     public static final int          CODE_IDX     = 0;
     public static final int          NUM_IDX      = 1;
@@ -19,6 +21,7 @@ public class CurrencyCodeList {
 
     static {
         CURRENCY_CODE_LIST = new ArrayList<CurrencyCode> ();
+        CURRENCY_CODE_MAP = new TwoWayMap ();
         try {
 
             final String path = "deltix/util/currency/currency.csv";
@@ -32,20 +35,34 @@ public class CurrencyCodeList {
                                                    true,
                                                    "");
             while (csv.nextLine ()) {
-                CURRENCY_CODE_LIST.add (new CurrencyCode (csv.getString (CODE_IDX,
-                                                                         true),
-                                                          csv.getString (NUM_IDX,
-                                                                         true),
+                final String code = csv.getString (CODE_IDX,
+                                                   true);
+
+                final String numeric = csv.getString (NUM_IDX,
+                                                      true);
+
+                CURRENCY_CODE_LIST.add (new CurrencyCode (code,
+                                                          numeric,
                                                           csv.getString (CURRENCY_IDX,
                                                                          true),
                                                           csv.getString (LOCATION_IDX,
                                                                          true)));
+                CURRENCY_CODE_MAP.put (code,
+                                       numeric);
             }
         } catch (final Throwable x) {
             Util.LOGGER.log (Level.SEVERE,
                              "Can not create currency code list",
                              x);
         }
+    }
+
+    public static String getCurrencyCodeByNumeric (String numeric) {
+        return (String) CURRENCY_CODE_MAP.getSecond (numeric);
+    }
+
+    public static String getNumericByCurrencyCode (String code) {
+        return (String) CURRENCY_CODE_MAP.getFirst (code);
     }
 
     public static String[] getCurrencyCodes () {
@@ -67,6 +84,8 @@ public class CurrencyCodeList {
 
         return result;
     }
+    
+    
 
     public static class CurrencyCode {
         public final String code;
