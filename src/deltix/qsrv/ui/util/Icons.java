@@ -91,4 +91,6 @@ public class Icons {
     public static final Icon STATIC_CONST       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/static_co.gif");
     public static final Icon TEMPLATE_RCD       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/templateSource.png");
     public static final Icon SHORTCUT           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/shortcut.gif");
+    public static final Icon COLUMN             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/column.png");
+    public static final Icon GROUP_BY           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/groupby.png");
 }
