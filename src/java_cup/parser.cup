@@ -97,6 +97,16 @@ import java.util.*;
 action code {:
   private int aux_count = 1;
 
+  private non_terminal mk_aux_non_term (String type) {
+    String          auxId = "_aux_" + (aux_count++);
+    return new non_terminal (auxId, type);
+  }
+
+  private void down () {
+    rhs_stack.push (rhs_parts);
+    rhs_parts = new ArrayList <production_part> ();
+  }
+
   /** helper routine to clone a new production part adding a given label */
   protected production_part add_lab(production_part part, String lab)
     throws internal_error
@@ -207,7 +217,7 @@ scan with {: return lexer.next_token(); :};
 terminal
   PACKAGE, IMPORT, CODE, ACTION, PARSER, TERMINAL, NON, INIT, SCAN, WITH, 
   START, SEMI, COMMA, STAR, DOT, COLON, COLON_COLON_EQUALS, BAR, PRECEDENCE,
-  LEFT, RIGHT, NONASSOC, PERCENT_PREC, LBRACK, RBRACK, NONTERMINAL;
+  LEFT, RIGHT, NONASSOC, PERCENT_PREC, LBRACK, RBRACK, NONTERMINAL, LBRACE, RBRACE;
 
 terminal String  ID, CODE_STRING;
 
@@ -679,27 +689,39 @@ prod_part ::=
 	  rhs_parts.add(new action_part(code_str));
 	:}
     |
-    LBRACK             
-        {: 
-            rhs_stack.push (rhs_parts);
-            rhs_parts = new ArrayList <production_part> ();
-        :}
+    LBRACK {: down (); :}
     prod_part_list
     RBRACK opt_label:labid
         {:
-            /* build the non terminal object */
-            String          auxId = "_aux_" + (aux_count++);
-            non_terminal    aux_nt = new non_terminal (auxId, "Object");
-
-	        //non_terms.put (non_term_id, this_nt);
-
+            non_terminal    aux_nt = mk_aux_non_term ("Object");
 	        symbol_part     sym_part = new symbol_part (aux_nt);
 
-	        //symbols.put (auxId, sym_part);
-
-            /* Create the auxiliary productions */
+	        /* Create the auxiliary productions */
             new production (aux_nt, rhs_part_array (), rhs_parts.size ());
             new production (aux_nt, null, 0);
+
+            rhs_parts = rhs_stack.pop ();
+            rhs_parts.add (add_lab (sym_part, labid));
+        :}
+    |
+    LBRACE {: down (); :}
+    prod_part_list
+    RBRACE opt_label:labid
+        {:
+            non_terminal    aux_nt = mk_aux_non_term ("java.util.List <Object>");
+	        symbol_part     sym_part = new symbol_part (aux_nt);
+
+	        /* Create the auxiliary productions */
+            rhs_parts.add (0, add_lab (sym_part, "_list_"));
+            rhs_parts.add (1, new action_part ("RESULT = _list_;"));
+            new production (aux_nt, rhs_part_array (), rhs_parts.size ());
+
+            new production (aux_nt,
+                new production_part [] {
+                   new action_part ("RESULT=new java.util.ArrayList <Object> ();")
+                },
+                1
+            );
 
             rhs_parts = rhs_stack.pop ();
             rhs_parts.add (add_lab (sym_part, labid));

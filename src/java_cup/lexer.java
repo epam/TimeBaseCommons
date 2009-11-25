@@ -20,6 +20,7 @@ import java.util.Hashtable;
  *    "left"        LEFT		  "right"       RIGHT
  *    "nonassoc"    NONASSOC		  "%prec        PRECENT_PREC  
  *      [           LBRACK                  ]           RBRACK
+ *      {           LBRACE                  }           RBRACE
  *      ;           SEMI 
  *      ,           COMMA                   *           STAR 
  *      .           DOT                     :           COLON
@@ -149,6 +150,7 @@ public class lexer {
       char_symbols.put(new Integer('|'), new Integer(sym.BAR));
       char_symbols.put(new Integer('['), new Integer(sym.LBRACK));
       char_symbols.put(new Integer(']'), new Integer(sym.RBRACK));
+      char_symbols.put(new Integer('}'), new Integer(sym.RBRACE));
 
       /* read two characters of lookahead */
       next_char = System.in.read();
@@ -519,8 +521,13 @@ public class lexer {
 	    }
 
 	  /* look for start of code string */
-	  if (next_char == '{' && next_char2 == ':')
-	    return do_code_string();
+	  if (next_char == '{')
+          if (next_char2 == ':')
+	          return do_code_string();
+          else {
+              advance ();
+              return new Symbol(sym.LBRACE);
+          }
 
 	  /* look for an id or keyword */
 	  if (id_start_char(next_char)) return do_id();
