@@ -154,7 +154,7 @@ public class emit {
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** List of imports (Strings containing class names) to go with actions. */
-  public static Stack import_list = new Stack();
+  public static Stack <String> import_list = new Stack <String> ();
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -321,7 +321,7 @@ public class emit {
       out.println(
        "/** Cup generated class to encapsulate user supplied action code.*/"
       );  
-      out.println("class " +  pre("actions") + " {");
+      out.println("@SuppressWarnings (\"unchecked\") class " +  pre("actions") + " {");
 
       /* user supplied code */
       if (action_code != null)

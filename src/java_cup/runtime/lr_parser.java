@@ -248,7 +248,7 @@ public abstract class lr_parser {
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** The parse stack itself. */
-  protected Stack stack = new Stack();
+  protected Stack <Symbol> stack = new Stack <Symbol>();
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -298,7 +298,7 @@ public abstract class lr_parser {
   public abstract Symbol do_action(
     int       act_num, 
     lr_parser parser, 
-    Stack     stack, 
+    Stack <Symbol>     stack,
     int       top) 
     throws java.lang.Exception;
 
@@ -629,11 +629,11 @@ public abstract class lr_parser {
     {
       if (stack == null)
 	{
-	  debug_message("# Stack dump requested, but stack is null");
+	  debug_message("# Stack <Symbol> dump requested, but stack is null");
 	  return;
 	}
 
-      debug_message("============ Parse Stack Dump ============");
+      debug_message("============ Parse Stack <Symbol> Dump ============");
 
       /* dump the stack */
       for (int i=0; i<stack.size(); i++)

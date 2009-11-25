@@ -78,7 +78,7 @@ public class lexer {
    *  they match one of the keywords.  The string of the name is the key here,
    *  which indexes Integer objects holding the symbol number. 
    */
-  protected static Hashtable keywords = new Hashtable(23);
+  protected static Hashtable <String, Integer> keywords = new Hashtable<String, Integer>(23);
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -88,7 +88,7 @@ public class lexer {
    *  appropriate char (currently Character objects have a bug which precludes
    *  their use in tables).
    */
-  protected static Hashtable char_symbols = new Hashtable(11);
+  protected static Hashtable <Integer, Integer> char_symbols = new Hashtable<Integer, Integer>(11);
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 

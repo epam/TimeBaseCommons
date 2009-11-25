@@ -60,7 +60,7 @@ public class non_terminal extends symbol {
   /** Table of all non-terminals -- elements are stored using name strings 
    *  as the key 
    */
-  protected static Hashtable _all = new Hashtable();
+  protected static Hashtable <String, non_terminal> _all = new Hashtable<String, non_terminal> ();
 
   /** Access to all non-terminals. */
   public static Enumeration all() {return _all.elements();}
@@ -77,7 +77,7 @@ public class non_terminal extends symbol {
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Table of all non terminals indexed by their index number. */
-  protected static Hashtable _all_by_index = new Hashtable();
+  protected static Hashtable <Integer, non_terminal> _all_by_index = new Hashtable<Integer, non_terminal> ();
 
   /** Lookup a non terminal by index. */
   public static non_terminal find(int indx)
@@ -224,7 +224,7 @@ public class non_terminal extends symbol {
   /*-----------------------------------------------------------*/
 
   /** Table of all productions with this non terminal on the LHS. */
-  protected Hashtable _productions = new Hashtable(11);
+  protected Hashtable <production, production> _productions = new Hashtable<production, production> (11);
 
   /** Access to productions with this non terminal on the LHS. */
   public Enumeration productions() {return _productions.elements();}
