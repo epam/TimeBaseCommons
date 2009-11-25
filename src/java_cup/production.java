@@ -171,7 +171,7 @@ public class production {
     {
       this(lhs_sym,rhs_parts,rhs_l,null);
     }
- 
+  
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /* Constructor with precedence and associativity of production
@@ -220,7 +220,7 @@ public class production {
   /** Table of all productions.  Elements are stored using their index as 
    *  the key.
    */
-  protected static Hashtable _all = new Hashtable();
+  protected static Hashtable <Integer, production> _all = new Hashtable<Integer, production>();
  
   /** Access to all productions. */
   public static Enumeration all() {return _all.elements();}
