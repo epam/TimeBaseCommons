@@ -93,4 +93,5 @@ public class Icons {
     public static final Icon SHORTCUT           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/shortcut.gif");
     public static final Icon COLUMN             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/column.png");
     public static final Icon GROUP_BY           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/groupby.png");
+    public static final Icon EDIT_CLEAR         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/edit-clear.png");
 }
