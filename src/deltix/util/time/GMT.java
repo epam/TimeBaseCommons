@@ -31,6 +31,22 @@ public abstract class GMT {
     public static Calendar              getCalendarInstance () {
         return (Calendar.getInstance (TZ));
     }
+
+    /**
+     *  Returns a GMT-zoned calendar set to current time.
+     */
+    public static Calendar              getCalendarInstance (int year,
+                                                             int month,
+                                                             int date,
+                                                             int hourOfDay,
+                                                             int minute,
+                                                             int second,
+                                                             int millis) {
+        Calendar instance = Calendar.getInstance(TZ);
+        instance.set(year, month, date, hourOfDay, minute, second);
+        instance.set(Calendar.MILLISECOND, millis);
+        return instance;
+    }
     
     /**
      *  Returns a GMT-zoned calendar set to 0.
