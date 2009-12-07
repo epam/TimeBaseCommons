@@ -90,6 +90,27 @@ public abstract class Interval {
      *  @see #getUnit
      */
     public abstract long            getNumUnits ();
+
+    public static FixedInterval     parse(long size) {
+        FixedInterval result = null;
+
+        if (size > Interval.toMilliseconds(Interval.DAY) * 30)
+            throw new IllegalStateException("Cannot create fixed Interval more that month");
+
+        if (size % toMilliseconds(Interval.DAY) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.DAY), TimeUnit.DAY);
+        if (size % toMilliseconds(Interval.HOUR) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.HOUR), TimeUnit.HOUR);
+        if (size % toMilliseconds(Interval.MINUTE) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.MINUTE), TimeUnit.MINUTE);
+        if (size % toMilliseconds(Interval.MINUTE) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.SECOND), TimeUnit.SECOND);
+
+        if (result == null)
+            throw new IllegalStateException("Cannot create fixed interval from size: " + size);
+
+        return result;
+    }
     
     /**
      *  Returns the short representation of this interval, such as

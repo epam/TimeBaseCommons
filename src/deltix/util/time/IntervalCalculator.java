@@ -7,9 +7,9 @@ import java.util.*;
  *  buffers and, therefore, must by externally protected from concurrent calls.
  */
 public class IntervalCalculator {
-    private Calendar        mCalendar = GMT.getCalendarInstance ();
+    private static Calendar        mCalendar = GMT.getCalendarInstance ();
     
-    public long             add (long time, Interval interval) {
+    public static long             add (long time, Interval interval) {
         if (interval instanceof FixedInterval) 
             return (time + ((FixedInterval) interval).getSizeInMilliseconds ());
         else {
@@ -19,7 +19,7 @@ public class IntervalCalculator {
         }
     }
     
-    public long             subtract (long time, Interval interval) {
+    public static long             subtract (long time, Interval interval) {
         if (interval instanceof FixedInterval) 
             return (time - ((FixedInterval) interval).getSizeInMilliseconds ());
         else {
@@ -39,7 +39,7 @@ public class IntervalCalculator {
      *  @param unit          The lowest degree of granularity of the period,
      *                          for example, months, days, or minutes. 
      */
-    public long             normalize (long time, TimeUnit unit) {
+    public static long             normalize (long time, TimeUnit unit) {
         switch (unit) {
             case MILLISECOND:   
                 return (time);
@@ -98,7 +98,7 @@ public class IntervalCalculator {
      *  @param unit         The granularity of the period,
      *                          for example, months, days, or minutes. 
      */
-    public long             getNormalizedTime (
+    public static long             getNormalizedTime (
         TimeUnit                unit,
         int                     year, 
         int                     month, 
@@ -204,7 +204,7 @@ public class IntervalCalculator {
     
     public static void main (String [] args) throws Exception {
         String              cmd = args [0];
-        IntervalCalculator  ic = new IntervalCalculator ();
+        //IntervalCalculator  ic = new IntervalCalculator ();
         
         if (cmd.equalsIgnoreCase ("n")) {
             Date                dt = GMT.parseDateTimeMillis (args [1]);
@@ -214,8 +214,7 @@ public class IntervalCalculator {
 
             System.out.println (
                 GMT.formatDateTimeMillis (t) + " normalized on " + unit +
-                " =\n" + GMT.formatDateTimeMillis (ic.normalize (t, unit))
-            );
+                " =\n" + GMT.formatDateTimeMillis (IntervalCalculator.normalize (t, unit)) );
         }
         else if (cmd.equalsIgnoreCase ("t")) {
             TimeUnit            unit = TimeUnit.valueOf (args [1]);
@@ -235,7 +234,7 @@ public class IntervalCalculator {
             
             System.out.println (
                 GMT.formatDateTimeMillis (
-                    ic.getNormalizedTime (unit, y, m, d, h, mi, s, x)
+                    IntervalCalculator.getNormalizedTime (unit, y, m, d, h, mi, s, x)
                 )
             );
         }
@@ -243,24 +242,24 @@ public class IntervalCalculator {
             long            t = GMT.parseDateTimeMillis (args [1]).getTime ();
             Interval        interval = Interval.valueOf (args [2]);
             
-            t = ic.normalize (t, interval.getUnit ());
+            t = IntervalCalculator.normalize (t, interval.getUnit ());
             
             System.out.println (
                 GMT.formatDateTimeMillis (t) + " + " + interval.toString () +
                 " = \n" +
-                GMT.formatDateTimeMillis (ic.add (t, interval))
+                GMT.formatDateTimeMillis (IntervalCalculator.add (t, interval))
             );
         }
         else if (cmd.equals ("-")) {
             long            t = GMT.parseDateTimeMillis (args [1]).getTime ();
             Interval        interval = Interval.valueOf (args [2]);
             
-            t = ic.normalize (t, interval.getUnit ());
+            t = IntervalCalculator.normalize (t, interval.getUnit ());
             
             System.out.println (
                 GMT.formatDateTimeMillis (t) + " - " + interval.toString () +
                 " = \n" +
-                GMT.formatDateTimeMillis (ic.subtract (t, interval))
+                GMT.formatDateTimeMillis (IntervalCalculator.subtract (t, interval))
             );
         }
         else
