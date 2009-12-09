@@ -6,7 +6,7 @@ package deltix.qsrv.hf.tickdb.sql.lang.pub;
 public abstract class Element {
     public static final long    NO_LOCATION = 0;
     
-    private final long          location;
+    public final long           location;
 
     protected Element (long location) {
         this.location = location;
@@ -23,6 +23,22 @@ public abstract class Element {
     }
 
     public abstract void        print (StringBuilder s);
+
+    public final int            getStartLine () {
+        return (Location.getStartLine (location));
+    }
+
+    public final int            getEndLine () {
+        return (Location.getEndLine (location));
+    }
+
+    public final int            getStartPosition () {
+        return (Location.getStartPosition (location));
+    }
+
+    public final int            getEndPosition () {
+        return (Location.getEndPosition (location));
+    }
 
     @Override
     public final String         toString () {
