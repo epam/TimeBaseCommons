@@ -5,6 +5,9 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
+import java.util.logging.Formatter;
+
+import deltix.util.lang.StringUtils;
 
 /**
  * Description: deltix.util.log.RollingFileHandler
@@ -99,7 +102,8 @@ public class RollingFileHandler extends FileHandler {
                                                     int defaultLimit,
                                                     int defaultCount,
                                                     Level defaultLevel,
-                                                    boolean append) {
+                                                    boolean append,
+                                                    Formatter defaultFormatter) {
         try {
             LogManager logManager = LogManager.getLogManager();
             String handlerClassName = FileHandler.class.getName();
@@ -109,6 +113,17 @@ public class RollingFileHandler extends FileHandler {
             String countValue = logManager.getProperty(handlerClassName + ".count");
             String levelValue = logManager.getProperty(handlerClassName + ".level");
 
+            Formatter formatter = defaultFormatter;
+            String formatterClass = StringUtils.trim(logManager.getProperty(handlerClassName + ".formatter"));
+            if (formatterClass != null) {
+                try {
+                    Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(formatterClass);
+                    formatter = (Formatter) clazz.newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
             RollingFileHandler handler =
                 new RollingFileHandler(pattern != null ? pattern : defaultPattern,
                                        limitValue != null ? Integer.parseInt(limitValue) : defaultLimit,
@@ -116,6 +131,10 @@ public class RollingFileHandler extends FileHandler {
                                        getPushLevel(logManager, DEFAULT_PUSH_LEVEL),
                                        getPushPeriod(logManager, DEFAULT_PUSH_PERIOD));
             handler.setLevel(levelValue != null ? Level.parse(levelValue) : defaultLevel);
+
+            // set formatter
+            handler.setFormatter(formatter);
+
             return handler;
         } catch (IOException e) {
             throw new RuntimeException(e);
