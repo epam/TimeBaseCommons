@@ -1,6 +1,4 @@
-package deltix.qsrv.hf.metadata;
-
-import deltix.util.lang.Util;
+package deltix.util.lang;
 
 import javax.tools.*;
 import java.util.List;
@@ -17,9 +15,9 @@ import java.net.URI;
  * Time: 10:48:44 PM
  * To change this template use File | Settings | File Templates.
  */
-class CompilerUtil {
+public class JavaCompilerHelper {
 
-    private static CompilerUtil instance = null;
+    private static JavaCompilerHelper instance = null;
 
     private JavaCompiler javac = null;
     private StandardJavaFileManager sjfm;
@@ -28,9 +26,9 @@ class CompilerUtil {
     private ClassLoader parentLoader;
     private SpecialClassLoader cl;
 
-    static synchronized Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
+    public static synchronized Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
         if (instance == null)
-            instance = new CompilerUtil();
+            instance = new JavaCompilerHelper();
         return instance.compileClassImpl(className, code, loader);
     }
 
