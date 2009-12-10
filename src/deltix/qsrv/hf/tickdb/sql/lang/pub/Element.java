@@ -12,16 +12,6 @@ public abstract class Element {
         this.location = location;
     }
 
-    @Override
-    public int                  hashCode () {
-        return (getClass ().hashCode ());
-    }
-
-    @Override
-    public boolean              equals (Object o) {
-        return (this == o || getClass () == o.getClass ());
-    }
-
     public abstract void        print (StringBuilder s);
 
     public final int            getStartLine () {
