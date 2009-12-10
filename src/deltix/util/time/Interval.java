@@ -92,10 +92,8 @@ public abstract class Interval {
     public abstract long            getNumUnits ();
 
     public static FixedInterval     parse(long size) {
-        FixedInterval result = null;
-
-        if (size > Interval.toMilliseconds(Interval.DAY) * 30)
-            throw new IllegalStateException("Cannot create fixed Interval more that month");
+        
+        FixedInterval result = new FixedInterval(size, TimeUnit.MILLISECOND);
 
         if (size % toMilliseconds(Interval.DAY) == 0)
             result = new FixedInterval(size / toMilliseconds(Interval.DAY), TimeUnit.DAY);
@@ -103,11 +101,8 @@ public abstract class Interval {
             result = new FixedInterval(size / toMilliseconds(Interval.HOUR), TimeUnit.HOUR);
         if (size % toMilliseconds(Interval.MINUTE) == 0)
             result = new FixedInterval(size / toMilliseconds(Interval.MINUTE), TimeUnit.MINUTE);
-        if (size % toMilliseconds(Interval.MINUTE) == 0)
+        if (size % toMilliseconds(Interval.SECOND) == 0)
             result = new FixedInterval(size / toMilliseconds(Interval.SECOND), TimeUnit.SECOND);
-
-        if (result == null)
-            throw new IllegalStateException("Cannot create fixed interval from size: " + size);
 
         return result;
     }
@@ -122,6 +117,10 @@ public abstract class Interval {
         sb.append (getNumUnits ());
         sb.append (getUnit ().getSuffix ());
         return (sb.toString ());
+    }
+
+    public long toMilliseconds() {
+        return toMilliseconds(this);
     }
 
     public static long toMilliseconds(Interval interval) {
