@@ -304,6 +304,13 @@ public class MemoryDataInput {
         sb.setLength (0);
         return (appendToStringBuilder (sb));
     }
+
+    public final void           skipCharSequence () {
+        int         utflen = readUnsignedShort ();
+        
+        if (utflen != 0xFFFF)
+            skipBytes (utflen);
+    }
     
     /**
      *  Returns false if the string value is null. 
