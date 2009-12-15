@@ -81,7 +81,12 @@ public class MemoryDataOutput {
     }
     
     public final void           writeString (CharSequence str) {
-        writeString (str, 0, str == null ? 0 : str.length ());
+        if (str == null) {
+            writeUnsignedShort (0xFFFF);
+            return;
+        }
+
+        writeStringNonNull (str, 0, str.length ());
     }
     
     public final void           writeString (CharSequence str, int start, int strlen) {
@@ -89,7 +94,11 @@ public class MemoryDataOutput {
             writeUnsignedShort (0xFFFF);        
             return;
         }
+
+        writeStringNonNull (str, start, strlen);
+    }
         
+    public final void           writeStringNonNull (CharSequence str, int start, int strlen) {
         int     utflen = 0;
         int     c, count = 0;
 
