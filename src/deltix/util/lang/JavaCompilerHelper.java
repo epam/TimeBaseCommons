@@ -28,11 +28,12 @@ public class JavaCompilerHelper {
 
     public static synchronized Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
         if (instance == null)
-            instance = new JavaCompilerHelper();
-        return instance.compileClassImpl(className, code, loader);
+            instance = new JavaCompilerHelper(loader);
+
+        return instance.compileClassLocal (className, code);
     }
 
-    private void init(ClassLoader loader) {
+    public JavaCompilerHelper (ClassLoader loader) {
         if (javac == null) {
             javac = ToolProvider.getSystemJavaCompiler();
             if (javac == null)
@@ -47,8 +48,7 @@ public class JavaCompilerHelper {
         }
     }
 
-    private Class<?> compileClassImpl(String className, String code, ClassLoader loader) throws ClassNotFoundException {
-        init(loader);
+    public Class<?> compileClassLocal (String className, String code) throws ClassNotFoundException {
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
         DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
@@ -81,14 +81,17 @@ public class JavaCompilerHelper {
             this.src = src;
         }
 
+        @Override
         public CharSequence getCharContent(boolean ignoreEncodingErrors) {
             return src;
         }
 
+        @Override
         public OutputStream openOutputStream() {
             throw new IllegalStateException();
         }
 
+        @Override
         public InputStream openInputStream() {
             return new ByteArrayInputStream(src.getBytes());
         }
@@ -103,12 +106,14 @@ public class JavaCompilerHelper {
             this.xcl = xcl;
         }
 
+        @Override
         public JavaFileObject getJavaFileForOutput(Location location, String name, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
             MemoryByteCode mbc = new MemoryByteCode(name);
             xcl.addClass(name, mbc);
             return mbc;
         }
 
+        @Override
         public ClassLoader getClassLoader(Location location) {
             return xcl;
         }
@@ -122,15 +127,18 @@ public class JavaCompilerHelper {
             super(URI.create("byte:///" + name + ".class"), Kind.CLASS);
         }
 
+        @Override
         public CharSequence getCharContent(boolean ignoreEncodingErrors) {
             throw new IllegalStateException();
         }
 
+        @Override
         public OutputStream openOutputStream() {
             baos = new ByteArrayOutputStream();
             return baos;
         }
 
+        @Override
         public InputStream openInputStream() {
             throw new IllegalStateException();
         }
@@ -147,6 +155,7 @@ public class JavaCompilerHelper {
             super(parent);
         }
 
+        @Override
         protected Class<?> findClass(String name) throws ClassNotFoundException {
             MemoryByteCode mbc = m.get(name);
             if (mbc == null) {
