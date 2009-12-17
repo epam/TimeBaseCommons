@@ -1,7 +1,7 @@
-package deltix.qsrv.hf.tickdb.sql.lang.compiler;
+package deltix.qsrv.hf.tickdb.lang.compiler;
 
-import deltix.qsrv.hf.tickdb.sql.lang.pub.Element;
-import deltix.qsrv.hf.tickdb.sql.lang.pub.Location;
+import deltix.qsrv.hf.tickdb.lang.pub.Element;
+import deltix.qsrv.hf.tickdb.lang.pub.Location;
 
 /**
  *

@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.sql.lang.pub;
+package deltix.qsrv.hf.tickdb.lang.pub;
 
 /**
  *
