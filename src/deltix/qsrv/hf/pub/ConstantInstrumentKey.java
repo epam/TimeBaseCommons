@@ -9,6 +9,20 @@ public class ConstantInstrumentKey
     public final InstrumentType     instrumentType;
     public final String             symbol;
 
+    /**
+     *  If the argument is already a ConstantInstrumentKey, cast it and return.
+     *  Otherwise, create a copy and return that.
+     *
+     *  @param id       The identity to make immutable.
+     *  @return         A guaranteed immutable version of the argument.
+     */
+    public static ConstantInstrumentKey makeImmutable (InstrumentIdentity id) {
+        if (id instanceof ConstantInstrumentKey)
+            return ((ConstantInstrumentKey) id);
+        else
+            return (new ConstantInstrumentKey (id));
+    }
+
     public ConstantInstrumentKey (InstrumentType instrumentType, CharSequence symbol) {
         this.instrumentType = instrumentType;
         this.symbol = symbol.toString ();
