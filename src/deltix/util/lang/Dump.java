@@ -6,17 +6,17 @@ package deltix.util.lang;
 public class Dump {
 
     /**
-     * dump byte [] as StringBuffer  "0x00, ..., 0xFF"
+     * dump byte [] as StringBuilder  "0x00, ..., 0xFF"
      */
-    public static final StringBuffer dump(byte[] bytes) {
+    public static StringBuilder dump(byte[] bytes) {
         if (bytes == null) throw new IllegalArgumentException("null bytes");
         return dump (bytes, 0, bytes.length);
     }
 
-    public static final StringBuffer dump(byte[] bytes, int offset, int length) {
+    public static StringBuilder dump(byte[] bytes, int offset, int length) {
         if (bytes == null) throw new IllegalArgumentException("null bytes");
 
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbuf = new StringBuilder();
         int i, cnt = offset + length;
         for (i = offset; i < cnt; i++) {
             if (i > offset)
@@ -27,11 +27,11 @@ public class Dump {
     }
 
     /**
-     * dump char [] as StringBuffer  "0x00, ..., 0xFF"
+     * dump char [] as StringBuilder  "0x00, ..., 0xFF"
      */
-    public static final StringBuffer dump(char[] chars) {
+    public static StringBuilder dump(char[] chars) {
         if (chars == null) throw new IllegalArgumentException("null chars");
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbuf = new StringBuilder();
         int i, cnt = chars.length;
         for (i = 0; i < cnt; i++) {
             if (i > 0)
@@ -50,14 +50,14 @@ public class Dump {
      * 00000020:  25 32 46 65 61 70 70 73 25 32 46 72 65 73 6f 75  [%2Feapps%2Fresou]
      * </pre>
      */
-    public static StringBuffer table(byte[] bytes) {
+    public static StringBuilder table(byte[] bytes) {
         if (bytes == null)
             return null;
 
         return table(bytes, 0, bytes.length);
     }
 
-    public static StringBuffer table(byte[] bytes, int offset, int length) {
+    public static StringBuilder table(byte[] bytes, int offset, int length) {
         if (bytes == null)
             return null;
 
@@ -67,7 +67,7 @@ public class Dump {
 
         final int COLS_IN_ROW = 0x10;
         int cnt = length;
-        StringBuffer sbuf = new StringBuffer((8 + 3 + 16 * 3 + 2 + 16 + 1) * (cnt / COLS_IN_ROW));
+        StringBuilder sbuf = new StringBuilder((8 + 3 + 16 * 3 + 2 + 16 + 1) * (cnt / COLS_IN_ROW));
         char[] row = new char[COLS_IN_ROW];
         for (int rowbase = offset; rowbase < cnt; rowbase += COLS_IN_ROW) {
             dump(sbuf, rowbase, 8);
@@ -101,14 +101,14 @@ public class Dump {
      * 00000020:  0025 0032 0046 0065 0061 0070 0070 0073 0025 0032 0046 0072 0065 0073 006f 0075  [%2Feapps%2Fresou]
      * </pre>
      */
-    public static StringBuffer table(char[] chars) {
+    public static StringBuilder table(char[] chars) {
         if (chars == null)
             return null;
 
         return table(chars, 0, chars.length);
     }
 
-    public static StringBuffer table(char[] chars, int offset, int length) {
+    public static StringBuilder table(char[] chars, int offset, int length) {
         if (chars == null)
             return null;
 
@@ -117,7 +117,7 @@ public class Dump {
 
         final int COLS_IN_ROW = 0x10;
         int cnt = length;
-        StringBuffer sbuf = new StringBuffer((8 + 3 + 16 * 5 + 2 + 16 + 1) * (cnt / COLS_IN_ROW));
+        StringBuilder sbuf = new StringBuilder((8 + 3 + 16 * 5 + 2 + 16 + 1) * (cnt / COLS_IN_ROW));
         char[] row = new char[COLS_IN_ROW];
         for (int rowbase = offset; rowbase < cnt; rowbase += COLS_IN_ROW) {
             dump(sbuf, rowbase, 8);
@@ -157,7 +157,7 @@ public class Dump {
     }
 
 
-    private static void dump(StringBuffer sbuf, int number, int nDigits) {
+    private static void dump(StringBuilder sbuf, int number, int nDigits) {
         char[] buf = new char[nDigits];
         for (int i = nDigits; i > 0;) {
             buf[--i] = Character.forDigit(number & 0xF, 0x10);
