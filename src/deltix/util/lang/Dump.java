@@ -10,11 +10,16 @@ public class Dump {
      */
     public static final StringBuffer dump(byte[] bytes) {
         if (bytes == null) throw new IllegalArgumentException("null bytes");
+        return dump (bytes, 0, bytes.length);
+    }
+
+    public static final StringBuffer dump(byte[] bytes, int offset, int length) {
+        if (bytes == null) throw new IllegalArgumentException("null bytes");
 
         StringBuffer sbuf = new StringBuffer();
-        int i, cnt = bytes.length;
-        for (i = 0; i < cnt; i++) {
-            if (i > 0)
+        int i, cnt = offset + length;
+        for (i = offset; i < cnt; i++) {
+            if (i > offset)
                 sbuf.append(", ");
             sbuf.append(Integer.toHexString(((int) bytes[i]) & 0xFF));
         }
