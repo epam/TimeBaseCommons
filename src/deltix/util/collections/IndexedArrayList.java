@@ -132,7 +132,7 @@ public class IndexedArrayList <E> implements List <E>, Serializable {
 
     public boolean      contains (Object o) {
         if (o == null)
-            throw new UnsupportedOperationException ("contains (null)");
+            return (mFirstNullIdx >= 0);
         
         return (mElemToIdxMap.containsKey (o));
     }
@@ -151,16 +151,20 @@ public class IndexedArrayList <E> implements List <E>, Serializable {
         return (mElemToIdxMap.get (o, -1));
     }
 
-    public E            remove (int index) {
-        if (index != size () - 1)
-            throw new UnsupportedOperationException (
-                "Removal from the middle is not supported"
-            );
-        
+    public E            remove (int index) {                
         E       e = mElemList.remove (index);
         
         unmap (e, index);
-        
+
+        final int       s = size ();
+
+        for (int ii = index; ii < s; ii++) {
+            E   ee = mElemList.get (ii);
+
+            if (ee != null)
+                mElemToIdxMap.put (ee, ii);
+        }
+
         return (e);
     }
 
