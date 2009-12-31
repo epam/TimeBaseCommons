@@ -1,6 +1,7 @@
 package deltix.util.io;
 
 import deltix.util.collections.generated.ByteArrayList;
+import deltix.util.collections.SafeArrays;
 
 /**
  *  Extension of java.io.ByteArrayInputStream
@@ -92,5 +93,12 @@ public class ByteArrayInputStreamEx extends java.io.ByteArrayInputStream {
      */
     public void         setLimit (int n) {
         count = n;
-    }    
+    }
+
+    public byte [] toByteArray () {
+    	byte []		ret = new byte [count - pos];
+    	SafeArrays.safeArrayCopy (buf, pos, ret, 0, count - pos);
+		return (ret);
+    }
+
 }

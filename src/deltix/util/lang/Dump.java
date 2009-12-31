@@ -66,7 +66,7 @@ public class Dump {
 
 
         final int COLS_IN_ROW = 0x10;
-        int cnt = length;
+        int cnt = length+offset;
         StringBuilder sbuf = new StringBuilder((8 + 3 + 16 * 3 + 2 + 16 + 1) * (cnt / COLS_IN_ROW));
         char[] row = new char[COLS_IN_ROW];
         for (int rowbase = offset; rowbase < cnt; rowbase += COLS_IN_ROW) {
@@ -120,7 +120,7 @@ public class Dump {
             length = chars.length;
 
         final int COLS_IN_ROW = 0x10;
-        int cnt = length;
+        int cnt = length + offset;
         StringBuilder sbuf = new StringBuilder((8 + 3 + 16 * 5 + 2 + 16 + 1) * (cnt / COLS_IN_ROW));
         char[] row = new char[COLS_IN_ROW];
         for (int rowbase = offset; rowbase < cnt; rowbase += COLS_IN_ROW) {
