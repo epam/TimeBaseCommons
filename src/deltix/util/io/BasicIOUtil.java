@@ -503,6 +503,15 @@ public abstract class BasicIOUtil {
         return (lines.toArray (new String [lines.size ()]));
     }
 
+    public static String getFileText (File file) throws IOException, InterruptedException {
+        FileInputStream is = new FileInputStream(file);
+        try {
+            return BasicIOUtil.readFromStream (is);
+        } finally {
+            is.close();
+        }
+    }
+
     public static void		writeTextFile (String filepath, String content)
         throws IOException
     {
