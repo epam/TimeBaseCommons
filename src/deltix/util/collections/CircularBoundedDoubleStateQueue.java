@@ -31,6 +31,16 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         }
     }
 
+    public final void addEmptyElements(int count, E[] elems) {
+        synchronized (mEmptyElements) {
+            for (int i = 0; i < count; i++) {
+                mEmptyElements.add(elems[i]);
+                mEmptyElements.notify();
+            }
+        }
+    }
+
+
     public final void addReadyElement(E e) {
         synchronized (mReadyElements) {
             mReadyElements.add(e);
@@ -38,27 +48,66 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         }
     }
 
+    public final void addReadyElements(final int count, E[] elems) {
+        synchronized (mReadyElements) {
+            for (int i = 0; i < count; i++) {
+                mReadyElements.add(elems[i]);
+                mReadyElements.notify(); 
+            }
+        }
+    }
+
+
     public final E getEmptyElement() throws InterruptedException {
         synchronized (mEmptyElements) {
             try {
                 while (mEmptyElements.count() == 0) {
-
-//FIXME: Classic concurrent if-then checking trap. The fact that emptyElements was empty a moment ago doesn't imply we have at least one ready element now
                     if (mCannibalizeStaleReadyElements) {
-
-                        // assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
+                        assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
                         return getReadyElement();
                     }
 
                     mEmptyElements.wait();
                 }
+                return mEmptyElements.remove();
             } catch (InterruptedException ie) {
                 notifyAll();
                 throw ie;
             }
-            return mEmptyElements.remove();
         }
     }
+
+
+    public final int getEmptyElements(int count, E[] result)
+        throws InterruptedException
+    {
+        synchronized (mEmptyElements) {
+
+            try {
+                int emptyCount;
+                while ((emptyCount = mEmptyElements.count()) == 0) {
+                    if (mCannibalizeStaleReadyElements) {
+                        assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
+                        result[0] = getReadyElement();
+                        return 1;
+                    }
+                    
+                    mEmptyElements.wait();
+                }
+                if (emptyCount > count)
+                    emptyCount = count;
+
+                for (int i=0; i < emptyCount; i++)
+                    result[i] = mEmptyElements.remove();
+
+                return emptyCount;
+            } catch (InterruptedException ie) {
+                notifyAll();
+                throw ie;
+            }
+        }
+    }
+
 
     public final E getReadyElement() throws InterruptedException {
         synchronized (mReadyElements) {
@@ -66,11 +115,35 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
                 while (mReadyElements.count() == 0) {
                     mReadyElements.wait();
                 }
+                return mReadyElements.remove();
             } catch (InterruptedException ie) {
                 notifyAll();
                 throw ie;
             }
-            return mReadyElements.remove();
+        }
+    }
+
+    public final int getReadyElements(int count, E[] result)
+        throws InterruptedException
+    {
+        synchronized (mReadyElements) {
+            
+            try {
+                int readyCount;
+                while ((readyCount = mReadyElements.count()) == 0) {
+                    mReadyElements.wait();
+                }
+                if (readyCount > count)
+                    readyCount = count;
+
+                for (int i=0; i < readyCount; i++)
+                    result[i] = mReadyElements.remove();
+
+                return readyCount;
+            } catch (InterruptedException ie) {
+                notifyAll();
+                throw ie;
+            }
         }
     }
 
