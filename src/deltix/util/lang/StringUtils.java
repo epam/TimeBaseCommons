@@ -4,6 +4,11 @@ import java.util.StringTokenizer;
 import java.text.DecimalFormat;
 
 public class StringUtils {
+    public static void      setStringBuilder (StringBuilder sb, CharSequence value) {
+        sb.setLength (0);
+        sb.append (value);
+    }
+
     public static String [] splitAtWhitespace (String s) {
         int     delim = 0;
         int     argLength = s.length ();
