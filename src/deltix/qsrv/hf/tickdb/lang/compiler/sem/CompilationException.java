@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.lang.compiler;
+package deltix.qsrv.hf.tickdb.lang.compiler.sem;
 
 import deltix.qsrv.hf.tickdb.lang.pub.Element;
 import deltix.qsrv.hf.tickdb.lang.pub.Location;
