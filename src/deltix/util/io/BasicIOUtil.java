@@ -1511,4 +1511,47 @@ public abstract class BasicIOUtil {
         return result.toString();
     }
 
+    public static LineNumberReader toLineNumberReader (Reader r) {
+        return (
+            r instanceof LineNumberReader ?
+                (LineNumberReader) r :
+                new LineNumberReader (r)
+        );
+    }
+
+    public static void             dumpWithLineNumbers (Reader text, PrintWriter out)
+        throws IOException
+    {
+        LineNumberReader        lnr = toLineNumberReader (text);
+        String                  line;
+
+        while ((line = lnr.readLine ()) != null)
+            out.printf ("%-4d: %s\n", lnr.getLineNumber (), line);
+    }
+
+    public static void             dumpWithLineNumbers (Reader text, PrintStream out)
+        throws IOException
+    {
+        LineNumberReader        lnr = toLineNumberReader (text);
+        String                  line;
+
+        while ((line = lnr.readLine ()) != null)
+            out.printf ("%-4d: %s\n", lnr.getLineNumber (), line);
+    }
+
+    public static void             dumpWithLineNumbers (CharSequence text, PrintWriter out) {
+        try {
+            dumpWithLineNumbers (new CharSequenceReader (text), out);
+        } catch (IOException x) {
+            throw new RuntimeException (x);
+        }
+    }
+    
+    public static void             dumpWithLineNumbers (CharSequence text, PrintStream out) {
+        try {
+            dumpWithLineNumbers (new CharSequenceReader (text), out);
+        } catch (IOException x) {
+            throw new RuntimeException (x);
+        }
+    }
 }

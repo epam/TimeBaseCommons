@@ -158,7 +158,5 @@ public class IOUtil extends BasicIOUtil {
 
             c = in.readByte ();
         }
-    }
-
-
+    }   
 }
