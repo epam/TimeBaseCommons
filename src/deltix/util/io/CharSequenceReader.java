@@ -89,10 +89,10 @@ public class CharSequenceReader extends Reader {
      * an exception in this case. Negative values of <code>ns</code> cause the
      * stream to skip backwards. Negative return values indicate a skip
      * backwards. It is not possible to skip backwards past the beginning of
-     * the string.
+     * the string.</p>
      *
      * <p>If the entire string has been read or skipped, then this method has
-     * no effect and always returns 0.
+     * no effect and always returns 0.</p>
      *
      * @exception  IOException  If an I/O error occurs
      */
@@ -140,7 +140,7 @@ public class CharSequenceReader extends Reader {
      *                         is no actual limit, so this argument must not
      *                         be negative, but is otherwise ignored.
      *
-     * @exception  IllegalArgumentException  If readAheadLimit is < 0
+     * @exception  IllegalArgumentException  If readAheadLimit is &lt; 0
      * @exception  IOException  If an I/O error occurs
      */
     public void mark(int readAheadLimit) throws IOException {
