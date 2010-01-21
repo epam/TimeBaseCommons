@@ -12,6 +12,10 @@ public abstract class Element {
         this.location = location;
     }
 
+    /**
+     *  Convert the element to correct QQL. This method is used for
+     *  serialization.
+     */
     public abstract void        print (StringBuilder s);
 
     public final int            getStartLine () {
@@ -30,6 +34,10 @@ public abstract class Element {
         return (Location.getEndPosition (location));
     }
 
+    /**
+     *  Convert the element to correct QQL. This method is used for
+     *  serialization. This method calls {@link #print}.
+     */
     @Override
     public final String         toString () {
         StringBuilder               sb = new StringBuilder ();

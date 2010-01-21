@@ -16,44 +16,30 @@ import java.net.URI;
  * To change this template use File | Settings | File Templates.
  */
 public class JavaCompilerHelper {
+    public static final JavaCompiler              JAVA_COMPILER_INSTANCE;
+    public static final StandardJavaFileManager   JAVA_FILEMGR_INSTANCE;
 
-    private static JavaCompilerHelper instance = null;
-
-    private JavaCompiler javac = null;
-    private StandardJavaFileManager sjfm;
-    private SpecialJavaFileManager fileManager;
-
-    private ClassLoader parentLoader;
-    private SpecialClassLoader cl;
-
-    public static synchronized Class<?> compileClass(String className, String code, ClassLoader loader) throws ClassNotFoundException {
-        if (instance == null)
-            instance = new JavaCompilerHelper(loader);
-
-        return instance.compileClassLocal (className, code);
+    static {
+        JAVA_COMPILER_INSTANCE = ToolProvider.getSystemJavaCompiler();
+//        if (JAVA_COMPILER_INSTANCE == null)
+//            JAVA_COMPILER_INSTANCE = getCompiler4IKVM(loader);
+        JAVA_FILEMGR_INSTANCE = JAVA_COMPILER_INSTANCE.getStandardFileManager(null, null, null);
     }
 
-    public JavaCompilerHelper (ClassLoader loader) {
-        if (javac == null) {
-            javac = ToolProvider.getSystemJavaCompiler();
-            if (javac == null)
-                javac = getCompiler4IKVM(loader);
-            sjfm = javac.getStandardFileManager(null, null, null);
-        }
+    private SpecialJavaFileManager  fileManager;
+    private SpecialClassLoader      cl;
 
-        if (cl == null || parentLoader != loader) {
-            parentLoader = loader;
-            cl = new SpecialClassLoader(loader);
-            fileManager = new SpecialJavaFileManager(sjfm, cl);
-        }
+    public JavaCompilerHelper (ClassLoader loader) {        
+        cl = new SpecialClassLoader (loader);
+        fileManager = new SpecialJavaFileManager (JAVA_FILEMGR_INSTANCE, cl);
     }
 
-    public Class<?> compileClassLocal (String className, String code) throws ClassNotFoundException {
+    public Class<?> compileClass (String className, String code) throws ClassNotFoundException {
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
         DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
         //Iterable<String> options = Arrays.asList("-verbose");
-        JavaCompiler.CompilationTask compile = javac.getTask(out, fileManager, dianosticListener, null, null, compilationUnits);
+        JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, null, null, compilationUnits);
         boolean ok = compile.call();
 
         final boolean hasDiagnostic = dianosticListener.getDiagnostics().size() > 0;
@@ -175,7 +161,8 @@ public class JavaCompilerHelper {
     private static final String defaultJavaCompilerName
             = "com.sun.tools.javac.api.JavacTool";
 
-    private static JavaCompiler getCompiler4IKVM(ClassLoader loader) {
+/*
+    private static JavaCompiler getCompiler4IKVM() {
         try {
             String jre_home = System.getProperty("java.home");
             if (jre_home == null || jre_home.endsWith("virtual-ikvm-home"))
@@ -191,10 +178,12 @@ public class JavaCompilerHelper {
                 class_path = System.getenv("CLASSPATH");
             System.setProperty("java.class.path", class_path);
 
-            Class<?> clazz = Class.forName(defaultJavaCompilerName, true, loader);
+            Class<?> clazz = Class.forName(defaultJavaCompilerName, true, MY CLASS LOADER);
             return (JavaCompiler) clazz.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+ *
+ */
 }
