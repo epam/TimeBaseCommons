@@ -73,7 +73,7 @@ public class CharSequenceReader extends Reader {
 
             int n = 0;
 
-            while (next < length)
+            while (next < length && n < len)
                 cbuf [off + n++] = str.charAt (next++);
 
             return n;
