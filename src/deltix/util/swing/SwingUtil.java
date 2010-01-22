@@ -23,6 +23,7 @@ public abstract class SwingUtil {
     public static final Icon       SAVE_ICON = loadIcon ("deltix/util/swing/save.gif");
     public static final Icon       NEW_ICON = loadIcon ("deltix/util/swing/new.gif");
     public static final Icon       OPEN_ICON = loadIcon ("deltix/util/swing/open.gif");
+    public static final Icon       X_ICON = loadIcon ("deltix/util/swing/x.gif");
         
     /**
      *  Marks components that call setDeepEnabled from their own setEnabled method

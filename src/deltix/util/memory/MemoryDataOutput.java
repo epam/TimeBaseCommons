@@ -98,6 +98,10 @@ public class MemoryDataOutput {
         writeUnsignedShort (0xFFFF);
     }
     
+    public final void           writeStringNonNull (CharSequence str) {
+        writeStringNonNull (str, 0, str.length ());
+    }
+
     public final void           writeStringNonNull (CharSequence str, int start, int strlen) {
         int     utflen = 0;
         int     c, count = 0;

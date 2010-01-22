@@ -19,15 +19,18 @@ public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseM
         return DragSource.getDragThreshold();
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         firstMouseEvent = e;
         e.consume();
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         firstMouseEvent = null;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         if (firstMouseEvent != null) {
             e.consume();
@@ -50,6 +53,7 @@ public class DefaultDragGestureRecognizer extends MouseAdapter implements MouseM
         }
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
     }
 
