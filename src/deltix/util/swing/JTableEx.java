@@ -48,6 +48,7 @@ public class JTableEx extends JTable {
      *  If JTable's logic fails to find a specific renderer, get the 
      *  default renderer for the <i>class of the cell's value object</i>.
      */
+    @Override
     public TableCellRenderer getCellRenderer (int row, int column) {
         TableColumn         tableColumn = getColumnModel ().getColumn (column);
         TableCellRenderer   renderer = tableColumn.getCellRenderer ();
@@ -75,6 +76,7 @@ public class JTableEx extends JTable {
      *  If JTable's logic fails to find a specific editor, get the 
      *  default editor for the <i>class of the cell's value object</i>.
      */
+    @Override
     public TableCellEditor getCellEditor(int row, int column) {
         TableColumn         tableColumn = getColumnModel ().getColumn (column);
         TableCellEditor     editor = tableColumn.getCellEditor ();
