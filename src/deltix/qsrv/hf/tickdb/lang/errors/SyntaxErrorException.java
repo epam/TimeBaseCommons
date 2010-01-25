@@ -5,6 +5,10 @@ package deltix.qsrv.hf.tickdb.lang.errors;
  */
 public class SyntaxErrorException extends CompilationException {
     public SyntaxErrorException (long location) {
-        super ("Syntax error", location);
+        this ("Syntax error", location);
+    }
+
+    public SyntaxErrorException (String msg, long location) {
+        super (msg, location);
     }
 }
