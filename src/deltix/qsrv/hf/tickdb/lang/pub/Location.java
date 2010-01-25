@@ -19,4 +19,8 @@ public abstract class Location {
     public static int           getEndPosition (long location) {
         return ((int) (location & 0xFFFF));
     }
+
+    public static long          combine (long left, long right) {
+        return (left << 32 | right);
+    }
 }

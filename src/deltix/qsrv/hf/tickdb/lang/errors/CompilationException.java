@@ -11,8 +11,8 @@ public class CompilationException extends RuntimeException {
 
     public CompilationException (String msg, long location) {
         super (
-            Location.getStartLine (location) + "." +
-            Location.getStartPosition (location) + ":" + 
+            (Location.getStartLine (location) + 1) + "." +
+            (Location.getStartPosition (location) + 1) + ":" +
             msg
         );
         
