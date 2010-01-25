@@ -4,8 +4,8 @@ package deltix.util.collections;
  * Fixed size circular buffer of byte values
  */
 public class ByteQueue {
-    private final int           capacity;
-    private final byte []       buffer;
+    private int                 capacity;
+    private byte []             buffer;
     private int                 size = 0;
     private int                 head = 0;
     private int                 tail = 0;
@@ -72,7 +72,7 @@ public class ByteQueue {
             head = 0;
         
         return (value);
-    }
+    }   
 
     /**
      *  Equivalent to (head + offset) % capacity for 0 &lt;= offset &lt; capacity
@@ -187,5 +187,26 @@ public class ByteQueue {
 
     public int                  getCapacity () {
         return capacity;
+    }
+
+    public boolean              setCapacity (int value) {
+        if (capacity == value)
+            return false; 
+
+        capacity = value;
+        
+        byte[] previous = buffer;
+        buffer = new byte[capacity];
+        if (tail > head) {
+            System.arraycopy (previous, head, buffer, 0, size);
+        }
+        else {
+            System.arraycopy (previous, head, buffer, 0, previous.length - head);
+            System.arraycopy (previous, 0, buffer, previous.length - head, tail);
+            head = 0;
+            tail = size;
+        }
+
+        return true;
     }
 }
