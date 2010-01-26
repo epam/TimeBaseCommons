@@ -10,11 +10,8 @@ import java.io.Serializable;
  *  contains operations.</p>
  *  <p>Notes:
  *  <ul>
- *      <li>Null elements can be added, but are not indexed, 
- *          therefore indexOf (null) is not allowed.</li>
  *      <li>Duplicate elements are not allowed. Therefore, indexOf () 
  *          and lastIndexOf () always return identical results.</li>
- *      <li>Removal of elements is not allowed.</li>
  *      <li>Insertion into the middle is not allowed.</li>
  *  </ul></p>
  */
@@ -145,8 +142,8 @@ public class IndexedArrayList <E> implements List <E>, Serializable {
     }
 
     public int          lastIndexOf (Object o) {
-        if (o == null)
-            return (mElemList.lastIndexOf (null));
+        if (o == null || mAllowAddingDuplicates)
+            return (mElemList.lastIndexOf (o));
         
         return (mElemToIdxMap.get (o, -1));
     }
