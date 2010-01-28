@@ -9,7 +9,7 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
 
     private final FixedSizeStack<E> mEmptyElements;
     private final CircularBoundedQueue<E> mReadyElements;
-    private final boolean mCannibalizeStaleReadyElements = true;
+    private final boolean mCannibalizeStaleReadyElements = false;
 
     public CircularBoundedDoubleStateQueue(final int elementCount) {
         mReadyElements = new CircularBoundedQueue<E>(elementCount);
@@ -52,7 +52,7 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         synchronized (mReadyElements) {
             for (int i = 0; i < count; i++) {
                 mReadyElements.add(elems[i]);
-                mReadyElements.notify(); 
+                mReadyElements.notify();
             }
         }
     }
@@ -64,6 +64,7 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
                 while (mEmptyElements.count() == 0) {
                     if (mCannibalizeStaleReadyElements) {
                         assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
+                        cannibilized();
                         return getReadyElement();
                     }
 
@@ -77,6 +78,9 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         }
     }
 
+    protected void cannibilized() {
+    	
+    }
 
     public final int getEmptyElements(int count, E[] result)
         throws InterruptedException
@@ -89,9 +93,10 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
                     if (mCannibalizeStaleReadyElements) {
                         assert getCountReadyElements() > 0; // implied: when mEmptyElementsis empty, mReadyElements must have at least capacity-numChannels elements
                         result[0] = getReadyElement();
+                        cannibilized();
                         return 1;
                     }
-                    
+
                     mEmptyElements.wait();
                 }
                 if (emptyCount > count)
@@ -127,7 +132,7 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         throws InterruptedException
     {
         synchronized (mReadyElements) {
-            
+
             try {
                 int readyCount;
                 while ((readyCount = mReadyElements.count()) == 0) {
