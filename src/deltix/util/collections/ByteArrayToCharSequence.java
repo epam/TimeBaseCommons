@@ -1,0 +1,79 @@
+package deltix.util.collections;
+
+import deltix.util.lang.Util;
+
+/**
+ *
+ */
+public class ByteArrayToCharSequence implements CharSequence {
+    public byte []         bytes;
+    public int             start;
+    public int             end;
+
+    public ByteArrayToCharSequence () {
+        bytes = null;
+        start = -1;
+        end = -1;
+    }
+
+    public ByteArrayToCharSequence (byte [] bytes, int start, int end) {
+        set (bytes, start, end);
+    }
+
+    public void                 set (byte [] bytes, int length) {
+        this.bytes = bytes;
+        this.start = 0;
+        this.end = length;
+    }
+
+    public void                 set (byte [] bytes, int start, int end) {
+        this.bytes = bytes;
+        this.start = start;
+        this.end = end;
+    }
+
+    public final char             charAt (int index) {
+        return ((char) bytes [start + index]);
+    }
+
+    public final CharSequence     subSequence (int inStart, int inEnd) {
+        return (new ByteArrayToCharSequence (bytes, start + inStart, start + inEnd));
+    }
+
+    public final int              length () {
+        return (end - start);
+    }
+
+    @Override
+    public final String           toString () {
+        return (new String (bytes, start, end - start));
+    }
+
+    public final void             trimWhitespace () {
+        while (start < end && Character.isWhitespace (bytes [start]))
+            start++;
+
+        while (start < end) {
+            final int       prev = end - 1;
+
+            if (!Character.isWhitespace (bytes [prev]))
+                break;
+
+            end = prev;
+        }
+    }
+
+    @Override
+    public boolean                  equals (Object other) {
+        return (
+            this == other ||
+            other instanceof CharSequence &&
+                Util.equals (this, (CharSequence) other)
+        );
+    }
+
+    @Override
+    public int                      hashCode () {
+        return (Util.hashCode (this));
+    }
+}

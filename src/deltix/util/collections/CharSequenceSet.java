@@ -11,6 +11,7 @@ import java.util.Set;
 public class CharSequenceSet extends HashSet <String> {
     private static final long serialVersionUID = 1L;
     private transient CharSubSequence     mBuffer = new CharSubSequence ();
+    private transient ByteArrayToCharSequence mBuffer2 = new ByteArrayToCharSequence ();
 
     public CharSequenceSet (int initialCapacity, float loadFactor) {
         super (initialCapacity, loadFactor);
@@ -109,8 +110,14 @@ public class CharSequenceSet extends HashSet <String> {
         return (super.contains (mBuffer));
     }
 
+    public final boolean        containsCharSequence (byte [] key, int start, int end) {
+        mBuffer2.set (key, start, end);
+        return (super.contains (mBuffer2));
+    }
+
     private void readObject (ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         mBuffer = new CharSubSequence ();
+        mBuffer2 = new ByteArrayToCharSequence ();
     }
 }
