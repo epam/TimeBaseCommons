@@ -96,4 +96,5 @@ public class Icons {
     public static final Icon GROUP_BY           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/groupby.png");
     public static final Icon EDIT_CLEAR         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/edit-clear.png");
     public static final Icon WIZARD             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/wizard.png");
+    public static final Icon SEARCH             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/search.png");
 }
