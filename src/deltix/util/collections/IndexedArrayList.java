@@ -270,6 +270,30 @@ public class IndexedArrayList <E> implements List <E>, Serializable {
         return (true);
     }
 
+    public int          getIndexOrAdd (E o) {
+        int         idx;
+        
+        if (o == null) {
+            idx = mFirstNullIdx;
+
+            if (idx < 0) {
+                idx = mElemList.size ();
+                mElemList.add (o);
+            }
+        }
+        else {
+            idx = mElemToIdxMap.get (o, -1);
+
+            if (idx < 0) {
+                idx = mElemList.size ();
+                mElemList.add (o);
+                map (o, idx);
+            }
+        }
+        
+        return (idx);
+    }
+
     public void         clear () {
         mElemList.clear ();
         mElemToIdxMap.clear ();
