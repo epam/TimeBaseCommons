@@ -14,6 +14,11 @@ public final class TimeRange {
 
     public final long to;
 
+    public TimeRange() {
+       this.from = UNDEFINED;
+       this.to = UNDEFINED;
+   }
+
 
     public TimeRange(long from, long to) {
         this.from = from;
