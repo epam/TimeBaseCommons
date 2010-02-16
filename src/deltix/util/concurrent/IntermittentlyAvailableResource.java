@@ -1,11 +1,11 @@
 package deltix.util.concurrent;
 
 /**
- *  A resource that changes its state between available and unavailable.
+ * A resource that changes its state between available and unavailable.
  * Usage (assuming "resource" implements IntermittentlyAvailableResource):
  *<pre>
  *resource.setAvailabilityListener (
- *    new AvailabilityListener <...> () {
+ *    new AvailabilityListener &lt;...&gt; () {
  *        public void             maybeAvailable (... resource) {
  *            synchronized (myLock) {
  *              availablePool.add (resource);
@@ -22,12 +22,14 @@ package deltix.util.concurrent;
  *    }
  *}
  *</pre>
+ * 
  * Note that it is absolutely critical to synchronize the <tt>maybeAvailable</tt>
  * callback on the same monitor as the critical operation call. This ensures
  * that, while UnavailableResourceException is being handled and the resource is
  * removed from the available pool, an opposite call to maybeAvailable cannot be
  * made.
  */
+
 public interface IntermittentlyAvailableResource <T> {    
     /**
      *  Installs the (only) availability listener.
