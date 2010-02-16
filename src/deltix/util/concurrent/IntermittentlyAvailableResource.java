@@ -36,5 +36,5 @@ public interface IntermittentlyAvailableResource <T> {
      *              resource may have become available after the critical operation
      *              threw an UnavailableResourceException.
      */
-    public void         setAvailabilityListener (AvailabilityListener <T> lnr);
+    public void         setAvailabilityListener (AvailabilityListener <? super T> lnr);
 }
