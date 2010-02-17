@@ -1,0 +1,105 @@
+package deltix.util.io;
+
+import deltix.util.collections.*;
+import java.io.*;
+
+/**
+ *  Input stream reqading from an embedded queue. Read operations block
+ *  for more data, or until the {@link #finish} method is called.
+ */
+public class ByteQueueInputStream extends InputStream {
+    private ByteQueue               q;
+    private boolean                 endOfQueue = false;
+    private IOException             exception;
+    
+    public ByteQueueInputStream (int capacity) {
+        q = new ByteQueue (capacity);
+    }
+
+    @Override
+    public synchronized void        close () {
+        q = null;
+        notify ();
+    }
+
+    public synchronized void        finish () {
+        endOfQueue = true;
+        notify ();
+    }
+
+    public synchronized void        putError (IOException exception) {
+        if (q == null)
+            throw new IllegalStateException ("closed");
+
+        this.exception = exception;
+        notify ();
+    }
+
+    public synchronized void        putData (byte [] data, int offset, int length) {
+        if (q == null)
+            throw new IllegalStateException ("closed");
+
+        q.offer (data, offset, length);
+        notify ();
+    }
+
+    private void                    waitUnchecked () throws IOException {
+        try {
+            wait ();
+        } catch (InterruptedException x) {
+            throw new InterruptedIOException ();
+        }
+    }
+
+    @Override
+    public synchronized int         read () throws IOException {
+        for (;;) {
+            if (q == null)
+                throw new IOException ("stream is closed");
+
+            if (!q.isEmpty ())
+                break;
+
+            if (exception != null)
+                throw exception;
+
+            if (endOfQueue)
+                return (-1);
+
+            waitUnchecked ();
+        }
+
+        return (q.poll ());
+    }
+
+    @Override
+    public synchronized int         read (byte [] b, int off, int len)
+        throws IOException 
+    {
+        int         size;
+
+        for (;;) {
+            if (q == null)
+                throw new IOException ("stream is closed");
+
+            if (exception != null)
+                throw exception;
+
+            size = q.size ();
+
+            if (size > 0)
+                break;
+
+            if (endOfQueue)
+                return (-1);
+
+            waitUnchecked ();
+        }
+
+        if (size > len)
+            size = len;
+
+        q.poll (b, off, size);
+        return (size);
+    }
+}
