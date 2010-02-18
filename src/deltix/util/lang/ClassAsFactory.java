@@ -6,7 +6,7 @@ import java.lang.reflect.Constructor;
  *  Adapts Class to Factory.
  */
 public class ClassAsFactory <C> implements Factory <C> {
-    protected final Constructor <C>     cons;
+    protected final Constructor <? extends C>     cons;
     protected final Object []           args;
 
     @SuppressWarnings ("unchecked")
@@ -20,13 +20,13 @@ public class ClassAsFactory <C> implements Factory <C> {
         return (paramTypes);
     }
 
-    public ClassAsFactory (Class <C> cls, Object ... args) 
+    public ClassAsFactory (Class <? extends C> cls, Object ... args)
         throws NoSuchMethodException
     {
         this (cls, getTypes (args), args);
     }
 
-    public ClassAsFactory (Class <C> cls, Class <?> [] argTypes, Object [] args)
+    public ClassAsFactory (Class <? extends C> cls, Class <?> [] argTypes, Object [] args)
         throws NoSuchMethodException
     {
         cons = cls.getConstructor (argTypes);
