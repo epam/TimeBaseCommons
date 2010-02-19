@@ -8,7 +8,7 @@ package deltix.util.concurrent;
  *    new AvailabilityListener &lt;...&gt; () {
  *        public void             maybeAvailable (... resource) {
  *            synchronized (myLock) {
- *              availablePool.add (resource);
+ *                myLock.notify ();
  *            }
  *        }
  *    }
@@ -18,7 +18,7 @@ package deltix.util.concurrent;
  *    try {
  *        resource.criticalOperation ();
  *    } catch (UnavailableResourceException x) {
- *        availablePool.remove (resource);
+ *        // do something like myLock.wait ()...
  *    }
  *}
  *</pre>
