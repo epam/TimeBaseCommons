@@ -15,6 +15,7 @@ import java.util.logging.LogRecord;
  */
 public class TerseFormatter extends Formatter {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static CurrentMonthDate currentMonthDate = CurrentMonthDate.getInstance();
 
     /**
      * Format the given log record and return the formatted string.
@@ -25,6 +26,7 @@ public class TerseFormatter extends Formatter {
         // time
         long time = record.getMillis();
         if (time != 0) {
+            sbuf.append (currentMonthDate.getDayMonth(time)).append (' ');
             sbuf.append (formatTimestamp(time)).append(' ');
         }
 
