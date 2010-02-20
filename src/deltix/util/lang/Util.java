@@ -790,6 +790,22 @@ public class Util {
         return swr.toString();
     }
 
+    public static RuntimeException asRuntimeException(Throwable exception) {
+        if (exception instanceof RuntimeException)
+            return (RuntimeException) exception;
+        else
+            return new RuntimeException(exception);
+    }
+
+    public static <T extends Throwable> T findCause(Throwable error, Class<T> causeClass) {
+        while (error != null) {
+            if (causeClass.isInstance(error))
+                return causeClass.cast(error);
+            error = error.getCause();
+        }
+        return null;
+    }
+
     /** @return Array of all interfaces implemented by given class (calls cls.getInterfaces() recursively), never null */
     public static Class [] getClassInterfaces (Class cls) {
         List <Class> result = new ArrayList<Class> ();
