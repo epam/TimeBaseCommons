@@ -69,7 +69,7 @@ public class ByteQueueInputStream extends InputStream {
             waitUnchecked ();
         }
 
-        return (q.poll ());
+        return (q.poll () & 0xFF);
     }
 
     @Override
