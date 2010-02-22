@@ -28,9 +28,6 @@ public class ByteQueueInputStream extends InputStream {
     }
 
     public synchronized void        putError (IOException exception) {
-        if (q == null)
-            throw new IllegalStateException ("closed");
-
         this.exception = exception;
         notify ();
     }
@@ -54,14 +51,14 @@ public class ByteQueueInputStream extends InputStream {
     @Override
     public synchronized int         read () throws IOException {
         for (;;) {
+            if (exception != null)
+                throw exception;
+
             if (q == null)
                 throw new IOException ("stream is closed");
 
             if (!q.isEmpty ())
                 break;
-
-            if (exception != null)
-                throw exception;
 
             if (endOfQueue)
                 return (-1);
@@ -79,11 +76,11 @@ public class ByteQueueInputStream extends InputStream {
         int         size;
 
         for (;;) {
-            if (q == null)
-                throw new IOException ("stream is closed");
-
             if (exception != null)
                 throw exception;
+
+            if (q == null)
+                throw new IOException ("stream is closed");
 
             size = q.size ();
 
