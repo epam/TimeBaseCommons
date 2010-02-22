@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.framework;
+package deltix.qsrv.hf.pub;
 
 import deltix.util.time.GMT;
 
@@ -36,5 +36,9 @@ public final class TimeRange {
         String t = (to == UNDEFINED) ? "*" : GMT.formatDateTime(to);
 
         return f + '-' + t;
+    }
+
+    public static TimeRange parse(String timeRangeProp) {
+        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 }
