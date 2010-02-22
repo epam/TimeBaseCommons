@@ -34,8 +34,9 @@ public class CurrentMonthDate extends TimerTask {
     }
 
     private static CurrentMonthDate create () {
+        final long now = System.currentTimeMillis();
         CurrentMonthDate result = new CurrentMonthDate();
-        Util.GLOBAL_TIMER.scheduleAtFixedRate(result, result.goodUntil, MILLISECONDS_IN_DAY);
+        Util.GLOBAL_TIMER.scheduleAtFixedRate(result, result.goodUntil - now, MILLISECONDS_IN_DAY);
         return result;
     }
 
