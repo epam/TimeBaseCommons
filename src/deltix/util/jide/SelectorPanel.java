@@ -207,7 +207,7 @@ public abstract class SelectorPanel<T> extends JPanel {
             final int size = model.getSize ();
             for (int index = 0; index < size; index++) {
                 if (checkBoxListSelectionModel.isSelectedIndex (index)) {
-                    result.add ((T) model.getElementAt (index));
+                    result.add ((T) _field.getDisplayListModel ().getElementAt (index));
                 }
             }
         }
