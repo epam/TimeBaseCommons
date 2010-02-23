@@ -224,11 +224,13 @@ public abstract class SelectorPanel<T> extends JPanel {
     public final void setSelection (java.util.List<T> prevoiusSelection) {
         final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
 
+        checkBoxListSelectionModel.clearSelection ();
+
         final DefaultListModel model = (DefaultListModel) getListModel ();
         final int size = model.getSize ();
         for (int index = 0; index < size; index++) {
             if (prevoiusSelection.contains (model.get (index))) {
-                checkBoxListSelectionModel.setSelectionInterval (index,
+                checkBoxListSelectionModel.addSelectionInterval (index,
                                                                  index);
             }
         }
