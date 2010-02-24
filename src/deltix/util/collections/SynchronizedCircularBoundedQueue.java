@@ -1,5 +1,7 @@
 package deltix.util.collections;
 
+import java.util.Collection;
+
 /**
  *
  * @author PaharelauK
