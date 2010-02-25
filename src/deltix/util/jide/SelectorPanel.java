@@ -16,11 +16,11 @@ import deltix.util.swing.*;
 
 public abstract class SelectorPanel<T> extends JPanel {
 
-    private CheckBoxList         _list;
-    private QuickListFilterField _field;
-    private TriStateCheckBox     _tristateCheckBox;
+    protected CheckBoxList         _list;
+    protected QuickListFilterField _field;
+    private TriStateCheckBox       _tristateCheckBox;
 
-    private boolean              _adjust = false;
+    private boolean                _adjust = false;
 
     public SelectorPanel () {
         super (new GridBagLayout ());
