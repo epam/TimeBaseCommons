@@ -12,7 +12,6 @@ import javax.swing.text.Position.*;
 import com.jidesoft.list.*;
 import com.jidesoft.swing.*;
 
-import deltix.qsrv.hf.tickdb.ui.administrator.util.*;
 import deltix.util.swing.*;
 
 public abstract class SelectorPanel<T> extends JPanel {
@@ -83,11 +82,11 @@ public abstract class SelectorPanel<T> extends JPanel {
         c.weighty = 0;
         c.fill = GridBagConstraints.HORIZONTAL;
 
-        final StyledLabel lblTime = new StyledLabel (getHeader ());
-        lblTime.addStyleRange (new StyleRange (Font.BOLD,
+        final StyledLabel header = new StyledLabel (getHeader ());
+        header.addStyleRange (new StyleRange (Font.BOLD,
                                                Color.BLACK));
         c.gridy++;
-        add (new TitledSeparator (lblTime,
+        add (new TitledSeparator (header,
                                   TitledSeparator.TYPE_PARTIAL_ETCHED,
                                   SwingConstants.LEFT),
              c);
@@ -110,8 +109,9 @@ public abstract class SelectorPanel<T> extends JPanel {
                                4,
                                4);
         final JideScrollPane sp = new JideScrollPane (_list);
-        Common.setWeightAndFill (sp,
-                                 c);
+        c.weightx = 1;
+        c.weighty = 1;
+        c.fill = GridBagConstraints.BOTH;
         add (sp,
              c);
     }
