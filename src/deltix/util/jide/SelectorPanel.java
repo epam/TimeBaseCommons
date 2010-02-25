@@ -4,7 +4,6 @@ import static deltix.qsrv.hf.tickdb.ui.administrator.res.CommonResourceBundle.RB
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -117,13 +116,13 @@ public abstract class SelectorPanel<T> extends JPanel {
              c);
     }
 
-    public void setCellRenderer (ListCellRenderer cellRenderer) {
+    public void setCellRenderer (final ListCellRenderer cellRenderer) {
         _list.setCellRenderer (cellRenderer);
     }
 
     protected abstract String getHeader ();
 
-    protected abstract java.util.List<T> getDelegate ();
+    protected abstract Collection<T> getDelegate ();
 
     public final void updateTristateCheckBox () {
         if (!_adjust) {
@@ -169,7 +168,7 @@ public abstract class SelectorPanel<T> extends JPanel {
         final java.util.List<T> prevoiusSelection = getSelection ();
         final DefaultListModel model = new DefaultListModel ();
 
-        final List<T> delegate = getDelegate ();
+        final Collection<T> delegate = getDelegate ();
         for (final T o : delegate) {
             model.addElement (o);
         }
@@ -221,7 +220,7 @@ public abstract class SelectorPanel<T> extends JPanel {
         updateTristateCheckBox ();
     }
 
-    public final void setSelection (java.util.List<T> prevoiusSelection) {
+    public final void setSelection (final java.util.List<T> prevoiusSelection) {
         final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
 
         checkBoxListSelectionModel.clearSelection ();

@@ -1,4 +1,4 @@
-package deltix.qsrv.ui.util.controls.qsrv.entityselector;
+package deltix.util.text;
 
 import java.util.*;
 
