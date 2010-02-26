@@ -1,0 +1,89 @@
+package deltix.util.io;
+
+import java.io.FilterInputStream;
+import java.io.InputStream;
+import java.io.IOException;
+
+/**
+ * Date: Feb 26, 2010
+ */
+public class CountingInputStream extends FilterInputStream {
+    private long                    mNumBytesRead = 0;
+    private long                    mNumBytesNotified = 0;
+    private long                    mMark = 0;
+    private int                     notifyThreshold;    
+
+    public CountingInputStream(InputStream delegate, int notifyThreshold ) {
+        super (delegate);
+        this.notifyThreshold = notifyThreshold;
+    }
+
+    public long                 getNumBytesRead () {
+        return (mNumBytesRead);
+    }  
+
+    private void                onDataRead(long bytes) {
+        mNumBytesRead += bytes;
+
+        long change = mNumBytesRead - mNumBytesNotified;
+
+        if (change >= notifyThreshold && bytesRead(change))
+            mNumBytesNotified = mNumBytesRead;        
+    }
+
+    protected boolean           bytesRead(long change) {
+        return true;
+    }    
+
+    @Override
+    public void                 mark (int readlimit) {
+        super.mark (readlimit);
+        mMark = mNumBytesRead;
+    }
+
+    @Override
+    public int                  read () throws IOException {
+        int             b = super.read ();
+
+        if (b >= 0)
+            onDataRead(1);
+
+        return (b);
+    }
+
+    @Override
+    public int                  read (byte[] b, int off, int len) throws IOException {
+        int             n = super.read (b, off, len);
+
+        if (n > 0)
+            onDataRead(n);
+
+        return (n);
+    }
+
+    @Override
+    public void                 reset () throws IOException {
+        super.reset ();
+
+        if (mNumBytesRead != mMark) {
+            mNumBytesRead = mMark;
+        }
+    }
+
+    @Override
+    public long                 skip (long n) throws IOException {
+        long            skipped = super.skip (n);
+
+        if (skipped > 0) {            
+            onDataRead(skipped);
+        }
+
+        return (skipped);
+    }
+
+
+    public static interface Listener {
+        void bytesRead(long count);
+    }
+
+}
