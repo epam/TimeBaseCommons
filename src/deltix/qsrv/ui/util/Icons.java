@@ -97,4 +97,13 @@ public class Icons {
     public static final Icon EDIT_CLEAR         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/edit-clear.png");
     public static final Icon WIZARD             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/wizard.png");
     public static final Icon SEARCH             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/search.png");
+
+    public static final Icon EQUITY             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/stock.png");
+    public static final Icon OPTION             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/option.png");
+    public static final Icon FUTURE             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/future.png");
+    public static final Icon BOND               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/bond.png");
+    public static final Icon CURRENCY           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/currency.png");
+    public static final Icon INDEX              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/index.png");
+    public static final Icon ETF                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/etf.png");
+    public static final Icon CUSTOM             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
 }
