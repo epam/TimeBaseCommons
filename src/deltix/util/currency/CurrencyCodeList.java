@@ -50,7 +50,7 @@ public class CurrencyCodeList {
                                                           csv.getString (LOCATION_IDX,
                                                                          true)));
                 CURRENCY_CODE_MAP.put (code,
-                                       numeric);
+                                       String.valueOf (numeric));
             }
         } catch (final Throwable x) {
             Util.LOGGER.log (Level.SEVERE,
