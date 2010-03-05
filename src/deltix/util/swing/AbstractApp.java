@@ -40,6 +40,11 @@ public class AbstractApp
      *  Ask the user if he wants to exit, and call System.exit (0) if so.
      */
     public void             confirmSystemExit (String title, String msg) {
+        if (yesNo (title, msg))
+            System.exit (0); 
+    }    
+
+    public boolean          yesNo (String title, String msg) {
         int     ret =
             JOptionPane.showConfirmDialog (
                 this,
@@ -47,10 +52,9 @@ public class AbstractApp
                 title,
                 JOptionPane.YES_NO_OPTION
             );
-        
-        if (ret == JOptionPane.YES_OPTION)
-            System.exit (0); 
-    }    
+
+        return (ret == JOptionPane.YES_OPTION);
+    }
 
     public void             showError (String title, String msg) {
         JOptionPane.showMessageDialog (
