@@ -47,6 +47,8 @@ public class CountingInputStream extends FilterInputStream {
 
         if (b >= 0)
             onDataRead(1);
+        else if (b == -1)
+            onEOF();
 
         return (b);
     }
@@ -57,8 +59,26 @@ public class CountingInputStream extends FilterInputStream {
 
         if (n > 0)
             onDataRead(n);
+        else if (n == -1)
+            onEOF();
 
         return (n);
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+         int             n = super.read (b);
+
+        if (n > 0)
+            onDataRead(n);
+        else if (n == -1)
+            onEOF();
+
+        return (n);
+    }
+
+    protected void onEOF() throws IOException {
+        
     }
 
     @Override
@@ -80,10 +100,4 @@ public class CountingInputStream extends FilterInputStream {
 
         return (skipped);
     }
-
-
-    public static interface Listener {
-        void bytesRead(long count);
-    }
-
 }

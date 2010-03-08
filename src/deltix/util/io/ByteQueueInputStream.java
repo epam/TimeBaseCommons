@@ -10,7 +10,7 @@ import java.io.*;
 public class ByteQueueInputStream extends InputStream {
     private ByteQueue               q;
     private boolean                 endOfQueue = false;
-    private IOException             exception;
+    private IOException             exception;    
     
     public ByteQueueInputStream (int capacity) {
         q = new ByteQueue (capacity);
@@ -22,7 +22,7 @@ public class ByteQueueInputStream extends InputStream {
         notify ();
     }
 
-    public synchronized void        finish () {
+    public synchronized void        finish () {        
         endOfQueue = true;
         notify ();
     }
@@ -33,6 +33,9 @@ public class ByteQueueInputStream extends InputStream {
     }
 
     public synchronized void        putData (byte [] data, int offset, int length) {
+        if (endOfQueue)
+            throw new IllegalStateException ("queue finished");
+        
         if (q == null)
             throw new IllegalStateException ("closed");
 
