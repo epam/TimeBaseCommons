@@ -3,7 +3,7 @@ package deltix.util.time;
 /**
  * Date: Mar 8, 2010
  */
-public abstract class TimerTask extends java.util.TimerTask {
+public abstract class TimerRunner extends java.util.TimerTask {
     
      @Override
      public void run() {
