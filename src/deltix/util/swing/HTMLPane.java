@@ -3,6 +3,8 @@ package deltix.util.swing;
 import java.awt.*;
 import javax.swing.JTextPane;
 import javax.swing.text.*;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
@@ -11,7 +13,18 @@ public class HTMLPane extends JTextPane {
     public HTMLPane () {
         setContentType ("text/html");
     }
-    
+
+    public void insert (String msg) {
+        HTMLDocument            doc = (HTMLDocument) getDocument ();
+        HTMLEditorKit           ek = (HTMLEditorKit) getEditorKit ();
+
+        try {
+            ek.insertHTML (doc, doc.getLength (), msg, 0, 0, null);
+        } catch (Exception unexp) {
+            throw new RuntimeException (unexp);
+        }
+    }
+
     public void setFontAndColor (Font font, Color c) {
         // Start with the current input attributes for the JTextPane. This
         // should ensure that we do not wipe out any existing attributes
