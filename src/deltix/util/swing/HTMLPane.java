@@ -14,12 +14,26 @@ public class HTMLPane extends JTextPane {
         setContentType ("text/html");
     }
 
+    public HTMLDocument     getHTMLDocument () {
+        return ((HTMLDocument) super.getDocument ());
+    }
+
     public void insert (String msg) {
-        HTMLDocument            doc = (HTMLDocument) getDocument ();
+        HTMLDocument            doc = getHTMLDocument ();
         HTMLEditorKit           ek = (HTMLEditorKit) getEditorKit ();
 
         try {
             ek.insertHTML (doc, doc.getLength (), msg, 0, 0, null);
+        } catch (Exception unexp) {
+            throw new RuntimeException (unexp);
+        }
+    }
+
+    public void             clear () {
+        HTMLDocument            doc = getHTMLDocument ();
+                
+        try {
+            doc.remove (0, doc.getLength ());
         } catch (Exception unexp) {
             throw new RuntimeException (unexp);
         }
