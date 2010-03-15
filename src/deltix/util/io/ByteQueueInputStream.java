@@ -32,9 +32,11 @@ public class ByteQueueInputStream extends InputStream {
         notify ();
     }
 
-    public synchronized void        putData (byte [] data, int offset, int length) {
+    public synchronized void        putData (byte [] data, int offset, int length)
+            throws IOException
+    {
         if (endOfQueue)
-            throw new IllegalStateException ("queue finished");
+            throw new IllegalStateException ("Finished");            
         
         if (q == null)
             throw new IllegalStateException ("closed");
