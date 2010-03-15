@@ -91,6 +91,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     private volatile ReconnectIntervalAdjuster  adjuster = null;
     private volatile Logger                     logger = Util.LOGGER;
     private volatile Level                      logLevel = Level.FINE;
+    private volatile String                     logprefix = getDefaultPrefix(getClass());
 
     @GuardedBy ("this")
     private Reconnector                         reconnector = null;
@@ -159,6 +160,10 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         this.logger = logger;
     }
 
+    public void                             setLogPrefix(String logprefix) {
+        this.logprefix = logprefix;
+    }
+
     public void                             connected () {
         synchronized (this) {
             if (reconnectTask != null)
@@ -171,7 +176,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         Logger          lg = logger;
 
         if (lg != null)
-            lg.log (logLevel, "Connected");
+            lg.log (logLevel, "[{0}] Connected", logprefix);
 
         onReconnected();
     }
@@ -185,7 +190,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         Logger          lg = logger;
 
         if (lg != null)
-            lg.log (logLevel, "Disconnected");
+            lg.log (logLevel, "[{0}] Disconnected", logprefix);
 
         onDisconnected();
     }
@@ -214,9 +219,9 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                 if (lg != null) {
                     //  Prevent verbose output
                     if (check.equals (lastExceptionAsString))
-                        lg.log (logLevel, "Reconnect failed due to: " + lastExceptionAsString);
+                        lg.log (logLevel, "[" + logprefix + "] Reconnect failed due to: " + lastExceptionAsString);
                     else {
-                        lg.log (logLevel, "Reconnect failed", x);
+                        lg.log (logLevel, "[" + logprefix + "] Reconnect failed", x);
                         lastExceptionAsString = check;
                     }
                 }
@@ -252,7 +257,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                     try {
                         tryReconnect ();
                     } catch (Throwable x) {
-                        Util.LOGGER.log (Level.SEVERE, "Unexpected", x);
+                        Util.LOGGER.log (Level.SEVERE, "[" + logprefix + "] Unexpected", x);
                     }
                 }
             };
@@ -262,12 +267,12 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         Logger          lg = logger;
 
         if (lg != null)
-            lg.log (logLevel, "Next reconnect in " + currentReconnectInterval + " ms");
+            lg.log (logLevel, "[" + logprefix + "] Next reconnect in " + currentReconnectInterval + " ms");
     }
 
     public synchronized void                scheduleReconnect () {
         if (reconnector == null)
-            throw new IllegalStateException ("Call setReconnector() first.");
+            throw new IllegalStateException ("[" + logprefix + "] Call setReconnector() first.");
 
         if (reconnectTask != null)
             reconnectTask.cancel ();
@@ -280,5 +285,21 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     public synchronized void                cancelReconnect () {
         if (reconnectTask != null)
             reconnectTask.cancel ();
+    }
+
+    private static String getDefaultPrefix(Class<?> current) {
+        StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+        if (elems == null || elems.length <= 1)
+            return current.getSimpleName();
+
+        String currentClassName = current.getName();
+        for (int i = 1; i < elems.length; i++) {
+            String className = elems[i].getClassName();
+            if (className != null && !currentClassName.equals(className)) {
+                int index = className.lastIndexOf('.');
+                return index >= 0 ? className.substring(index + 1) : className;
+            }
+        }
+        return current.getSimpleName();
     }
 }
