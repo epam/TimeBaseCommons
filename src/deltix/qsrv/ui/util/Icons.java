@@ -106,4 +106,6 @@ public class Icons {
     public static final Icon INDEX              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/index.png");
     public static final Icon ETF                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/etf.png");
     public static final Icon CUSTOM             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
+
+    public static final Icon TWO_DOWARROW       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/2dowarrow.png");
 }
