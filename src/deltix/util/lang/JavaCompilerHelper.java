@@ -9,15 +9,12 @@ import java.io.*;
 import java.net.URI;
 
 /**
- * Created by IntelliJ IDEA.
  * User: BazylevD
  * Date: Dec 8, 2008
- * Time: 10:48:44 PM
- * To change this template use File | Settings | File Templates.
  */
 public class JavaCompilerHelper {
-    public static final JavaCompiler              JAVA_COMPILER_INSTANCE;
-    public static final StandardJavaFileManager   JAVA_FILEMGR_INSTANCE;
+    private static final JavaCompiler           JAVA_COMPILER_INSTANCE;
+    private static final JavaFileManager        JAVA_FILEMGR_INSTANCE;
 
     static {
         JAVA_COMPILER_INSTANCE = ToolProvider.getSystemJavaCompiler();
@@ -29,9 +26,12 @@ public class JavaCompilerHelper {
     private SpecialJavaFileManager  fileManager;
     private SpecialClassLoader      cl;
 
-    public JavaCompilerHelper (ClassLoader loader) {        
-        cl = new SpecialClassLoader (loader);
-        fileManager = new SpecialJavaFileManager (JAVA_FILEMGR_INSTANCE, cl);
+    public JavaCompilerHelper (ClassLoader loader) {
+        cl = new SpecialClassLoader(loader);
+        final JavaFileManager jfm = (loader instanceof ListClasses) ?
+                new ClassLoaderJavaFileManager(JAVA_FILEMGR_INSTANCE, (ListClasses) loader) :
+                JAVA_FILEMGR_INSTANCE;
+        fileManager = new SpecialJavaFileManager(jfm, cl);
     }
 
     public Class<?> compileClass (String className, String code) throws ClassNotFoundException {
@@ -84,10 +84,10 @@ public class JavaCompilerHelper {
     }
 
 
-    private static class SpecialJavaFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
+    private static class SpecialJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
         private SpecialClassLoader xcl;
 
-        public SpecialJavaFileManager(StandardJavaFileManager sjfm, SpecialClassLoader xcl) {
+        public SpecialJavaFileManager(JavaFileManager sjfm, SpecialClassLoader xcl) {
             super(sjfm);
             this.xcl = xcl;
         }

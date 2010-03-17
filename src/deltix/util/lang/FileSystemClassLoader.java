@@ -3,12 +3,15 @@ package deltix.util.lang;
 import java.io.*;
 
 import deltix.util.io.IOUtil;
+import deltix.util.io.RegexFilenameFilter;
+
 import java.net.URL;
+import java.util.Iterator;
 
 /**
  *  UNTESTED
  */
-public final class FileSystemClassLoader extends AbstractClassLoader {
+public final class FileSystemClassLoader extends AbstractClassLoader implements ListClasses {
     private final File mClassDir;
     
     public FileSystemClassLoader (File rootDir, boolean searchParentFirst) {
@@ -50,5 +53,41 @@ public final class FileSystemClassLoader extends AbstractClassLoader {
         } catch (FileNotFoundException x) {
             return (null);
         }
-    }          
+    }
+
+    private final static FilenameFilter CLASS_FILE_FILTER = new RegexFilenameFilter(".*\\.class");
+
+    @Override
+    public Iterator<Class<?>> list(final String packageName) {
+        final String subfolder = packageName.replace('.', File.separatorChar);
+        final StringBuilder sb = new StringBuilder();
+
+        return new Iterator<Class<?>>() {
+            private final File[] files = new File(mClassDir, subfolder).listFiles(CLASS_FILE_FILTER);
+            private int idx = 0;
+
+            @Override
+            public boolean hasNext() {
+                return files != null && idx < files.length;
+            }
+
+            @Override
+            public Class<?> next() {
+                final File file = files[idx++];
+                sb.setLength(0);
+                final String fileName = file.getName();
+                sb.append(packageName).append('.').append(fileName, 0, fileName.length() - 6);
+                try {
+                    return loadClass(sb.toString());
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 }
