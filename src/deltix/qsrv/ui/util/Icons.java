@@ -30,6 +30,7 @@ public class Icons {
     public static final Icon TABLE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table.png");
     public static final Icon TABLE_GO           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_go.png");
     public static final Icon TABLE_LINK         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_link.png");
+    public static final Icon TABLE_LIGHTNING         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_lightning.png");
     public static final Icon SERVER             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/server.png");
     public static final Icon MAXIMIZE           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/maximize.gif");
     public static final Icon OPEN               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/open.png");
