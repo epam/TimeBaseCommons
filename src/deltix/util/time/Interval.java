@@ -41,6 +41,9 @@ public abstract class Interval {
      * @param text  The QQL representation of the interval.
      */
     public static Interval          valueOf (CharSequence text) {
+        if (text == null)
+            return (null);
+        
         int         end = text.length ();
         
         if (end < 2)
@@ -91,22 +94,6 @@ public abstract class Interval {
      */
     public abstract long            getNumUnits ();
 
-    public static FixedInterval     parse(long size) {
-        
-        FixedInterval result = new FixedInterval(size, TimeUnit.MILLISECOND);
-
-        if (size % toMilliseconds(Interval.DAY) == 0)
-            result = new FixedInterval(size / toMilliseconds(Interval.DAY), TimeUnit.DAY);
-        if (size % toMilliseconds(Interval.HOUR) == 0)
-            result = new FixedInterval(size / toMilliseconds(Interval.HOUR), TimeUnit.HOUR);
-        if (size % toMilliseconds(Interval.MINUTE) == 0)
-            result = new FixedInterval(size / toMilliseconds(Interval.MINUTE), TimeUnit.MINUTE);
-        if (size % toMilliseconds(Interval.SECOND) == 0)
-            result = new FixedInterval(size / toMilliseconds(Interval.SECOND), TimeUnit.SECOND);
-
-        return result;
-    }
-    
     /**
      *  Returns the short representation of this interval, such as
      *  <tt>-4Q</tt>
