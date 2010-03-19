@@ -117,4 +117,21 @@ public abstract class Interval {
         }
         return interval.getNumUnits() * interval.getUnit().getSizeInMilliseconds();
     }
+
+    // Used in .NET code (dotnet/talclient/Deltix/Data/RealTick\Cursor.cs) 
+    public static FixedInterval     parse(long size) {
+
+        FixedInterval result = new FixedInterval(size, TimeUnit.MILLISECOND);
+
+        if (size % toMilliseconds(Interval.DAY) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.DAY), TimeUnit.DAY);
+        if (size % toMilliseconds(Interval.HOUR) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.HOUR), TimeUnit.HOUR);
+        if (size % toMilliseconds(Interval.MINUTE) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.MINUTE), TimeUnit.MINUTE);
+        if (size % toMilliseconds(Interval.SECOND) == 0)
+            result = new FixedInterval(size / toMilliseconds(Interval.SECOND), TimeUnit.SECOND);
+
+        return result;
+    }
 }
