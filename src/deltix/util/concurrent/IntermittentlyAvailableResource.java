@@ -5,8 +5,8 @@ package deltix.util.concurrent;
  * Usage (assuming "resource" implements IntermittentlyAvailableResource):
  *<pre>
  *resource.setAvailabilityListener (
- *    new AvailabilityListener &lt;...&gt; () {
- *        public void             maybeAvailable (... resource) {
+ *    new Runnable () {
+ *        public void             run () {
  *            synchronized (myLock) {
  *                myLock.notify ();
  *            }
@@ -29,8 +29,7 @@ package deltix.util.concurrent;
  * removed from the available pool, an opposite call to maybeAvailable cannot be
  * made.
  */
-
-public interface IntermittentlyAvailableResource <T> {    
+public interface IntermittentlyAvailableResource {    
     /**
      *  Installs the (only) availability listener.
      *
@@ -38,5 +37,5 @@ public interface IntermittentlyAvailableResource <T> {
      *              resource may have become available after the critical operation
      *              threw an UnavailableResourceException.
      */
-    public void         setAvailabilityListener (AvailabilityListener <? super T> lnr);
+    public void         setAvailabilityListener (Runnable lnr);
 }

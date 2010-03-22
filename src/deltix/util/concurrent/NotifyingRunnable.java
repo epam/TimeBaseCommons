@@ -4,13 +4,22 @@ package deltix.util.concurrent;
  *  A Runnable that calls notify () from its run () method.
  */
 public class NotifyingRunnable implements Runnable {
+    private final Object        lock;
+
+    public NotifyingRunnable (Object lock) {
+        this.lock = lock;
+    }
+
+    public NotifyingRunnable () {
+        lock = this;
+    }
+
     /**
-     *  Code:
-     *<pre>public synchronized void run () {
-     *    notify ();
-     *}</pre>
+     *  Synchronizes on the configured lock, then calls notify ().
      */
-    public synchronized void    run () {
-        notify ();
+    public void    run () {
+        synchronized (lock) {
+            lock.notify ();
+        }
     }
 }
