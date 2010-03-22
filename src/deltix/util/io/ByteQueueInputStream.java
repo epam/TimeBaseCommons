@@ -45,7 +45,12 @@ public class ByteQueueInputStream extends InputStream {
         notify ();
     }
 
-    private void                    waitUnchecked () throws IOException {
+    @Override
+    public int available() throws IOException {
+        return q.size();
+    }
+
+    protected void                  waitUnchecked () throws IOException {
         try {
             wait ();
         } catch (InterruptedException x) {
