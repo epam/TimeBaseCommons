@@ -5,4 +5,10 @@ package deltix.util.concurrent;
  *  previously or asynchronously closed.
  */
 public class CursorIsClosedException extends RuntimeException {
+    public CursorIsClosedException() {
+    }
+
+    public CursorIsClosedException(Throwable cause) {
+        super(cause);
+    }
 }
