@@ -79,6 +79,10 @@ public class ByteQueueInputStream extends InputStream {
         return (q.poll () & 0xFF);
     }
 
+    public synchronized boolean     isClosed() {
+        return q == null;
+    }
+
     @Override
     public synchronized int         read (byte [] b, int off, int len)
         throws IOException 
