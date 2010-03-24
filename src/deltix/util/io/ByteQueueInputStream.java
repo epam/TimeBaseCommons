@@ -80,7 +80,7 @@ public class ByteQueueInputStream extends InputStream {
     }
 
     public synchronized boolean     isClosed() {
-        return q == null;
+        return q == null || endOfQueue;
     }
 
     @Override
