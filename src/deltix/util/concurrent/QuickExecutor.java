@@ -12,7 +12,7 @@ import java.util.logging.Level;
 public class QuickExecutor {
     public static abstract class QuickTask extends QuickList.Entry <QuickTask> {
         protected final QuickExecutor       executor;
-        boolean                             isScheduled;
+        boolean                             isScheduled = false;
 
         protected QuickTask (QuickExecutor executor) {
             this.executor = executor;
