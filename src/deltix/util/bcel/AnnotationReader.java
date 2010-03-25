@@ -1,7 +1,6 @@
 package deltix.util.bcel;
 
 import java.io.*;
-import java.util.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.*;
 
@@ -41,7 +40,7 @@ public class AnnotationReader implements AttributeReader
 		Annotation      a = new Annotation ();
         
         a.type = cp.constantToString (cp.getConstant (typeIndex));
-		a.elements = new AnnotationElement [numMVPairs];
+        a.elements = new AnnotationElement [numMVPairs];
         
 		for (int i = 0; i < numMVPairs; i++) {
 			short       nameIndex = in.readShort();

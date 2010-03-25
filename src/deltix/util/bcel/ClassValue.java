@@ -3,7 +3,7 @@ package deltix.util.bcel;
 /**
  *
  */
-public class ClassValue {
+public final class ClassValue {
     public final String         className;
 
     public ClassValue (String className) {
