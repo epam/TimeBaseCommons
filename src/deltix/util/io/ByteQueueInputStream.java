@@ -1,6 +1,7 @@
 package deltix.util.io;
 
 import deltix.util.collections.*;
+import deltix.util.vsocket.ChannelClosedException;
 import java.io.*;
 
 /**
@@ -46,7 +47,10 @@ public class ByteQueueInputStream extends InputStream {
     }
 
     @Override
-    public int available() throws IOException {
+    public synchronized int         available () throws IOException {
+        if (q == null)
+            throw new EOFException ("closed");
+
         return q.size();
     }
 
