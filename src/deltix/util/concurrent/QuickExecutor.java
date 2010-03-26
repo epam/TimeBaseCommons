@@ -2,14 +2,16 @@ package deltix.util.concurrent;
 
 import deltix.util.collections.*;
 import deltix.util.lang.Util;
-import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.*;
+import java.util.logging.*;
 
 /**
  *  Similar to standard Java executors, but does not allocate memory on task
  *  reschedule.
  */
 public class QuickExecutor {
+    public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
+
     public static abstract class QuickTask extends QuickList.Entry <QuickTask> {
         protected final QuickExecutor       executor;
         boolean                             isScheduled = false;
@@ -40,18 +42,20 @@ public class QuickExecutor {
         }
     }
 
-    private final QuickList <QuickTask>     tasks = new QuickList <QuickTask> ();
     private final String                    name;
-    private final ArrayList <Worker>        workers = new ArrayList <Worker> ();
+    //
+    //  The following members are all guarded by "tasks"
+    //
+    private final QuickList <QuickTask>     tasks = new QuickList <QuickTask> ();
+    private final Set <Worker>              workers = new HashSet <Worker> ();
+    private int                             workerId = 1;
+    private int                             numAvailableWorkers = 0;
 
-    public QuickExecutor (String name, int numWorkers) {
+    public QuickExecutor (String name) {
         this.name = name;
+    }
 
-        for (int ii = 0; ii < numWorkers; ii++) {
-            Worker  w = new Worker (ii);
-            w.start ();
-            workers.add (w);
-        }
+    public void             start () {
     }
 
     @Override
@@ -59,16 +63,28 @@ public class QuickExecutor {
         return ("QuickExecutor \"" + name + "\"");
     }
 
+    private void            addWorkerInternal () {
+        Worker      w = new Worker (workerId++);
+        w.start ();
+        workers.add (w);
+        numAvailableWorkers++;
+        LOGGER.info ("# Workers: " + workers.size ());
+    }
+
     public void             submit (QuickTask task) {
         assert task.executor == this :
             task + " is being submitted to the wrong executor";
 
         synchronized (tasks) {
-            if (!task.isScheduled) {
-                task.isScheduled = true;
-                tasks.linkLast (task);
-                tasks.notify ();
-            }
+            if (task.isScheduled)
+                return;
+
+            if (numAvailableWorkers < 1)
+                addWorkerInternal ();
+
+            task.isScheduled = true;
+            tasks.linkLast (task);
+            tasks.notify ();
         }
     }
 
@@ -113,6 +129,7 @@ public class QuickExecutor {
                     task = tasks.getFirst ();
                     task.unlink ();
                     task.isScheduled = false;
+                    numAvailableWorkers--;
                 }
 
                 try {
@@ -121,6 +138,10 @@ public class QuickExecutor {
                     Util.LOGGER.log (Level.SEVERE, task + " failed", x);
                 } catch (RuntimeException x) {
                     Util.LOGGER.log (Level.SEVERE, task + " failed", x);
+                } finally {
+                    synchronized (tasks) {
+                        numAvailableWorkers++;
+                    }
                 }
             }
         } catch (InterruptedException x) {
