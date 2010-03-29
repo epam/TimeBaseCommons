@@ -29,6 +29,10 @@ public class QuickExecutor {
         public final void       cancel () {
             executor.cancel (this);
         }
+
+        public final void       submit () {
+            executor.submit (this);
+        }
     }
 
     private class Worker extends Thread {
@@ -40,6 +44,15 @@ public class QuickExecutor {
         public void             run () {
             executorLoop ();
         }
+    }
+
+    private static QuickExecutor            globalInstance = null;
+
+    public static synchronized QuickExecutor getGlobalInstance () {
+        if (globalInstance == null)
+            globalInstance = new QuickExecutor ("Global Executor");
+
+        return (globalInstance);
     }
 
     private final String                    name;
