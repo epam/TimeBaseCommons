@@ -1554,4 +1554,24 @@ public abstract class BasicIOUtil {
             throw new RuntimeException (x);
         }
     }
+    
+    public static void              recursiveListFiles(File root, FileFilter filter, Collection<File> listFiles)   {
+        if (root != null && root.isDirectory ()) {
+
+            final File[] contents = root.listFiles ();
+
+            for (int index = 0; index < contents.length; index++) {
+                final File f = contents[index];
+                if (f.isDirectory ()) {
+                    recursiveListFiles (f,
+                                        filter,
+                                        listFiles);
+                } else {
+                    if (filter.accept (f))
+                        listFiles.add (f);
+                }
+            }
+        }
+    }
+
 }
