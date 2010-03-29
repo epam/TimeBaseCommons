@@ -41,6 +41,10 @@ public class ByteArrayOutputStreamEx extends ByteArrayOutputStream {
         
         count = position;
     }
+
+    public synchronized int capacity() {
+        return buf.length;
+    }
     
     public InputStream      openInput () {
         return (new ByteArrayInputStreamEx (buf, 0, count));

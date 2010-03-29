@@ -68,7 +68,7 @@ public class QuickExecutor {
         w.start ();
         workers.add (w);
         numAvailableWorkers++;
-        LOGGER.info ("# Workers: " + workers.size ());
+        LOGGER.fine ("# Workers: " + workers.size ());
     }
 
     public void             submit (QuickTask task) {
