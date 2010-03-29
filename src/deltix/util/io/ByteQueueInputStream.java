@@ -69,7 +69,7 @@ public class ByteQueueInputStream extends InputStream {
                 throw exception;
 
             if (q == null)
-                throw new IOException ("stream is closed");
+                throw new IOException ("Stream is closed");
 
             if (!q.isEmpty ())
                 break;
