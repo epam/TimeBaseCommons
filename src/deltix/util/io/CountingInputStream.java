@@ -3,6 +3,7 @@ package deltix.util.io;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.EOFException;
 
 /**
  * Date: Feb 26, 2010
@@ -78,7 +79,7 @@ public class CountingInputStream extends FilterInputStream {
     }
 
     protected void onEOF() throws IOException {
-        
+       //throw new EOFException(); 
     }
 
     @Override
