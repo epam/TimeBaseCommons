@@ -30,7 +30,7 @@ public class Icons {
     public static final Icon TABLE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table.png");
     public static final Icon TABLE_GO           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_go.png");
     public static final Icon TABLE_LINK         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_link.png");
-    public static final Icon TABLE_LIGHTNING         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_lightning.png");
+    public static final Icon TABLE_LIGHTNING    = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_lightning.png");
     public static final Icon SERVER             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/server.png");
     public static final Icon MAXIMIZE           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/maximize.gif");
     public static final Icon OPEN               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/open.png");
@@ -51,6 +51,8 @@ public class Icons {
     public static final Icon TAXONOMY           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/taxonomy.png");
     public static final Icon CONSOLE            = SwingUtil.loadIcon ("deltix/qsrv/ui/util/console.png");
     public static final Icon PROPERTIES         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/properties.png");
+    public static final Icon PROPERTIES2        = SwingUtil.loadIcon ("deltix/qsrv/ui/util/properties2.png");
+    public static final Icon PROJECT_PROPERTIES = SwingUtil.loadIcon ("deltix/qsrv/ui/util/projectProperties.png");
     public static final Icon GROUP              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/group.png");
     public static final Icon ENTITY             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/entity.gif");
     public static final Icon SCROLL_UP          = SwingUtil.loadIcon ("deltix/qsrv/ui/util/scroll_up.png");
