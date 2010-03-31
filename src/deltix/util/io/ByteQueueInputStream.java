@@ -37,10 +37,10 @@ public class ByteQueueInputStream extends InputStream {
             throws IOException
     {
         if (endOfQueue)
-            throw new IllegalStateException ("Finished");            
+            throw new EOQException("Finished");            
         
         if (q == null)
-            throw new IllegalStateException ("closed");
+            throw new EOFException ("Closed");
 
         q.offer (data, offset, length);
         notify ();
