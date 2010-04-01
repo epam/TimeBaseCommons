@@ -29,7 +29,7 @@ public class CurrencyCodeList {
 
             final String path = "deltix/util/currency/currency.csv";
             final InputStream is =
-                    Common.class.getClassLoader ().getResourceAsStream (path);
+                                   Common.class.getClassLoader ().getResourceAsStream (path);
             if (is == null)
                 throw new FileNotFoundException (path);
 
@@ -102,6 +102,10 @@ public class CurrencyCodeList {
             return getCurrencyCodeByCode (s);
         }
         return null;
+    }
+
+    public static boolean isValidValue (final Object value) {
+        return getCurrencyCodeByObject (value) != null;
     }
 
     public static class CurrencyCode {
