@@ -1,6 +1,7 @@
 package deltix.util.lang;
 
 import java.util.StringTokenizer;
+import java.util.Arrays;
 import java.text.DecimalFormat;
 
 public class StringUtils {
@@ -565,6 +566,44 @@ public class StringUtils {
             synchronized (DECIMAL_FORMAT) {
                 return DECIMAL_FORMAT.format(value);
             }
+    }
+
+    private static String repeat(char symbol, int length) {
+        char[] chars = new char[length];
+        Arrays.fill(chars, symbol);
+        return String.valueOf(chars);
+    }
+
+    public static String messageInFrame(String message, char frameSymbol, int maxFrameLength, int paddingLength) {
+        String lineSeparator = System.getProperty("line.separator");
+        String[] lines = message.split("\n");
+
+        int maxLength = maxFrameLength;
+        if (maxFrameLength <= 0) {
+            maxLength = lines[0].length();
+            for (int i = 1; i < lines.length; i++) {
+                maxLength = Math.max(maxLength, lines[i].length());
+            }
+            maxLength = 2 * paddingLength + maxLength;
+        }
+
+        String topAndBottom = repeat(frameSymbol, maxLength + 2);
+        String padding = repeat(' ', paddingLength);
+        String emptyLine = repeat(' ', maxLength);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(lineSeparator).append(topAndBottom).append(lineSeparator).
+                append(frameSymbol).append(emptyLine).append(frameSymbol).append(lineSeparator);
+        for (String line : lines) {
+            int rightPaddingLenght = Math.max(1, maxLength - paddingLength - line.length());
+            builder.append(frameSymbol).
+                    append(padding).append(line).append(repeat(' ', rightPaddingLenght)).
+                    append(frameSymbol).append(lineSeparator);
+        }
+        builder.append(frameSymbol).append(emptyLine).append(frameSymbol).append(lineSeparator).
+                append(topAndBottom).append(lineSeparator);
+
+        return builder.toString();
     }
 }
 
