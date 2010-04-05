@@ -1,19 +1,22 @@
-package deltix.qsrv.hf.framework;
+package deltix.qsrv.hf.spi.conn;
 
 import deltix.util.lang.Util;
-import java.util.TimerTask;
-import java.util.logging.*;
+import deltix.qsrv.hf.spi.conn.DisconnectableEventHandler;
 import net.jcip.annotations.GuardedBy;
 
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *  Helps implement the {@link Disconnectable} interface, including reconnect
+ *  Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface, including reconnect
  *  capability.
  */
 public class ReconnectableImpl extends DisconnectableEventHandler {
     public interface Reconnector {
         /**
          *  Try and reconnect. If successful, this method must call
-         *  {@link #connected} on <tt>helper</tt>. After that, the return
+         *  {@link ReconnectableImpl#connected} on <tt>helper</tt>. After that, the return
          *  value is irrelevant. If unsucessful, this method can either throw
          *  an exception, or return <tt>true</tt> to reschedule the reconnect,
          *  or, in rare instances, return <tt>false</tt> to give up.

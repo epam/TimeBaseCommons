@@ -1,11 +1,15 @@
 package deltix.qsrv.hf.pub;
 
+import java.io.Serializable;
+
 /**
  *
  */
 public class ConstantInstrumentKey
-    implements InstrumentIdentity, Comparable <InstrumentIdentity>
+    implements InstrumentIdentity, Comparable <InstrumentIdentity>, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     public final InstrumentType     instrumentType;
     public final String             symbol;
 

@@ -1,34 +1,37 @@
-package deltix.qsrv.hf.framework;
+package deltix.qsrv.hf.spi.conn;
+
+import deltix.qsrv.hf.spi.conn.Disconnectable;
+import deltix.qsrv.hf.spi.conn.DisconnectEventListener;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Helps implement the {@link Disconnectable} interface.
+ * Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface.
  * <p> Doesn't maintain a connection status, so <code>isConnected</code> must be implemented by a client.</p>
  */
 public class DisconnectableEventHandler implements Disconnectable {
     private final CopyOnWriteArrayList<DisconnectEventListener> listeners =
         new CopyOnWriteArrayList<DisconnectEventListener>();
 
-    public void     addDisconnectEventListener(DisconnectEventListener listener) {        
+    public void addDisconnectEventListener(DisconnectEventListener listener) {
         listeners.addIfAbsent(listener);
     }
 
-    public void     removeDisconnectEventListener(DisconnectEventListener listener) {
+    public void removeDisconnectEventListener(DisconnectEventListener listener) {
         listeners.remove(listener);
     }
 
-    public boolean  isConnected() {
+    public boolean isConnected() {
         throw new UnsupportedOperationException();
     }
 
-    public void     onReconnected() {
+    public void onReconnected() {
         for (DisconnectEventListener listener : listeners) {
             listener.onReconnected();
         }
     }
 
-    public void     onDisconnected() {
+    public void onDisconnected() {
         for (DisconnectEventListener listener : listeners) {
             listener.onDisconnected();
         }

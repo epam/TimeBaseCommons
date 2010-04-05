@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.framework;
+package deltix.qsrv.hf.spi.conn;
 
 public interface DisconnectEventListener {
 
@@ -6,4 +6,5 @@ public interface DisconnectEventListener {
     void onDisconnected();
     
     void onReconnected();
+    
 }

@@ -2,14 +2,21 @@ package deltix.qsrv.hf.pub;
 
 import deltix.util.lang.Util;
 
+import java.io.Serializable;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 /**
  * Pair { InstrumentType, symbol } that provides InstrumentIdentity.
  *
  * Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead.
  */
 public class InstrumentKey
-    implements InstrumentIdentity, Comparable <InstrumentIdentity>
+    implements InstrumentIdentity, Comparable <InstrumentIdentity>, Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     public InstrumentType       instrumentType;
     public CharSequence         symbol;
 
@@ -88,5 +95,19 @@ public class InstrumentKey
         return (compare (this, o));
     }
 
+    /// Serializable
 
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.writeObject(instrumentType);
+        if (symbol instanceof Serializable) {
+            oos.writeObject(symbol);
+        } else {
+            oos.writeObject(symbol.toString());
+        }
+    }
+
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        instrumentType = (InstrumentType) ois.readObject();
+        symbol = (CharSequence) ois.readObject();
+    }
 }

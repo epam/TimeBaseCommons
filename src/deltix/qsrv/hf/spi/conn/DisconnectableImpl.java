@@ -1,7 +1,9 @@
-package deltix.qsrv.hf.framework;
+package deltix.qsrv.hf.spi.conn;
+
+import deltix.qsrv.hf.spi.conn.DisconnectableEventHandler;
 
 /**
- *  Helps implement the {@link Disconnectable} interface. 
+ *  Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface.
  */
 public class DisconnectableImpl extends DisconnectableEventHandler {
     private volatile boolean isConnected = false;
