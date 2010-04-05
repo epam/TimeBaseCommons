@@ -6,5 +6,4 @@ public interface DisconnectEventListener {
     void onDisconnected();
     
     void onReconnected();
-    
 }
