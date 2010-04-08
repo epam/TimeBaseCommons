@@ -3,7 +3,7 @@ package deltix.util.collections;
 /**
  * Fixed size circular buffer of byte values
  */
-public class ByteQueue {
+public final class ByteQueue {
     private int                 capacity;
     private byte []             buffer;
     private int                 size = 0;
@@ -153,26 +153,22 @@ public class ByteQueue {
         tail = 0;
     }
     
-    public final boolean        isEmpty () {
+    public boolean        isEmpty () {
         return (size == 0);
     }
     
-    public final boolean        isFull () {
+    public boolean        isFull () {
         return (size == capacity);
     }
     
-    public final int            size () {
+    public int            size () {
         return (size);
     }  
     
-    public final int            free () {
+    public int            free () {
         return (capacity - size);
     }
     
-    public final int            capacity () {
-        return (capacity);
-    }
-
     public byte []              getBuffer () {
         return buffer;
     }

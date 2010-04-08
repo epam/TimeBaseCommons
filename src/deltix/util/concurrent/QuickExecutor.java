@@ -17,6 +17,9 @@ public class QuickExecutor {
         boolean                             isScheduled = false;
 
         protected QuickTask (QuickExecutor executor) {
+            if (executor == null)
+                throw new IllegalArgumentException ("null executor");
+            
             this.executor = executor;
         }
 

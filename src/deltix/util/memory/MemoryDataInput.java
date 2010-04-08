@@ -49,21 +49,21 @@ public class MemoryDataInput {
     }
     
     public final void       setBytes (byte [] buffer, int offset, int length) {
+        assert offset + length <= buffer.length :
+            "Insufficient buffer length " + buffer.length + "; offset: " +
+            offset + "; length: " + length;
+        
         mBuffer = buffer;
         mLimit = offset + length;
         mStart = mPos = offset;
     }
     
     public final void       setBytes (ByteArrayList buffer) {
-        mBuffer = buffer.getInternalBuffer ();
-        mLimit = buffer.size ();
-        mStart = mPos = 0;
+        setBytes (buffer.getInternalBuffer (), 0, buffer.size ());
     }
     
     public final void       setBytes (ByteArrayOutputStreamEx buffer) {
-        mBuffer = buffer.getInternalBuffer ();
-        mLimit = buffer.size ();
-        mStart = mPos = 0;
+        setBytes (buffer.getInternalBuffer (), 0, buffer.size ());
     }
     
     public final void       setBytes (byte [] buffer) {
@@ -73,12 +73,14 @@ public class MemoryDataInput {
     }
     
     public final void       setBytes (MemoryDataOutput out) {
-        mBuffer = out.getBuffer ();
-        mLimit = out.getSize ();
-        mStart = mPos = 0;
+        setBytes (out.getBuffer (), 0, out.getSize ());
     }
     
     public final void       reset (int newSize) {
+        assert newSize <= mBuffer.length :
+            "Insufficient buffer length " + mBuffer.length +
+            "; newSize: " + newSize;
+
         mLimit = newSize;
         mStart = mPos = 0;
     }
@@ -101,8 +103,31 @@ public class MemoryDataInput {
     public final int        getLength () {
         return (mLimit - mStart);
     }
-    
+
+    /**
+     *  Distance from current position until the end
+     */
+    public final int        getAvail () {
+        return (mLimit - mPos);
+    }
+
+    /**
+     *  Returns the current position relative to the byte buffer.
+     */
+    public final int        getCurrentOffset () {
+        return (mPos);
+    }
+
+    private boolean         haveRoom (int n) {
+        if (getAvail () < n)
+            throw new AssertionError ("Cannot read " + n + " bytes; available: " + getAvail ());
+
+        return (true);
+    }
+
     public final void       readFully (byte[] b, int off, int len) {
+        assert haveRoom (len);
+        
         System.arraycopy (mBuffer, mPos, b, off, len);
         mPos += len;
     }
@@ -112,79 +137,107 @@ public class MemoryDataInput {
     }
 
     public final void       skipBytes (int n) {
+        assert haveRoom (n);
         mPos += n;
     }
 
     public final void       seek (int n) {
+        assert n <= getLength () :
+            "Cannot seek to " + n + " bytes; length: " + getLength ();
+
         mPos = mStart + n;
     }
 
     public final int        readUnsignedShort () {
+        assert haveRoom (2);
+
         int     ret = DataExchangeUtils.readUnsignedShort (mBuffer, mPos);
         mPos += 2;
         return (ret);
     }
 
     public final long       readUnsignedInt () {
+        assert haveRoom (4);
+
         long    ret = DataExchangeUtils.readUnsignedInt (mBuffer, mPos);
         mPos += 4;
         return (ret);
     }
 
     public final int        readUnsignedByte () {
+        assert haveRoom (1);
+
         return (mBuffer [mPos++] & 0xFF);
     }
 
     public final boolean    readBoolean () {
+        assert haveRoom (1);
+
         return (mBuffer [mPos++] != 0);
     }
 
     public final byte       readByte () {
+        assert haveRoom (1);
+
         return (mBuffer [mPos++]);
     }
 
     public final char       readChar () {
+        assert haveRoom (2);
+
         char    ret = DataExchangeUtils.readChar (mBuffer, mPos);
         mPos += 2;
         return (ret);
     }
 
     public final double     readDouble () {
+        assert haveRoom (8);
+
         double    ret = DataExchangeUtils.readDouble (mBuffer, mPos);
         mPos += 8;
         return (ret);
     }
 
     public final float      readFloat () {
+        assert haveRoom (4);
+
         float    ret = DataExchangeUtils.readFloat (mBuffer, mPos);
         mPos += 4;
         return (ret);
     }
 
     public final int        readInt () {
+        assert haveRoom (4);
+
         int    ret = DataExchangeUtils.readInt (mBuffer, mPos);
         mPos += 4;
         return (ret);
     }
 
     public final long       readLong () {
+        assert haveRoom (8);
+
         long    ret = DataExchangeUtils.readLong (mBuffer, mPos);
         mPos += 8;
         return (ret);
     }
 
     public final long       readLong48 () {
+        assert haveRoom (6);
+
         long    ret = DataExchangeUtils.readLong48 (mBuffer, mPos);
         mPos += 6;
         return (ret);
     }
 
     public final long       readLongUnsignedByte () {
+        assert haveRoom (1);
+
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
     
     public final long       readPackedUnsignedLong () {        
-        int     head = mBuffer [mPos++];
+        int     head = readByte ();
         long    ret = head & 0x1F;
         int     numAddlBytes = (head >>> 5) & 0x7;
         
@@ -246,7 +299,7 @@ public class MemoryDataInput {
     }
 
     public final int       readPackedUnsignedInt () {        
-        int     head = mBuffer [mPos++];
+        int     head = readByte ();
         int     ret = head & 0x3F;
         int     numAddlBytes = (head >>> 6) & 0x3;
         
@@ -274,6 +327,8 @@ public class MemoryDataInput {
     }
 
     public final short      readShort () {
+        assert haveRoom (2);
+
         short    ret = DataExchangeUtils.readShort (mBuffer, mPos);
         mPos += 2;
         return (ret);
