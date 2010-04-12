@@ -11,51 +11,49 @@ public abstract class DataFieldTableEx extends DataFieldTable {
     @SuppressWarnings("deprecation")
     @Override
     public void doLayout () {
-        final TableColumn resizingColumn = getResizingColumn ();
-        if (resizingColumn == null) {
-            setWidthsFromPreferredWidths (false);
-        } else {
-            // JTable behaves like a layout manger - but one in which the
-            // user can come along and dictate how big one of the children
-            // (columns) is supposed to be.
+        if (autoResizeMode != AUTO_RESIZE_OFF)
+            super.doLayout ();
+        else {
+            final TableColumn resizingColumn = getResizingColumn ();
+            if (resizingColumn == null) {
+                setWidthsFromPreferredWidths (false);
+            } else {
+                // JTable behaves like a layout manger - but one in which the
+                // user can come along and dictate how big one of the children
+                // (columns) is supposed to be.
 
-            // A column has been resized and JTable may need to distribute
-            // any overall delta to other columns, according to the resize mode.
-            final int columnIndex = viewIndexForColumn (resizingColumn);
-            int delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
-            accommodateDelta (columnIndex,
-                              delta);
-            delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
+                // A column has been resized and JTable may need to distribute
+                // any overall delta to other columns, according to the resize mode.
+                final int columnIndex = viewIndexForColumn (resizingColumn);
+                int delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
+                accommodateDelta (columnIndex,
+                                  delta);
+                delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
 
-            // If the delta cannot be completely accomodated, then the
-            // resizing column will have to take any remainder. This means
-            // that the column is not being allowed to take the requested
-            // width. This happens under many circumstances: For example,
-            // AUTO_RESIZE_NEXT_COLUMN specifies that any delta be distributed
-            // to the column after the resizing column. If one were to attempt
-            // to resize the last column of the table, there would be no
-            // columns after it, and hence nowhere to distribute the delta.
-            // It would then be given entirely back to the resizing column,
-            // preventing it from changing size.
-            if (autoResizeMode == AUTO_RESIZE_OFF) {
+                // If the delta cannot be completely accomodated, then the
+                // resizing column will have to take any remainder. This means
+                // that the column is not being allowed to take the requested
+                // width. This happens under many circumstances: For example,
+                // AUTO_RESIZE_NEXT_COLUMN specifies that any delta be distributed
+                // to the column after the resizing column. If one were to attempt
+                // to resize the last column of the table, there would be no
+                // columns after it, and hence nowhere to distribute the delta.
+                // It would then be given entirely back to the resizing column,
+                // preventing it from changing size.
                 if (delta > 0) {
                     resizingColumn.setWidth (resizingColumn.getWidth () + delta);
                 }
-            } else {
-                if (delta != 0) {
-                    resizingColumn.setWidth (resizingColumn.getWidth () + delta);
-                }
-            }
 
-            // At this point the JTable has to work out what preferred sizes
-            // would have resulted in the layout the user has chosen.
-            // Thereafter, during window resizing etc. it has to work off
-            // the preferred sizes as usual - the idea being that, whatever
-            // the user does, everything stays in synch and things don't jump
-            // around.
-            setWidthsFromPreferredWidths (true);
+                // At this point the JTable has to work out what preferred sizes
+                // would have resulted in the layout the user has chosen.
+                // Thereafter, during window resizing etc. it has to work off
+                // the preferred sizes as usual - the idea being that, whatever
+                // the user does, everything stays in synch and things don't jump
+                // around.
+                setWidthsFromPreferredWidths (true);
+            }
+            layout ();
         }
-        layout ();
     }
 
     // Distribute delta over columns, as indicated by the autoresize mode.
