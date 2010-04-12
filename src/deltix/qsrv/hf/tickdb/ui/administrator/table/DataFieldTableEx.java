@@ -24,12 +24,8 @@ public abstract class DataFieldTableEx extends DataFieldTable {
 
                 // A column has been resized and JTable may need to distribute
                 // any overall delta to other columns, according to the resize mode.
-                final int columnIndex = viewIndexForColumn (resizingColumn);
                 int delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
-                accommodateDelta (columnIndex,
-                                  delta);
-                delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
-
+               
                 // If the delta cannot be completely accomodated, then the
                 // resizing column will have to take any remainder. This means
                 // that the column is not being allowed to take the requested
@@ -54,77 +50,6 @@ public abstract class DataFieldTableEx extends DataFieldTable {
             }
             layout ();
         }
-    }
-
-    // Distribute delta over columns, as indicated by the autoresize mode.
-    private void accommodateDelta (final int resizingColumnIndex,
-                                   final int delta) {
-        final int columnCount = getColumnCount ();
-        int from = resizingColumnIndex;
-        int to = columnCount;
-
-        // Use the mode to determine how to absorb the changes.
-        switch (autoResizeMode) {
-            case AUTO_RESIZE_NEXT_COLUMN:
-                from = from + 1;
-                to = Math.min (from + 1,
-                               columnCount);
-            break;
-            case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-                from = from + 1;
-                to = columnCount;
-            break;
-            case AUTO_RESIZE_LAST_COLUMN:
-                from = columnCount - 1;
-                to = from + 1;
-            break;
-            default:
-                return;
-        }
-
-        final int start = from;
-        final int end = to;
-        final TableColumnModel cm = columnModel;
-        final Resizable3 r = new Resizable3 () {
-            @Override
-            public int getElementCount () {
-                return end - start;
-            }
-
-            @Override
-            public int getLowerBoundAt (final int i) {
-                return cm.getColumn (i + start).getMinWidth ();
-            }
-
-            @Override
-            public int getUpperBoundAt (final int i) {
-                return cm.getColumn (i + start).getMaxWidth ();
-            }
-
-            @Override
-            public int getMidPointAt (final int i) {
-                return cm.getColumn (i + start).getWidth ();
-            }
-
-            @Override
-            public void setSizeAt (final int s,
-                                   final int i) {
-                cm.getColumn (i + start).setWidth (s);
-            }
-        };
-
-        int totalWidth = 0;
-        for (int i = from; i < to; i++) {
-            final TableColumn aColumn = columnModel.getColumn (i);
-            final int input = aColumn.getWidth ();
-            totalWidth = totalWidth + input;
-        }
-
-        adjustSizes (totalWidth + delta,
-                     r,
-                     false);
-
-        return;
     }
 
     private void setWidthsFromPreferredWidths (final boolean inverse) {
