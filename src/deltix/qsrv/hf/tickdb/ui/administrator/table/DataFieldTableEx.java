@@ -25,7 +25,7 @@ public abstract class DataFieldTableEx extends DataFieldTable {
                 // A column has been resized and JTable may need to distribute
                 // any overall delta to other columns, according to the resize mode.
                 int delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
-               
+
                 // If the delta cannot be completely accomodated, then the
                 // resizing column will have to take any remainder. This means
                 // that the column is not being allowed to take the requested
@@ -99,16 +99,6 @@ public abstract class DataFieldTableEx extends DataFieldTable {
         adjustSizes (target,
                      r,
                      inverse);
-    }
-
-    private int viewIndexForColumn (final TableColumn aColumn) {
-        final TableColumnModel cm = getColumnModel ();
-        for (int column = 0; column < cm.getColumnCount (); column++) {
-            if (cm.getColumn (column) == aColumn) {
-                return column;
-            }
-        }
-        return -1;
     }
 
     private void adjustSizes (final long target,
