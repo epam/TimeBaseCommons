@@ -135,7 +135,7 @@ public abstract class TinyFIX {
         } else {
              // 2010 01 15 20 59 44 292
             calendar.set (Calendar.YEAR,  extractNumber(0, 4));
-            calendar.set (Calendar.MONTH, extractNumber(4, 2));
+            calendar.set (Calendar.MONTH, extractNumber(4, 2) - 1);
             calendar.set (Calendar.DAY_OF_MONTH, extractNumber(6, 2));
             calendar.set (Calendar.HOUR_OF_DAY, extractNumber(8, 2));
             calendar.set (Calendar.MINUTE, extractNumber(10, 2));
