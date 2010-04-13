@@ -1,12 +1,17 @@
 package deltix.util.time;
 
+import deltix.util.lang.Util;
+import java.util.logging.Level;
+
 /**
- * Date: Mar 8, 2010
+ *  Isolates java.util.Timer from exceptions thrown by TimerTasks.
  */
 public abstract class TimerRunner extends java.util.TimerTask {
-    
-     @Override
-     public void run() {
+    /**
+     *  Override {@link #runInternal} instead.
+     */
+    @Override
+    public final void      run () {
         try {
             runInternal();
         }
@@ -14,14 +19,22 @@ public abstract class TimerRunner extends java.util.TimerTask {
             try {
                 onError(e);
             } catch (Throwable ex) {
-                ex.printStackTrace(System.out);
+                Util.LOGGER.log (Level.SEVERE, null, ex);
             }
         }
     }
 
-    void onError(Throwable e) {
-        e.printStackTrace(System.out);
+    /**
+     *  Override to handle errors thrown by {@link #runInternal}.
+     *
+     *  @param e    The exception.
+     */
+    protected void          onError (Throwable e) {
+        Util.LOGGER.log (Level.SEVERE, null, e);
     }
 
-    protected abstract void runInternal();
+    /**
+     *  Override this method to perform timer task, instead of overriding run ().
+     */
+    protected abstract void runInternal () throws Exception;
 }

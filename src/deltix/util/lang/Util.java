@@ -1103,7 +1103,7 @@ public class Util {
      *  without calling CharSequence.toString ().
      */
     public static String               toString (CharSequence cs) {
-        return (new StringBuilder (cs).toString ());
+        return (cs.getClass () == String.class ? (String) cs : new StringBuilder (cs).toString ());
     }
 
     /**
