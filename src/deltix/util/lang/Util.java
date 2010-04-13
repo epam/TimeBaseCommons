@@ -1110,6 +1110,9 @@ public class Util {
      *  Replicates the String.hashCode () logic for arbitrary CharSequence instances
      */
     public static int               hashCode (CharSequence cs) {
+        if (cs.getClass () == String.class) // String caches hash code
+            return (cs.hashCode ());
+        
         int         len = cs.length ();
         int         hc = 0;
 

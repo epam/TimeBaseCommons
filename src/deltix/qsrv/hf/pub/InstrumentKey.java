@@ -44,8 +44,12 @@ public class InstrumentKey
         symbol = symbol.toString ();
     }
 
+    public static int           hashCode (InstrumentType type, CharSequence symbol) {
+        return (type.hashCode () + Util.hashCode (symbol));
+    }
+
     public static int           hashCode (InstrumentIdentity id) {
-        return (id.getType ().hashCode () + Util.hashCode (id.getSymbol ()));
+        return (hashCode (id.getType (), id.getSymbol ()));
     }
 
     public static boolean       equals (InstrumentIdentity id1, InstrumentIdentity id2) {
