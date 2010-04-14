@@ -30,7 +30,7 @@ public abstract class TinyFIX {
 
         @Override
         public CharSequence subSequence(int start, int end) {
-            throw new UnsupportedOperationException();
+            return new String(buf, start, end-start);
         }
     }
 
