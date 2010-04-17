@@ -150,6 +150,9 @@ public class QuickExecutor {
 
                 try {
                     task.run ();
+                } catch (UncheckedInterruptedException x) {
+                    Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
+                    break;
                 } catch (Error x) {
                     Util.LOGGER.log (Level.SEVERE, task + " failed", x);
                 } catch (RuntimeException x) {
