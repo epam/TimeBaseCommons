@@ -8,6 +8,10 @@ public abstract class DataFieldTableEx extends DataFieldTable {
         super (model);
     }
 
+    public DataFieldTableEx () {
+        super ();
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public void doLayout () {
