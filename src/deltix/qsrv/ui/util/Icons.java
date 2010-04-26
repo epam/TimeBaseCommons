@@ -111,4 +111,5 @@ public class Icons {
     public static final Icon CUSTOM             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
 
     public static final Icon TWO_DOWARROW       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/2dowarrow.png");
+    public static final Icon BETA               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/beta.png");
 }
