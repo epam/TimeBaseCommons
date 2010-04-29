@@ -66,6 +66,7 @@ public class QuickExecutor {
     private final Set <Worker>              workers = new HashSet <Worker> ();
     private int                             workerId = 1;
     private int                             numAvailableWorkers = 0;
+    private boolean                         shutdownInProgress = false;
 
     public QuickExecutor (String name) {
         this.name = name;
@@ -80,6 +81,9 @@ public class QuickExecutor {
     }
 
     private void            addWorkerInternal () {
+        if (shutdownInProgress)
+            throw new IllegalStateException ("Shutdown in progress");
+
         Worker      w = new Worker (workerId++);
         w.start ();
         workers.add (w);
@@ -117,20 +121,26 @@ public class QuickExecutor {
     }
 
     public void             shutdown (boolean waitForCompleteShutdown) {
-        synchronized (workers) {
-            for (Worker w : workers)
-                w.interrupt ();
+        Worker []               workerSnapshot;
 
-            if (waitForCompleteShutdown) {
-                for (Worker w : workers) {
-                    try {
-                        w.join ();
-                    } catch (InterruptedException x) {
-                        Util.LOGGER.log (Level.WARNING, "While shutting down " + this, x);
-                    }
+        synchronized (tasks) {
+            shutdownInProgress = true;
+
+            workerSnapshot = workers.toArray (new Worker [workers.size ()]);
+        }
+        
+        for (Worker w : workerSnapshot)
+            w.interrupt ();
+
+        if (waitForCompleteShutdown) {
+            for (Worker w : workerSnapshot) {
+                try {
+                    w.join ();
+                } catch (InterruptedException x) {
+                    Util.LOGGER.log (Level.WARNING, "While shutting down " + this, x);
                 }
             }
-        }
+        }        
     }
 
     private void            executorLoop () {
