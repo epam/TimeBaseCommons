@@ -10,11 +10,16 @@ import java.util.logging.*;
  *  reschedule.
  */
 public class QuickExecutor {
+    public static final boolean         CRASH_ON_TASK_REENTER = false;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
     public static abstract class QuickTask extends QuickList.Entry <QuickTask> {
         protected final QuickExecutor       executor;
+        //
+        //  The following variables are guarded by executor.tasks
+        //
         boolean                             isScheduled = false;
+        boolean                             isRunning = false;
 
         protected QuickTask (QuickExecutor executor) {
             if (executor == null)
@@ -99,6 +104,11 @@ public class QuickExecutor {
             if (task.isScheduled)
                 return;
 
+            if (CRASH_ON_TASK_REENTER) {
+                if (task.isRunning)
+                    throw new IllegalStateException (task + " is currently running");
+            }
+            
             if (numAvailableWorkers < 1)
                 addWorkerInternal ();
 
@@ -155,6 +165,7 @@ public class QuickExecutor {
                     task = tasks.getFirst ();
                     task.unlink ();
                     task.isScheduled = false;
+                    task.isRunning = true;
                     numAvailableWorkers--;
                 }
 
@@ -170,6 +181,7 @@ public class QuickExecutor {
                 } finally {
                     synchronized (tasks) {
                         numAvailableWorkers++;
+                        task.isRunning = false;
                     }
                 }
             }
