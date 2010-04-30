@@ -1,6 +1,7 @@
 package deltix.util.xml;
 
 import java.io.StringWriter;
+import java.io.StringReader;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -8,6 +9,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,6 +53,19 @@ public final class XmlTools {
         
     }	
     
+	public static String toXML(Marshaller marshaller, Object value) throws JAXBException {
+        StringWriter writer = new StringWriter(8096);
+        marshaller.marshal(value, writer);
+        writer.flush();
+        return writer.toString();
+    }
     
-	
+    public static Object fromXML(Unmarshaller unmarshaller, String xmlValue) throws JAXBException {
+        StringReader reader = new StringReader(xmlValue);
+        try {
+            return unmarshaller.unmarshal(reader);
+        } finally {
+            reader.close();
+        }
+    }
 }
