@@ -187,6 +187,13 @@ public abstract class TextReader implements Disposable {
 		                                                   true ) ));
 	}
 
+    public double getDoubleOrNaN ( int idx ) {
+         CharSequence cell = getCell ( idx,  true );
+         if (cell.length() == 0)
+             return Double.NaN;
+         return (CharSequenceParser.parseDouble ( cell ));
+     }
+
 	public double getDoubleEx ( int idx ) {
 		return (Double.parseDouble ( getString ( idx,
 		                                         true ) ));
