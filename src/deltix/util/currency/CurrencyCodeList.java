@@ -99,7 +99,7 @@ public class CurrencyCodeList {
         return getCurrencyCodeByObject (value) != null;
     }
 
-    public static class CurrencyInfo {
+    public static class CurrencyInfo implements Comparable<CurrencyInfo>{
         public final String symbolicCode;
         public final short  numericCode;
         public final String description;
@@ -119,6 +119,11 @@ public class CurrencyCodeList {
         @Override
         public String toString () {
             return numericCode + " (" + symbolicCode + ")";
+        }
+
+        @Override
+        public int compareTo (CurrencyInfo o) {
+            return Util.compare (symbolicCode, o == null ? null : o.symbolicCode, true);
         }
     }
 }
