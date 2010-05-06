@@ -6,27 +6,53 @@ import java.io.*;
  *  Helper for writing correctly formatted CSV files.
  */
 public class CSVWriter extends FilterWriter {
+    
+    private static final char   DEFAULT_SEPARATOR = ',';
+    
     private boolean             closeDelegate = true;
     private boolean             flushEveryLine = false;
     
+    private final char          separator;
+    
     public CSVWriter (String f) throws IOException {
         this (new File (f));
+    }
+    
+    public CSVWriter (String f, char separator) throws IOException {
+        this (new File (f), separator);
     }
 
     public CSVWriter (String f, boolean append) throws IOException {
         this (new File (f), append);
     }
     
+    public CSVWriter (String f, boolean append, char separator ) throws IOException {
+        this (new File (f), append, separator);
+    }
+    
     public CSVWriter (File f) throws IOException {
         this (f, false);
     }
+    
+    public CSVWriter (File f, char separator) throws IOException {
+        this (f, false, separator);
+    }
 
     public CSVWriter (File f, boolean append) throws IOException {
-        super (new BufferedWriter (new FileWriter (f, append)));
+        this (new BufferedWriter (new FileWriter (f, append)));
+    }
+    
+    public CSVWriter (File f, boolean append, char separator) throws IOException {
+        this (new BufferedWriter (new FileWriter (f, append)), separator);
     }
     
     public CSVWriter (Writer out) {
+        this (out, DEFAULT_SEPARATOR);
+    }
+    
+    public CSVWriter (Writer out, char separator) {
         super (out);
+        this.separator = separator;
     }
     
     public CSVWriter (OutputStream os) {
@@ -76,7 +102,7 @@ public class CSVWriter extends FilterWriter {
                 if (first)
                     first = false;
                 else
-                    write (',');
+                    write (separator);
 
                 if (arg != null)
                     printCell (arg.toString (), out);
@@ -108,7 +134,7 @@ public class CSVWriter extends FilterWriter {
     
     public void             writeSeparator () throws IOException {
         synchronized (lock) {
-            write (',');
+            write (separator);
         }
     }
     
