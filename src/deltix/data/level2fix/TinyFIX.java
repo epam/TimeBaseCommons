@@ -5,11 +5,12 @@ import deltix.util.text.CharSequenceParser;
 import java.util.TimeZone;
 import java.util.Calendar;
 
+import quickfix.field.CheckSum;
+
 /**
  * @author Andy
  */
 public abstract class TinyFIX {
-
 
     private class CharArray implements CharSequence {
 
@@ -35,16 +36,15 @@ public abstract class TinyFIX {
     }
 
     private static final char SEPA = 1;
-
     private final CharArray fieldValue = new CharArray();
-
     public TinyFIX () {
     }
 
     /** @return false to terminate parsing of current message */
-    protected abstract boolean onField (int field);
+    protected abstract boolean onField (int field, int lineNumber);
 
-    public final void parse (CharSequence message) {
+    public final void parse (CharSequence message, int lineNumber) {
+
         int fieldId = 0;
         boolean isParsingFieldId = true;
 
@@ -59,15 +59,23 @@ public abstract class TinyFIX {
                 if (ch >= '0' && ch <= '9') {
                     fieldId = 10*fieldId + (ch - '0');
                 } else {
-                    throw new RuntimeException("Illegal character in FIX field [" + (i+1) + "]: '" + ch + "'");
+                    throw new RuntimeException(
+                        "Illegal character in FIX field [" + (i+1) + "]: '" + ch + "'. Line number: " + lineNumber + ".");
                 }
             } else {
                 if (ch == SEPA) {
-                    if ( ! onField(fieldId))
+                    if ( ! onField(fieldId, lineNumber))
                         return;
                     fieldId = 0;
                     isParsingFieldId = true;
                 }
+                /*else if (i == length - 1) {
+
+                    if (fieldId != CheckSum.FIELD)
+                        throw new RuntimeException("Illegal last message field [" + fieldId + "]. Line number: " + lineNumber + ".");
+
+                    onField(fieldId, lineNumber);
+                }*/
 
                 fieldValue.buf[fieldValue.len++ ] = ch;
             }
