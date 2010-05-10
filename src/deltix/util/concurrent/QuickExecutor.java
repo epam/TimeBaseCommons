@@ -13,13 +13,32 @@ public class QuickExecutor {
     public static final boolean         CRASH_ON_TASK_REENTER = false;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
+    public enum TaskState {
+        IDLE,
+
+        /**
+         *  In queue
+         */
+        SCHEDULED,
+
+        /**
+         *  Running in a Worker
+         */
+        RUNNING,
+
+        /**
+         *  Scheduled while running; will be re-run when finished.
+         */
+        REARMED
+    }
+
     public static abstract class QuickTask extends QuickList.Entry <QuickTask> {
         protected final QuickExecutor       executor;
         //
-        //  The following variables are guarded by executor.tasks
+        //  The state is guarded by executor.tasks
         //
-        boolean                             isScheduled = false;
-        boolean                             isRunning = false;
+        TaskState                           state = TaskState.IDLE;
+        Worker                              worker = null;
 
         protected QuickTask (QuickExecutor executor) {
             if (executor == null)
@@ -34,8 +53,12 @@ public class QuickExecutor {
          */
         public abstract void    run () throws InterruptedException;
 
-        public final void       cancel () {
-            executor.cancel (this);
+        public final void       unschedule () {
+            executor.unschedule (this);
+        }
+
+        public final void       kill () {
+            executor.kill (this);
         }
 
         public final void       submit () {
@@ -45,12 +68,55 @@ public class QuickExecutor {
 
     private class Worker extends Thread {
         Worker (int idx) {
-            super (QuickExecutor.this + " Worker #" + idx);
+            super ("Worker #" + idx + " for " + QuickExecutor.this);
         }
 
         @Override
         public void             run () {
-            executorLoop ();
+            try {
+                QuickTask   task = null;
+
+                for (;;) {
+                    if (task == null) {
+                        synchronized (tasks) {
+                            while (tasks.isEmpty ())
+                                tasks.wait ();
+
+                            task = tasks.getFirst ();
+                            
+                            assert task.state == TaskState.SCHEDULED;
+
+                            task.unlink ();
+                            task.state = TaskState.RUNNING;
+                            task.worker = this;
+                            numAvailableWorkers--;
+                        }
+                    }
+
+                    try {
+                        task.run ();
+                    } catch (UncheckedInterruptedException x) {
+                        Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
+                    } catch (InterruptedException x) {
+                        Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
+                    } catch (Throwable x) {
+                        Util.LOGGER.log (Level.SEVERE, task + " failed", x);
+                    } finally {
+                        synchronized (tasks) {
+                            if (task.state == TaskState.REARMED)
+                                task.state = TaskState.RUNNING;  // go again
+                            else {
+                                numAvailableWorkers++;
+                                task.state = TaskState.IDLE;
+                                task.worker = null;
+                                task = null;    // cause a queue poll
+                            }
+                        }
+                    }
+                }
+            } catch (InterruptedException x) {
+                // Worker shutdown
+            }
         }
     }
 
@@ -96,36 +162,71 @@ public class QuickExecutor {
         LOGGER.fine ("# Workers: " + workers.size ());
     }
 
-    public void             submit (QuickTask task) {
+    void                    submit (QuickTask task) {
         assert task.executor == this :
             task + " is being submitted to the wrong executor";
 
         synchronized (tasks) {
-            if (task.isScheduled)
-                return;
+            switch (task.state) {
+                case SCHEDULED:
+                case REARMED:
+                    break;
 
-            if (CRASH_ON_TASK_REENTER) {
-                if (task.isRunning)
-                    throw new IllegalStateException (task + " is currently running");
-            }
-            
-            if (numAvailableWorkers < 1)
-                addWorkerInternal ();
+                case RUNNING:
+                    task.state = TaskState.REARMED;
+                    break;
 
-            task.isScheduled = true;
-            tasks.linkLast (task);
-            tasks.notify ();
+                case IDLE:
+                    if (numAvailableWorkers < 1)
+                        addWorkerInternal ();
+
+                    task.state = TaskState.SCHEDULED;
+
+                    tasks.linkLast (task);
+                    tasks.notify ();
+                    break;
+
+                default:
+                    throw new RuntimeException (task.state.name ());
+            }           
         }
     }
 
-    public void             cancel (QuickTask task) {
+    void                    unschedule (QuickTask task) {
         assert task.executor == this :
-            task + " is being cancelled with the wrong executor";
+            task + " is being unscheduled with the wrong executor";
 
         synchronized (tasks) {
-            if (task.isScheduled) {
-                task.isScheduled = false;
-                task.unlink ();
+            switch (task.state) {
+                case SCHEDULED:
+                    task.unlink ();
+                    task.state = TaskState.IDLE;
+                    break;
+
+                case REARMED:
+                    task.state = TaskState.RUNNING;
+                    break;
+            }
+        }
+    }
+
+    void                    kill (QuickTask task) {
+        assert task.executor == this :
+            task + " is being killed with the wrong executor";
+
+        synchronized (tasks) {
+            switch (task.state) {
+                case SCHEDULED:
+                    task.unlink ();
+                    task.state = TaskState.IDLE;
+                    break;
+
+                case REARMED:
+                    task.state = TaskState.RUNNING;
+                    // Fall through to RUNNING
+                case RUNNING:
+                    task.worker.interrupt ();
+                    break;
             }
         }
     }
@@ -151,42 +252,5 @@ public class QuickExecutor {
                 }
             }
         }        
-    }
-
-    private void            executorLoop () {
-        try {
-            for (;;) {
-                QuickTask   task;
-
-                synchronized (tasks) {
-                    while (tasks.isEmpty ())
-                        tasks.wait ();
-
-                    task = tasks.getFirst ();
-                    task.unlink ();
-                    task.isScheduled = false;
-                    task.isRunning = true;
-                    numAvailableWorkers--;
-                }
-
-                try {
-                    task.run ();
-                } catch (UncheckedInterruptedException x) {
-                    Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
-                    break;
-                } catch (Error x) {
-                    Util.LOGGER.log (Level.SEVERE, task + " failed", x);
-                } catch (RuntimeException x) {
-                    Util.LOGGER.log (Level.SEVERE, task + " failed", x);
-                } finally {
-                    synchronized (tasks) {
-                        numAvailableWorkers++;
-                        task.isRunning = false;
-                    }
-                }
-            }
-        } catch (InterruptedException x) {
-            //
-        }
-    }
+    }   
 }
