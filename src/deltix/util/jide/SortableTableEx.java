@@ -1,15 +1,59 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.table;
+package deltix.util.jide;
 
+import java.util.*;
+
+import javax.swing.*;
 import javax.swing.table.*;
 
-public abstract class DataFieldTableEx extends DataFieldTable {
+import com.jidesoft.grid.*;
 
-    public DataFieldTableEx (final TableModel model) {
-        super (model);
+public class SortableTableEx extends SortableTable {
+
+    public SortableTableEx () {
+        super ();
+
     }
 
-    public DataFieldTableEx () {
-        super ();
+    public SortableTableEx (final int numRows,
+                             final int numColumns) {
+        super (numRows,
+               numColumns);
+
+    }
+
+    public SortableTableEx (final Object[][] rowData,
+                             final Object[] columnNames) {
+        super (rowData,
+               columnNames);
+
+    }
+
+    public SortableTableEx (final TableModel dm,
+                             final TableColumnModel cm,
+                             final ListSelectionModel sm) {
+        super (dm,
+               cm,
+               sm);
+
+    }
+
+    public SortableTableEx (final TableModel dm,
+                             final TableColumnModel cm) {
+        super (dm,
+               cm);
+
+    }
+
+    public SortableTableEx (final TableModel model) {
+        super (model);
+
+    }
+
+    public SortableTableEx (final Vector<?> rowData,
+                             final Vector<?> columnNames) {
+        super (rowData,
+               columnNames);
+
     }
 
     @SuppressWarnings("deprecation")
@@ -28,7 +72,7 @@ public abstract class DataFieldTableEx extends DataFieldTable {
 
                 // A column has been resized and JTable may need to distribute
                 // any overall delta to other columns, according to the resize mode.
-                int delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
+                final int delta = getWidth () - getColumnModel ().getTotalColumnWidth ();
 
                 // If the delta cannot be completely accomodated, then the
                 // resizing column will have to take any remainder. This means
@@ -229,4 +273,5 @@ public abstract class DataFieldTableEx extends DataFieldTable {
     private interface Resizable3 extends Resizable2 {
         public int getMidPointAt (int i);
     }
+
 }
