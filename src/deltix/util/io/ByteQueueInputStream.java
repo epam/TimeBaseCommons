@@ -48,8 +48,12 @@ public class ByteQueueInputStream extends InputStream {
 
     @Override
     public synchronized int         available () throws IOException {
+
         if (q == null)
-            throw new EOFException ("closed");
+            throw new EOFException ("Closed");
+
+        if (q.size() == 0 && endOfQueue)
+            throw new EOQException("Finished");        
 
         return q.size();
     }
