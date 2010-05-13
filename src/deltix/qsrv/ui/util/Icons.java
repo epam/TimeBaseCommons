@@ -1,5 +1,6 @@
 package deltix.qsrv.ui.util;
 
+import deltix.qsrv.hf.pub.InstrumentType;
 import javax.swing.*;
 
 import deltix.util.swing.*;
@@ -109,6 +110,14 @@ public class Icons {
     public static final Icon INDEX              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/index.png");
     public static final Icon ETF                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/etf.png");
     public static final Icon CUSTOM             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
+
+    public static final Icon [] INSTRUMENT_TYPE_ICONS = {
+        EQUITY, OPTION, FUTURE, BOND, CURRENCY, INDEX, ETF, CUSTOM
+    };
+
+    public static Icon  forInstrumentType (InstrumentType t) {
+        return (INSTRUMENT_TYPE_ICONS [t.ordinal ()]);
+    }
 
     public static final Icon TWO_DOWARROW       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/2dowarrow.png");
     public static final Icon BETA               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/beta.png");
