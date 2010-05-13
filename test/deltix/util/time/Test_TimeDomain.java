@@ -94,14 +94,14 @@ public class Test_TimeDomain {
         td.buildIndex ();
 
         for (int ii = 0; ii < 50; ii++) {
-            long    o = td.globalToOpen (ii, false);
+            long    o = td.g2c (ii, false);
 
             String actual;
             if (o == TimeDomain.TIME_EXCLUDED) {
                 actual = (ii + " -> X");
                 continue;
             } else {
-                long    t = td.openToGlobal (o);
+                long    t = td.c2g (o);
                 assertEquals (ii, t);
                 actual = (ii + " -> " + o);
             }

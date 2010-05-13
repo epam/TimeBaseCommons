@@ -202,7 +202,7 @@ public class TimeDomain {
             return (cumTimes.getLong (upToIdx - 1));
     }
 
-    public long             globalToOpen (long t, boolean snap) {
+    public long             g2c (long t, boolean snap) {
         int         idx = search (t);
 
         if ((idx & NOT_FOUND) == 0)
@@ -214,7 +214,7 @@ public class TimeDomain {
         return (TIME_EXCLUDED);
     }
 
-    public long             openToGlobal (long t) {
+    public long             c2g (long t) {
         int     n = cumTimes.size ();
 
         if (n == 0)
