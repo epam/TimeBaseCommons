@@ -1,25 +1,21 @@
 package deltix.util.concurrent;
 
-import deltix.util.collections.*;
 import deltix.util.lang.Util;
 import java.util.*;
+import java.util.concurrent.locks.LockSupport;
 import java.util.logging.*;
+import net.jcip.annotations.GuardedBy;
 
 /**
  *  Similar to standard Java executors, but does not allocate memory on task
  *  reschedule.
  */
 public class QuickExecutor {
-    public static final boolean         CRASH_ON_TASK_REENTER = false;
+    public static final boolean         DEBUG_TASKS = false;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
     public enum TaskState {
         IDLE,
-
-        /**
-         *  In queue
-         */
-        SCHEDULED,
 
         /**
          *  Running in a Worker
@@ -32,10 +28,10 @@ public class QuickExecutor {
         REARMED
     }
 
-    public static abstract class QuickTask extends QuickList.Entry <QuickTask> {
+    public static abstract class QuickTask {
         protected final QuickExecutor       executor;
         //
-        //  The state is guarded by executor.tasks
+        //  The state is guarded by this
         //
         TaskState                           state = TaskState.IDLE;
         Worker                              worker = null;
@@ -55,50 +51,120 @@ public class QuickExecutor {
          *  This method must stop immediately on interrupt and throw
          *  InterruptedException, to cooperate with shutdown.
          */
-        public abstract void    run () throws InterruptedException;
+        public abstract void                run ()
+            throws InterruptedException;
 
-        public final void       unschedule () {
-            executor.unschedule (this);
+        final synchronized boolean          setDone () {
+            if (state == TaskState.REARMED) {
+                if (DEBUG_TASKS)
+                    System.out.println (this + " is re-armed");
+
+                state = TaskState.RUNNING;  // go again
+                return (true);
+            }
+            else {
+                if (DEBUG_TASKS)
+                    System.out.println (this + " is finished");
+
+                state = TaskState.IDLE;
+                worker = null;
+                return (false);
+            }
         }
 
-        public final void       kill () {
-            executor.kill (this);
+        public final synchronized void      unschedule () {
+            if (state == TaskState.REARMED) {
+                if (DEBUG_TASKS)
+                    System.out.println (this + " is disarmed");
+
+                state = TaskState.RUNNING;
+            }
         }
 
-        public final void       submit () {
-            executor.submit (this);
+        public final synchronized void      kill () {
+            switch (state) {
+                case REARMED:
+                    state = TaskState.RUNNING;
+                    // Fall through to RUNNING
+                case RUNNING:
+                    if (DEBUG_TASKS)
+                        System.out.println (this + " is being killed");
+
+                    worker.interrupt ();
+                    break;
+            }
+        }
+
+        public final void                   submit () {
+            synchronized (this) {
+                switch (state) {
+                    case REARMED:
+                        return;
+
+                    case RUNNING:
+                        state = TaskState.REARMED;
+                        return;
+
+                    case IDLE:
+                        state = TaskState.RUNNING;
+                        worker = executor.feedToWorker (this);
+                        break;
+
+                    default:
+                        throw new RuntimeException (state.name ());
+                }
+            }
+        }
+
+        @Override
+        public synchronized String          toString () {
+            if (worker == null)
+                return super.toString ();
+            else
+                return (super.toString () + " running in " + worker);
         }
     }
 
     private class Worker extends Thread {
+        QuickTask   task;
+
         Worker (int idx) {
+            this (null, idx);
+
+            freePool.push (this);
+        }
+        
+        Worker (QuickTask task, int idx) {
             super ("Worker #" + idx + " for " + QuickExecutor.this);
+
+            this.task = task;
+        }
+
+        void                    wakeUp (QuickTask task) {
+            this.task = task;
+
+            LockSupport.unpark (this);
         }
 
         @Override
         public void             run () {
             try {
-                QuickTask   task = null;
-
                 for (;;) {
                     if (task == null) {
-                        synchronized (tasks) {
-                            while (tasks.isEmpty ())
-                                tasks.wait ();
+                        LockSupport.park ();
 
-                            task = tasks.getFirst ();
-                            
-                            assert task.state == TaskState.SCHEDULED;
+                        if (interrupted ())
+                            break;
 
-                            task.unlink ();
-                            task.state = TaskState.RUNNING;
-                            task.worker = this;
-                            numAvailableWorkers--;
-                        }
+                        if (task == null)
+                            continue;
                     }
 
                     try {
                         task.run ();
+
+                        if (interrupted ())
+                            throw new InterruptedException ();
                     } catch (UncheckedInterruptedException x) {
                         Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
                     } catch (InterruptedException x) {
@@ -106,20 +172,20 @@ public class QuickExecutor {
                     } catch (Throwable x) {
                         Util.LOGGER.log (Level.SEVERE, task + " failed", x);
                     } finally {
-                        synchronized (tasks) {
-                            if (task.state == TaskState.REARMED)
-                                task.state = TaskState.RUNNING;  // go again
-                            else {
-                                numAvailableWorkers++;
-                                task.state = TaskState.IDLE;
-                                task.worker = null;
-                                task = null;    // cause a queue poll
-                            }
+                        if (!task.setDone ()) {
+                            task = null;
+                            freePool.push (this);
                         }
                     }
                 }
-            } catch (InterruptedException x) {
-                // Worker shutdown
+            } finally {
+                freePool.remove (this);
+
+                synchronized (workers) {
+                    workers.remove (this);
+                }
+                
+                LOGGER.info (this + " is terminating.");
             }
         }
     }
@@ -134,14 +200,17 @@ public class QuickExecutor {
     }
 
     private final String                    name;
-    //
-    //  The following members are all guarded by "tasks"
-    //
-    private final QuickList <QuickTask>     tasks = new QuickList <QuickTask> ();
+
+    @GuardedBy ("freePool")
+    private final Stack <Worker>            freePool = new Stack <Worker> ();
+    
+    @GuardedBy ("workers")
     private final Set <Worker>              workers = new HashSet <Worker> ();
+    
+    @GuardedBy ("workers")
     private int                             workerId = 1;
-    private int                             numAvailableWorkers = 0;
-    private boolean                         shutdownInProgress = false;
+
+    private volatile boolean                shutdownInProgress = false;
 
     public QuickExecutor (String name) {
         this.name = name;
@@ -155,95 +224,42 @@ public class QuickExecutor {
         return ("QuickExecutor \"" + name + "\"");
     }
 
-    private void            addWorkerInternal () {
-        if (shutdownInProgress)
-            throw new IllegalStateException ("Shutdown in progress");
-
-        Worker      w = new Worker (workerId++);
-        w.start ();
-        workers.add (w);
-        numAvailableWorkers++;
-        LOGGER.fine ("# Workers: " + workers.size ());
-    }
-
-    void                    submit (QuickTask task) {
+    Worker                  feedToWorker (QuickTask task) {
         assert task.executor == this :
             task + " is being submitted to the wrong executor";
 
-        synchronized (tasks) {
-            switch (task.state) {
-                case SCHEDULED:
-                case REARMED:
-                    break;
+        if (shutdownInProgress)
+            throw new IllegalStateException ("Shutdown in progress");
 
-                case RUNNING:
-                    task.state = TaskState.REARMED;
-                    break;
+        Worker      w;
 
-                case IDLE:
-                    if (numAvailableWorkers < 1)
-                        addWorkerInternal ();
+        try {
+            w = freePool.pop ();
 
-                    task.state = TaskState.SCHEDULED;
-
-                    tasks.linkLast (task);
-                    tasks.notify ();
-                    break;
-
-                default:
-                    throw new RuntimeException (task.state.name ());
-            }           
-        }
-    }
-
-    void                    unschedule (QuickTask task) {
-        assert task.executor == this :
-            task + " is being unscheduled with the wrong executor";
-
-        synchronized (tasks) {
-            switch (task.state) {
-                case SCHEDULED:
-                    task.unlink ();
-                    task.state = TaskState.IDLE;
-                    break;
-
-                case REARMED:
-                    task.state = TaskState.RUNNING;
-                    break;
+            w.wakeUp (task);
+        } catch (EmptyStackException x) {
+            synchronized (workers) {
+                w = new Worker (task, workerId++);
+                workers.add (w);
             }
+
+            w.start ();
+
+            LOGGER.fine ("# Workers: " + workers.size ());
         }
-    }
 
-    void                    kill (QuickTask task) {
-        assert task.executor == this :
-            task + " is being killed with the wrong executor";
-
-        synchronized (tasks) {
-            switch (task.state) {
-                case SCHEDULED:
-                    task.unlink ();
-                    task.state = TaskState.IDLE;
-                    break;
-
-                case REARMED:
-                    task.state = TaskState.RUNNING;
-                    // Fall through to RUNNING
-                case RUNNING:
-                    task.worker.interrupt ();
-                    break;
-            }
-        }
+        return (w);
     }
 
     public void             shutdown (boolean waitForCompleteShutdown) {
         Worker []               workerSnapshot;
+        
+        shutdownInProgress = true;
 
-        synchronized (tasks) {
-            shutdownInProgress = true;
-
+        synchronized (workers) {
             workerSnapshot = workers.toArray (new Worker [workers.size ()]);
         }
-        
+               
         for (Worker w : workerSnapshot)
             w.interrupt ();
 
