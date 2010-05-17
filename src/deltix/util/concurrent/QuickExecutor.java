@@ -47,6 +47,10 @@ public class QuickExecutor {
             this.executor = executor;
         }
 
+        protected QuickTask () {
+            this (getGlobalInstance ());
+        }
+
         /**
          *  This method must stop immediately on interrupt and throw
          *  InterruptedException, to cooperate with shutdown.

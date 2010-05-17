@@ -57,6 +57,14 @@ public class ByteArrayInputStreamEx extends java.io.ByteArrayInputStream {
     }
     
     /**
+     * Creates <code>ByteArrayInputStream</code>
+     * that reads the incoming {@link ByteArrayOutputStreamEx}
+     */
+    public ByteArrayInputStreamEx (ByteArrayOutputStreamEx blist) {
+        super (blist.getInternalBuffer (), 0, blist.size ());
+    }
+
+    /**
      *  Returns the current position.
      */
     public int          getPosition () {
