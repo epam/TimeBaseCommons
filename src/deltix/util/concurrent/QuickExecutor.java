@@ -166,9 +166,9 @@ public class QuickExecutor {
                         if (interrupted ())
                             throw new InterruptedException ();
                     } catch (UncheckedInterruptedException x) {
-                        Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
+                        Util.LOGGER.log (Level.FINE, task + " interrupted.", x);
                     } catch (InterruptedException x) {
-                        Util.LOGGER.log (Level.INFO, task + " interrupted.", x);
+                        Util.LOGGER.log (Level.FINE, task + " interrupted.", x);
                     } catch (Throwable x) {
                         Util.LOGGER.log (Level.SEVERE, task + " failed", x);
                     } finally {
