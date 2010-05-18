@@ -28,6 +28,15 @@ public class TimeDomain {
      */
     private final LongArrayList     cumTimes = new LongArrayList ();
 
+    public static TimeDomain    createOpen () {
+        TimeDomain     td = new TimeDomain ();
+
+        td.add (Long.MIN_VALUE, Long.MAX_VALUE);
+        td.buildIndex ();
+
+        return (td);
+    }
+    
     /**
      *  Return interval index if t falls into an open interval.
      *  Otherwise return NOT_FOUND | index of interval following t.
