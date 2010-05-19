@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.util;
+package deltix.util.time;
 
 import java.util.*;
 
