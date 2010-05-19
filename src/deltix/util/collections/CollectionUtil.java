@@ -2,23 +2,21 @@ package deltix.util.collections;
 
 import java.util.*;
 
+import deltix.util.lang.*;
+
 public class CollectionUtil {
 
     public static <T> void remove (Collection<T> collection,
-                                   Condition<T> condition) {
+                                   Filter<T> filter) {
         ArrayList<T> r = new ArrayList<T> ();
         for (T o : collection) {
-            if (condition.check (o))
+            if (filter.accept (o))
                 r.add (o);
         }
 
         while (r.size () > 0) {
             collection.remove (r.get (0));
         }
-    }
-
-    public static interface Condition<T> {
-        boolean check (T o);
     }
 
 }
