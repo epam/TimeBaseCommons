@@ -47,6 +47,10 @@ public class QuickExecutor {
             this (getGlobalInstance ());
         }
 
+        protected boolean                   killSupported () {
+            return (false);
+        }
+
         /**
          *  This method must stop immediately on interrupt and throw
          *  InterruptedException, to cooperate with shutdown.
@@ -82,6 +86,9 @@ public class QuickExecutor {
         }
 
         public final synchronized void      kill () {
+            if (!killSupported ())
+                throw new UnsupportedOperationException (this + " does not support kill ()");
+            
             switch (state) {
                 case REARMED:
                     state = TaskState.RUNNING;
@@ -126,7 +133,8 @@ public class QuickExecutor {
     }
 
     private class Worker extends Thread {
-        QuickTask   task;
+        QuickTask               task;
+        volatile boolean        stop = false;
 
         Worker (int idx) {
             this (null, idx);
@@ -140,6 +148,11 @@ public class QuickExecutor {
             this.task = task;
         }
 
+        void                    terminate () {
+            stop = true;
+            interrupt ();
+        }
+
         void                    wakeUp (QuickTask task) {
             this.task = task;
 
@@ -149,11 +162,11 @@ public class QuickExecutor {
         @Override
         public void             run () {
             try {
-                for (;;) {
+                while (!stop) {
                     if (task == null) {
                         LockSupport.park ();
 
-                        if (interrupted ())
+                        if (interrupted () && stop)
                             break;
 
                         if (task == null)
@@ -162,19 +175,20 @@ public class QuickExecutor {
 
                     try {
                         task.run ();
-
-                        if (interrupted ())
-                            throw new InterruptedException ();
                     } catch (UncheckedInterruptedException x) {
-                        Util.LOGGER.log (Level.FINE, task + " interrupted.", x);
+                        if (!stop)
+                            LOGGER.log (Level.FINE, task + " interrupted.", x);
                     } catch (InterruptedException x) {
-                        Util.LOGGER.log (Level.FINE, task + " interrupted.", x);
+                        if (!stop)
+                            LOGGER.log (Level.FINE, task + " interrupted.", x);
                     } catch (Throwable x) {
-                        Util.LOGGER.log (Level.SEVERE, task + " failed", x);
+                        LOGGER.log (Level.SEVERE, task + " failed", x);
                     } finally {
                         if (!task.setDone ()) {
                             task = null;
-                            freePool.push (this);
+
+                            if (!stop)
+                                freePool.push (this);
                         }
                     }
                 }
@@ -261,12 +275,25 @@ public class QuickExecutor {
         }
                
         for (Worker w : workerSnapshot)
-            w.interrupt ();
+            w.terminate ();
 
         if (waitForCompleteShutdown) {
             for (Worker w : workerSnapshot) {
                 try {
-                    w.join ();
+                    //
+                    //  Keep interrupting u8ntil it's dead.
+                    //
+                    //  This works around ignored interrupts in
+                    //      misbehaving tasks.
+                    for (;;) {
+                        w.join (1000);
+
+                        if (!w.isAlive ())
+                            break;
+
+                        LOGGER.warning (w + " failed to terminate in 1s, interrupting again ...");
+                        w.interrupt ();
+                    }
                 } catch (InterruptedException x) {
                     Util.LOGGER.log (Level.WARNING, "While shutting down " + this, x);
                 }
