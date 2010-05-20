@@ -14,7 +14,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
      *  Turn this on if problems are suspected in the use of this class
      */
     public static final boolean DO_ASSERTIONS = false;
-    
+
 	public static class BadEntryException extends RuntimeException {
 		public BadEntryException (Entry e) {
 			super (
@@ -441,4 +441,18 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	@SuppressWarnings("unchecked") public Enumeration <T>		entries () {
 		return (new EntryEnumeration (mHead.mNext));
 	}
+
+    @SuppressWarnings("unchecked")
+    public int              size() {
+        if (isEmpty())
+            return 0;
+        T first = getFirst();
+        int count = 0;
+        while (first != null) {
+            count++;
+            first = (T) first.next();
+        }
+
+        return count;
+    }
 }
