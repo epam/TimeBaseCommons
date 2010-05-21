@@ -294,6 +294,7 @@ public class DurationFormatUtilEx {
                                           S)) {
             milliseconds = (int) durationMillis;
         }
+      
 
         return format (tokens,
                        years,

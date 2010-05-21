@@ -14,9 +14,8 @@ public class CollectionUtil {
                 r.add (o);
         }
 
-        while (r.size () > 0) {
-            collection.remove (r.get (0));
+        for (T o : r) {
+            collection.remove (o);
         }
     }
-
 }
