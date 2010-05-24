@@ -6,13 +6,13 @@ package deltix.qsrv.hf.pub;
 public enum InstrumentType {
     EQUITY('S', "Stock"),
     OPTION('O', "Option"),
-    SIMPLE_OPTION('P', "SimpleOption"),
     FUTURE('F', "Futures"),
     BOND('B', "Bond"),
     FX('X', "Currency"),
     INDEX('I', "Index"),
     ETF('F', "ETF"),
-    CUSTOM('C', "Custom");
+    CUSTOM('C', "Custom"),
+    SIMPLE_OPTION('P', "SimpleOption");
 
 
     private final char code;

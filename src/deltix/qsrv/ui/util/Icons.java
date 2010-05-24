@@ -113,7 +113,7 @@ public class Icons {
     public static final Icon   CUSTOM                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
 
     public static final Icon [] INSTRUMENT_TYPE_ICONS = {
-        EQUITY, OPTION, SIMPLE_OPTION, FUTURE, BOND, CURRENCY, INDEX, ETF, CUSTOM
+        EQUITY, OPTION, FUTURE, BOND, CURRENCY, INDEX, ETF, CUSTOM, SIMPLE_OPTION
     };
 
     public static Icon  forInstrumentType (InstrumentType t) {
