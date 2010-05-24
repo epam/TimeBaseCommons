@@ -6,6 +6,7 @@ package deltix.qsrv.hf.pub;
 public enum InstrumentType {
     EQUITY('S', "Stock"),
     OPTION('O', "Option"),
+    SIMPLE_OPTION('P', "SimpleOption"),
     FUTURE('F', "Futures"),
     BOND('B', "Bond"),
     FX('X', "Currency"),
@@ -24,6 +25,7 @@ public enum InstrumentType {
     public static InstrumentType fromChar (char code) {
     	if (code == EQUITY.code) return EQUITY;
     	if (code == OPTION.code) return OPTION;
+    	if (code == SIMPLE_OPTION.code) return SIMPLE_OPTION;
     	if (code == FUTURE.code) return FUTURE;
     	if (code == BOND.code)   return BOND;
     	if (code == FX.code)     return FX;
