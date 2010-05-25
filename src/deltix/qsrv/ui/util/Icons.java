@@ -111,9 +111,11 @@ public class Icons {
     public static final Icon   INDEX                 = SwingUtil.loadIcon ("deltix/qsrv/ui/util/index.png");
     public static final Icon   ETF                   = SwingUtil.loadIcon ("deltix/qsrv/ui/util/etf.png");
     public static final Icon   CUSTOM                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
+    public static final Icon   EXCHANGE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/quotes.gif");
+    public static final Icon   TRADING_SESSION       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/calendar.png");
 
     public static final Icon [] INSTRUMENT_TYPE_ICONS = {
-        EQUITY, OPTION, FUTURE, BOND, CURRENCY, INDEX, ETF, CUSTOM, SIMPLE_OPTION
+        EQUITY, OPTION, FUTURE, BOND, CURRENCY, INDEX, ETF, CUSTOM, SIMPLE_OPTION, EXCHANGE, TRADING_SESSION
     };
 
     public static Icon  forInstrumentType (InstrumentType t) {

@@ -12,8 +12,9 @@ public enum InstrumentType {
     INDEX('I', "Index"),
     ETF('F', "ETF"),
     CUSTOM('C', "Custom"),
-    SIMPLE_OPTION('P', "SimpleOption");
-
+    SIMPLE_OPTION('P', "SimpleOption"),
+    EXCHANGE('E', "Exchange"),
+    TRADING_SESSION('T', "TradingSession");
 
     private final char code;
     private final String qoType;
