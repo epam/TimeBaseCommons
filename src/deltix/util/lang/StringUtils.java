@@ -575,7 +575,7 @@ public class StringUtils {
     }
 
     public static String messageInFrame(String message, char frameSymbol, int maxFrameLength, int paddingLength) {
-        String lineSeparator = System.getProperty("line.separator");
+        String lineSeparator = Util.NATIVE_LINE_BREAK;
         String[] lines = message.split("\n");
 
         int maxLength = maxFrameLength;
