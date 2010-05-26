@@ -49,4 +49,20 @@ public enum InstrumentType {
 
         throw new IllegalArgumentException("Unknown InstrumentType qoType: " + qoType);
     }
+
+    private static final InstrumentType[] INSTRUMENT_TYPES = {
+        EQUITY,
+        OPTION,
+        FUTURE,
+        BOND,
+        FX,
+        INDEX,
+        ETF,
+        CUSTOM,
+        SIMPLE_OPTION
+    };
+
+    public static InstrumentType[] getInstruments() {
+        return INSTRUMENT_TYPES;
+    }
 }
