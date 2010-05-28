@@ -199,7 +199,7 @@ public class QuickExecutor {
                     workers.remove (this);
                 }
                 
-                LOGGER.info (this + " is terminating.");
+                LOGGER.fine (this + " is terminating.");
             }
         }
     }
