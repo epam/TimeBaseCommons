@@ -25,6 +25,11 @@ public final class TimeRange {
         this.to = to;
     }
 
+    public TimeRange(long [] range) {
+        this.from = range[0];
+        this.to = range [1];
+    }
+
     public TimeRange(long from) {
         this.from = from;
         this.to = UNDEFINED;
@@ -38,7 +43,33 @@ public final class TimeRange {
         return f + '-' + t;
     }
 
-    public static TimeRange parse(String timeRangeProp) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+//    public static TimeRange parse(String timeRangeProp) {
+//        return null;  //To change body of created methods use File | Settings | File Templates.
+//    }
+
+    public static TimeRange union(TimeRange r1, TimeRange r2) {
+        if (r1 == null)
+            return r2;
+        if (r2 == null)
+            return r1;
+
+        long from, to;
+        if (r1.from == UNDEFINED)
+            from = r2.from;
+        else
+            if (r2.from != UNDEFINED)
+                from = Math.min(r1.from, r2.from);
+            else
+                from = r1.from;
+
+        if (r1.to == UNDEFINED)
+            to = r2.to;
+        else
+            if (r2.to != UNDEFINED)
+                to = Math.max(r1.to, r2.to);
+            else
+                to = r1.to;
+
+        return new TimeRange (from, to);
     }
 }

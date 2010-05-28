@@ -868,6 +868,10 @@ public class Util {
         return result;
     }
 
+    public static long getLongSystemProperty (String propName, long defaultValue) {
+        return getLongSystemProperty(propName, defaultValue, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
     public static int getIntSystemProperty (String propName, int defaultValue, int minValue, int maxValue) {
         return (int) getLongSystemProperty(propName, defaultValue, minValue, maxValue);
     }
