@@ -125,10 +125,10 @@ public class TimeDomain {
         StringBuffer    sb = new StringBuffer ("TimeDomain {\n");
 
         for (int ii = 0; ii < n; ii++) {
-            sb.append ("[ ");
-            sb.append (openTimes.getLong (ii));
+            sb.append ("[ (GMT) ");
+            sb.append (GMT.formatDateTimeMillis (openTimes.getLong (ii)));
             sb.append (" .. ");
-            sb.append (closeTimes.getLong (ii));
+            sb.append (GMT.formatDateTimeMillis (closeTimes.getLong (ii)));
             sb.append (" ]\n");
         }
 
