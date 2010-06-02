@@ -99,8 +99,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     @GuardedBy ("this")
     private Reconnector                         reconnector = null;
 
-    @GuardedBy("this")
-    private boolean                             isConnected = false;
+    private volatile boolean                    isConnected = false;
 
     @GuardedBy ("this")
     private long                                timeDisconnected;
@@ -198,7 +197,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         onDisconnected();
     }
 
-    public synchronized boolean             isConnected () {
+    public boolean             isConnected () {
         return (isConnected);
     }
     
