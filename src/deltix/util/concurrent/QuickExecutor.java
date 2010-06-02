@@ -205,6 +205,7 @@ public class QuickExecutor {
     }
 
     private static QuickExecutor            globalInstance = null;
+    private static int                      usages = 0;
 
     public static synchronized QuickExecutor getGlobalInstance () {
         if (globalInstance == null)
@@ -212,7 +213,7 @@ public class QuickExecutor {
 
         return (globalInstance);
     }
-
+    
     private final String                    name;
 
     @GuardedBy ("freePool")
@@ -226,12 +227,12 @@ public class QuickExecutor {
 
     private volatile boolean                shutdownInProgress = false;
 
-    public QuickExecutor (String name) {
+    private QuickExecutor (String name) {
         this.name = name;
     }
 
-    public void             start () {
-    }
+//    public void             start () {
+//    }
 
     @Override
     public String           toString () {
@@ -265,7 +266,18 @@ public class QuickExecutor {
         return (w);
     }
 
-    public void             shutdown (boolean waitForCompleteShutdown) {
+    public synchronized static QuickExecutor    reuse() {
+        usages++;
+        return getGlobalInstance();
+    }
+
+    public synchronized static void             shutdown() {
+        usages--;
+        if (usages <= 0)
+            globalInstance.shutdown(true);
+    }
+
+    private void             shutdown(boolean waitForCompleteShutdown) {
         Worker []               workerSnapshot;
         
         shutdownInProgress = true;
@@ -298,6 +310,8 @@ public class QuickExecutor {
                     Util.LOGGER.log (Level.WARNING, "While shutting down " + this, x);
                 }
             }
-        }        
-    }   
+        }
+
+        shutdownInProgress = false;
+    }
 }
