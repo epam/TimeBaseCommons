@@ -38,8 +38,9 @@ public class JavaCompilerHelper {
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
         DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
-        //Iterable<String> options = Arrays.asList("-verbose");
-        JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, null, null, compilationUnits);
+        final String optionString = System.getProperty("javac.options");
+        final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
+        JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
         boolean ok = compile.call();
 
         final boolean hasDiagnostic = dianosticListener.getDiagnostics().size() > 0;
