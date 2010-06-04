@@ -305,8 +305,12 @@ public abstract class BasicIOUtil {
                     removeRecursive (fileElements [iElement], filter, true);
         }
 
-        if (includeThisFile)
+        if (includeThisFile) {
             file.delete ();
+            
+            if (file.exists ())
+                throw new IOException ("Failed to delete " + file);
+        }
     }
 
     public static void  		removeRecursive (File file)
