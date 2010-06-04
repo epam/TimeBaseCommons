@@ -168,6 +168,12 @@ public class TimeDomain {
         return (openTimes.isEmpty ());
     }
 
+    public void             clear () {
+        openTimes.clear();
+        closeTimes.clear();
+        cumTimes.clear();
+    }
+
     public void             add (long open, long close) {
         if (close <= open)
             return;
