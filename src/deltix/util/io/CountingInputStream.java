@@ -17,11 +17,15 @@ public class CountingInputStream extends FilterInputStream {
     public CountingInputStream(InputStream delegate, int notifyThreshold ) {
         super (delegate);
         this.notifyThreshold = notifyThreshold;
-    }
+    }   
 
     public long                 getNumBytesRead () {
         return (mNumBytesRead);
-    }  
+    }
+
+    public void                 setNumBytesRead(long mNumBytesRead) {
+        this.mNumBytesNotified = this.mNumBytesRead = mNumBytesRead;
+    }
 
     private void                onDataRead(long bytes) {
         mNumBytesRead += bytes;

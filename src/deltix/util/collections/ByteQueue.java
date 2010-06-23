@@ -138,7 +138,7 @@ public final class ByteQueue {
     }
 
     public void                 skip (int length) {
-        assert size >= length : "size: " + size + "; length: " + length;
+        assert size >= length : "skip length " + length + " > size: " + size;
         
         size -= length;
         head += length;
@@ -185,18 +185,21 @@ public final class ByteQueue {
         return capacity;
     }
 
+    public void                 addCapacity(int increment) {
+        setCapacity(capacity + increment);
+    }
+
     public boolean              setCapacity (int value) {
         if (capacity == value)
             return false; 
-
+        assert(value > capacity);
         capacity = value;
         
         byte[] previous = buffer;
         buffer = new byte[capacity];
         if (tail > head) {
             System.arraycopy (previous, head, buffer, 0, size);
-        }
-        else {
+        } else {
             System.arraycopy (previous, head, buffer, 0, previous.length - head);
             System.arraycopy (previous, 0, buffer, previous.length - head, tail);
             head = 0;
