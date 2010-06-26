@@ -605,6 +605,16 @@ public class StringUtils {
 
         return builder.toString();
     }
+
+    public static String   quote(String value) {
+        String result = "\"\"";
+        if (value.length() > 0 && value.charAt(0) != '"')
+            result = "\"" + value;
+        if (value.length() > 0 && value.charAt(value.length() - 1) != '"')
+            result += "\"";
+
+        return result;
+    }
 }
 
 

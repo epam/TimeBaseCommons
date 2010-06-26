@@ -1,6 +1,7 @@
 package deltix.util.os;
 
 import deltix.util.lang.Util;
+import deltix.util.lang.StringUtils;
 
 import java.io.*;
 
@@ -60,7 +61,9 @@ public class Executor {
      */
 
     public static void exec(File file) throws IOException {
-        (new ProcessBuilder("cmd.exe", "/C", "start", file.getPath())).start();         
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/C", "start", StringUtils.quote(""),
+                StringUtils.quote(file.getPath()));
+        builder.start();
     }
 
     public static void exec(ProcessBuilder builder, boolean redirect) throws IOException {
