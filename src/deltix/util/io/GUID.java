@@ -33,7 +33,7 @@ public class GUID {
             // followed by process-unique counter
             s.append (String.format ("%04x", seed.port));
             s.append (Long.toString (seed.time - BASE_TIME, Character.MAX_RADIX));
-            s.append (' '); // separator
+            s.append ('_'); // separator
             s.append (Long.toString (++staticCounter, Character.MAX_RADIX));
         }
         guid = s.toString();
