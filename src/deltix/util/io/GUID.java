@@ -3,6 +3,7 @@ package deltix.util.io;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import java.io.*;
 import java.net.*;
+import java.util.Calendar;
 
 /**
  *  Globally unique identifier generator, based on the fact that on any system at any
@@ -13,53 +14,29 @@ import java.net.*;
  *  the system's IP address is non-unique within the scope of interest.
  */
 public class GUID {
-    public final long           time;
-    public final int            port;
-    
-    public GUID () {
-        ServerSocket        socket = null;
-        
-        try {
-            socket = new ServerSocket ();
-        
-            socket.bind (null);
-            //
-            //  Sleep for 2 ticks to prevent the (extremely unlikely) situation
-            //  where somebody else owned the port for a fraction of the previous tick.
-            //
-            Thread.sleep (2);
 
-            //  Get a time at which we definitely owned the socket ...
-            time = System.currentTimeMillis () - 1;
-            port = socket.getLocalPort ();
-        } catch (InterruptedException x) {
-            throw new UncheckedInterruptedException (x);
-        } catch (IOException x) {
-            throw new UncheckedIOException (x);
-        } finally {
-            IOUtil.close (socket);
+    private static final long BASE_TIME = 1277741650203L; // 6/28/2010
+    private static final Object lock = new Object ();
+    private static GUIDSeed seed;
+    private static long staticCounter;
+    private final String guid;
+
+    public GUID () {
+        StringBuilder       s = new StringBuilder ();
+        synchronized (lock) {
+            if (seed == null)
+                seed = new GUIDSeed();
+
+            // first 4 character is port
+            // followed by serveral characters that represent local port hold timestamp
+            // followed by space as separator
+            // followed by process-unique counter
+            s.append (String.format ("%04x", seed.port));
+            s.append (Long.toString (seed.time - BASE_TIME, Character.MAX_RADIX));
+            s.append (' '); // separator
+            s.append (Long.toString (++staticCounter, Character.MAX_RADIX));
         }
-    }
-    
-    public void                 writeTo (OutputStream out) throws IOException {
-        DataOutputStream    dos = new DataOutputStream (out);
-        dos.writeLong (time);
-        dos.writeShort (port);
-        dos.flush ();
-    }
-    
-    @Override
-    public String               toString () {
-        return (port + "_" + time);
-    }
-    
-    public static void          writeLocalIPAddress (OutputStream out) 
-        throws IOException 
-    {        
-        InetAddress         addr = InetAddress.getLocalHost ();
-        byte []             addressBytes = addr.getAddress ();
-        
-        out.write (addressBytes);
+        guid = s.toString();
     }
 
     public static void          appendLocalIPAddressToString (StringBuilder s) {
@@ -78,12 +55,18 @@ public class GUID {
         }
     }
 
+
+
+    @Override
+    public String               toString () {
+        return guid;
+    }
+
     public String               toStringWithLocalIPAddress () {
         StringBuilder       s = new StringBuilder ();
-        
+
         appendLocalIPAddressToString (s);
-        s.append (String.format ("%016x", time));
-        s.append (String.format ("%04x", port));
+        s.append (guid);
 
         return (s.toString ());
     }
@@ -92,8 +75,7 @@ public class GUID {
         StringBuilder       s = new StringBuilder ();
 
         s.append(prefix);
-        s.append (String.format ("%016x", time));
-        s.append (String.format ("%04x", port));
+        s.append (guid);
 
         return (s.toString ());
     }
