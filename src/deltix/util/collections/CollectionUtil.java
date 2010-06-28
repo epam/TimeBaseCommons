@@ -18,4 +18,17 @@ public class CollectionUtil {
             collection.remove (o);
         }
     }
+
+    public static String toString(Collection<?> collection, String separator) {
+        if (collection == null || collection.isEmpty())
+            return "[]";
+
+        StringBuilder builder = new StringBuilder(128);
+        builder.append("[");
+        for (Object value : collection)
+            builder.append(value).append(separator);
+        builder.setLength(builder.length() - separator.length());
+        builder.append("]");
+        return builder.toString();
+    }
 }
