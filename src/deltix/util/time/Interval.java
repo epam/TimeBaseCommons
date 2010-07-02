@@ -94,6 +94,12 @@ public abstract class Interval {
      */
     public abstract long            getNumUnits ();
 
+     /**
+     *  Returns the duration of this interval in in given units.
+     *  Result can be negative.       
+     */
+    public abstract long            getNumUnits (TimeUnit unit);
+
     /**
      *  Returns the short representation of this interval, such as
      *  <tt>-4Q</tt>

@@ -37,7 +37,12 @@ public final class FixedInterval extends Interval {
     public long                 getNumUnits () {
         return (mSize / getUnit ().getSizeInMilliseconds ());
     }
-    
+
+    @Override
+    public long                 getNumUnits(TimeUnit unit) {
+        return (mSize / unit.getSizeInMilliseconds ());
+    }
+
     public FixedInterval        negate () {
         return (new FixedInterval (-mSize));
     }

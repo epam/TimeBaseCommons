@@ -35,8 +35,13 @@ public class MonthlyInterval extends Interval {
     @Override
     public long                  getNumUnits () {
         return (mNumMonths / getUnit ().getSizeInMonths ());
-    }    
-    
+    }
+
+    @Override
+    public long                 getNumUnits(TimeUnit unit) {
+        return (mNumMonths / unit.getSizeInMonths ());
+    }
+
     public MonthlyInterval       negate () {
         return (new MonthlyInterval (-mNumMonths));
     }
