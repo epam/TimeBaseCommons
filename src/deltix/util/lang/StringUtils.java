@@ -2,6 +2,10 @@ package deltix.util.lang;
 
 import java.util.StringTokenizer;
 import java.util.Arrays;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.text.DecimalFormat;
 
 public class StringUtils {
@@ -615,6 +619,36 @@ public class StringUtils {
 
         return result;
     }
+
+
+    private static String replace(String value, Map<String, String> replacements) {
+        String result = value;
+        for (String key : replacements.keySet()) {
+            result = result.replace(key, replacements.get(key));
+        }
+        return result;
+    }
+
+    // ND TODO: use regex for replacement holders matching
+    public static void replace(Properties target, Properties replacements,
+                               String placeholderPrefix, String placeholderSuffix) {
+        Set<String> replacementKeys = replacements.stringPropertyNames();
+        Map<String, String> replaceMap = new HashMap<String, String>(replacementKeys.size());
+        for (String key : replacementKeys)
+            replaceMap.put(placeholderPrefix + key + placeholderSuffix, replacements.getProperty(key));
+
+        Set<String> keys = target.stringPropertyNames();
+        for (String key : keys) {
+            String value = target.getProperty(key);
+            // replace placeholders
+            String newKey = replace(key, replaceMap);
+            String newValue = value != null ? replace(value, replaceMap) : value;
+            // remove old entry and put the new one
+            target.remove(key);
+            target.put(newKey, newValue);
+        }
+    }
+
 }
 
 

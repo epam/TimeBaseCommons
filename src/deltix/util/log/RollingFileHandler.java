@@ -32,6 +32,7 @@ public class RollingFileHandler extends FileHandler {
     }
 
     public RollingFileHandler() throws IOException, SecurityException {
+        super();
         LogManager manager = LogManager.getLogManager();
         initialize(getPushLevel(manager, DEFAULT_PUSH_LEVEL), 
                    getPushPeriod(manager, DEFAULT_PUSH_PERIOD));
@@ -110,7 +111,7 @@ public class RollingFileHandler extends FileHandler {
             // read predefined FileHandler properties if any
             String pattern = logManager.getProperty(handlerClassName + ".pattern");
             String limitValue = logManager.getProperty(handlerClassName + ".limit");
-            String countValue = logManager.getProperty(handlerClassName + ".count");
+            String countValue = logManager.getProperty(handlerClassName + ".headIndex");
             String levelValue = logManager.getProperty(handlerClassName + ".level");
 
             Formatter formatter = defaultFormatter;
