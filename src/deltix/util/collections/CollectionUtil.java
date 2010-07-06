@@ -23,15 +23,19 @@ public class CollectionUtil {
     }
 
     public static String toString(Collection<?> collection, String separator) {
+        return toString(collection, "", "", separator);
+    }
+
+    public static String toString(Collection<?> collection, String head, String tail, String separator) {
         if (collection == null || collection.isEmpty())
-            return "[]";
+            return head + tail;
 
         StringBuilder builder = new StringBuilder(128);
-        builder.append("[");
+        builder.append(head);
         for (Object value : collection)
             builder.append(value).append(separator);
         builder.setLength(builder.length() - separator.length());
-        builder.append("]");
+        builder.append(tail);
         return builder.toString();
     }
 
