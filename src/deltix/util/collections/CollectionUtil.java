@@ -1,8 +1,11 @@
 package deltix.util.collections;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
 
-import deltix.util.lang.*;
+import deltix.util.lang.Filter;
+import deltix.util.lang.StringUtils;
 
 public class CollectionUtil {
 
@@ -30,5 +33,19 @@ public class CollectionUtil {
         builder.setLength(builder.length() - separator.length());
         builder.append("]");
         return builder.toString();
+    }
+
+    public static <T extends Enum<T>> EnumSet<T> toEnumSet(Class<T> elementType,
+                                                           String... elements) throws IllegalArgumentException {
+        if (elements == null || elements.length <= 0)
+            return EnumSet.noneOf(elementType);
+
+        EnumSet<T> result = EnumSet.noneOf(elementType);
+        for (String element : elements) {
+            String elementStr = StringUtils.trim(element);
+            if (elementStr != null)
+                result.add(Enum.valueOf(elementType, elementStr));
+        }
+        return result;
     }
 }
