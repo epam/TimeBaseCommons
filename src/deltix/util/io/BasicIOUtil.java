@@ -780,7 +780,14 @@ public abstract class BasicIOUtil {
     public static void  copyToFile (InputStream is, File destFile, long size, byte [] buffer)
         throws IOException, InterruptedException
     {        
-        RandomAccessFile    out = new RandomAccessFile (destFile, "rw");
+        RandomAccessFile out;
+        try {
+            out = new RandomAccessFile (destFile,
+                                        "rw");
+        } catch (IOException ioe) {
+            throw new AccessibleIOException (ioe,
+                                             destFile);
+        }
 
         try {
             if (size < 0)
