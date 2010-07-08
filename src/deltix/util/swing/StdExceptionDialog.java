@@ -29,6 +29,11 @@ public class StdExceptionDialog extends StandardDialog {
 		if (msg == null || msg.length () == 0)
 			msg = ("Exception: " + xClassName);
 
+        if (msg.contains ("\n")) {
+            msg = msg.replaceAll ("\n", "<br>");
+            msg = "<html>" + msg + "</html>";
+        }
+		
 		mMessage = new JLabel (msg);
         mMessage.setBorder (
             BorderFactory.createEmptyBorder (4, 4, 4, 4)

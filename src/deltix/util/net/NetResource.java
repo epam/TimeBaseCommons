@@ -42,4 +42,10 @@ public class NetResource extends Resource {
     public String           toString () {
         return (url.toString ());
     }
+
+    public URL getUrl () {
+        return url;
+    }
+    
+    
 }
