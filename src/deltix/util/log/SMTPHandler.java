@@ -34,6 +34,7 @@ public class SMTPHandler extends Handler {
 
     private static final Level DEFAULT_PUSH_LEVEL = Level.SEVERE;
     private static final int DEFAULT_GRACEFUL_PERIOD = 30 * 60000;
+    private static final int DEFAULT_MAX_EMAIL_COUNT = 5;
 
     private static final int DEFAULT_ERROR_CODE = 1;
 
@@ -51,6 +52,7 @@ public class SMTPHandler extends Handler {
 
     private Level pushLevel;
     private long gracefulPeriod;
+    private int maxEmailCount;
 
     private int bufferSize;
     private LogRecord buffer[];
@@ -61,10 +63,10 @@ public class SMTPHandler extends Handler {
     private boolean debug;
 
     public SMTPHandler() {
-        this(DEFAULT_PUSH_LEVEL, DEFAULT_GRACEFUL_PERIOD);
+        this(DEFAULT_PUSH_LEVEL, DEFAULT_GRACEFUL_PERIOD, DEFAULT_MAX_EMAIL_COUNT);
     }
 
-    public SMTPHandler(Level defaultPushLevel, long defaultGracefulPeriod) {
+    public SMTPHandler(Level defaultPushLevel, long defaultGracefulPeriod, int defaultMaxEmailCount) {
         LogManager manager = LogManager.getLogManager();
 
         // set handler level
@@ -89,6 +91,7 @@ public class SMTPHandler extends Handler {
 
         pushLevel = parseLevel(getProperty(manager, "pushLevel", null), defaultPushLevel);
         gracefulPeriod = parseLong(getProperty(manager, "gracefulPeriod", null), defaultGracefulPeriod);
+        maxEmailCount = parseInt(getProperty(manager, "maxEmailCount", null), defaultMaxEmailCount);
 
         setTriggerClass(getProperty(manager, "triggerClass", null));
 
@@ -111,8 +114,12 @@ public class SMTPHandler extends Handler {
         // increment next index
         headIndex++;
 
-        if (trigger.accept(record))
+        if (trigger.accept(record)) {
+            // send email
             doSendBuffer(Arrays.copyOf(buffer, headIndex));
+            // cleanup buffer
+            headIndex = 0;
+        }
     }
 
     public void close() {
@@ -161,7 +168,7 @@ public class SMTPHandler extends Handler {
      */
     @SuppressWarnings("unchecked")
     public void setTriggerClass(String value) {
-        trigger = (Filter<LogRecord>) instantiateByClassName(value, new DefaultTrigger(pushLevel, gracefulPeriod));
+        trigger = (Filter<LogRecord>) instantiateByClassName(value, new DefaultTrigger(pushLevel, gracefulPeriod, maxEmailCount));
     }
 
     public boolean isDebug() {
@@ -415,22 +422,33 @@ public class SMTPHandler extends Handler {
     public static class DefaultTrigger implements Filter<LogRecord> {
         private final Level pushLevel;
         private final long gracefulPeriodMillis;
-        private long lastSendTimestamp;
+        private final int maxEmailCount;
 
-        protected DefaultTrigger(Level pushLevel, long gracefulPeriodMillis) {
+        private long gracefulPeriodStartTime;
+        private int counter;
+
+        public DefaultTrigger(Level pushLevel, long gracefulPeriodMillis, int maxEmailCount) {
             this.pushLevel = pushLevel;
             this.gracefulPeriodMillis = gracefulPeriodMillis;
+            this.maxEmailCount = maxEmailCount;
         }
 
         public boolean accept(final LogRecord record) {
             if (record.getLevel() == null || record.getLevel().intValue() < pushLevel.intValue())
                 return false;
 
-            long current = System.currentTimeMillis();
-            if (current - lastSendTimestamp <= gracefulPeriodMillis)
-                return false;
+            if (gracefulPeriodMillis <= 0) // skip additional checks
+                return true;
 
-            lastSendTimestamp = current;
+            long current = System.currentTimeMillis();
+            if (current - gracefulPeriodStartTime <= gracefulPeriodMillis) { // we are within graceful period
+                if (maxEmailCount <= 0 || ++counter >= maxEmailCount)
+                    return false;
+            } else { // graceful period expired
+                gracefulPeriodStartTime = current;
+                counter = 0; // reset email counter
+            }
+
             return true;
         }
     }
