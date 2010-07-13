@@ -189,6 +189,16 @@ public final class ByteQueue {
         setCapacity(capacity + increment);
     }
 
+    public void                 truncate(int length) {
+        assert length < size;
+        int newTail = tail - length;
+        if (newTail < 0)
+            newTail =+ capacity;
+        
+        size -= length;
+        tail = newTail;
+    }
+
     public boolean              setCapacity (int value) {
         if (capacity == value)
             return false; 
