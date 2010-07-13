@@ -2,6 +2,7 @@ package deltix.util.os;
 
 import java.io.*;
 import java.util.*;
+import java.util.prefs.*;
 
 /**
  *
@@ -137,7 +138,23 @@ public class WindowsOS {
         return (homes [homes.length - 1]);
     }
     
+    public static boolean asAdministrator () {
+        // attempt to set a preference
+        try {
+            final String path = "/deltix/dummyPref";
+            final Preferences prefs = Preferences.systemRoot ().node (path);
+            prefs.putLong ("dummyKey",
+                           System.currentTimeMillis ());
+            prefs.flush ();
+            return true;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+    
     public static void main (String [] args) throws Exception {
         System.out.println (getDotNetHome ());
     }
+
+    
 }
