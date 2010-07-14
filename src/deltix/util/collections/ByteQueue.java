@@ -179,9 +179,9 @@ public final class ByteQueue {
 
     public int                  getTail () {
         return tail;
-    }
+    }    
 
-    public int                  getCapacity () {
+    public int                  capacity() {
         return capacity;
     }
 
@@ -202,6 +202,7 @@ public final class ByteQueue {
     public boolean              setCapacity (int value) {
         if (capacity == value)
             return false; 
+
         assert(value > capacity);
         capacity = value;
         
