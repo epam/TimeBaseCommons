@@ -14,20 +14,7 @@ import java.util.logging.LogRecord;
  *
  */
 public class TerseFormatter extends Formatter {
-    public static final String PRINT_THREAD_ID_PROPERTY = "QuantServer.logging.printThreadID";
-
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static CurrentMonthDate currentMonthDate = CurrentMonthDate.getInstance();
-
-    private final boolean printThreadID;
-
-    public TerseFormatter() {
-        this(Boolean.getBoolean(PRINT_THREAD_ID_PROPERTY));
-    }
-
-    public TerseFormatter(boolean printThreadID) {
-        this.printThreadID = printThreadID;
-    }
 
     /**
      * Format the given log record and return the formatted string.
@@ -45,9 +32,6 @@ public class TerseFormatter extends Formatter {
         // level
         sbuf.append(record.getLevel()).append(' ');
 
-        if (printThreadID)
-            sbuf.append('[').append(record.getThreadID()).append("] ");
-
         // message
         String message = record.getMessage ();
         Object [] params = record.getParameters();
@@ -58,11 +42,11 @@ public class TerseFormatter extends Formatter {
         }
 
         if (record.getThrown() != null) {
-            sbuf.append(LINE_SEPARATOR);
+            sbuf.append(Util.NATIVE_LINE_BREAK);
             sbuf.append(Util.printStackTrace(record.getThrown()));
         }
 
-        sbuf.append(LINE_SEPARATOR);
+        sbuf.append(Util.NATIVE_LINE_BREAK);
         return sbuf.toString();
     }
 
