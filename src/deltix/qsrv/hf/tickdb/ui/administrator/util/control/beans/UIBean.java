@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.util.control;
+package deltix.qsrv.hf.tickdb.ui.administrator.util.control.beans;
 
 import javax.swing.*;
 
