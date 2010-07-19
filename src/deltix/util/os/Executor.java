@@ -40,7 +40,8 @@ public class Executor {
     /**
      * Executes the specified file.
      *
-     * @param   file      a specified file to execute     
+     * @param   file      a specified file to execute
+     * @param   title     a specified process title
      *
      * @throws  SecurityException
      *          If a security manager exists and its
@@ -60,10 +61,15 @@ public class Executor {
      * @see     ProcessBuilder
      */
 
-    public static void exec(File file) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/C", "start", StringUtils.quote(""),
+    public static void exec(File file, String title) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/C", "start", StringUtils.quote(title),
                 StringUtils.quote(file.getPath()));
-        builder.start();
+
+        builder.start();        
+    }
+
+    public static void exec(File file) throws IOException {
+        exec(file, "");
     }
 
     public static void exec(ProcessBuilder builder, boolean redirect) throws IOException {
@@ -71,7 +77,7 @@ public class Executor {
         
         if (redirect) {
             new StreamGrabber(process.getErrorStream(), System.err).start();
-            new StreamGrabber(process.getInputStream(), System.out).start();
+            new StreamGrabber(process.getInputStream(), System.out).start();            
         }
     }
 
