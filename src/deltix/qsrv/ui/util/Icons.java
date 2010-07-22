@@ -73,6 +73,7 @@ public class Icons {
     public static final Icon   EXPORT                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/export.png");
     public static final Icon   HELP                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/help.png");
     public static final Icon   HELP2                 = SwingUtil.loadIcon ("deltix/qsrv/ui/util/help2.png");
+    public static final Icon   GEARS                 = SwingUtil.loadIcon ("deltix/qsrv/ui/util/gears.png");
     public static final Icon   GEAR_TIME             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/gear_time.png");
     public static final Icon   GEAR_TIME_16x16       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/gear_time_16x16.png");
     public static final Icon   BAR_CHART             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/bar_chart.png");
@@ -114,12 +115,23 @@ public class Icons {
     public static final Icon   EXCHANGE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/quotes.gif");
     public static final Icon   TRADING_SESSION       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/calendar.png");
 
-    public static final Icon [] INSTRUMENT_TYPE_ICONS = {
-        EQUITY, OPTION, FUTURE, BOND, CURRENCY, INDEX, ETF, CUSTOM, SIMPLE_OPTION, EXCHANGE, TRADING_SESSION
-    };
+    public static final Icon[] INSTRUMENT_TYPE_ICONS =
+                                                     {
+                                                     EQUITY,
+            OPTION,
+            FUTURE,
+            BOND,
+            CURRENCY,
+            INDEX,
+            ETF,
+            CUSTOM,
+            SIMPLE_OPTION,
+            EXCHANGE,
+            TRADING_SESSION
+                                                     };
 
-    public static Icon  forInstrumentType (InstrumentType t) {
-        return (INSTRUMENT_TYPE_ICONS [t.ordinal ()]);
+    public static Icon forInstrumentType (InstrumentType t) {
+        return (INSTRUMENT_TYPE_ICONS[t.ordinal ()]);
     }
 
     public static final Icon TWO_DOWARROW = SwingUtil.loadIcon ("deltix/qsrv/ui/util/2dowarrow.png");
