@@ -19,12 +19,23 @@ public class AwtUtil {
 	    return new Point (x, y);
 	}
    
-    public static void  inflate (Dimension out, Dimension add) {
+    public static void  union (Dimension out, Dimension add) {
         if (add.width > out.width)
             out.width = add.width;
         
         if (add.height > out.height)
             out.height = add.height;
+    }
+
+    public static void  inflate (Rectangle out, int margin) {
+        inflate (out, margin, margin, margin, margin);
+    }
+
+    public static void  inflate (Rectangle out, int top, int left, int bottom, int right) {
+        out.x -= left;
+        out.y -= top;
+        out.width += left + right;
+        out.height += top + bottom;
     }
 
     public static Color brighter (Color c, double factor) {
