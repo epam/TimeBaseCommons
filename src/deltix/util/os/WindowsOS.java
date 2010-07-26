@@ -1,5 +1,8 @@
 package deltix.util.os;
 
+import deltix.util.lang.Util;
+import deltix.util.lang.StringUtils;
+
 import java.io.*;
 import java.util.*;
 import java.util.prefs.*;
@@ -7,7 +10,7 @@ import java.util.prefs.*;
 /**
  *
  */
-public class WindowsOS {
+public final class WindowsOS {
     public static final boolean     IS_X64;
     public static final boolean     IS_X86;
     public static final boolean     IS_VISTA;
@@ -22,6 +25,23 @@ public class WindowsOS {
         String osName = System.getProperty ( "os.name" );
         IS_VISTA = osName.startsWith ( "Windows Vista" );
     }
+
+    // mkshortcut.vbs
+//    static String mkshortcut =
+//        "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
+//        "set oShellLink = WshShell.CreateShortcut(Wscript.Arguments.Named(\"shortcut\") & \".lnk\")\n" +
+//        "oShellLink.TargetPath = Wscript.Arguments.Named(\"target\")\n" +
+//        "oShellLink.IconLocation = Wscript.Arguments.Named(\"icon\")\n" +
+//        "oShellLink.WindowStyle = 1\n" +
+//        "oShellLink.Save";
+
+     static String mkshortcut =
+        "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
+        "set oShellLink = WshShell.CreateShortcut(\"%s.lnk\")\n" +
+        "oShellLink.TargetPath = %s \n" +
+        "oShellLink.IconLocation = %s\n" +
+        "oShellLink.WindowStyle = 1\n" +
+        "oShellLink.Save";
 
     public static final String      getSystemDrive () {
         String      sysdrive = System.getenv ("C:");
@@ -136,6 +156,32 @@ public class WindowsOS {
         Arrays.sort (homes);
         
         return (homes [homes.length - 1]);
+    }
+
+    public static void createShortcut(File target, File location, File icon)
+            throws IOException
+    {
+        createShortcut(target.getAbsolutePath(), location.getAbsolutePath(), icon.getAbsolutePath());
+    }
+
+    public static void createShortcut(String target, String location, String icon)
+            throws IOException
+    {
+        // create script that will make shortcut
+        File script = File.createTempFile("shcut", ".vbs");
+        script.deleteOnExit();
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(script);
+            writer.write(String.format(mkshortcut,
+                    location, StringUtils.quote(target), StringUtils.quote(icon)));
+            writer.close();
+            writer = null;
+        } finally {
+            Util.close(writer);
+        }
+        
+        (new ProcessBuilder("cmd.exe", "/K", StringUtils.quote(script.getAbsolutePath()))).start();
     }
     
     public static boolean asAdministrator () {
