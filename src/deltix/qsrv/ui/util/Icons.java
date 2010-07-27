@@ -117,6 +117,10 @@ public class Icons {
     public static final Icon   EXCHANGE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/quotes.gif");
     public static final Icon   TRADING_SESSION       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/calendar.png");
 
+    public static final Icon   TASK                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/task.png");
+    public static final Icon   FEED                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/feed.png");
+    public static final Icon   TRADER                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/trader.png");
+
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {
                                                      EQUITY,
