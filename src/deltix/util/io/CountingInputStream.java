@@ -71,7 +71,7 @@ public class CountingInputStream extends FilterInputStream {
     }
 
     @Override
-    public int read(byte[] b) throws IOException {
+    public int                  read(byte[] b) throws IOException {
          int             n = super.read (b);
 
         if (n > 0)
@@ -82,7 +82,7 @@ public class CountingInputStream extends FilterInputStream {
         return (n);
     }
 
-    protected void onEOF() throws IOException {
+    protected void              onEOF() throws IOException {
        //throw new EOFException(); 
     }
 
@@ -99,9 +99,8 @@ public class CountingInputStream extends FilterInputStream {
     public long                 skip (long n) throws IOException {
         long            skipped = super.skip (n);
 
-        if (skipped > 0) {            
+        if (skipped > 0)
             onDataRead(skipped);
-        }
 
         return (skipped);
     }

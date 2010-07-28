@@ -35,6 +35,36 @@ public final class ByteQueue {
         if (tail == capacity)
             tail = 0;                
     }
+
+    public void                 insert (byte [] src, int offset, int length) {
+        if (capacity - size < length) {
+            // increase buffer
+            if (tail > head) {
+                byte[] temp = new byte[capacity + length];
+                System.arraycopy (buffer, head, temp, length + head, size);
+                buffer = temp;                
+            } else {
+                byte[] temp = new byte[capacity + length];
+                System.arraycopy (buffer, 0, temp, 0, tail);
+                System.arraycopy (buffer, head, temp, capacity - head + length, capacity - head);
+                buffer = temp;
+            }
+            capacity += length;
+        }
+        
+        if (head > length) {
+            System.arraycopy (src, offset, buffer, head - length, length);
+            head -= length;
+        } else {
+            int remains = length - head;
+            System.arraycopy (src, offset, buffer, capacity - remains, remains);
+            System.arraycopy (src, offset + remains, buffer, 0, head);
+
+            head = capacity - remains;
+        }
+        size += length;
+
+    }
     
     public void                 offer (byte [] src, int offset, int length) {
         assert size + length <= capacity :
@@ -213,9 +243,10 @@ public final class ByteQueue {
         } else {
             System.arraycopy (previous, head, buffer, 0, previous.length - head);
             System.arraycopy (previous, 0, buffer, previous.length - head, tail);
-            head = 0;
-            tail = size;
         }
+        
+        head = 0;
+        tail = size;
 
         return true;
     }
