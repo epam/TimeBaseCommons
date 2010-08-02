@@ -2,8 +2,7 @@ package deltix.util.concurrent;
 
 /**
  *  Thrown when a resource is unavailable. This class is used in conjunction with
- *  the {@link IntermittentlyAvailableResource} and {@link AvailabilityListener}
- *  interfaces.
+ *  the {@link IntermittentlyAvailableResource} interface.
  */
 public class UnavailableResourceException extends RuntimeException {
     private UnavailableResourceException () {
