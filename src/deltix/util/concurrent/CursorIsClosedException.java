@@ -6,9 +6,10 @@ package deltix.util.concurrent;
  */
 public class CursorIsClosedException extends RuntimeException {
     public CursorIsClosedException() {
+        super ("Cursor is closed");
     }
 
     public CursorIsClosedException(Throwable cause) {
-        super(cause);
+        super("Cursor is closed", cause);
     }
 }
