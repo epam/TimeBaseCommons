@@ -62,6 +62,7 @@ public class Icons {
     public static final Icon   DELETE                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/delete.png");
     public static final Icon   DELETE2               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/delete2.png");
     public static final Icon   LOGO                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/logo_small.png");
+    public static final Icon   DELTIX                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/deltix.png");
     public static final Icon   GENERAL               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/general.png");
     public static final Icon   FILTER                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/filter.png");
     public static final Icon   APPLY                 = SwingUtil.loadIcon ("deltix/qsrv/ui/util/apply.png");
