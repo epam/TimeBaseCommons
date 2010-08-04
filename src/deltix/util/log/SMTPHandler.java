@@ -28,6 +28,8 @@ import deltix.util.concurrent.DirectExecutor;
 
 public class SMTPHandler extends Handler {
 
+    private static final int DEFAULT_SMTP_TIMEOUT = 60000;
+
     private static final Level DEFAULT_LEVEL = Level.INFO;
     private static final Formatter DEFAULT_FORMATTER = new TerseFormatter();
     private static final int DEFAULT_BUFFER_SIZE = 128;
@@ -47,6 +49,7 @@ public class SMTPHandler extends Handler {
     private String subject;
     private String smtpHost;
     private int smtpPort;
+    private boolean smtpSecure;
     private String smtpUsername;
     private String smtpPassword;
 
@@ -60,6 +63,7 @@ public class SMTPHandler extends Handler {
 
     private Filter<LogRecord> trigger;
 
+    private int smtpTimeout;
     private boolean debug;
 
     public SMTPHandler() {
@@ -80,10 +84,12 @@ public class SMTPHandler extends Handler {
         setFrom(getProperty(manager, "from", null));
         setSmtpHost(getProperty(manager, "smtpHost", null));
         setSmtpPort(parseInt(getProperty(manager, "smtpPort", null), 0));
+        setSmtpSecure(Boolean.valueOf(getProperty(manager, "smtpSecure", "false")));
         setSmtpUsername(getProperty(manager, "smtpUsername", null));
         setSmtpPassword(getProperty(manager, "smtpPassword", null));
         setSubject(getProperty(manager, "subject", null));
 
+        setSmtpTimeout(parseInt(getProperty(manager, "smtpTimeout", null), DEFAULT_SMTP_TIMEOUT));
         setDebug(Boolean.valueOf(getProperty(manager, "debug", "false")));
 
         boolean syncSend = Boolean.valueOf(getProperty(manager, "sync", "false"));
@@ -227,6 +233,22 @@ public class SMTPHandler extends Handler {
         this.smtpPort = smtpPort;
     }
 
+    public boolean isSmtpSecure() {
+        return smtpSecure;
+    }
+
+    public void setSmtpSecure(boolean smtpSecure) {
+        this.smtpSecure = smtpSecure;
+    }
+
+    public int getSmtpTimeout() {
+        return smtpTimeout;
+    }
+
+    public void setSmtpTimeout(int smtpTimeout) {
+        this.smtpTimeout = smtpTimeout;
+    }
+
     public String getSmtpPassword() {
         return smtpPassword;
     }
@@ -287,6 +309,12 @@ public class SMTPHandler extends Handler {
         assertConfigValid();
 
         Properties props = new Properties(System.getProperties());
+
+        if (smtpSecure)
+            props.put("mail.smtp.starttls.enable", "true");
+
+        if (smtpTimeout > 0)
+            props.put("mail.smtp.timeout", smtpTimeout);
 
         if (smtpHost != null)
             props.put("mail.smtp.host", smtpHost);
