@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 
 import deltix.util.lang.Filter;
 import deltix.util.concurrent.DirectExecutor;
+import deltix.util.text.SimpleMessageFormat;
 
 public class SMTPHandler extends Handler {
 
@@ -341,14 +342,17 @@ public class SMTPHandler extends Handler {
 
             message.setRecipients(Message.RecipientType.TO, parseAddress(to));
 
+            LogRecord lastRecord = recordBuffer [recordBuffer.length - 1];
+            String lastMessageSubjectSuffix = getSubject(lastRecord);
+
             if (subject != null)
-                message.setSubject(subject);
+                message.setSubject(subject + ':' + lastMessageSubjectSuffix);
 
             MimeBodyPart part = new MimeBodyPart();
 
             StringBuffer sbuf = new StringBuffer();
-            Formatter formatter = getFormatter();
 
+            Formatter formatter = getFormatter();
             String head = formatter.getHead(this);
             if (head != null)
                 sbuf.append(head);
@@ -374,6 +378,22 @@ public class SMTPHandler extends Handler {
         } catch (Exception ex) {
             reportError("Email send failure: " + ex.getMessage(), ex, DEFAULT_ERROR_CODE);
         }
+    }
+
+    private String getSubject(LogRecord record) {
+        final int MAX_LEN = 32;
+        String message = record.getMessage ();
+        Object [] params = record.getParameters();
+        if (params != null) {
+            StringBuilder result = new StringBuilder (256);
+            SimpleMessageFormat.format(result, message, params);
+            result.setLength(MAX_LEN);
+            return result.toString();
+        } else {
+            return message.substring(0, Math.max(MAX_LEN, message.length()));
+        }
+
+
     }
 
     protected String getEmailContentType() {
