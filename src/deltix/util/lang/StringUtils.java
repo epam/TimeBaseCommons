@@ -233,8 +233,28 @@ public class StringUtils {
         }
         out.append ('\"');
         return (out.toString ());
-    }    
-        
+    }
+
+    public static boolean isValidJavaIdentifier(String s) {
+        // an empty or null string cannot be a valid identifier
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+
+        char[] c = s.toCharArray();
+        if (!Character.isJavaIdentifierStart(c[0])) {
+            return false;
+        }
+
+        for (int i = 1; i < c.length; i++) {
+            if (!Character.isJavaIdentifierPart(c[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static int          parseDecimalInt (byte [] bytes, int offset, int len) {
         skipSpace: while (len > 0)
             switch (bytes [offset]) {
