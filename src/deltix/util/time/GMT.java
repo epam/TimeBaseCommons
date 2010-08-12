@@ -114,6 +114,16 @@ public abstract class GMT {
             return (TF.format (new Date (t)));
         }
     }
+
+    public static Date                clearTime (Date date) {
+        Calendar calendar = getCalendarInstance();
+        calendar.setTime(date);
+        // clear time fields
+        for (int i = Calendar.HOUR_OF_DAY; i <= Calendar.MILLISECOND; i++)
+            calendar.set(i, 0);
+        
+        return calendar.getTime();
+    }
     
     public static Date 					getTomorrow() {
         Calendar calendar = getCalendarInstance();
