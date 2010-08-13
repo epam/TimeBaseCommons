@@ -390,7 +390,7 @@ public class SMTPHandler extends Handler {
             result.setLength(MAX_LEN);
             return result.toString();
         } else {
-            return message.substring(0, Math.max(MAX_LEN, message.length()));
+            return message.substring(0, Math.min(MAX_LEN, message.length()));
         }
 
 
