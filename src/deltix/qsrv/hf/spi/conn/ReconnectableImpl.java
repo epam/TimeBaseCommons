@@ -2,6 +2,7 @@ package deltix.qsrv.hf.spi.conn;
 
 import deltix.util.lang.Util;
 import deltix.qsrv.hf.spi.conn.DisconnectableEventHandler;
+import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
 
 import java.util.TimerTask;
@@ -253,9 +254,9 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         assert Thread.holdsLock (this);
 
         reconnectTask =
-            new TimerTask () {
+            new TimerRunner() {
                 @Override
-                public void     run () {
+                public void     runInternal () {
                     try {
                         tryReconnect ();
                     } catch (Throwable x) {
