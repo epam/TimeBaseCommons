@@ -39,8 +39,9 @@ public final class WindowsOS {
         "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
         "set oShellLink = WshShell.CreateShortcut(\"%s.lnk\")\n" +
         "oShellLink.TargetPath = %s \n" +
+        "oShellLink.WorkingDirectory = %s\n" +
         "oShellLink.IconLocation = %s\n" +
-        "oShellLink.WindowStyle = 1\n" +
+        "oShellLink.WindowStyle = 1\n" +                         
         "oShellLink.Save";
 
     public static final String      getSystemDrive () {
@@ -161,10 +162,10 @@ public final class WindowsOS {
     public static void createShortcut(File target, File location, File icon)
             throws IOException
     {
-        createShortcut(target.getAbsolutePath(), location.getAbsolutePath(), icon.getAbsolutePath());
+        createShortcut(target, location.getAbsolutePath(), icon.getAbsolutePath());
     }
 
-    public static void createShortcut(String target, String location, String icon)
+    public static void createShortcut(File target, String location, String icon)
             throws IOException
     {
         // create script that will make shortcut
@@ -174,7 +175,10 @@ public final class WindowsOS {
         try {
             writer = new FileWriter(script);
             writer.write(String.format(mkshortcut,
-                    location, StringUtils.quote(target), StringUtils.quote(icon)));
+                    location,
+                    StringUtils.quote(target.getAbsolutePath()),
+                    StringUtils.quote(target.getParentFile().getAbsolutePath()),
+                    StringUtils.quote(icon)));
             writer.close();
             writer = null;
         } finally {
