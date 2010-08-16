@@ -4,77 +4,101 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
+import javax.xml.parsers.*;
+
+import org.w3c.dom.*;
+import org.w3c.dom.Node;
+
 import deltix.qsrv.hf.pub.*;
-import deltix.util.csvx.*;
-import deltix.util.io.IOUtil;
+import deltix.util.io.*;
 import deltix.util.lang.*;
+import deltix.util.text.*;
 
 public class CurrencyCodeList {
-    private static final CurrencyInfo []            numericIndex =
-        new CurrencyInfo [1000];
-
-    private static final Map <String, CurrencyInfo> symbolicIndex =
-        new HashMap <String, CurrencyInfo> (1000);
-
-    private static final int                CODE_IDX     = 0;
-    private static final int                NUM_IDX      = 1;
-    private static final int                CURRENCY_IDX = 2;
-    private static final int                LOCATION_IDX = 3;
-
-    private static int                     TEXT_MARKER  = 0x8000;
+    private static final CurrencyInfo[]            numericIndex  = new CurrencyInfo[1000];
+    private static final Map<String, CurrencyInfo> symbolicIndex = new HashMap<String, CurrencyInfo> (1000);
+    private static int                             TEXT_MARKER   = 0x8000;
 
     static {
+        read ("deltix/util/currency/CurrencyCodes.xml");
+    }
+
+    private static void read (final String path) {
+        InputStream is = null;
         try {
-            final String path = "deltix/util/currency/currency.csv";
-            final InputStream is = IOUtil.openResourceAsStream (path);
+            is = BasicIOUtil.openResourceAsStream (path);
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance ();
+            final DocumentBuilder db = dbf.newDocumentBuilder ();
+            final Document doc = db.parse (is);
+            doc.getDocumentElement ().normalize ();
 
-            final CSVXReader csv = 
-                new CSVXReader (new InputStreamReader (is), ';', true, path);
+            final NodeList nodeLst = doc.getElementsByTagName ("Currency");
 
-            while (csv.nextLine ()) {
-                CurrencyInfo    info =
-                    new CurrencyInfo (
-                        csv.getString (CODE_IDX, true),
-                        (short) csv.getInt (NUM_IDX),
-                        csv.getString (CURRENCY_IDX, true),
-                        csv.getString (LOCATION_IDX, true)
-                    );
+            for (int s = 0; s < nodeLst.getLength (); s++) {
 
-                numericIndex [info.numericCode] = info;
-                symbolicIndex.put (info.symbolicCode, info);
+                final Node node = nodeLst.item (s);
+
+                if (node.getNodeType () == Node.ELEMENT_NODE) {
+                    final Element element = (Element) node;
+
+                    final CurrencyInfo info = new CurrencyInfo (getText (element, "AlphabeticCode"),
+                                                                CharSequenceParser.parseShort (getText (element,
+                                                                                                        "NumericCode")),
+                                                                getText (element, "Name"),
+                                                                getText (element, "Country"));
+                    numericIndex[info.numericCode] = info;
+                    symbolicIndex.put (info.symbolicCode, info);
+                }
+
             }
         } catch (final Throwable x) {
             Util.LOGGER.log (Level.SEVERE,
-                             "Can not create currency code list",
-                             x);
+                                 "Can not create currency code list",
+                                 x);
+        } finally {
+            Util.close (is);
         }
     }
 
-    public static CurrencyInfo []       getCodes () {
-        return (symbolicIndex.values ().toArray (new CurrencyInfo [symbolicIndex.size ()]));
+    private static String getText (final Element element, final String tag) {
+        NodeList fstNm;
+        try {
+            final NodeList fstNmElmntLst = element.getElementsByTagName (tag);
+            final Element fstNmElmnt = (Element) fstNmElmntLst.item (0);
+            fstNm = fstNmElmnt.getChildNodes ();
+
+            return (fstNm.item (0)).getNodeValue ();
+        } catch (final Throwable x) {
+            return null;
+        }
+
     }
 
-    public static String                numericToSymbolic (int code) {
-        CurrencyInfo    info = getInfoByNumeric (code);
+    public static CurrencyInfo[] getCodes () {
+        return (symbolicIndex.values ().toArray (new CurrencyInfo[symbolicIndex.size ()]));
+    }
+
+    public static String numericToSymbolic (final int code) {
+        final CurrencyInfo info = getInfoByNumeric (code);
 
         return (info == null ? null : info.symbolicCode);
     }
 
-    public static int                   symbolicToNumeric (String code, int notFoundValue) {
-        CurrencyInfo    info = getInfoBySymbolic (code);
+    public static int symbolicToNumeric (final String code, final int notFoundValue) {
+        final CurrencyInfo info = getInfoBySymbolic (code);
 
         return (info == null ? notFoundValue : info.numericCode);
     }
 
-    public static CurrencyInfo          getInfoByNumeric (int code) {
-        return (numericIndex [code]);
+    public static CurrencyInfo getInfoByNumeric (final int code) {
+        return (numericIndex[code]);
     }
 
-    public static CurrencyInfo          getInfoBySymbolic (String code) {
+    public static CurrencyInfo getInfoBySymbolic (final String code) {
         return (symbolicIndex.get (code));
     }
 
-    public static CurrencyInfo          getCurrencyCodeByObject (final Object value) {
+    public static CurrencyInfo getCurrencyCodeByObject (final Object value) {
         if (value != null) {
             final String s = String.valueOf (value);
 
@@ -85,11 +109,11 @@ public class CurrencyCodeList {
                         return getInfoByNumeric (n);
                     else
                         return getInfoBySymbolic (CurrencyCodec.intToCode (n));
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     //
                 }
             }
-            
+
             return getInfoBySymbolic (s);
         }
         return null;
@@ -99,16 +123,16 @@ public class CurrencyCodeList {
         return getCurrencyCodeByObject (value) != null;
     }
 
-    public static class CurrencyInfo implements Comparable<CurrencyInfo>{
+    public static class CurrencyInfo implements Comparable<CurrencyInfo> {
         public final String symbolicCode;
-        public final short  numericCode;
+        public final Short  numericCode;
         public final String description;
         public final String location;
 
         private CurrencyInfo (final String code,
-                             final short numeric,
-                             final String currency,
-                             final String location) {
+                              final Short numeric,
+                              final String currency,
+                              final String location) {
             super ();
             this.symbolicCode = code;
             this.numericCode = numeric;
@@ -122,7 +146,7 @@ public class CurrencyCodeList {
         }
 
         @Override
-        public int compareTo (CurrencyInfo o) {
+        public int compareTo (final CurrencyInfo o) {
             return Util.compare (symbolicCode, o == null ? null : o.symbolicCode, true);
         }
     }
