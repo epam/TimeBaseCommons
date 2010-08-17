@@ -1571,15 +1571,17 @@ public abstract class BasicIOUtil {
 
             final File[] contents = root.listFiles ();
 
-            for (int index = 0; index < contents.length; index++) {
-                final File f = contents[index];
-                if (f.isDirectory ()) {
-                    recursiveListFiles (f,
-                                        filter,
-                                        listFiles);
-                } else {
-                    if (filter.accept (f))
-                        listFiles.add (f);
+            if (contents != null) {
+                for (int index = 0; index < contents.length; index++) {
+                    final File f = contents[index];
+                    if (f.isDirectory ()) {
+                        recursiveListFiles (f,
+                                            filter,
+                                            listFiles);
+                    } else {
+                        if (filter.accept (f))
+                            listFiles.add (f);
+                    }
                 }
             }
         }
