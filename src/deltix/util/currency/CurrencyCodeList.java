@@ -14,6 +14,7 @@ import deltix.util.io.*;
 import deltix.util.lang.*;
 import deltix.util.text.*;
 
+@Depends("deltix/util/currency/CurrencyCodes.xml")
 public class CurrencyCodeList {
     private static final CurrencyInfo[]            numericIndex  = new CurrencyInfo[1000];
     private static final Map<String, CurrencyInfo> symbolicIndex = new HashMap<String, CurrencyInfo> (1000);
