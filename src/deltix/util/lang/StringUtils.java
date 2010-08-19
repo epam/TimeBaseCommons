@@ -30,13 +30,26 @@ public class StringUtils {
     }
 
     public static String join(String separator, String ... items) {
-        StringBuffer    sb = new StringBuffer ();
+        StringBuilder    sb = new StringBuilder ();
         for (String item : items) {
-            sb.append(sb.length() > 0 ? separator : "").append(item);
+            if (sb.length() > 0)
+                sb.append (separator);
+
+            sb.append(item);
         }
         return sb.toString();
     }
-    /**
+
+    public static String join(String separator, String [] items, int offset, int length) {
+        StringBuilder    sb = new StringBuilder ();
+        for (int ii = 0; ii < length; ii++) {
+            if (ii > 0)
+                sb.append (separator);
+            
+            sb.append (items [offset + ii]);
+        }
+        return sb.toString();
+    }/**
      * Capitalizes first letter of each word in the buffer, and lowercases
      * each letter after the first of each word.
      */
