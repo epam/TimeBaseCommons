@@ -25,10 +25,12 @@ import java.util.concurrent.ExecutorService;
 
 import deltix.util.lang.Filter;
 import deltix.util.concurrent.DirectExecutor;
+import deltix.util.lang.Util;
 import deltix.util.text.SimpleMessageFormat;
 
 public class SMTPHandler extends Handler {
 
+    private static final int MAX_SUBJECT_LEN = Util.getIntSystemProperty("QuantServer.alerts.maxSubjectLength", 64, 10, 1000);
     private static final int DEFAULT_SMTP_TIMEOUT = 60000;
 
     private static final Level DEFAULT_LEVEL = Level.INFO;
@@ -381,16 +383,15 @@ public class SMTPHandler extends Handler {
     }
 
     private String getSubject(LogRecord record) {
-        final int MAX_LEN = 32;
         String message = record.getMessage ();
         Object [] params = record.getParameters();
         if (params != null) {
             StringBuilder result = new StringBuilder (256);
             SimpleMessageFormat.format(result, message, params);
-            result.setLength(MAX_LEN);
+            result.setLength(MAX_SUBJECT_LEN);
             return result.toString();
         } else {
-            return message.substring(0, Math.min(MAX_LEN, message.length()));
+            return message.substring(0, Math.min(MAX_SUBJECT_LEN, message.length()));
         }
 
 
