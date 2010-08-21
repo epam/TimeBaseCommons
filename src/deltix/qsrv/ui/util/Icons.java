@@ -117,6 +117,7 @@ public class Icons {
     public static final Icon   CUSTOM                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/custom.png");
     public static final Icon   EXCHANGE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/quotes.gif");
     public static final Icon   TRADING_SESSION       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/calendar.png");
+    public static final Icon   BINARY                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/binary.png");
 
     public static final Icon   TASK                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/task.png");
     public static final Icon   FEED                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/feed.png");
