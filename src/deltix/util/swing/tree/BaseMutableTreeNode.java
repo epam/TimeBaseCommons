@@ -51,8 +51,6 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         return null;
     }
 
-    protected final JPopupMenu _menu = new JPopupMenu ( );
-
     protected final JTree      _tree;
 
     public BaseMutableTreeNode ( final Object userObject,
@@ -237,9 +235,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         _tree.expandPath ( path );
     }
 
-    public JPopupMenu getMenu ( ) {
-        return _menu;
-    }
+ 
 
     /**
      * Return the font for the label to display.
