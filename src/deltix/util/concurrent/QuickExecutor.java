@@ -293,7 +293,7 @@ public class QuickExecutor {
             for (Worker w : workerSnapshot) {
                 try {
                     //
-                    //  Keep interrupting u8ntil it's dead.
+                    //  Keep interrupting until it's dead.
                     //
                     //  This works around ignored interrupts in
                     //      misbehaving tasks.
