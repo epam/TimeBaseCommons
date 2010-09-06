@@ -29,15 +29,26 @@ public class TextDisplay {
         int                         y
     )
     {
+        int                         height = x * 2;
         FontMetrics                 fm = g.getFontMetrics ();
+        int                         stringWidth = fm.stringWidth (text);
+        
+        boolean trunkate = false;
+        while (stringWidth > height) {
+            text = text.substring (0,
+                                   text.length () - 1);
+            stringWidth = fm.stringWidth (text + "...");
+            trunkate = true;
+        }
 
         int			asc = fm.getAscent ();
     	int			desc = fm.getDescent();
         int         h = asc + desc;
 
-        g.drawString (text, x - fm.stringWidth (text) / 2, y + h / 2 - desc);
+        g.drawString (trunkate ? text + "..." : text, x - stringWidth / 2, y + h / 2 - desc);
     }
-
+    
+   
 	/**
 	 *	Sets up the text to be displayed at the given point.
 	 *
