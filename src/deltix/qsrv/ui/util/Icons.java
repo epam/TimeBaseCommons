@@ -32,6 +32,7 @@ public class Icons {
     public static final Icon   TABLE_GO              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_go.png");
     public static final Icon   TABLE_LINK            = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_link.png");
     public static final Icon   TABLE_LIGHTNING       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_lightning.png");
+    public static final Icon   TABLE_REFRESH         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/table_refresh.png");
     public static final Icon   SERVER                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/server.png");
     public static final Icon   MAXIMIZE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/maximize.gif");
     public static final Icon   OPEN                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/open.png");
@@ -122,6 +123,8 @@ public class Icons {
     public static final Icon   TASK                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/task.png");
     public static final Icon   FEED                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/feed.png");
     public static final Icon   TRADER                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/trader.png");
+
+    public static final Icon   IN_OUT                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/exchange.png");
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {
