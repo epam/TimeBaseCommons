@@ -4,56 +4,48 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.table.*;
-
 import com.jidesoft.grid.*;
 
-public class SortableTableEx extends SortableTable {
+public class TreeTableEx extends TreeTable {
 
-    public SortableTableEx () {
+    public TreeTableEx () {
         super ();
-
     }
 
-    public SortableTableEx (final int numRows,
-                             final int numColumns) {
+    public TreeTableEx (int numRows,
+                        int numColumns) {
         super (numRows,
                numColumns);
-
     }
 
-    public SortableTableEx (final Object[][] rowData,
-                             final Object[] columnNames) {
+    public TreeTableEx (Object[][] rowData,
+                        Object[] columnNames) {
         super (rowData,
                columnNames);
-
     }
 
-    public SortableTableEx (final TableModel dm,
-                             final TableColumnModel cm,
-                             final ListSelectionModel sm) {
+    public TreeTableEx (TableModel dm,
+                        TableColumnModel cm,
+                        ListSelectionModel sm) {
         super (dm,
                cm,
                sm);
-
     }
 
-    public SortableTableEx (final TableModel dm,
-                             final TableColumnModel cm) {
+    public TreeTableEx (TableModel dm,
+                        TableColumnModel cm) {
         super (dm,
                cm);
-
     }
 
-    public SortableTableEx (final TableModel model) {
-        super (model);
-
+    public TreeTableEx (TableModel dm) {
+        super (dm);
     }
 
-    public SortableTableEx (final Vector<?> rowData,
-                             final Vector<?> columnNames) {
+    public TreeTableEx (Vector<?> rowData,
+                        Vector<?> columnNames) {
         super (rowData,
                columnNames);
-
     }
 
     @SuppressWarnings("deprecation")
@@ -253,8 +245,7 @@ public class SortableTableEx extends SortableTable {
     }
 
     private TableColumn getResizingColumn () {
-        return (tableHeader == null) ? null
-                                         : tableHeader.getResizingColumn ();
+        return (tableHeader == null) ? null : tableHeader.getResizingColumn ();
     }
 
     private interface Resizable2 {
