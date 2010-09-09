@@ -9,20 +9,14 @@ import java.util.regex.*;
  *  Reverse-engineers Java format from date text.
  */ 
 public class DateFormatDetector {
-    private static final Pattern    SLASH_DATE_PATTERN_MDY = 
-        Pattern.compile ("([^\\d]*)\\d\\d?/\\d\\d?/\\d\\d\\d\\d(.*)");
     
-    private static final Pattern    SLASH_DATE_PATTERN_YMD = 
-        Pattern.compile ("([^\\d]*)\\d\\d\\d\\d/\\d\\d?/\\d\\d?(.*)");
-    
-    private static final Pattern    DASH_DATE_PATTERN = 
-        Pattern.compile ("([^\\d]*)\\d\\d\\d\\d-\\d\\d?-\\d\\d?(.*)");
-    
-    private static final Pattern    DASH_DATE_PATTERN2 = 
-        Pattern.compile ("([^\\d]*)\\d\\d?-\\d\\d?-\\d\\d\\d\\d(.*)");
-    
-    private static final Pattern    NSEP_DATE_PATTERN = 
-        Pattern.compile ("([^\\d]*)\\d\\d\\d\\d\\d\\d\\d\\d(.*)");
+    private static final Pattern SLASH_PATTERN_MM_DD_YY   = Pattern.compile ("([^\\d]*)\\d{1,2}/\\d{1,2}/\\d{2}(.*)");
+    private static final Pattern SLASH_PATTERN_MM_DD_YYYY = Pattern.compile ("([^\\d]*)\\d\\d?/\\d\\d?/\\d{4}(.*)");
+    private static final Pattern SLASH_PATTERN_YYYY_MM_DD = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d/\\d\\d?/\\d\\d?(.*)");
+    private static final Pattern DASH_PATTERN_YYYY_MM_DD  = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d-\\d\\d?-\\d\\d?(.*)");
+    private static final Pattern DASH_PATTERN_MM_DD_YYYY  = Pattern.compile ("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{4}(.*)");
+    private static final Pattern DASH_PATTERN_MM_DD_YY  = Pattern.compile ("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{2}(.*)");
+    private static final Pattern NSEP_PATTERN_YYYY_MM_DD  = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d\\d\\d\\d\\d(.*)");
 
     private enum TPS {
         BEFORE_HOURS,
@@ -80,18 +74,23 @@ public class DateFormatDetector {
         Matcher         m;
         String          dateFormat;
         
-        if ((m = SLASH_DATE_PATTERN_MDY.matcher (text)).matches ()) 
+        if ((m = SLASH_PATTERN_MM_DD_YYYY.matcher (text)).matches ()) 
             dateFormat = "MM/dd/yyyy";
-        else if ((m = SLASH_DATE_PATTERN_YMD.matcher (text)).matches ()) 
+        else if ((m = SLASH_PATTERN_MM_DD_YY.matcher (text)).matches ()) 
+            dateFormat = "MM/dd/yy";
+        else if ((m = SLASH_PATTERN_YYYY_MM_DD.matcher (text)).matches ()) 
             dateFormat = "yyyy/MM/dd";
-        else if ((m = DASH_DATE_PATTERN.matcher (text)).matches ())
+        else if ((m = DASH_PATTERN_YYYY_MM_DD.matcher (text)).matches ())
             dateFormat = "yyyy-MM-dd";
-        else if ((m = DASH_DATE_PATTERN2.matcher (text)).matches ())
+        else if ((m = DASH_PATTERN_MM_DD_YYYY.matcher (text)).matches ())
             dateFormat = "MM-dd-yyyy";
-        else if ((m = NSEP_DATE_PATTERN.matcher (text)).matches ()) 
+        else if ((m = DASH_PATTERN_MM_DD_YY.matcher (text)).matches ())
+            dateFormat = "MM-dd-yy";
+        else if ((m = NSEP_PATTERN_YYYY_MM_DD.matcher (text)).matches ()) 
             dateFormat = "yyyyMMdd";
         else
             return (-1);
+        
         
         CharSequence    prefix = m.group (1);
         int             plen = prefix.length ();
@@ -110,15 +109,19 @@ public class DateFormatDetector {
         int             limit = text.length ();
         StringBuilder   timeFormat = new StringBuilder (limit);
         
-        if ((m = SLASH_DATE_PATTERN_MDY.matcher (text)).matches ()) 
+        if ((m = SLASH_PATTERN_MM_DD_YYYY.matcher (text)).matches ()) 
             dateFormat = "MM/dd/yyyy";
-        else if ((m = SLASH_DATE_PATTERN_YMD.matcher (text)).matches ()) 
+        else if ((m = SLASH_PATTERN_MM_DD_YY.matcher (text)).matches ()) 
+            dateFormat = "MM/dd/yy";
+        else if ((m = SLASH_PATTERN_YYYY_MM_DD.matcher (text)).matches ()) 
             dateFormat = "yyyy/MM/dd";
-        else if ((m = DASH_DATE_PATTERN.matcher (text)).matches ())
+        else if ((m = DASH_PATTERN_YYYY_MM_DD.matcher (text)).matches ())
             dateFormat = "yyyy-MM-dd";
-        else if ((m = DASH_DATE_PATTERN2.matcher (text)).matches ())
+        else if ((m = DASH_PATTERN_MM_DD_YYYY.matcher (text)).matches ())
             dateFormat = "MM-dd-yyyy";
-        else if ((m = NSEP_DATE_PATTERN.matcher (text)).matches ()) 
+        else if ((m = DASH_PATTERN_MM_DD_YY.matcher (text)).matches ())
+            dateFormat = "MM-dd-yy";
+        else if ((m = NSEP_PATTERN_YYYY_MM_DD.matcher (text)).matches ()) 
             dateFormat = "yyyyMMdd";
         else
             return (null);
@@ -261,12 +264,17 @@ public class DateFormatDetector {
             args = 
                 new String [] { 
                     "4/2/2008",
+                    "4/2/2008 19:53:39.205",
+                    "4/2/08",
+                    "4/2/08 23:44",
                     "15:34",
                     "x'2008-04-02 23:44",
                     "20080402 1200", 
                     "2008040212:00",
                     "02-04-2009 19:53:39.205" ,
-                    "02-04-2009"
+                    "02-04-2009",
+                    "02-04-09",
+                    "02-04-09 19:53:39.205" ,
                 };
         
         for (String s : args) {            
