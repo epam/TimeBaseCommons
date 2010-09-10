@@ -33,19 +33,19 @@ public class TextDisplay {
         FontMetrics                 fm = g.getFontMetrics ();
         int                         stringWidth = fm.stringWidth (text);
         
-        boolean trunkate = false;
+        boolean truncate = false;
         while (stringWidth > height) {
             text = text.substring (0,
                                    text.length () - 1);
             stringWidth = fm.stringWidth (text + "...");
-            trunkate = true;
+            truncate = true;
         }
 
         int			asc = fm.getAscent ();
     	int			desc = fm.getDescent();
         int         h = asc + desc;
 
-        g.drawString (trunkate ? text + "..." : text, x - stringWidth / 2, y + h / 2 - desc);
+        g.drawString (truncate ? text + "..." : text, x - stringWidth / 2, y + h / 2 - desc);
     }
     
    
