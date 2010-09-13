@@ -15,7 +15,7 @@ public class DateFormatDetector {
     private static final Pattern SLASH_PATTERN_YYYY_MM_DD = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d/\\d\\d?/\\d\\d?(.*)");
     private static final Pattern DASH_PATTERN_YYYY_MM_DD  = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d-\\d\\d?-\\d\\d?(.*)");
     private static final Pattern DASH_PATTERN_MM_DD_YYYY  = Pattern.compile ("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{4}(.*)");
-    private static final Pattern DASH_PATTERN_MM_DD_YY  = Pattern.compile ("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{2}(.*)");
+    private static final Pattern DASH_PATTERN_MM_DD_YY    = Pattern.compile ("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{2}(.*)");
     private static final Pattern NSEP_PATTERN_YYYY_MM_DD  = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d\\d\\d\\d\\d(.*)");
 
     private enum TPS {
