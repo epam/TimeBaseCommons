@@ -1,11 +1,8 @@
 package deltix.util.io;
 
-import deltix.util.lang.Util;
 import java.io.*;
+import java.util.*;
 import java.nio.channels.*;
-
-import deltix.util.*;
-import deltix.util.collections.generated.*;
 
 /**
  *  A globally synchronized file operation.
@@ -18,90 +15,100 @@ public abstract class FileOpSynchronizer {
         )
             throws IOException, InterruptedException;
     }
-    
-    private static final int    NO_LOCK = 0;
+
     private static final int    EXCLUSIVE_LOCK = -1;
-    
+
+    private static class LockRecord {
+        final String            globalPath;
+        final RandomAccessFile  raf;
+        final FileLock          lock;
+        int                     count;
+
+        public LockRecord (String globalPath, RandomAccessFile raf, boolean shared)
+            throws IOException
+        {
+            this.globalPath = globalPath;
+            this.raf = raf;
+            this.lock = raf.getChannel ().lock (0, Long.MAX_VALUE, shared);;
+            this.count = shared ? 1 : EXCLUSIVE_LOCK;
+        }
+    }
+
     /**
      *  Maps file path to whether the number of shared locks
      */
-    private static ObjectToIntegerHashMap <String>        mLocks = 
-        new ObjectToIntegerHashMap <String> ();
-    
+    private static final HashMap <String, LockRecord>    locks =
+        new HashMap <String, LockRecord> ();
+
+    private static LockRecord   getLock (
+        String                      globalPath,
+        RandomAccessFile            raf,
+        boolean                     shared
+    )
+        throws InterruptedException, IOException
+    {
+        synchronized (locks) {
+            //
+            //  Get the current lock status
+            //
+            LockRecord  record;
+
+            for (;;) {
+                record = locks.get (globalPath);
+
+                if (record == null) {
+                    //  Get the OS lock ...
+                    record = new LockRecord (globalPath, raf, shared);
+
+                    locks.put (globalPath, record);
+
+                    return (record);
+                }
+
+                if (shared && record.count != EXCLUSIVE_LOCK) {
+                    record.count++;
+
+                    return (record);
+                }
+                   
+                // wait for locks to be released
+                locks.wait ();
+            }           
+        }
+    }
+
+    private static void         releaseLock (LockRecord record)
+        throws InterruptedException, IOException
+    {
+        synchronized (locks) {
+            if (record.count == EXCLUSIVE_LOCK || record.count == 1) {
+                record.raf.close ();
+                locks.remove (record.globalPath);
+                locks.notifyAll ();
+            }
+            else
+                record.count--;
+        }
+    }
+
     public static void          perform (
-            File                    f, 
-            Operation           op,
-            boolean                 readOnly
+        File                        f,
+        Operation                   op,
+        boolean                     shared
     )
         throws IOException, InterruptedException
     {
         String              globalPath = f.getCanonicalPath ();
-        RandomAccessFile    raf = null;
-        FileLock            flock = null;
-        boolean             gotLocalLock = false;
+        RandomAccessFile    raf = new RandomAccessFile (f, shared ? "r" : "rw");        
+        LockRecord          record = getLock (globalPath, raf, shared);
         
         try {
-            synchronized (mLocks) {   
-                int     lockCount;
-                
-                for (;;) {
-                    lockCount = mLocks.get (globalPath, NO_LOCK);
-                    
-                    if (lockCount == NO_LOCK)
-                        break;
-                    
-                    if (readOnly && lockCount != EXCLUSIVE_LOCK)
-                        break;
-                    
-                    mLocks.wait ();
-                }
-                
-                if (readOnly)
-                    lockCount++;
-                else
-                    lockCount = EXCLUSIVE_LOCK;
-                
-                mLocks.put (globalPath, lockCount);
-                gotLocalLock = true;
-            }
-                
-            raf = new RandomAccessFile (f, readOnly ? "r" : "rw");
-            
-            flock = raf.getChannel ().lock (0, Long.MAX_VALUE, readOnly);
-            
             op.perform (f, raf);
         } finally {
-            // MUST release in reverse order
-            
-            if (flock != null)
-                flock.release ();
-            
-            Util.close (raf);
-            
-            if (gotLocalLock) {
-                try {
-                    synchronized (mLocks) {
-                        if (readOnly) {
-                            int     lockCount = mLocks.get (globalPath);
+            releaseLock (record);
 
-                            lockCount--;
-
-                            if (lockCount == 0) {
-                                mLocks.remove (globalPath);
-                                mLocks.notifyAll ();
-                            }
-                            else
-                                mLocks.put (globalPath, lockCount);
-                        }
-                        else {
-                            mLocks.remove (globalPath);
-                            mLocks.notifyAll ();
-                        }
-                    }
-                } catch (ObjectToIntegerHashMap.KeyNotFoundException x) {
-                    throw new RuntimeException ("Lock record is gone", x);
-                }
-            }
+            if (raf != record.raf)
+                raf.close ();
         }        
     }
 }
