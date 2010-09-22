@@ -3,6 +3,7 @@ package deltix.util.time;
 import deltix.qsrv.pxml.StringIntervalAdapter;
 import deltix.util.text.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.logging.Logger;
 
 /**
  * Represents an interval (also known as time span in some systems), which
@@ -10,6 +11,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlJavaTypeAdapter (StringIntervalAdapter.class)
 public abstract class Interval {
+    private static final Logger LOGGER = Logger.getLogger (Interval.class.getName());
+
+
     public static final Interval    ZERO = null;
     public static final Interval DAY = Interval.valueOf("1D");
     public static final Interval HOUR = Interval.valueOf("1H");
@@ -138,6 +142,27 @@ public abstract class Interval {
         if (size % toMilliseconds(Interval.SECOND) == 0)
             result = new FixedInterval(size / toMilliseconds(Interval.SECOND), TimeUnit.SECOND);
 
+        return result;
+    }
+
+    public static long getSystemProperty(String propName, long defaultValue, long minValue, long maxValue) {
+        String intervalValue = System.getProperty (propName);
+        if (intervalValue == null)
+            return defaultValue;
+        intervalValue = intervalValue.trim();
+        if (intervalValue.isEmpty())
+            return defaultValue;
+
+        Interval interval = Interval.valueOf(intervalValue);
+        long result = interval.toMilliseconds();
+        if (result < minValue) {
+            LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
+            result = minValue;
+}
+        if (result > maxValue) {
+            LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
+            result = maxValue;
+        }
         return result;
     }
 }

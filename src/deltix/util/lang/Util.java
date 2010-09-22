@@ -858,11 +858,11 @@ public class Util {
             Long.parseLong(System.getProperty (propName, String.valueOf (defaultValue)));
 
         if (result < minValue) {
-            System.err.println("Property \"" + propName + "\" cannot be less than " + minValue);
+            LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
             result = minValue;
         }
         if (result > maxValue) {
-            System.err.println("Property \"" + propName + "\" cannot be more than " + maxValue);
+            LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
             result = maxValue;
         }
         return result;
@@ -889,11 +889,11 @@ public class Util {
             Double.parseDouble(System.getProperty (propName, String.valueOf (defaultValue)));
 
         if (result < minValue) {
-            System.err.println("Property \"" + propName + "\" cannot be less than " + minValue);
+            LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
             result = minValue;
         }
         if (result > maxValue) {
-            System.err.println("Property \"" + propName + "\" cannot be more than " + maxValue);
+            LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
             result = maxValue;
         }
         return result;
