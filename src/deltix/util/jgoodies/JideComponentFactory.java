@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.util;
+package deltix.util.jgoodies;
 
 import java.awt.*;
 
@@ -7,14 +7,14 @@ import javax.swing.*;
 import com.jgoodies.forms.factories.*;
 import com.jidesoft.swing.*;
 
-public class JideComponentFactory2 extends DefaultComponentFactory {
+public class JideComponentFactory extends DefaultComponentFactory {
 
     /**
      * Holds the single instance of this class.
      */
-    private static final JideComponentFactory2 INSTANCE = new JideComponentFactory2 ();
+    private static final JideComponentFactory INSTANCE = new JideComponentFactory ();
 
-    public static JideComponentFactory2 getInstance () {
+    public static JideComponentFactory getInstance () {
         return INSTANCE;
     }
 
@@ -48,13 +48,8 @@ public class JideComponentFactory2 extends DefaultComponentFactory {
     }
 
     @Override
-    public JLabel createLabel (final String textWithMnemonic) {
-        final StyledLabel label = new StyledLabel ("Start:");
-        label.addStyleRange (new StyleRange (Font.BOLD,
-                                               Color.BLACK));
-        setTextAndMnemonic (label,
-                            textWithMnemonic);
-        return label;
+    public JLabel createTitle (String textWithMnemonic) {
+        return super.createTitle (textWithMnemonic);
     }
 
 }
