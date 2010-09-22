@@ -116,6 +116,15 @@ public abstract class Interval {
         return (sb.toString ());
     }
 
+    public String toHumanString() {
+        StringBuilder   sb = new StringBuilder ();
+        sb.append (getNumUnits ());
+        sb.append (' ');
+        sb.append (getUnit ().name ());
+        return (sb.toString ());
+    }
+
+
     public long toMilliseconds() {
         return toMilliseconds(this);
     }
