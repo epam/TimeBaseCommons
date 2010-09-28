@@ -58,7 +58,7 @@ public class CollectionUtil {
         for (int index = 0; index < elementData.length; index++)
             if (Util.xequals (element, elementData[index])) {
                 int numMoved = elementData.length - index - 1;
-                if (numMoved > 0) {
+                if (numMoved >= 0) {
                     T[] result = (T[]) Array.newInstance (clazz, elementData.length - 1);
                     System.arraycopy (elementData, 0, result, 0, index);
                     System.arraycopy (elementData, index + 1, result, index, numMoved);
