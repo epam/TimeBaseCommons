@@ -5,7 +5,9 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-public abstract class CompositeEditor extends JPanel {
+import deltix.util.swing.SwingUtil.*;
+
+public abstract class CompositeEditor extends JPanel implements HorizontalFillOnlyField{
 
     public CompositeEditor () {
         super ();
