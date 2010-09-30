@@ -1,30 +1,17 @@
 package deltix.util.jgoodies;
 
-import java.awt.*;
-
 import javax.swing.*;
 import javax.swing.event.*;
 
-import deltix.util.swing.SwingUtil.*;
+import com.jgoodies.binding.value.*;
 
-public abstract class CompositeEditor extends JPanel implements HorizontalFillOnlyField{
+public abstract class CompositeEditor extends AbstractUIBean {
+
+    /** A list of event listeners for this component. */
+    protected EventListenerList listenerList = new EventListenerList ();
 
     public CompositeEditor () {
         super ();
-    }
-
-    public CompositeEditor (boolean isDoubleBuffered) {
-        super (isDoubleBuffered);
-    }
-
-    public CompositeEditor (LayoutManager layout,
-                            boolean isDoubleBuffered) {
-        super (layout,
-               isDoubleBuffered);
-    }
-
-    public CompositeEditor (LayoutManager layout) {
-        super (layout);
     }
 
     public abstract Object getEditorValue ();
@@ -47,7 +34,7 @@ public abstract class CompositeEditor extends JPanel implements HorizontalFillOn
      * @see #removeChangeListener
      * @see SpinnerModel#addChangeListener
      */
-    public void addChangeListener (ChangeListener l) {
+    public void addChangeListener (final ChangeListener l) {
         listenerList.add (ChangeListener.class,
                           l);
     }
@@ -60,7 +47,7 @@ public abstract class CompositeEditor extends JPanel implements HorizontalFillOn
      * @see #addChangeListener
      * @see SpinnerModel#removeChangeListener
      */
-    public void removeChangeListener (ChangeListener l) {
+    public void removeChangeListener (final ChangeListener l) {
         listenerList.remove (ChangeListener.class,
                              l);
     }
@@ -74,7 +61,7 @@ public abstract class CompositeEditor extends JPanel implements HorizontalFillOn
      * @since 1.4
      */
     public ChangeListener[] getChangeListeners () {
-        return (ChangeListener[]) listenerList.getListeners (
+        return listenerList.getListeners (
                 ChangeListener.class);
     }
 
@@ -85,7 +72,7 @@ public abstract class CompositeEditor extends JPanel implements HorizontalFillOn
      * @see EventListenerList
      */
     protected void fireStateChanged () {
-        Object[] listeners = listenerList.getListenerList ();
+        final Object[] listeners = listenerList.getListenerList ();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == ChangeListener.class) {
                 if (changeEvent == null) {
@@ -94,5 +81,12 @@ public abstract class CompositeEditor extends JPanel implements HorizontalFillOn
                 ((ChangeListener) listeners[i + 1]).stateChanged (changeEvent);
             }
         }
+    }
+
+    public static void bind (final CompositeEditor editor,
+                             final ValueModel valueModel) {
+        final CompositeEditorToValueModelConnector connector = new CompositeEditorToValueModelConnector (editor,
+                                                                                                         valueModel);
+        connector.updateComponent ();
     }
 }

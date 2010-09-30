@@ -1,8 +1,6 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.panels;
+package deltix.util.jgoodies;
 
 import javax.swing.*;
-
-import deltix.qsrv.hf.tickdb.ui.administrator.util.control.beans.*;
 
 public abstract class AbstractUIBean implements UIBean {
 
