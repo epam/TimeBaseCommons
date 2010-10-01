@@ -13,12 +13,14 @@ public abstract class ValidatableParametersModel<B> extends PresentationModel<B>
 
     public ValidatableParametersModel (final B bean,
                                        final ValueModel triggerChannel) {
-        super (bean,
-               triggerChannel);
+        this (new ValueHolder (bean,
+                               true),
+              triggerChannel);
     }
 
     public ValidatableParametersModel (final B bean) {
-        super (bean);
+        this (new ValueHolder (bean,
+                               true));
     }
 
     public ValidatableParametersModel (final ValueModel beanChannel,
@@ -30,7 +32,8 @@ public abstract class ValidatableParametersModel<B> extends PresentationModel<B>
     }
 
     public ValidatableParametersModel (final ValueModel beanChannel) {
-        super (beanChannel);
+        this (beanChannel,
+              new Trigger ());
     }
 
     // Exposing Models ********************************************************
