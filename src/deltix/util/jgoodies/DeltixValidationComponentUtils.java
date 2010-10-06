@@ -12,6 +12,8 @@ import com.jgoodies.validation.*;
 import com.jgoodies.validation.view.*;
 import com.jgoodies.validation.view.ValidationComponentUtils.*;
 
+import deltix.util.lang.*;
+
 public class DeltixValidationComponentUtils {
 
     // Colors *****************************************************************
@@ -153,7 +155,7 @@ public class DeltixValidationComponentUtils {
          * or {@code null}. The check for null is necessary to handle the
          * special event where property name, old and new value are all
          * {@code null} to indicate that multiple properties have changed.
-         * 
+         *
          * @param evt
          *            describes the property change
          */
@@ -185,6 +187,31 @@ public class DeltixValidationComponentUtils {
             } else if (result.hasWarnings ()) {
                 setWarningBackground (textChild);
             }
+        }
+    }
+
+    public static class FinderVisitor implements deltix.util.collections.Visitor<JComponent> {
+        private final ValidationMessage _error;
+        public JComponent               _component = null;
+
+        public FinderVisitor (final ValidationMessage error) {
+            super ();
+            this._error = error;
+        }
+
+        @Override
+        public boolean visit (final JComponent component) {
+            final Object[] messageKeys = DeltixValidationComponentUtils.getMessageKeys (component);
+            if (messageKeys != null) {
+                for (final Object element : messageKeys) {
+                    if (Util.xequals (_error.key (),
+                                      element)) {
+                        _component = component;
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }
