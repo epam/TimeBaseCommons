@@ -2,7 +2,7 @@ package deltix.util.jgoodies;
 
 public interface BeanEditor{
 
-    void initComponents ();
+    void createComponents ();
 
     void initEventHandling ();
 

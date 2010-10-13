@@ -27,9 +27,12 @@ public class FileEditor extends CompositeEditor {
         _prefs = prefs;
         field.getPathField ().getDocument ().addDocumentListener (new ChangePathHandler ());
         field.addActionListener (new ActionHandler (field));
-        if (_prefs != null)
-            field.fileChooser ().setCurrentDirectory (new File (_prefs.get (RECENT_FOLDER,
-                                                                            null)));
+        if (_prefs != null) {
+            final String path = _prefs.get (RECENT_FOLDER,
+                                            null);
+            if (!BindingUtils.isBlank (path))
+                field.fileChooser ().setCurrentDirectory (new File (path));
+        }
 
         _ui = field;
 
