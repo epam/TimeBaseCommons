@@ -16,7 +16,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     public static Locale LOCALE = Locale.getDefault ();
 
     public static final Object findTreeNode (final JTree tree,
-                                              final Object userObject) {
+                                             final Object userObject) {
         final Object root = tree.getModel ().getRoot ();
         // Traverse tree from root
         return findTreeNode (tree,
@@ -25,8 +25,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     public static final Object findTreeNode (final JTree tree,
-                                              final TreePath parent,
-                                              final Object userObject) {
+                                             final TreePath parent,
+                                             final Object userObject) {
         // Traverse children
         final Object node = parent.getLastPathComponent ();
 
@@ -42,8 +42,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
                                                               i);
                 final TreePath path = parent.pathByAddingChild (n);
                 final Object result = findTreeNode (tree,
-                                                     path,
-                                                     userObject);
+                                                    path,
+                                                    userObject);
                 if (result != null) {
                     return result;
                 }
@@ -55,8 +55,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     protected final JTree _tree;
 
     public BaseMutableTreeNode (final Object userObject,
-                                 final boolean allowsChildren,
-                                 final JTree tree) {
+                                final boolean allowsChildren,
+                                final JTree tree) {
         super (userObject,
                 allowsChildren);
         _tree = tree;
@@ -64,7 +64,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     public BaseMutableTreeNode (final Object userObject,
-                                 final JTree tree) {
+                                final JTree tree) {
         super (userObject);
         _tree = tree;
         createMenu ();
@@ -170,7 +170,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         refreshTree ();
     }
 
-    public final void refreshTree () {
+    public void refreshTree () {
 
         // save selection and expansion states
         Enumeration<TreePath> enumeration = null;
@@ -186,7 +186,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         if (getTree () != null) {
             if (enumeration != null) {
                 TreeUtils.loadExpansionStateByTreePath (getTree (),
-                                                             enumeration);
+                                                        enumeration);
             }
             if (selected != null) {
                 TreeUtils.loadSelection (getTree (), selected);
@@ -195,7 +195,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
     }
 
-    private void refresh () {
+    protected void refresh () {
         final FilterableTreeModel displayTreeModel = getFilterableTreeModel ();
         if (displayTreeModel != null) {
             displayTreeModel.refresh ();
@@ -260,8 +260,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         final DefaultTreeModel model = getActualDefaultTreeModel ();
         if (model != null) {
             model.insertNodeInto (node,
-                                   this,
-                                   this.getChildCount ());
+                                  this,
+                                  this.getChildCount ());
         } else {
             reload ();
         }
