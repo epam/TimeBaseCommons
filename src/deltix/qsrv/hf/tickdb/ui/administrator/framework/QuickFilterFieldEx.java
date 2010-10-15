@@ -16,7 +16,6 @@ import com.jidesoft.grid.*;
 import deltix.qsrv.hf.tickdb.ui.administrator.tree.*;
 import deltix.qsrv.ui.util.*;
 import deltix.util.lang.StringUtils;
-import deltix.util.swing.*;
 
 final class QuickFilterFieldEx extends QuickFilterField {
 
@@ -48,22 +47,21 @@ final class QuickFilterFieldEx extends QuickFilterField {
             }
         });
         setResetIcon (Icons.RESET);
-        _lockableUI = new BusyPainterUI ();
+        _lockableUI = lockableUI;
     }
 
     public void setTreeModel (final TreeModel treeModel) {
         _treeModel = treeModel;
         _filterAdded = false;
         if (_treeModel != null) {
-
             applyFilter ();
         }
     }
 
     public boolean isFiltersApplied () {
         final String searchingText = getSearchingText ();
-        return (_searchingText == null && searchingText != null && searchingText.isEmpty ()) ||
-                (searchingText == null && _searchingText != null && _searchingText.isEmpty ()) ||
+        return (_searchText == null && searchingText != null && searchingText.isEmpty ()) ||
+               (searchingText == null && _searchText != null && _searchText.isEmpty ()) ||
                (StringUtils.equals (_searchText,
                                     searchingText));
     }
@@ -112,7 +110,10 @@ final class QuickFilterFieldEx extends QuickFilterField {
 
     @Override
     protected boolean compare (final String text,
-                               final String searchingText) { // note this method is same as the same-name method in Searchable
+                               final String searchingText) { // note this method
+        // is same as the
+        // same-name method
+        // in Searchable
         if (searchingText == null || searchingText.trim ().length () == 0) {
             _pattern = null;
             _searchText = searchingText;
@@ -121,10 +122,10 @@ final class QuickFilterFieldEx extends QuickFilterField {
 
         if (!isWildcardEnabled ()) {
             return searchingText != null &&
-                    (searchingText.equals (text) || searchingText.length () > 0
-                                                    &&
-                                                    (isFromStart () ? text.startsWith (searchingText)
-                                                                   : text.indexOf (searchingText) != -1));
+                   (searchingText.equals (text) || searchingText.length () > 0
+                                                   &&
+                                                   (isFromStart () ? text.startsWith (searchingText)
+                                                                  : text.indexOf (searchingText) != -1));
         } else {
             if (_searchText != null && _searchText.equals (searchingText) && _pattern != null) {
                 return _pattern.matcher (text).find ();
