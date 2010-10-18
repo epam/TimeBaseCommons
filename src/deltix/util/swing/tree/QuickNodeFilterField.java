@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.framework;
+package deltix.util.swing.tree;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,11 +13,10 @@ import org.springframework.util.*;
 
 import com.jidesoft.grid.*;
 
-import deltix.qsrv.hf.tickdb.ui.administrator.tree.*;
 import deltix.qsrv.ui.util.*;
 import deltix.util.lang.StringUtils;
 
-final class QuickFilterFieldEx extends QuickFilterField {
+public class QuickNodeFilterField extends QuickFilterField {
 
     private transient ChangeEvent _changeEvent = null;
     private TreeModel             _treeModel;
@@ -27,7 +26,7 @@ final class QuickFilterFieldEx extends QuickFilterField {
 
     private final LockableUI      _lockableUI;
 
-    public QuickFilterFieldEx (final LockableUI lockableUI) {
+    public QuickNodeFilterField (final LockableUI lockableUI) {
         super ();
         setWildcardEnabled (true);
         getTextField ().getDocument ().addDocumentListener (new DocumentListener () {
@@ -48,6 +47,7 @@ final class QuickFilterFieldEx extends QuickFilterField {
         });
         setResetIcon (Icons.RESET);
         _lockableUI = lockableUI;
+
     }
 
     public void setTreeModel (final TreeModel treeModel) {
@@ -70,14 +70,13 @@ final class QuickFilterFieldEx extends QuickFilterField {
     @Override
     public void applyFilter (final String text) {
         if (_treeModel != null) {
-
-            TickDBTreeNode root = null;
+            FilterableNode<?> root = null;
+            setLocked (true);
             try {
-                setLocked (true);
                 final Object o = _treeModel.getRoot ();
-                Assert.isInstanceOf (TickDBTreeNode.class,
-                                     o);
-                root = (TickDBTreeNode) o;
+                Assert.isInstanceOf (FilterableNode.class,
+                                             o);
+                root = (FilterableNode<?>) o;
                 if (!_filterAdded) { // only add filter for the first time.
                     root.addFilter (getFilter ());
                     _filterAdded = true;
@@ -92,7 +91,7 @@ final class QuickFilterFieldEx extends QuickFilterField {
         fireStateChanged ();
     }
 
-    private void setLocked (final boolean isLocked) {
+    public void setLocked (final boolean isLocked) {
         if (_lockableUI != null)
             _lockableUI.setLocked (isLocked);
     }
