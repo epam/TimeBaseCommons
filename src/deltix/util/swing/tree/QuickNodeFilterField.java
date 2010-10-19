@@ -69,13 +69,41 @@ public class QuickNodeFilterField extends QuickFilterField {
     @SuppressWarnings("unchecked")
     @Override
     public void applyFilter (final String text) {
+        //        setLocked (true);
+        //        SwingWorker<?, ?> worker = new SwingWorker<Void, Void> () {
+        //            @Override
+        //            public Void doInBackground () {
+        //                if (_treeModel != null) {
+        //                    FilterableNode<?> root = null;
+        //                    final Object o = _treeModel.getRoot ();
+        //                    Assert.isInstanceOf (FilterableNode.class,
+        //                                             o);
+        //                    root = (FilterableNode<?>) o;
+        //                    if (!_filterAdded) { // only add filter for the first time.
+        //                        root.addFilter (getFilter ());
+        //                        _filterAdded = true;
+        //                    }
+        //                    if (root != null)
+        //                        root.reload ();
+        //                }
+        //                fireStateChanged ();
+        //                return null;
+        //            }
+        //
+        //            @Override
+        //            public void done () {
+        //                setLocked (false);
+        //            }
+        //        };
+        //        worker.execute ();
+
         if (_treeModel != null) {
             FilterableNode<?> root = null;
             setLocked (true);
             try {
                 final Object o = _treeModel.getRoot ();
                 Assert.isInstanceOf (FilterableNode.class,
-                                             o);
+                                                     o);
                 root = (FilterableNode<?>) o;
                 if (!_filterAdded) { // only add filter for the first time.
                     root.addFilter (getFilter ());
@@ -86,14 +114,15 @@ public class QuickNodeFilterField extends QuickFilterField {
             } finally {
                 setLocked (false);
             }
-
         }
         fireStateChanged ();
+
     }
 
     public void setLocked (final boolean isLocked) {
-        if (_lockableUI != null)
+        if (_lockableUI != null) {
             _lockableUI.setLocked (isLocked);
+        }
     }
 
     @Override
