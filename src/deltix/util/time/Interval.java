@@ -49,6 +49,8 @@ public abstract class Interval {
             return (null);
         
         int         end = text.length ();
+        if (end == 0)
+            return null;
         
         if (end < 2)
             throw new IllegalArgumentException ("Interval must consist of at least two characters. For example: \"1D\" or \"5Y\", got: " + text.toString ());
