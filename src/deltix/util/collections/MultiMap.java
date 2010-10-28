@@ -1,0 +1,16 @@
+package deltix.util.collections;
+
+import java.util.*;
+
+/**
+ *  Our version of MultiMap. Thanks to Sun, everyone has their own.
+ */
+public interface MultiMap <K, V> {
+    public void                 clear ();
+
+    public Collection <V>       remove (K key);
+
+    public Collection <V>       put (K key, V value);
+    
+    public Collection <V>       get (K key);
+}
