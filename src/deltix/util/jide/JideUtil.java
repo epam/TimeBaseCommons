@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.logging.*;
 
 import javax.swing.*;
+import javax.swing.border.*;
 
 import com.jidesoft.dialog.*;
 import com.jidesoft.swing.*;
@@ -14,8 +15,8 @@ import deltix.util.lang.*;
 /**
  *  Colleciton of static utilities
  */
-public abstract class JideUtil { 
-	
+public abstract class JideUtil {
+
 	  public static JideButton newZeroMarginButton ( Action action ) {
 		JideButton btn = new JideButton ( action );
 
@@ -34,16 +35,16 @@ public abstract class JideUtil {
 
 		return (btn);
 	}
-    
+
    public static void		    staticHandle (
-        Component                   parent, 
+        Component                   parent,
         Throwable                   x,
         Logger                      logger,
         Level                       logLevel
-    ) 
+    )
     {
         x = Util.unwrap (x);
-		
+
         if (logger != null)
             logger.log (logLevel, "Uncaught Exception", x);
 
@@ -92,16 +93,16 @@ public abstract class JideUtil {
         dialog.pack();
         dialog.setVisible(true);
     }
-        
+
     public static void		    staticHandle (
-        Component                   parent, 
+        Component                   parent,
         Throwable                   x,
-        Level                       logLevel        
+        Level                       logLevel
     )
     {
         staticHandle (parent, x, Util.LOGGER, logLevel);
     }
-    
+
     public static void		    staticHandle (Throwable x) {
         staticHandle (null, x, Level.SEVERE);
     }
@@ -114,20 +115,20 @@ public abstract class JideUtil {
     }
 
     public static void          asyncHandle (
-        final Component             parent, 
+        final Component             parent,
         final Throwable             x,
         final Level                 level
-    ) 
+    )
     {
         asyncHandle (parent, x, Util.LOGGER, level);
     }
-    
+
     public static void          asyncHandle (
-        final Component             parent, 
+        final Component             parent,
         final Throwable             x,
         final Logger                logger,
         final Level                 level
-    ) 
+    )
     {
         if (SwingUtilities.isEventDispatchThread())
             staticHandle (parent, x, logger, level);
@@ -139,6 +140,17 @@ public abstract class JideUtil {
                     }
                 }
             );
+    }
+
+    public static CompoundBorder createRoundCornerBorder (String title) {
+        return BorderFactory.createCompoundBorder (BorderFactory.createTitledBorder (new PartialLineBorder (Color.gray,
+                                                                                                            1,
+                                                                                                            true),
+                                                                                     title),
+                                                   BorderFactory.createEmptyBorder (0,
+                                                                                    6,
+                                                                                    4,
+                                                                                    6));
     }
 
 }
