@@ -139,7 +139,7 @@ public class QuickNodeFilterField extends QuickFilterField {
     }
 
     @Override
-    protected boolean compare (final String text,
+    protected boolean compare (String text,
                                final String searchingText) {
         // note this method is same as the same-name method in Searchable
         if (searchingText == null || searchingText.trim ().length () == 0) {
@@ -149,6 +149,8 @@ public class QuickNodeFilterField extends QuickFilterField {
         }
 
         if (!isWildcardEnabled ()) {
+            text = (isCaseSensitive ()) ? text : text.toLowerCase ();
+
             return searchingText != null &&
                    (searchingText.equals (text) || searchingText.length () > 0 &&
                                                    (isFromStart () ? text.startsWith (searchingText)
