@@ -17,7 +17,7 @@ public class StringUtils {
     public static String [] splitAtWhitespace (String s) {
         int     delim = 0;
         int     argLength = s.length ();
-        
+
         while (delim < argLength && !Character.isWhitespace (s.charAt (delim)))
             delim++;
 
@@ -45,7 +45,7 @@ public class StringUtils {
         for (int ii = 0; ii < length; ii++) {
             if (ii > 0)
                 sb.append (separator);
-            
+
             sb.append (items [offset + ii]);
         }
         return sb.toString();
@@ -154,31 +154,31 @@ public class StringUtils {
 
     public static int           parseDecimalDigit (CharSequence s, int idx) {
         int         d = s.charAt (idx) - '0';
-        
+
         if (d < 0 || d > 9)
             throw new NumberFormatException (s.toString ());
-        
+
         return (d);
     }
-    
+
     public static int           parseUnsignedDecimalInt (CharSequence s, int idx, int len) {
         int         d = 0;
-        
+
         for (int ii = 0; ii < len; ii++)
             d = d * 10 + parseDecimalDigit (s, idx + ii);
-        
+
         return (d);
     }
-    
+
     private static void         hex (int n, StringBuilder out) {
         n = n & 0xF;
-        
+
         if (n < 10)
             out.append ('0' + n);
         else
             out.append ('A' + n);
     }
-    
+
     public static String        escapeJavaString (CharSequence str) {
         StringBuilder       out = new StringBuilder ();
 
@@ -212,11 +212,11 @@ public class StringUtils {
     }
 
     /**
-     *  
+     *
      */
     public static String        escapeJavaStringLiteral (CharSequence str) {
         StringBuilder       out = new StringBuilder ();
-        
+
         out.append ('\"');
         int sz = str.length();
         for (int i = 0; i < sz; i++) {
@@ -242,7 +242,7 @@ public class StringUtils {
                         hex (ch, out);
                     }
                     break;
-            }            
+            }
         }
         out.append ('\"');
         return (out.toString ());
@@ -493,6 +493,22 @@ public class StringUtils {
         return str;
     }
 
+    public static CharSequence trim (CharSequence cs) {
+        if (cs == null)
+            return null;
+        int len = cs.length ();
+        int st = 0;
+
+        while ((st < len) && (cs.charAt (st) <= ' ')) {
+            st++;
+        }
+        while ((st < len) && (cs.charAt (len - 1) <= ' ')) {
+            len--;
+        }
+        return ((st > 0) || (len < cs.length ())) ? cs.subSequence (st,
+                                                                    len) : cs;
+    }
+
     public static String [] parseCommaSeparatedList (String str) {
         String []       cols = null;
         if (str != null) {
@@ -501,15 +517,15 @@ public class StringUtils {
             cols = new String [num];
             int             count = 0;
             while (tok.hasMoreTokens ())
-                cols [count++] = tok.nextToken ();            
+                cols [count++] = tok.nextToken ();
         }
         return (cols);
     }
-    
+
     public static String    createCommaSepList (String [] strs) {
         if (strs == null)
             return (null);
-        
+
         StringBuffer    buf = new StringBuffer();
         if (strs != null)
             for (int i = 0; i < strs.length; i++) {
@@ -517,7 +533,7 @@ public class StringUtils {
                     buf.append (", ");
                 buf.append (strs [i]);
             }
-        return (buf.toString());                
+        return (buf.toString());
     }
 
     // adapted from String.indexOf(char[] ...)
@@ -553,17 +569,17 @@ public class StringUtils {
         int     alen = a.length ();
         int     blen = b.length ();
         int     offset = alen - blen;
-        
+
         if (offset < 0)
             return (false);
-        
-        for (int ii = 0; ii < blen; ii++) 
+
+        for (int ii = 0; ii < blen; ii++)
             if (a.charAt (offset + ii) != b.charAt (ii))
                 return (false);
-        
+
         return (true);
     }
-    
+
     public static boolean equals ( String one,
 	                                     String two ) {
 		if (one == null) {
@@ -571,7 +587,7 @@ public class StringUtils {
 		}
 		return one == two || one.equals ( two );
 	}
-    
+
     public static void main (String [] args) {
         byte []     b = args [0].getBytes();
 
