@@ -12,6 +12,7 @@ import org.jdesktop.jxlayer.plaf.ext.*;
 import org.springframework.util.*;
 
 import com.jidesoft.grid.*;
+import com.jidesoft.swing.*;
 import com.jidesoft.utils.*;
 
 import deltix.qsrv.ui.util.*;
@@ -52,6 +53,11 @@ public class QuickNodeFilterField extends QuickFilterField {
 
     }
 
+    @Override
+    protected JLabel createLabel () {
+        return null;
+    }
+
     public void setTreeModel (final TreeModel treeModel) {
         _treeModel = treeModel;
         _filterAdded = false;
@@ -71,34 +77,6 @@ public class QuickNodeFilterField extends QuickFilterField {
     @SuppressWarnings("unchecked")
     @Override
     public void applyFilter (final String text) {
-        //        setLocked (true);
-        //        SwingWorker<?, ?> worker = new SwingWorker<Void, Void> () {
-        //            @Override
-        //            public Void doInBackground () {
-        //                if (_treeModel != null) {
-        //                    FilterableNode<?> root = null;
-        //                    final Object o = _treeModel.getRoot ();
-        //                    Assert.isInstanceOf (FilterableNode.class,
-        //                                             o);
-        //                    root = (FilterableNode<?>) o;
-        //                    if (!_filterAdded) { // only add filter for the first time.
-        //                        root.addFilter (getFilter ());
-        //                        _filterAdded = true;
-        //                    }
-        //                    if (root != null)
-        //                        root.reload ();
-        //                }
-        //                fireStateChanged ();
-        //                return null;
-        //            }
-        //
-        //            @Override
-        //            public void done () {
-        //                setLocked (false);
-        //            }
-        //        };
-        //        worker.execute ();
-
         if (_treeModel != null) {
             FilterableNode<?> root = null;
             setLocked (true);
@@ -139,7 +117,7 @@ public class QuickNodeFilterField extends QuickFilterField {
     }
 
     @Override
-    protected boolean compare (String text,
+    protected boolean compare (final String text,
                                final String searchingText) {
         // note this method is same as the same-name method in Searchable
         if (searchingText == null || searchingText.trim ().length () == 0) {
@@ -148,32 +126,25 @@ public class QuickNodeFilterField extends QuickFilterField {
             return true;
         }
 
-        if (!isWildcardEnabled ()) {
-            text = (isCaseSensitive ()) ? text : text.toLowerCase ();
-
-            return searchingText != null &&
-                   (searchingText.equals (text) || searchingText.length () > 0 &&
-                                                   (isFromStart () ? text.startsWith (searchingText)
-                                                                  : text.indexOf (searchingText) != -1));
-        } else {
-            if (_searchText != null && _searchText.equals (searchingText) && _pattern != null) {
-                return _pattern.matcher (text).find ();
-            }
-
-            _searchText = searchingText;
-
-            try {
-                _pattern = Pattern.compile ((isFromStart () ? "^" : "") + convertFromPatternToRegex (searchingText),
-                                            isCaseSensitive () ? 0 : Pattern.CASE_INSENSITIVE);
-
-                //FIXME: support for a full regular expressions support
-                //                _pattern = Pattern.compile (isFromStart () ? ("^" + searchingText) : searchingText,
-                //                                            isCaseSensitive () ? 0 : Pattern.CASE_INSENSITIVE);
-                return _pattern.matcher (text).find ();
-            } catch (final PatternSyntaxException e) {
-                return false;
-            }
+        if (_searchText != null && _searchText.equals (searchingText) && _pattern != null) {
+            return _pattern.matcher (text).matches ();
         }
+
+        _searchText = searchingText;
+
+        try {
+            _pattern = Pattern.compile (convertFromPatternToRegex (searchingText),
+                                        Pattern.CASE_INSENSITIVE);
+            return _pattern.matcher (text).matches ();
+        } catch (final PatternSyntaxException e) {
+            return false;
+        }
+
+    }
+
+    @Override
+    protected JidePopupMenu createContextMenu () {
+        return null;
     }
 
     private String convertFromPatternToRegex (final String pattern) {
