@@ -12,19 +12,21 @@ import org.jdesktop.jxlayer.plaf.ext.*;
 import org.springframework.util.*;
 
 import com.jidesoft.grid.*;
+import com.jidesoft.utils.*;
 
 import deltix.qsrv.ui.util.*;
 import deltix.util.lang.StringUtils;
 
 public class QuickNodeFilterField extends QuickFilterField {
 
-    private transient ChangeEvent _changeEvent = null;
-    private TreeModel             _treeModel;
-    private boolean               _filterAdded = false;
-    private Pattern               _pattern;
-    private String                _searchText;
+    private transient ChangeEvent  _changeEvent = null;
+    private TreeModel              _treeModel;
+    private boolean                _filterAdded = false;
+    private Pattern                _pattern;
+    private String                 _searchText;
 
-    private final LockableUI      _lockableUI;
+    private DefaultWildcardSupport _defaultWildcardSupport;
+    private final LockableUI       _lockableUI;
 
     public QuickNodeFilterField (final LockableUI lockableUI) {
         super ();
@@ -103,7 +105,7 @@ public class QuickNodeFilterField extends QuickFilterField {
             try {
                 final Object o = _treeModel.getRoot ();
                 Assert.isInstanceOf (FilterableNode.class,
-                                                     o);
+                                     o);
                 root = (FilterableNode<?>) o;
                 if (!_filterAdded) { // only add filter for the first time.
                     root.addFilter (getFilter ());
@@ -138,10 +140,8 @@ public class QuickNodeFilterField extends QuickFilterField {
 
     @Override
     protected boolean compare (final String text,
-                               final String searchingText) { // note this method
-        // is same as the
-        // same-name method
-        // in Searchable
+                               final String searchingText) {
+        // note this method is same as the same-name method in Searchable
         if (searchingText == null || searchingText.trim ().length () == 0) {
             _pattern = null;
             _searchText = searchingText;
@@ -150,8 +150,7 @@ public class QuickNodeFilterField extends QuickFilterField {
 
         if (!isWildcardEnabled ()) {
             return searchingText != null &&
-                   (searchingText.equals (text) || searchingText.length () > 0
-                                                   &&
+                   (searchingText.equals (text) || searchingText.length () > 0 &&
                                                    (isFromStart () ? text.startsWith (searchingText)
                                                                   : text.indexOf (searchingText) != -1));
         } else {
@@ -162,13 +161,67 @@ public class QuickNodeFilterField extends QuickFilterField {
             _searchText = searchingText;
 
             try {
-                _pattern = Pattern.compile (isFromStart () ? ("^" + searchingText) : searchingText,
+                _pattern = Pattern.compile ((isFromStart () ? "^" : "") + convertFromPatternToRegex (searchingText),
                                             isCaseSensitive () ? 0 : Pattern.CASE_INSENSITIVE);
+
+                //FIXME: support for a full regular expressions support
+                //                _pattern = Pattern.compile (isFromStart () ? ("^" + searchingText) : searchingText,
+                //                                            isCaseSensitive () ? 0 : Pattern.CASE_INSENSITIVE);
                 return _pattern.matcher (text).find ();
             } catch (final PatternSyntaxException e) {
                 return false;
             }
         }
+    }
+
+    private String convertFromPatternToRegex (final String pattern) {
+        if (pattern == null) {
+            return null;
+        }
+
+        if (_defaultWildcardSupport == null) {
+            _defaultWildcardSupport = new DefaultWildcardSupport () {
+
+                @Override
+                public String convert (final String s) {
+                    final char c = getZeroOrMoreQuantifier ();
+                    final int i = c != 0 ? s.indexOf (c) : -1;
+                    final char c1 = getZeroOrOneQuantifier ();
+                    final int j = c1 != 0 ? s.indexOf (c1) : -1;
+                    final char c2 = getOneOrMoreQuantifier ();
+                    final int k = c2 != 0 ? s.indexOf (c2) : -1;
+                    if (i == -1 && j == -1 && k == -1)
+                        return s;
+                    final StringBuffer stringbuffer = new StringBuffer ();
+                    final int l = s.length ();
+                    for (int i1 = 0; i1 < l; i1++) {
+                        final char c3 = s.charAt (i1);
+                        if (c1 != 0 && c3 == c1) {
+                            stringbuffer.append (".");
+                            continue;
+                        }
+                        if (c != 0 && c3 == c) {
+                            stringbuffer.append (".*");
+                            continue;
+                        }
+                        if (c2 != 0 && c3 == c2) {
+                            stringbuffer.append ("..*");
+                            continue;
+                        }
+                        if ("(){}[].^$\\".indexOf (c3) != -1) {
+                            stringbuffer.append ('\\');
+                            stringbuffer.append (c3);
+                        } else {
+                            stringbuffer.append (c3);
+                        }
+                    }
+
+                    return stringbuffer.toString ();
+                }
+            };
+        }
+
+        return _defaultWildcardSupport.convert (pattern);
     }
 
     @Override
@@ -212,8 +265,7 @@ public class QuickNodeFilterField extends QuickFilterField {
     }
 
     public ChangeListener[] getChangeListeners () {
-        return listenerList.getListeners (
-                ChangeListener.class);
+        return listenerList.getListeners (ChangeListener.class);
     }
 
     protected void fireStateChanged () {
