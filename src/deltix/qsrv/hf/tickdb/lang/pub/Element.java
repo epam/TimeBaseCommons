@@ -36,7 +36,7 @@ public abstract class Element {
 
     /**
      *  Convert the element to correct QQL. This method is used for
-     *  serialization. This method calls {@link #print(StringBuilder)}.
+     *  serialization. This method calls {@link #print}.
      */
     @Override
     public final String         toString () {
