@@ -118,7 +118,7 @@ public class FileField extends JPanel {
         return (f.getPath ());
     }
 
-    public void        complain (ParsingException px)
+	public void        complain (ParsingException px) 
         throws ParsingException
     {
         mPathField.complain (px);

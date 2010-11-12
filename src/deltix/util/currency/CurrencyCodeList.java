@@ -42,26 +42,31 @@ public class CurrencyCodeList {
                 if (node.getNodeType () == Node.ELEMENT_NODE) {
                     final Element element = (Element) node;
 
-                    final CurrencyInfo info = new CurrencyInfo (getText (element, "AlphabeticCode"),
+                    final CurrencyInfo info = new CurrencyInfo (getText (element,
+                                                                         "AlphabeticCode"),
                                                                 CharSequenceParser.parseShort (getText (element,
                                                                                                         "NumericCode")),
-                                                                getText (element, "Name"),
-                                                                getText (element, "Country"));
+                                                                getText (element,
+                                                                         "Name"),
+                                                                getText (element,
+                                                                         "Country"));
                     numericIndex[info.numericCode] = info;
-                    symbolicIndex.put (info.symbolicCode, info);
+                    symbolicIndex.put (info.symbolicCode,
+                                       info);
                 }
 
             }
         } catch (final Throwable x) {
             Util.LOGGER.log (Level.SEVERE,
-                                 "Can not create currency code list",
-                                 x);
+                             "Can not create currency code list",
+                             x);
         } finally {
             Util.close (is);
         }
     }
 
-    private static String getText (final Element element, final String tag) {
+    private static String getText (final Element element,
+                                   final String tag) {
         NodeList fstNm;
         try {
             final NodeList fstNmElmntLst = element.getElementsByTagName (tag);
@@ -85,7 +90,8 @@ public class CurrencyCodeList {
         return (info == null ? null : info.symbolicCode);
     }
 
-    public static int symbolicToNumeric (final String code, final int notFoundValue) {
+    public static int symbolicToNumeric (final String code,
+                                         final int notFoundValue) {
         final CurrencyInfo info = getInfoBySymbolic (code);
 
         return (info == null ? notFoundValue : info.numericCode);
@@ -103,19 +109,22 @@ public class CurrencyCodeList {
         if (value != null) {
             final String s = String.valueOf (value);
 
-            if (!(Character.isLetter (s.charAt (0)))) {
-                try {
-                    final int n = Integer.parseInt (s);
-                    if ((n & TEXT_MARKER) == 0)
-                        return getInfoByNumeric (n);
-                    else
-                        return getInfoBySymbolic (CurrencyCodec.intToCode (n));
-                } catch (final NumberFormatException e) {
-                    //
-                }
-            }
+            if (!s.isEmpty ()) {
 
-            return getInfoBySymbolic (s);
+                if (!(Character.isLetter (s.charAt (0)))) {
+                    try {
+                        final int n = Integer.parseInt (s);
+                        if ((n & TEXT_MARKER) == 0)
+                            return getInfoByNumeric (n);
+                        else
+                            return getInfoBySymbolic (CurrencyCodec.intToCode (n));
+                    } catch (final NumberFormatException e) {
+                        //
+                    }
+                }
+
+                return getInfoBySymbolic (s);
+            }
         }
         return null;
     }
@@ -148,7 +157,9 @@ public class CurrencyCodeList {
 
         @Override
         public int compareTo (final CurrencyInfo o) {
-            return Util.compare (symbolicCode, o == null ? null : o.symbolicCode, true);
+            return Util.compare (symbolicCode,
+                                 o == null ? null : o.symbolicCode,
+                                 true);
         }
     }
 }
