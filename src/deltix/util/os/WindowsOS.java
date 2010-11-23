@@ -7,90 +7,89 @@ import java.io.*;
 import java.util.*;
 import java.util.prefs.*;
 
+
 /**
  *
  */
 public final class WindowsOS {
-    public static final boolean     IS_X64;
-    public static final boolean     IS_X86;
-    public static final boolean     IS_VISTA;
+    public static final boolean IS_X64;
+    public static final boolean IS_X86;
+    public static final boolean IS_VISTA;
 
     static {
-        String      PROC_ID = System.getenv ("PROCESSOR_IDENTIFIER");
+        String PROC_ID = System.getenv ("PROCESSOR_IDENTIFIER");
 
         IS_X64 = PROC_ID != null && PROC_ID.contains ("64");
 
         IS_X86 = !IS_X64;
-        
-        String osName = System.getProperty ( "os.name" );
-        IS_VISTA = osName.startsWith ( "Windows Vista" );
+
+        String osName = System.getProperty ("os.name");
+        IS_VISTA = osName.startsWith ("Windows Vista");
     }
 
     // mkshortcut.vbs
-//    static String mkshortcut =
-//        "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
-//        "set oShellLink = WshShell.CreateShortcut(Wscript.Arguments.Named(\"shortcut\") & \".lnk\")\n" +
-//        "oShellLink.TargetPath = Wscript.Arguments.Named(\"target\")\n" +
-//        "oShellLink.IconLocation = Wscript.Arguments.Named(\"icon\")\n" +
-//        "oShellLink.WindowStyle = 1\n" +
-//        "oShellLink.Save";
+    // static String mkshortcut =
+    // "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
+    // "set oShellLink = WshShell.CreateShortcut(Wscript.Arguments.Named(\"shortcut\") & \".lnk\")\n"
+    // +
+    // "oShellLink.TargetPath = Wscript.Arguments.Named(\"target\")\n" +
+    // "oShellLink.IconLocation = Wscript.Arguments.Named(\"icon\")\n" +
+    // "oShellLink.WindowStyle = 1\n" +
+    // "oShellLink.Save";
 
-     static String mkshortcut =
-        "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
-        "set oShellLink = WshShell.CreateShortcut(\"%s.lnk\")\n" +
-        "oShellLink.TargetPath = %s \n" +
-        "oShellLink.WorkingDirectory = %s\n" +
-        "oShellLink.IconLocation = %s\n" +
-        "oShellLink.WindowStyle = 1\n" +                         
-        "oShellLink.Save";
+    static String               mkshortcut = "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n"
+                                             + "set oShellLink = WshShell.CreateShortcut(\"%s.lnk\")\n"
+                                             + "oShellLink.TargetPath = %s \n" + "oShellLink.WorkingDirectory = %s\n"
+                                             + "oShellLink.IconLocation = %s\n" + "oShellLink.WindowStyle = 1\n"
+                                             + "oShellLink.Save";
 
-    public static final String      getSystemDrive () {
-        String      sysdrive = System.getenv ("C:");
-        
+    public static final String getSystemDrive () {
+        String sysdrive = System.getenv ("C:");
+
         if (sysdrive == null)
             sysdrive = "C:";
-        
+
         return (sysdrive);
     }
-    
-    public static final String      getProgramFiles () {
-        String      pf = System.getenv ("ProgramFiles");
-        
+
+    public static final String getProgramFiles () {
+        String pf = System.getenv ("ProgramFiles");
+
         if (pf == null)
             pf = getSystemDrive () + "\\Program Files";
-        
+
         return (pf);
     }
-    
-    public static final String      getSystemRoot () {
-        String      pf = System.getenv ("SystemRoot");
-        
+
+    public static final String getSystemRoot () {
+        String pf = System.getenv ("SystemRoot");
+
         if (pf == null)
             pf = getSystemDrive () + "\\Windows";
-        
+
         return (pf);
     }
-    
-    public static final String      getAllUsersProfile () {
-        String      pf = System.getenv ("ALLUSERSPROFILE");
+
+    public static final String getAllUsersProfile () {
+        String pf = System.getenv ("ALLUSERSPROFILE");
 
         if (pf == null)
             pf = getSystemDrive () + "\\Documents and Settings\\All Users";
-    
+
         return (pf);
     }
-    
-    public static final String      getPublic () {
-        String      p = System.getenv ("PUBLIC");
+
+    public static final String getPublic () {
+        String p = System.getenv ("PUBLIC");
 
         if (p == null)
             p = getSystemDrive () + "\\Users\\Public";
         return (p);
-        
+
     }
 
-    public static final String      getUserName () {
-        String      pf = System.getenv ("USERNAME");
+    public static final String getUserName () {
+        String pf = System.getenv ("USERNAME");
 
         if (pf == null)
             pf = "Administrator";
@@ -98,96 +97,102 @@ public final class WindowsOS {
         return (pf);
     }
 
-    public static final String      getUserProfile () {
-        String      pf = System.getenv ("USERPROFILE");
+    public static final String getUserProfile () {
+        String pf = System.getenv ("USERPROFILE");
 
         if (pf == null)
             pf = getSystemDrive () + "\\Documents and Settings\\" + getUserName ();
 
         return (pf);
     }
-    
-    public static final File       getDotNetHome () {
+
+    public static final File getDotNetHome () {
         return (getDotNetHome (-1));
     }
-    
-    public static final File       getDotNetHome (int version) {
-        return (getDotNetHome (false, version));
+
+    public static final File getDotNetHome (int version) {
+        return (getDotNetHome (false,
+                               version));
     }
-    
-    public static final File       getDotNetHome (boolean force32, int version) {
-        File        dotNet = new File (getSystemRoot (), "Microsoft.NET");
-        
+
+    public static final File getDotNetHome (boolean force32,
+                                            int version) {
+        File dotNet = new File (getSystemRoot (),
+                                "Microsoft.NET");
+
         if (!dotNet.isDirectory ())
             return (null);
-        
-        File        framework = null;
-        
+
+        File framework = null;
+
         if (!force32) {
-            framework = new File (dotNet, "framework64");
+            framework = new File (dotNet,
+                                  "framework64");
             if (!framework.isDirectory ())
                 framework = null;
         }
-        
+
         if (framework == null) {
-            framework = new File (dotNet, "framework");
-            
+            framework = new File (dotNet,
+                                  "framework");
+
             if (!framework.isDirectory ())
                 framework = null;
         }
-        
+
         if (framework == null)
             return (null);
-        
-        final String    start = 
-            version < 1 ? "v" :"v" + version + ".";
-        
-        File []     homes = 
-            framework.listFiles (
-                new FileFilter () {
-                    public boolean accept (File f) {
-                        return (f.isDirectory () && f.getName ().startsWith (start));
-                    }                    
-                }
-            );
-        
+
+        final String start = version < 1 ? "v" : "v" + version + ".";
+
+        File[] homes = framework.listFiles (new FileFilter () {
+            public boolean accept (File f) {
+                return (f.isDirectory () && f.getName ().startsWith (start));
+            }
+        });
+
         if (homes == null)
             return (null);
-        
+
         Arrays.sort (homes);
-        
-        return (homes [homes.length - 1]);
+
+        return (homes[homes.length - 1]);
     }
 
-    public static void createShortcut(File target, File location, File icon)
-            throws IOException
-    {
-        createShortcut(target, location.getAbsolutePath(), icon.getAbsolutePath());
+    public static void createShortcut (File target,
+                                       File location,
+                                       File icon) throws IOException {
+        createShortcut (target,
+                        location.getAbsolutePath (),
+                        icon.getAbsolutePath ());
     }
 
-    public static void createShortcut(File target, String location, String icon)
-            throws IOException
-    {
+    public static void createShortcut (File target,
+                                       String location,
+                                       String icon) throws IOException {
         // create script that will make shortcut
-        File script = File.createTempFile("shcut", ".vbs");
-        script.deleteOnExit();
+        File script = File.createTempFile ("shcut",
+                                           ".vbs");
+        script.deleteOnExit ();
         FileWriter writer = null;
         try {
-            writer = new FileWriter(script);
-            writer.write(String.format(mkshortcut,
-                    location,
-                    StringUtils.quote(target.getAbsolutePath()),
-                    StringUtils.quote(target.getParentFile().getAbsolutePath()),
-                    StringUtils.quote(icon)));
-            writer.close();
+            writer = new FileWriter (script);
+            writer.write (String.format (mkshortcut,
+                                         location,
+                                         StringUtils.quote (target.getAbsolutePath ()),
+                                         StringUtils.quote (target.getParentFile ().getAbsolutePath ()),
+                                         StringUtils.quote (icon)));
+            writer.close ();
             writer = null;
         } finally {
-            Util.close(writer);
+            Util.close (writer);
         }
-        
-        (new ProcessBuilder("cmd.exe", "/K", StringUtils.quote(script.getAbsolutePath()))).start();
+
+        (new ProcessBuilder ("cmd.exe",
+                             "/K",
+                             StringUtils.quote (script.getAbsolutePath ()))).start ();
     }
-    
+
     public static boolean asAdministrator () {
         // attempt to set a preference
         try {
@@ -201,10 +206,99 @@ public final class WindowsOS {
             return false;
         }
     }
-    
-    public static void main (String [] args) throws Exception {
+
+
+    static String GET_HARD_DISK_SERIAL_NUMBERS = "strComputer = \".\"\n"
+                                                 + "Set objWMIService = GetObject(\"winmgmts:\\\\\" & strComputer & \"\\root\\CIMV2\")\n"
+                                                 + "Set colItems = objWMIService.ExecQuery( _\n"
+                                                 + "    \"SELECT * FROM Win32_DiskDrive\",,48)\n"
+                                                 + "For Each objItem in colItems\n"
+                                                 + "    Wscript.Echo objItem.Caption & \":\" & objItem.InterfaceType & \":\" & objItem.SerialNumber\n"
+                                                 + "Next\n";
+
+    public static String getHardDiskSerial () {
+        String result = "";
+        try {
+            File file = File.createTempFile ("getHardDiskSerial",
+                                             ".vbs");
+            file.deleteOnExit ();
+            FileWriter fw = new java.io.FileWriter (file);
+
+            String vbs = GET_HARD_DISK_SERIAL_NUMBERS;
+            fw.write (vbs);
+            fw.close ();
+            Process p = Runtime.getRuntime ().exec ("cscript //NoLogo " + file.getPath ());
+            BufferedReader input = new BufferedReader (new InputStreamReader (p.getInputStream ()));
+            String line;
+            while ((line = input.readLine ()) != null) {
+                result += "%" + line;
+            }
+            input.close ();
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
+        return result.trim ();
+    }
+
+    static String GET_SERIAL_NUMBERS = "Set fso = CreateObject(\"Scripting.FileSystemObject\")\n"
+                                       + "Set drives = fso.Drives\n" + "For Each d in drives\n"
+                                       + "If d.DriveType=2 Then\n"
+                                       + " Wscript.Echo  d.DriveLetter & \":\" & d.SerialNumber\n" + "End If\n"
+                                       + "Next\n" + "Set drives = nothing\n" + "Set fso = nothing";
+
+    public static String getSerialNumbers () {
+        String result = "";
+        try {
+            File file = File.createTempFile ("getSerialNumber",
+                                             ".vbs");
+            file.deleteOnExit ();
+            FileWriter fw = new java.io.FileWriter (file);
+
+            String vbs = GET_SERIAL_NUMBERS;
+            fw.write (vbs);
+            fw.close ();
+            Process p = Runtime.getRuntime ().exec ("cscript //NoLogo " + file.getPath ());
+            BufferedReader input = new BufferedReader (new InputStreamReader (p.getInputStream ()));
+            String line;
+            while ((line = input.readLine ()) != null) {
+                result += "%" + line;
+            }
+            input.close ();
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
+        return result.trim ();
+    }
+
+    public static String getDiskSerialNumber (String drive) {
+        String result = "";
+        try {
+            File file = File.createTempFile ("getSerialNumber",
+                                             ".vbs");
+            file.deleteOnExit ();
+            FileWriter fw = new java.io.FileWriter (file);
+
+            String vbs = "Set objFSO = CreateObject(\"Scripting.FileSystemObject\")\n" +
+                         "Set colDrives = objFSO.Drives\n" + "Set objDrive = colDrives.item(\"" + drive + "\")\n" +
+                         "Wscript.Echo objDrive.SerialNumber";
+            fw.write (vbs);
+            fw.close ();
+            Process p = Runtime.getRuntime ().exec ("cscript //NoLogo " + StringUtils.quote (file.getAbsolutePath ()));
+            BufferedReader input = new BufferedReader (new InputStreamReader (p.getInputStream ()));
+            String line;
+            while ((line = input.readLine ()) != null) {
+                result += line;
+            }
+            input.close ();
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
+        return String.format ("%08X",  Integer.valueOf (result.trim ()));
+    }
+
+
+    public static void main (String[] args) throws Exception {
         System.out.println (getDotNetHome ());
     }
 
-    
 }

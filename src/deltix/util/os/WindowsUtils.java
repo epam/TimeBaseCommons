@@ -2,6 +2,12 @@ package deltix.util.os;
 
 import java.io.*;
 
+import org.springframework.util.*;
+
+import com.sun.jna.*;
+
+import deltix.util.jna.*;
+
 public class WindowsUtils {
 
     // FIXME: do not delete - for a future use
@@ -59,99 +65,137 @@ public class WindowsUtils {
     public static final int     CSIDL_PROFILES                = 0x003E;
     public static final int     CSIDL_FLAG_CREATE             = 0x8000;
 
-    private static final String SHELL_FOLDERS_REG_KEY         =
-                                                                      "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders";
+    private static final String SHELL_FOLDERS_REG_KEY         = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders";
 
     // FIXME: do not delete - for a future use
-    static native String getSpecialFolderPath ( int csidl );
+    static native String getSpecialFolderPath (int csidl);
 
-    public static String regQuery ( final int hive,
-                                    final String keyName,
-                                    final String valueName ) {
+    public static String regQuery (final int hive,
+                                   final String keyName,
+                                   final String valueName) {
 
         try {
-            return WindowsRegistry.readString ( hive,
-                                                keyName,
-                                                valueName );
+            return WindowsRegistry.readString (hive,
+                                               keyName,
+                                               valueName);
         } catch (final Throwable e) {
             return null;
         }
     }
 
-    public static String regQueryCurrentUserDesktopPath ( ) {
-        return regQuery ( WindowsRegistry.HKEY_CURRENT_USER,
-                          SHELL_FOLDERS_REG_KEY,
-                          "Desktop" );
+    public static String regQueryCurrentUserDesktopPath () {
+        return regQuery (WindowsRegistry.HKEY_CURRENT_USER,
+                         SHELL_FOLDERS_REG_KEY,
+                         "Desktop");
     }
 
-    public static String regQueryCurrentUserStartMenuPath ( ) {
-        return regQuery ( WindowsRegistry.HKEY_CURRENT_USER,
-                          SHELL_FOLDERS_REG_KEY,
-                          "Start Menu" );
+    public static String regQueryCurrentUserStartMenuPath () {
+        return regQuery (WindowsRegistry.HKEY_CURRENT_USER,
+                         SHELL_FOLDERS_REG_KEY,
+                         "Start Menu");
     }
 
-    public static String regQueryCommonDesktopPath ( ) {
-        return regQuery ( WindowsRegistry.HKEY_LOCAL_MACHINE,
-                          SHELL_FOLDERS_REG_KEY,
-                          "Common Desktop" );
+    public static String regQueryCommonDesktopPath () {
+        return regQuery (WindowsRegistry.HKEY_LOCAL_MACHINE,
+                         SHELL_FOLDERS_REG_KEY,
+                         "Common Desktop");
     }
 
-    public static String regQueryCommonStartMenuPath ( ) {
-        return regQuery ( WindowsRegistry.HKEY_LOCAL_MACHINE,
-                          SHELL_FOLDERS_REG_KEY,
-                          "Common Start Menu" );
-
-    }
-
-    public static String regQueryCommonProgramsPath ( ) {
-        return regQuery ( WindowsRegistry.HKEY_LOCAL_MACHINE,
-                          SHELL_FOLDERS_REG_KEY,
-                          "Common Programs" );
+    public static String regQueryCommonStartMenuPath () {
+        return regQuery (WindowsRegistry.HKEY_LOCAL_MACHINE,
+                         SHELL_FOLDERS_REG_KEY,
+                         "Common Start Menu");
 
     }
 
-    public static File getCurrentUserDesktopDir ( ) {
-        final String currentUserDesktopPath = regQueryCurrentUserDesktopPath ( );
-        return currentUserDesktopPath != null ? new File ( currentUserDesktopPath ) : null;
+    public static String regQueryCommonProgramsPath () {
+        return regQuery (WindowsRegistry.HKEY_LOCAL_MACHINE,
+                         SHELL_FOLDERS_REG_KEY,
+                         "Common Programs");
+
     }
 
-    public static File getCurrentUserStartMenuDir ( ) {
-        final String currentUserStartMenuPath = regQueryCurrentUserStartMenuPath ( );
-        return currentUserStartMenuPath != null ? new File ( currentUserStartMenuPath ) : null;
+    public static File getCurrentUserDesktopDir () {
+        final String currentUserDesktopPath = regQueryCurrentUserDesktopPath ();
+        return currentUserDesktopPath != null ? new File (currentUserDesktopPath) : null;
     }
 
-    public static File getCommonUserDesktopDir ( ) {
-        final String commonUserDesktopPath = regQueryCommonDesktopPath ( );
-        return commonUserDesktopPath != null ? new File ( commonUserDesktopPath ) : null;
+    public static File getCurrentUserStartMenuDir () {
+        final String currentUserStartMenuPath = regQueryCurrentUserStartMenuPath ();
+        return currentUserStartMenuPath != null ? new File (currentUserStartMenuPath) : null;
     }
 
-    public static File getCommonStartMenuDir ( ) {
-        final String commonUserStartMenuPath = regQueryCommonStartMenuPath ( );
-        return commonUserStartMenuPath != null ? new File ( commonUserStartMenuPath ) : null;
+    public static File getCommonUserDesktopDir () {
+        final String commonUserDesktopPath = regQueryCommonDesktopPath ();
+        return commonUserDesktopPath != null ? new File (commonUserDesktopPath) : null;
     }
 
-    public static File getCommonProgramsDir ( ) {
-        final String commonommonProgramsPath = regQueryCommonProgramsPath ( );
-        return commonommonProgramsPath != null ? new File ( commonommonProgramsPath ) : null;
+    public static File getCommonStartMenuDir () {
+        final String commonUserStartMenuPath = regQueryCommonStartMenuPath ();
+        return commonUserStartMenuPath != null ? new File (commonUserStartMenuPath) : null;
     }
 
-    public static void main ( final String[] args ) {
-        System.out.println ( "User Desktop directory : "
-                             + regQueryCurrentUserDesktopPath ( ) );
+    public static File getCommonProgramsDir () {
+        final String commonommonProgramsPath = regQueryCommonProgramsPath ();
+        return commonommonProgramsPath != null ? new File (commonommonProgramsPath) : null;
+    }
 
-        System.out.println ( "User StartMenu directory : "
-                             + regQueryCurrentUserStartMenuPath ( ) );
+    private static String b2s (byte b[]) {
+        // Converts C string to Java String
+        int len = 0;
+        while (b[len] != 0)
+            ++len;
+        return new String (b,
+                           0,
+                           len);
+    }
 
-        System.out.println ( "Common Desktop directory : "
-                             + regQueryCommonDesktopPath ( ) );
+    public static String getDiskSerialNumber (String path) {
+        Assert.notNull (path);
+        if (path.indexOf ("\\") != path.length () - 1) {
+            path += "\\";
+        }
+        Kernel32 kernel32 = (Kernel32) Native.loadLibrary ("kernel32",
+                                                           Kernel32.class);
+        byte volName[] = new byte[256], fsName[] = new byte[256];
+        int volSerNbr[] = new int[1], maxCompLen[] = new int[1], fileSysFlags[] = new int[1];
+        boolean ok = kernel32.GetVolumeInformationA (path,
+                                                     volName,
+                                                     256,
+                                                     volSerNbr,
+                                                     maxCompLen,
+                                                     fileSysFlags,
+                                                     fsName,
+                                                     256);
+        if (ok) {
+            boolean showInfo = false;
+            if (showInfo)// for test only
+                System.out.printf ("%s %08X '%s' %s %08X%n",
+                                   path,
+                                   volSerNbr[0],
+                                   b2s (volName),
+                                   b2s (fsName),
+                                   fileSysFlags[0]);
 
-        System.out.println ( "Common StartMenu directory : "
-                             + regQueryCommonStartMenuPath ( ) );
+            return String.format ("%08X",
+                                  volSerNbr[0]);
+        } else
+            throw new RuntimeException ("Unable to get HDD volume serial number");
 
-        System.out.println ( "Common Programs directory : "
-                             + regQueryCommonProgramsPath ( ) );
+    }
 
-        System.exit ( 0 );
+    public static void main (final String[] args) {
+        System.out.println ("User Desktop directory : " + regQueryCurrentUserDesktopPath ());
+
+        System.out.println ("User StartMenu directory : " + regQueryCurrentUserStartMenuPath ());
+
+        System.out.println ("Common Desktop directory : " + regQueryCommonDesktopPath ());
+
+        System.out.println ("Common StartMenu directory : " + regQueryCommonStartMenuPath ());
+
+        System.out.println ("Common Programs directory : " + regQueryCommonProgramsPath ());
+
+        System.exit (0);
 
     }
 }
