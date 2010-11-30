@@ -493,6 +493,11 @@ public class StringUtils {
         return str;
     }
 
+    /** @return true if input is empty string or null */
+    public static boolean isEmpty (String value) {
+        return trim(value) == null;
+    }
+
     public static CharSequence trim (CharSequence cs) {
         if (cs == null)
             return null;

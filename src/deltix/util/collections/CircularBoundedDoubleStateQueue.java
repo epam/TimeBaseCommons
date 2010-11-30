@@ -9,7 +9,7 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
 
     private final FixedSizeStack<E> mEmptyElements;
     private final CircularBoundedQueue<E> mReadyElements;
-    private final boolean mCannibalizeStaleReadyElements = false;
+    private boolean mCannibalizeStaleReadyElements = false;
 
     public CircularBoundedDoubleStateQueue(final int elementCount) {
         mReadyElements = new CircularBoundedQueue<E>(elementCount);
@@ -18,6 +18,14 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
             mEmptyElements.add(newEmptyElement());
         }
 
+    }
+
+    public boolean isCannibalizable() {
+        return mCannibalizeStaleReadyElements;
+    }
+
+    public void setCannibalizable(boolean cannibalizable) {
+        this.mCannibalizeStaleReadyElements = cannibalizable;
     }
 
     public int capacity() {
