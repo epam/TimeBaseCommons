@@ -1,10 +1,7 @@
 package deltix.util.lang;
 
 import javax.tools.*;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.io.*;
 import java.net.URI;
 
@@ -57,6 +54,39 @@ public class JavaCompilerHelper {
         if (ok)
             return cl.findClass(className);
         else
+            throw new RuntimeException("compilation failed:\n" + (sb != null ? sb.toString() : ""));
+    }
+
+    public Map<String, Class<?>> compileClasses(Map<String, String> mapClassName2Code) throws ClassNotFoundException {
+        final ArrayList<MemorySource> compilationUnits = new ArrayList<MemorySource>(mapClassName2Code.size());
+        for (Map.Entry<String, String> entry : mapClassName2Code.entrySet()) {
+            compilationUnits.add(new MemorySource(entry.getKey(), entry.getValue()));
+        }
+        Writer out = new PrintWriter(System.err);
+        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
+        final String optionString = System.getProperty("javac.options");
+        final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
+        JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
+        boolean ok = compile.call();
+
+        final boolean hasDiagnostic = dianosticListener.getDiagnostics().size() > 0;
+        StringBuilder sb = null;
+        if (hasDiagnostic) {
+            sb = new StringBuilder();
+            for (Diagnostic<? extends JavaFileObject> s : dianosticListener.getDiagnostics()) {
+                sb.append(s).append(Util.NATIVE_LINE_BREAK);
+            }
+            if (ok)
+                Util.LOGGER.warning(sb.toString());
+        }
+
+        if (ok) {
+            final HashMap<String, Class<?>> result = new HashMap<String, Class<?>>(mapClassName2Code.size());
+            for (String className : mapClassName2Code.keySet())
+                result.put(className, cl.findClass(className));
+
+            return result;
+        } else
             throw new RuntimeException("compilation failed:\n" + (sb != null ? sb.toString() : ""));
     }
 
