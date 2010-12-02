@@ -94,7 +94,7 @@ public class JavaCompilerHelper {
         private String src;
 
         public MemorySource(String name, String src) {
-            super(URI.create("string:///" + name + ".java"), Kind.SOURCE);
+            super(URI.create("string:///" + name.replace ('.', '/') + ".java"), Kind.SOURCE);
             this.src = src;
         }
 
