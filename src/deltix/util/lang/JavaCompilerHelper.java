@@ -1,6 +1,9 @@
 package deltix.util.lang;
 
 import javax.tools.*;
+
+import sun.security.action.*;
+
 import java.util.*;
 import java.io.*;
 import java.net.URI;
@@ -54,7 +57,7 @@ public class JavaCompilerHelper {
         if (ok)
             return cl.findClass(className);
         else
-            throw new RuntimeException("compilation failed:\n" + (sb != null ? sb.toString() : ""));
+            throw new CompilationExceptionWithDiagnostic("compilation failed:\n" + (sb != null ? sb.toString() : ""), dianosticListener.getDiagnostics());
     }
 
     public Map<String, Class<?>> compileClasses(Map<String, String> mapClassName2Code) throws ClassNotFoundException {
@@ -87,7 +90,7 @@ public class JavaCompilerHelper {
 
             return result;
         } else
-            throw new RuntimeException("compilation failed:\n" + (sb != null ? sb.toString() : ""));
+            throw new CompilationExceptionWithDiagnostic("compilation failed:\n" + (sb != null ? sb.toString() : ""), dianosticListener.getDiagnostics());
     }
 
     private static class MemorySource extends SimpleJavaFileObject {
@@ -181,7 +184,8 @@ public class JavaCompilerHelper {
                     return super.findClass(name);
                 }
             }
-            return defineClass(name, mbc.getBytes(), 0, mbc.getBytes().length);
+            final Class<?> clazz = findLoadedClass (name);
+            return clazz == null ? defineClass(name, mbc.getBytes(), 0, mbc.getBytes().length) : clazz;
         }
 
         public void addClass(String name, MemoryByteCode mbc) {
