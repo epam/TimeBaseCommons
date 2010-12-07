@@ -34,6 +34,10 @@ public class JavaCompilerHelper {
         fileManager = new SpecialJavaFileManager(jfm, cl);
     }
 
+    public ClassLoader  getClassLoader () {
+        return (cl);
+    }
+
     public Class<?> compileClass (String className, String code) throws ClassNotFoundException {
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
