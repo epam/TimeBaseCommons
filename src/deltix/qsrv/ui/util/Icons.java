@@ -126,20 +126,21 @@ public class Icons {
     public static final Icon   TRADER                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/trader.png");
 
     public static final Icon   IN_OUT                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/exchange.png");
+    public static final Icon   JAVA                  = SwingUtil.loadIcon ("deltix/qsrv/ui/util/java.png");
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {
-                                                     EQUITY,
-                                                     OPTION,
-                                                     FUTURE,
-                                                     BOND,
-                                                     CURRENCY,
-                                                     INDEX,
-                                                     ETF,
-                                                     CUSTOM,
-                                                     SIMPLE_OPTION,
-                                                     EXCHANGE,
-                                                     TRADING_SESSION
+            EQUITY,
+            OPTION,
+            FUTURE,
+            BOND,
+            CURRENCY,
+            INDEX,
+            ETF,
+            CUSTOM,
+            SIMPLE_OPTION,
+            EXCHANGE,
+            TRADING_SESSION
                                                      };
 
     public static Icon forInstrumentType (InstrumentType t) {
