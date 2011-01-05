@@ -300,7 +300,7 @@ public class MemoryDataOutput {
         }
     }
     
-    private final boolean       writeSpecialScaledDouble (double v) {
+    private boolean             writeSpecialScaledDouble (double v) {
         if (v == 0) {
             writeByte (0);
             return (true);
@@ -346,7 +346,7 @@ public class MemoryDataOutput {
             exp--;
         }
 
-        // Prevent 8-byte significand from being written
+        // Prevent 8-byte significant from being written
         if ((lv & 0xFF00000000000000L) != 0) {
             writeByte (0x0F);
             writeDouble (v);
@@ -364,10 +364,10 @@ public class MemoryDataOutput {
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
     }
 
-    public final void           writeScaledDouble (double v) {
+    public final void           oldWriteScaledDouble (double v) {
         if (writeSpecialScaledDouble (v))
             return;
-                    
+
         int                 signBit;
         double              x;
 
@@ -382,13 +382,13 @@ public class MemoryDataOutput {
 
         int                 exp = 0;
         long                lv;
-        
+
         for (;;) {
             double          scale = DSCALES [exp];
 
             lv = Math.round (x * scale);
 
-            // Prevent 8-byte significand from being written
+            // Prevent 8-byte significant from being written
             if ((lv & 0xFF00000000000000L) != 0) {
                 writeByte (0x0F);
                 writeDouble (v);
@@ -397,16 +397,16 @@ public class MemoryDataOutput {
 
             if (x == lv / scale)
                 break;
-            
+
             exp++;
-                       
+
             if (exp == MAX_SCALE_EXP) {
                 writeByte (0x0F);
                 writeDouble (v);
                 return;
             }
         }
-        
+
         //  Discount leading zero bytes in x
         makeRoom (1);
 
@@ -414,9 +414,76 @@ public class MemoryDataOutput {
         int                 numBytes = writeLongBytes (lv);
 
         assert numBytes < 8;
-        
+
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
     }
+
+    public final void           writeScaledDouble (double v) {
+        if (writeSpecialScaledDouble (v))
+            return;
+
+        int                 signBit;
+        double              x;
+
+        if (v < 0) {
+            signBit = 0x80;
+            x = -v;
+        }
+        else {
+            signBit = 0;
+            x = v;
+        }
+
+        int                 exp = 0;
+        long                lv;
+
+        for (;;) {
+            double          scale = DSCALES [exp];
+
+            lv = (long)(x * scale);
+
+            // Prevent 8-byte significant from being written
+            if ((lv & 0xFF00000000000000L) != 0) {
+                writeByte (0x0F);
+                writeDouble (v);
+                return;
+            }
+
+            if (x == lv / scale || x == (lv + 1) / scale) {
+                lv = Math.round (x * scale);
+                if (x == lv / scale)
+                    break;
+            }
+
+            exp++;
+
+            if (exp == MAX_SCALE_EXP) {
+                writeByte (0x0F);
+                writeDouble (v);
+                return;
+            }
+        }
+
+        //  Discount leading zero bytes in x
+        makeRoom (1);
+
+        int                 headerPos = mPos++;
+        int                 numBytes = writeLongBytes (lv);
+
+        assert numBytes < 8;
+
+        mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
+    }
+
+//    public long             round(double value, double scale) {
+//        long l = (long) value;
+//        double fraction = value - l;
+//
+//        long top = (long) (scale * 10 * fraction + 5);
+//        long v = (long) (scale * fraction);
+//
+//        return (long)(value * scale) + (top - v * 10 > 10 ? 1 : 0);
+//    }
 
     /**
      *  Writes out a long in LSBF order, and stops when all 
@@ -425,7 +492,7 @@ public class MemoryDataOutput {
      *  @param v The long to write.
      *  @return  The number of bytes written, between 0 .. 8 inclusively.
      */
-    public int                  writeLongBytes (long v) {
+    public int                      writeLongBytes (long v) {
         int                 addlPos = mPos;
         
         while (v != 0) {   
