@@ -20,8 +20,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         final Object root = tree.getModel ().getRoot ();
         // Traverse tree from root
         return findTreeNode (tree,
-                              new TreePath (root),
-                              userObject);
+                             new TreePath (root),
+                             userObject);
     }
 
     public static final Object findTreeNode (final JTree tree,
@@ -30,16 +30,16 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         // Traverse children
         final Object node = parent.getLastPathComponent ();
 
-        if (node instanceof BaseMutableTreeNode
-            && JideSwingUtilities.equals (userObject,
-                                           ((BaseMutableTreeNode) node).getUserObject ())) {
+        if (node instanceof DefaultMutableTreeNode &&
+            JideSwingUtilities.equals (userObject,
+                                       ((DefaultMutableTreeNode) node).getUserObject ())) {
             return node;
         }
 
         if (tree.getModel ().getChildCount (node) >= 0) {
             for (int i = 0; i < tree.getModel ().getChildCount (node); i++) {
                 final Object n = tree.getModel ().getChild (node,
-                                                              i);
+                                                            i);
                 final TreePath path = parent.pathByAddingChild (n);
                 final Object result = findTreeNode (tree,
                                                     path,
@@ -58,7 +58,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
                                 final boolean allowsChildren,
                                 final JTree tree) {
         super (userObject,
-                allowsChildren);
+               allowsChildren);
         _tree = tree;
         createMenu ();
     }
@@ -189,7 +189,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
                                                         enumeration);
             }
             if (selected != null) {
-                TreeUtils.loadSelection (getTree (), selected);
+                TreeUtils.loadSelection (getTree (),
+                                         selected);
             }
         }
 
@@ -202,15 +203,17 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         } else {
             final TreeModel model = _tree.getModel ();
             if (model instanceof AbstractTreeModel)
-                fireTreeStructureChanged ((AbstractTreeModel) model, new TreePath (getRoot ()));
+                fireTreeStructureChanged ((AbstractTreeModel) model,
+                                          new TreePath (getRoot ()));
             else if (model instanceof DefaultTreeModel)
                 ((DefaultTreeModel) model).reload ();
         }
     }
 
-    protected void fireTreeStructureChanged (AbstractTreeModel source, TreePath path) {
+    protected void fireTreeStructureChanged (final AbstractTreeModel source,
+                                             final TreePath path) {
         // Guaranteed to return a non-null array
-        Object[] listeners = source.getTreeModelListeners ();
+        final Object[] listeners = source.getTreeModelListeners ();
         TreeModelEvent e = null;
         // Process the listeners last to first, notifying
         // those that are interested in this event
@@ -225,9 +228,10 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         }
     }
 
-    protected void fireTreeStructureChanged (DefaultTreeModel source, TreePath path) {
+    protected void fireTreeStructureChanged (final DefaultTreeModel source,
+                                             final TreePath path) {
         // Guaranteed to return a non-null array
-        Object[] listeners = source.getTreeModelListeners ();
+        final Object[] listeners = source.getTreeModelListeners ();
         TreeModelEvent e = null;
         // Process the listeners last to first, notifying
         // those that are interested in this event
@@ -299,22 +303,22 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
      * realize the full power of JTree.
      */
     private JComponent render (final boolean selected,
-                                final boolean hasFocus,
-                                final JLabel defaultRendering) {
+                               final boolean hasFocus,
+                               final JLabel defaultRendering) {
         configureLabel (defaultRendering,
-                         selected,
-                         hasFocus);
+                        selected,
+                        hasFocus);
         return (defaultRendering);
     }
 
     /**
-     * User can override this method instead of {@link #getColor}, {@link #getFont},
-     * {@link #getLabelText} and {@link #getIcon}. Default
+     * User can override this method instead of {@link #getColor},
+     * {@link #getFont}, {@link #getLabelText} and {@link #getIcon}. Default
      * implementation sets the above properties in the label.
      */
     public void configureLabel (final JLabel label,
-                                 final boolean selected,
-                                 final boolean hasFocus) {
+                                final boolean selected,
+                                final boolean hasFocus) {
 
         final Color c = getColor ();
         final Font f = getFont (label.getFont ());
@@ -338,20 +342,20 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
         @Override
         public Component getTreeCellRendererComponent (final JTree jTree,
-                                                        final Object node,
-                                                        final boolean selected,
-                                                        final boolean expanded,
-                                                        final boolean leaf,
-                                                        final int row,
-                                                        final boolean hasFocus) {
+                                                       final Object node,
+                                                       final boolean selected,
+                                                       final boolean expanded,
+                                                       final boolean leaf,
+                                                       final int row,
+                                                       final boolean hasFocus) {
 
             final JLabel label = (JLabel) super.getTreeCellRendererComponent (jTree,
-                                                                               node,
-                                                                               selected,
-                                                                               expanded,
-                                                                               leaf,
-                                                                               row,
-                                                                               hasFocus);
+                                                                              node,
+                                                                              selected,
+                                                                              expanded,
+                                                                              leaf,
+                                                                              row,
+                                                                              hasFocus);
 
             if (node instanceof BaseMutableTreeNode) {
 
@@ -367,8 +371,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
             final BaseMutableTreeNode anode = (BaseMutableTreeNode) node;
             return anode.render (selected,
-                                  hasFocus,
-                                  label);
+                                 hasFocus,
+                                 label);
         }
     }
 }
