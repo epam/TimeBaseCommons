@@ -8,35 +8,63 @@ import java.util.prefs.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.filechooser.*;
+import javax.swing.filechooser.FileFilter;
 
 import com.jgoodies.binding.*;
 import com.jgoodies.binding.value.*;
 
+import com.jgoodies.validation.util.*;
 import deltix.util.swing.*;
 
 public class FileEditor extends CompositeEditor {
 
-    static final ResourceBundle RB            = ResourceBundle.getBundle ("deltix/util/swing/ui");
+            static final ResourceBundle RB            = ResourceBundle.getBundle ("deltix/util/swing/ui");
 
-    private final Preferences   _prefs;
-    private static final String RECENT_FOLDER = "recent_folder";
+    private        final Preferences    prefs;
+    private static final String         RECENT_FOLDER = "recent_folder";
 
     public FileEditor (final FileField field,
                        final Preferences prefs) {
         super ();
-        _prefs = prefs;
+        this.prefs = prefs;
         field.getPathField ().getDocument ().addDocumentListener (new ChangePathHandler ());
         field.addActionListener (new ActionHandler (field));
-        if (_prefs != null) {
-            final String path = _prefs.get (RECENT_FOLDER,
-                                            null);
-            if (!BindingUtils.isBlank (path))
+        if (this.prefs != null) {
+            final String path = this.prefs.get (RECENT_FOLDER,
+                                                null);
+            if (!ValidationUtils.isBlank (path))
                 field.fileChooser ().setCurrentDirectory (new File (path));
         }
 
-        _ui = field;
+        field.addActionListener (new ActionListener() {
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                if (FileField.ACTION_FILE_DIALOG == e.getID () && field.getValidationMode () == FileField.VALID_EXISTING_FILE) {
+                    try {
 
+                        String ext = extension ();
+                        if (!ValidationUtils.isEmpty (ext)) {
+                            String path = field.getPathField().getText ().trim ();
+                            if (!ValidationUtils.isEmpty (path)) {
+                                if (path.lastIndexOf (".") == -1) {
+                                    path += "." + ext;
+                                    setEditorValue (new File (path));
+                                }
+                            }
+                        }
+
+                    } catch (Throwable x) {
+                        //nothing to do
+                    }
+                }
+            }
+        });
+
+        _ui = field;
     }
+
+
 
     public FileEditor (final FileField field) {
         this (field,
@@ -114,6 +142,20 @@ public class FileEditor extends CompositeEditor {
 
     }
 
+    private String extension () {
+        JFileChooser fileChooser = ((FileField) _ui).fileChooser ();
+        final FileFilter[] filters = fileChooser.getChoosableFileFilters ();
+
+        for (FileFilter filter : filters) {
+            if (filter instanceof FileNameExtensionFilter) {
+                return ((FileNameExtensionFilter) filter).getExtensions ()[0];
+            }
+        }
+
+        return null;
+
+    }
+
     // Event Handling *********************************************************
 
     private final class ActionHandler implements ActionListener {
@@ -132,8 +174,8 @@ public class FileEditor extends CompositeEditor {
 
                 if (f != null && f.exists ()) {
                     _field.fileChooser ().setCurrentDirectory (f);
-                    if (_prefs != null) {
-                        _prefs.put (RECENT_FOLDER,
+                    if (prefs != null) {
+                        prefs.put (RECENT_FOLDER,
                                     f.getAbsolutePath ());
                     }
                 }

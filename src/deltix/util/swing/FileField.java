@@ -103,6 +103,10 @@ public class FileField extends JPanel {
         }
     }
 
+    public int            getValidationMode () {
+        return mValidationMode;
+    }
+
     public void         setEnabled (boolean flag) {
         super.setEnabled (flag);
         mPathField.setEnabled (flag);
