@@ -142,7 +142,7 @@ public class FileEditor extends CompositeEditor {
 
     }
 
-    private String extension () {
+    protected String extension () {
         JFileChooser fileChooser = ((FileField) _ui).fileChooser ();
         final FileFilter[] filters = fileChooser.getChoosableFileFilters ();
 
