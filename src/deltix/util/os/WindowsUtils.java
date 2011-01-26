@@ -2,12 +2,6 @@ package deltix.util.os;
 
 import java.io.*;
 
-import org.springframework.util.*;
-
-import com.sun.jna.*;
-
-import deltix.util.jna.*;
-
 public class WindowsUtils {
 
     // FIXME: do not delete - for a future use
@@ -150,39 +144,40 @@ public class WindowsUtils {
                            len);
     }
 
-    public static String getDiskSerialNumber (String path) {
-        Assert.notNull (path);
-        if (path.indexOf ("\\") != path.length () - 1) {
-            path += "\\";
-        }
-        Kernel32 kernel32 = (Kernel32) Native.loadLibrary ("kernel32",
-                                                           Kernel32.class);
-        byte volName[] = new byte[256], fsName[] = new byte[256];
-        int volSerNbr[] = new int[1], maxCompLen[] = new int[1], fileSysFlags[] = new int[1];
-        boolean ok = kernel32.GetVolumeInformationA (path,
-                                                     volName,
-                                                     256,
-                                                     volSerNbr,
-                                                     maxCompLen,
-                                                     fileSysFlags,
-                                                     fsName,
-                                                     256);
-        if (ok) {
-            boolean showInfo = false;
-            if (showInfo)// for test only
-                System.out.printf ("%s %08X '%s' %s %08X%n",
-                                   path,
-                                   volSerNbr[0],
-                                   b2s (volName),
-                                   b2s (fsName),
-                                   fileSysFlags[0]);
-
-            return String.format ("%08X",
-                                  volSerNbr[0]);
-        } else
-            throw new RuntimeException ("Unable to get HDD volume serial number");
-
-    }
+    //TODO: do not delete - for a future use
+//    public static String getDiskSerialNumber (String path) {
+//        Assert.notNull (path);
+//        if (path.indexOf ("\\") != path.length () - 1) {
+//            path += "\\";
+//        }
+//        Kernel32 kernel32 = (Kernel32) Native.loadLibrary ("kernel32",
+//                                                           Kernel32.class);
+//        byte volName[] = new byte[256], fsName[] = new byte[256];
+//        int volSerNbr[] = new int[1], maxCompLen[] = new int[1], fileSysFlags[] = new int[1];
+//        boolean ok = kernel32.GetVolumeInformationA (path,
+//                                                     volName,
+//                                                     256,
+//                                                     volSerNbr,
+//                                                     maxCompLen,
+//                                                     fileSysFlags,
+//                                                     fsName,
+//                                                     256);
+//        if (ok) {
+//            boolean showInfo = false;
+//            if (showInfo)// for test only
+//                System.out.printf ("%s %08X '%s' %s %08X%n",
+//                                   path,
+//                                   volSerNbr[0],
+//                                   b2s (volName),
+//                                   b2s (fsName),
+//                                   fileSysFlags[0]);
+//
+//            return String.format ("%08X",
+//                                  volSerNbr[0]);
+//        } else
+//            throw new RuntimeException ("Unable to get HDD volume serial number");
+//
+//    }
 
     public static void main (final String[] args) {
         System.out.println ("User Desktop directory : " + regQueryCurrentUserDesktopPath ());
