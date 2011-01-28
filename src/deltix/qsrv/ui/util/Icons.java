@@ -133,6 +133,7 @@ public class Icons {
     public static final Icon NONE                = SwingUtil.loadIcon ("deltix/qsrv/ui/util/none.png"              );
     public static final Icon EVALUATE_EXPRESSION = SwingUtil.loadIcon ("deltix/qsrv/ui/util/evaluateExpression.png");
     public static final Icon EXPRESSION_OBJ      = SwingUtil.loadIcon ("deltix/qsrv/ui/util/expression_obj.png"    );
+    public static final Icon LOCALE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/locale.png"            );
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {
