@@ -134,6 +134,16 @@ public class Icons {
     public static final Icon EVALUATE_EXPRESSION = SwingUtil.loadIcon ("deltix/qsrv/ui/util/evaluateExpression.png");
     public static final Icon EXPRESSION_OBJ      = SwingUtil.loadIcon ("deltix/qsrv/ui/util/expression_obj.png"    );
     public static final Icon LOCALE              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/locale.png"            );
+    public static final Icon COLUMNS             = SwingUtil.loadIcon ("deltix/qsrv/ui/util/columns.png"           );
+    public static final Icon FUNCTIONS           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/functions.png"         );
+    public static final Icon FUNCTION            = SwingUtil.loadIcon ("deltix/qsrv/ui/util/function.png"          );
+    public static final Icon OPERATOR            = SwingUtil.loadIcon ("deltix/qsrv/ui/util/operator.png"          );
+    public static final Icon OPERATOR2           = SwingUtil.loadIcon ("deltix/qsrv/ui/util/operator2.png"         );
+    public static final Icon METHOD              = SwingUtil.loadIcon ("deltix/qsrv/ui/util/method.png"            );
+    public static final Icon OPEN_ELEMENT        = SwingUtil.loadIcon ("deltix/qsrv/ui/util/open_element.png"      );
+    public static final Icon VALUE               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/value.png"             );
+    public static final Icon NAVIGATE_UP         = SwingUtil.loadIcon ("deltix/qsrv/ui/util/navigate_up.png"       );
+    public static final Icon NAVIGATE_DOWN       = SwingUtil.loadIcon ("deltix/qsrv/ui/util/navigate_down.png"     );
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {

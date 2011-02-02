@@ -15,8 +15,8 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
     public static Locale LOCALE = Locale.getDefault ();
 
-    public static final Object findTreeNode (final JTree tree,
-                                             final Object userObject) {
+    public static Object findTreeNode (final JTree tree,
+                                       final Object userObject) {
         final Object root = tree.getModel ().getRoot ();
         // Traverse tree from root
         return findTreeNode (tree,
@@ -24,15 +24,15 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
                              userObject);
     }
 
-    public static final Object findTreeNode (final JTree tree,
-                                             final TreePath parent,
-                                             final Object userObject) {
+    public static Object findTreeNode (final JTree tree,
+                                       final TreePath parent,
+                                       final Object userObject) {
         // Traverse children
         final Object node = parent.getLastPathComponent ();
 
         if (node instanceof DefaultMutableTreeNode &&
-            JideSwingUtilities.equals (userObject,
-                                       ((DefaultMutableTreeNode) node).getUserObject ())) {
+                JideSwingUtilities.equals (userObject,
+                                           ((DefaultMutableTreeNode) node).getUserObject ())) {
             return node;
         }
 
@@ -52,29 +52,32 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         return null;
     }
 
-    protected final JTree _tree;
+    protected final JTree tree;
 
     public BaseMutableTreeNode (final Object userObject,
                                 final boolean allowsChildren,
                                 final JTree tree) {
         super (userObject,
                allowsChildren);
-        _tree = tree;
+        this.tree = tree;
         createMenu ();
     }
 
     public BaseMutableTreeNode (final Object userObject,
                                 final JTree tree) {
-        super (userObject);
-        _tree = tree;
-        createMenu ();
+        this (userObject, true, tree);
     }
+
+    public BaseMutableTreeNode (final JTree tree) {
+        this (null, true, tree);
+    }
+
 
     protected void createMenu () {
     }
 
     public final JTree getTree () {
-        return _tree;
+        return tree;
     }
 
     protected final void updateChildren () {
@@ -108,7 +111,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         int depth = 1;
         TreeNode node = this;
 
-        for (;;) {
+        for (; ;) {
             final TreeNode next = node.getParent ();
 
             if (next == null)
@@ -122,7 +125,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
         node = this;
 
-        for (;;) {
+        for (; ;) {
             depth--;
             path[depth] = node;
 
@@ -136,7 +139,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     protected TreeModel getActualModel () {
-        TreeModel model = _tree.getModel ();
+        TreeModel model = tree.getModel ();
 
         final FilterableTreeModel filterableTreeModel = getFilterableTreeModel ();
         if (filterableTreeModel != null) {
@@ -147,7 +150,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     protected FilterableTreeModel getFilterableTreeModel () {
-        final TreeModel model = _tree.getModel ();
+        final TreeModel model = tree.getModel ();
         if (model instanceof FilterableTreeModel) {
             return (FilterableTreeModel) model;
         }
@@ -201,7 +204,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         if (displayTreeModel != null) {
             displayTreeModel.refresh ();
         } else {
-            final TreeModel model = _tree.getModel ();
+            final TreeModel model = tree.getModel ();
             if (model instanceof AbstractTreeModel)
                 fireTreeStructureChanged ((AbstractTreeModel) model,
                                           new TreePath (getRoot ()));
@@ -278,10 +281,10 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
          * Reset selection momentarily in order to force the reloading of the
          * node's form.
          */
-        _tree.setSelectionPath (null);
+        tree.setSelectionPath (null);
         final TreePath path = getTreePath ();
-        _tree.setSelectionPath (path);
-        _tree.expandPath (path);
+        tree.setSelectionPath (path);
+        tree.expandPath (path);
     }
 
     /**
@@ -360,19 +363,21 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
             if (node instanceof BaseMutableTreeNode) {
 
                 final String tootip = ((BaseMutableTreeNode) node).getTooltip ();
-                if (tootip != null)
-                    setToolTipText (tootip);
+                setToolTipText (tootip);
+                /**
+                 * Reset font because it may have been tweaked
+                 */
+                label.setFont (_defaultFont);
+
+                final BaseMutableTreeNode anode = (BaseMutableTreeNode) node;
+                return anode.render (selected,
+                                     hasFocus,
+                                     label);
             }
 
-            /**
-             * Reset font because it may have been tweaked
-             */
-            label.setFont (_defaultFont);
+            return label;
 
-            final BaseMutableTreeNode anode = (BaseMutableTreeNode) node;
-            return anode.render (selected,
-                                 hasFocus,
-                                 label);
+
         }
     }
 }
