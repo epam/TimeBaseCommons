@@ -14,7 +14,8 @@ public enum InstrumentType {
     CUSTOM('C', "Custom"),
     SIMPLE_OPTION('P', "SimpleOption"),
     EXCHANGE('E', "Exchange"),
-    TRADING_SESSION('T', "TradingSession");
+    TRADING_SESSION('T', "TradingSession"),
+    STREAM('M', "Stream");
 
     private final char code;
     private final String qoType;
@@ -33,6 +34,7 @@ public enum InstrumentType {
     	if (code == INDEX.code)  return INDEX;
         if (code == ETF.code)    return ETF;
         if (code == CUSTOM.code) return CUSTOM;
+        if (code == STREAM.code) return STREAM;
     	
         throw new IllegalArgumentException ("Unknown InstrumentType code: " + code);
     }
