@@ -344,11 +344,7 @@ public class SMTPHandler extends Handler {
 
             message.setRecipients(Message.RecipientType.TO, parseAddress(to));
 
-            LogRecord lastRecord = recordBuffer [recordBuffer.length - 1];
-            String lastMessageSubjectSuffix = getSubject(lastRecord);
-
-            if (subject != null)
-                message.setSubject(subject + ':' + lastMessageSubjectSuffix);
+            message.setSubject(getSubject(subject, recordBuffer[recordBuffer.length - 1], MAX_SUBJECT_LEN));
 
             MimeBodyPart part = new MimeBodyPart();
 
@@ -382,19 +378,24 @@ public class SMTPHandler extends Handler {
         }
     }
 
-    private String getSubject(LogRecord record) {
+    private static String getSubject(String prefix, LogRecord record, int maxLength) {
         String message = record.getMessage ();
         Object [] params = record.getParameters();
         if (params != null) {
             StringBuilder result = new StringBuilder (256);
             SimpleMessageFormat.format(result, message, params);
-            result.setLength(MAX_SUBJECT_LEN);
-            return result.toString();
-        } else {
-            return message.substring(0, Math.min(MAX_SUBJECT_LEN, message.length()));
+            result.setLength(maxLength);
+            message = result.toString();
         }
 
-
+        // use only first line in message
+        int index = message.indexOf('\n');
+        if (index >= 0)
+            message = message.substring(0, index);
+        // add prefix if any
+        message = prefix != null ? prefix + ": " + message : message;
+        // cut off message if needed
+        return message.substring(0, Math.min(maxLength, message.length()));
     }
 
     protected String getEmailContentType() {
