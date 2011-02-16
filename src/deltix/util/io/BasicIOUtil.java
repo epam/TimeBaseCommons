@@ -8,6 +8,8 @@ import java.util.zip.*;
 
 import deltix.util.lang.Util;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -75,6 +77,19 @@ public abstract class BasicIOUtil {
             throw new InterruptedException ();
         else if (!fc.isOpen ())
             throw new IOException ("FileChannel is closed.");
+    }
+
+    public static void      marshall (Marshaller m, File file, Object object)
+            throws IOException, JAXBException
+    {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            m.marshal(object, out);
+            out.getChannel().force(false);
+        } finally {
+            Util.close(out);
+        }
     }
 
     public static void      rename (File from, File to) throws IOException {
