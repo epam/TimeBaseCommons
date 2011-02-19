@@ -10,10 +10,10 @@ public enum InstrumentType {
     BOND('B', "Bond"),
     FX('X', "Currency"),
     INDEX('I', "Index"),
-    ETF('F', "ETF"),
+    ETF('E', "ETF"),
     CUSTOM('C', "Custom"),
     SIMPLE_OPTION('P', "SimpleOption"),
-    EXCHANGE('E', "Exchange"),
+    EXCHANGE('G', "Exchange"),
     TRADING_SESSION('T', "TradingSession"),
     STREAM('M', "Stream");
 

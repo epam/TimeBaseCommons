@@ -1,5 +1,6 @@
 package deltix.data.level2fix;
 
+import deltix.util.lang.Util;
 import deltix.util.text.CharSequenceParser;
 
 import java.util.TimeZone;
@@ -33,6 +34,12 @@ public abstract class TinyFIX {
         public CharSequence subSequence(int start, int end) {
             return new String(buf, start, end-start);
         }
+
+        @Override
+        public String toString () {
+            return new String (buf, 0, len);
+        }
+
     }
 
     private static final char SEPA = 1;

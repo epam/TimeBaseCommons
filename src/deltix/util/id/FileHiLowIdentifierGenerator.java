@@ -1,13 +1,10 @@
 package deltix.util.id;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-
-import deltix.temp.NetBeansDebugMain;
 
 /**
  * HiLowIdentifierGenerator that uses file storage in given directory to persist last allocated block.
@@ -72,12 +69,23 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
 
     @Override
     public void close() throws IOException {
+        storeLastUsed();
         if (lock != null)
             lock.release();
         if (channel != null)
             channel.close();
         if (raf != null)
             raf.close();
+    }
+
+    private void storeLastUsed() {
+        long lastUsed = next();
+        try {
+            raf.seek(0L);
+            raf.write(Long.toString(lastUsed - blockSize + 1).getBytes());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
 

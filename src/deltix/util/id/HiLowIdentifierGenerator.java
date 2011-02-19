@@ -39,10 +39,10 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
     protected abstract long aquireNextBlock(long resetNextBlock);
 
 
-    private synchronized void setNext (long nextId) {
-    	id = 0;
-    	aquireNextBlock(nextId);
-    }
+//    private synchronized void setNext (long nextId) {
+//    	id = 0;
+//    	aquireNextBlock(nextId);
+//    }
     
 //    @Override
 //    public synchronized void markUsed (long usedId) {
