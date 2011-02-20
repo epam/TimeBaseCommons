@@ -1,7 +1,5 @@
 package deltix.util.collections;
 
-import deltix.qsrv.hf.pub.trade.TradeOrder;
-
 import java.util.List;
 
 /**
@@ -72,6 +70,7 @@ public class CircularBuffer<E> {
             return capacity - tail + head;
     }
 
+    @SuppressWarnings("unchecked")
     public void appendTo(List<E> result) {
         if ( ! isEmpty) {
             if (isFull) {
