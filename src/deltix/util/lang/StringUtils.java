@@ -1,5 +1,8 @@
 package deltix.util.lang;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Arrays;
 import java.util.Properties;
@@ -624,6 +627,24 @@ public class StringUtils {
             synchronized (DECIMAL_FORMAT) {
                 return DECIMAL_FORMAT.format(value);
             }
+    }
+
+    public static List<String> split(String message, String regex,
+                                     boolean trimToNull, boolean discardNullOrEmpty) {
+        String[] splitted = message.split(regex);
+        List<String> result = new ArrayList<String>(splitted.length);
+        if (!trimToNull && !discardNullOrEmpty) {
+            Collections.addAll(result, splitted);
+            return result;
+        }
+
+        for (int i = 0; i < splitted.length; i++) {
+            String value = trimToNull ? trim(splitted[i]) : splitted[i];
+            if (discardNullOrEmpty && (value == null || value.length() <= 0))
+                continue;
+            result.add(value);
+        }
+        return result;
     }
 
     private static String repeat(char symbol, int length) {

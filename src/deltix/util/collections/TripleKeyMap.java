@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.Collections;
 
 /**
- * Description: deltix.qsrv.hf.framework.util.TriKeyMap
+ * Description: deltix.util.collections.TripleKeyMap
  * Date: May 18, 2010
  *
  * @author Nickolay Dul
@@ -53,6 +53,10 @@ public class TripleKeyMap<OK, MK, IK, V> {
 
     public int size() {
         return map.size();
+    }
+
+    public void clear() {
+        map.clear();
     }
 
     public boolean containsKey(OK outerKey, MK middleKey, IK innerKey) {
