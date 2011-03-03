@@ -629,22 +629,25 @@ public class StringUtils {
             }
     }
 
-    public static List<String> split(String message, String regex,
-                                     boolean trimToNull, boolean discardNullOrEmpty) {
+    public static String[] split(String message, String regex,
+                                 boolean trimToNull, boolean discardNullOrEmpty) {
         String[] splitted = message.split(regex);
-        List<String> result = new ArrayList<String>(splitted.length);
-        if (!trimToNull && !discardNullOrEmpty) {
-            Collections.addAll(result, splitted);
-            return result;
+        if (discardNullOrEmpty) {
+            List<String> result = new ArrayList<String>(splitted.length);
+            for (int i = 0; i < splitted.length; i++) {
+                String value = trimToNull ? trim(splitted[i]) : splitted[i];
+                if (value == null || value.length() <= 0)
+                    continue;
+                result.add(value);
+            }
+            return result.toArray(new String[result.size()]);
+        } else {
+            if (trimToNull) {
+                for (int i = 0; i < splitted.length; i++)
+                    splitted[i] = trim(splitted[i]);
+            }
+            return splitted;
         }
-
-        for (int i = 0; i < splitted.length; i++) {
-            String value = trimToNull ? trim(splitted[i]) : splitted[i];
-            if (discardNullOrEmpty && (value == null || value.length() <= 0))
-                continue;
-            result.add(value);
-        }
-        return result;
     }
 
     private static String repeat(char symbol, int length) {
