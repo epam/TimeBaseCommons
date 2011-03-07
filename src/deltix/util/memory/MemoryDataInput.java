@@ -384,8 +384,8 @@ public class MemoryDataInput {
         int count = 0;        
         
         for (;;) {
-            c = readByte ();    
-            if (c > 127) 
+            c = readByte ();
+            if (c > 127 || c < 0) 
                 break;
             
             count++;
@@ -397,7 +397,7 @@ public class MemoryDataInput {
         //  If we are here, we have broken out of the previous loop and there is an
         //  unhandled escape character in variable c.        
         for (;;) {
-            switch (c >> 4) {
+            switch ((0xff & c) >> 4) {
                 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
                     /* 0xxxxxxx*/
                     count++;
