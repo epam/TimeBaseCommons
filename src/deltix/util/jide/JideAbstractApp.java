@@ -70,7 +70,7 @@ public class JideAbstractApp extends DefaultDockableBarDockableHolder
         };
         uiDefaultsCustomizer.customize(UIManager.getDefaults());
     }
-    
+
     protected void          windowClosing (WindowEvent e) {        
     }
     
