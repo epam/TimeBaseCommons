@@ -40,6 +40,7 @@ public class Test_ThrottlingExecutor {
     }
 
     @Test(timeout = 90000)
+    @Ignore // FIXME: TEST
     public void             go () throws InterruptedException {
 
         boolean cruiseControlMode = Boolean.getBoolean("deltix.test.mode");
