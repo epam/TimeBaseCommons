@@ -65,8 +65,7 @@ public class QuickExecutor {
 
                 state = TaskState.RUNNING;  // go again
                 return (true);
-            }
-            else {
+            } else {
                 if (DEBUG_TASKS)
                     System.out.println (this + " is finished");
 
@@ -164,9 +163,12 @@ public class QuickExecutor {
             try {
                 while (!stop) {
                     if (task == null) {
-                        LockSupport.park ();
+                        if (workers.size() < 1000)
+                            LockSupport.park ();
+                        else
+                            break;
 
-                        if (interrupted () && stop)
+                        if (interrupted() && stop)
                             break;
 
                         if (task == null)
@@ -198,7 +200,6 @@ public class QuickExecutor {
                 synchronized (workers) {
                     workers.remove (this);
                 }
-                
                 LOGGER.fine (this + " is terminating.");
             }
         }
