@@ -62,10 +62,13 @@ public class Executor {
      */
 
     public static void exec(File file, String title) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/C", "start", StringUtils.quote(title),
-                StringUtils.quote(file.getPath()));
-
-        builder.start();        
+        if (Util.IS_WINDOWS_OS){
+            ProcessBuilder  builder = new ProcessBuilder("cmd.exe", "/C", "start", StringUtils.quote(title), StringUtils.quote(file.getPath()));
+        	builder.start();
+        }
+        else{
+            LinuxOS.startScriptInTerminal("csh", title, file);
+        }
     }
 
     public static void exec(File file) throws IOException {

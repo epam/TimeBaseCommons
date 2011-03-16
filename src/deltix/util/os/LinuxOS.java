@@ -4,6 +4,7 @@ import java.io.*;
 
 import deltix.util.concurrent.*;
 import deltix.util.io.*;
+import deltix.util.lang.StringUtils;
 
 public class LinuxOS {
     
@@ -39,6 +40,23 @@ public class LinuxOS {
         }
     }
 
+    public static void startScriptInTerminal(String shell, String title, File script) {
+        try {
+            Runtime r = Runtime.getRuntime();
+            if (new File("/usr/bin/gnome-terminal").exists()) {
+                r.exec(new String[]{"/usr/bin/gnome-terminal", "-t", title, "-e", shell + " -c " + StringUtils.quote(script.getPath())});
+            } else if (new File("/usr/bin/xterm").exists()) {
+                r.exec(new String[]{"/usr/bin/xterm", "-T", title, "-e", shell, "-c", StringUtils.quote(script.getPath())});
+            } else if (new File("/usr/bin/konsole").exists()) {
+                r.exec(new String[]{"/usr/bin/konsole", "--title", title, "-e", shell, "-c", StringUtils.quote(script.getPath())});
+            } else {
+                throw new IllegalStateException("Cann't find any terminal. Please install 'konsole', 'gnome-terminal' or 'xtrem'.");
+            }
+        } catch (Throwable x) {
+            throw new RuntimeException(x);
+        }
+    }
+
     public static void command (String... parameters) {
         try {
 
@@ -70,5 +88,5 @@ public class LinuxOS {
             throw new UncheckedInterruptedException (e);
         }
     }
-    
+
 }
