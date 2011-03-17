@@ -11,6 +11,7 @@ import deltix.util.concurrent.*;
 import deltix.util.io.*;
 import deltix.util.lang.StringUtils;
 import deltix.util.lang.Util;
+import org.springframework.util.Assert;
 
 import javax.swing.*;
 
@@ -57,15 +58,19 @@ public class LinuxOS {
     }
 
     public static void browse(URI uri) throws IOException {
+        Assert.notNull(uri);
+
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
             Desktop.getDesktop().browse(uri);
         else
             throw new RuntimeException("Browse functionality is not supported");
     }
 
-    public static void open(File f) throws IOException {
-        if (Desktop.isDesktopSupported())
-            Desktop.getDesktop().open(f);
+    public static void open(File dir) throws IOException {
+        Assert.notNull(dir);
+
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN))
+            Desktop.getDesktop().open(dir);
         else
             throw new RuntimeException("Open functionality is not supported");
     }
@@ -84,13 +89,16 @@ public class LinuxOS {
             cmdarray.add("-T");
             cmdarray.add(title);
             cmdarray.add("-e");
-        } else if (new File("/usr/bin/konsole").exists()) {
-            cmdarray.add("/usr/bin/konsole");
-            cmdarray.add("--title");
-            cmdarray.add(title);
-            cmdarray.add("-e");
-        } else {
-            throw new IllegalStateException("Cann't find any terminal. Please install 'konsole', 'gnome-terminal' or 'xtrem'.");
+        }
+        //FIXME: do not delete - for a future use
+//        else if (new File("/usr/bin/konsole").exists()) {
+//            cmdarray.add("/usr/bin/konsole");
+//            cmdarray.add("--title");
+//            cmdarray.add(title);
+//            cmdarray.add("-e");
+//        }
+        else {
+            throw new IllegalStateException("Cann't find supported terminal. Please install 'gnome-terminal' or 'xtrem'.");
         }
         String command = shell + " -f '" + script.getPath() + "'";
 
