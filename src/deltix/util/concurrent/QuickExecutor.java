@@ -261,7 +261,8 @@ public class QuickExecutor {
 
             w.start ();
 
-            LOGGER.fine ("# Workers: " + workers.size ());
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.fine ("# Workers: " + workers.size ());
         }
 
         return (w);
