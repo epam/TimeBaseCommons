@@ -1,6 +1,8 @@
 package deltix.util.os;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import deltix.util.concurrent.*;
 import deltix.util.io.*;
@@ -56,6 +58,53 @@ public class LinuxOS {
             throw new RuntimeException(x);
         }
     }
+
+
+    public static void startScriptInTerminal2(String title, File script, String... parameters) {
+        try {
+            Runtime r = Runtime.getRuntime();
+            r.exec(paramsForStartScriptInTerminal(title, script, parameters));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String[] paramsForStartScriptInTerminal(String title, File script, String... parameters) {
+        List<String> cmdarray = new ArrayList<String>();
+        if (new File("/usr/bin/gnome-terminal").exists()) {
+            cmdarray.add("/usr/bin/gnome-terminal");
+            cmdarray.add("-t");
+            cmdarray.add(title);
+            cmdarray.add("-e");
+        } else if (new File("/usr/bin/xterm").exists()) {
+            cmdarray.add("/usr/bin/xterm");
+            cmdarray.add("-T");
+            cmdarray.add(title);
+            cmdarray.add("-e");
+        } else if (new File("/usr/bin/konsole").exists()) {
+            cmdarray.add("/usr/bin/konsole");
+            cmdarray.add("--title");
+            cmdarray.add(title);
+            cmdarray.add("-e");
+            cmdarray.add("csh");
+            cmdarray.add("-c");
+        } else {
+            throw new IllegalStateException("Cann't find any terminal. Please install 'konsole', 'gnome-terminal' or 'xtrem'.");
+        }
+        String command = "'" + script.getPath() + "'";
+
+        if (parameters != null) {
+            for (String parameter : parameters) {
+                command+= " ";
+                command+= parameter;
+            }
+        }
+       cmdarray.add(command);
+
+       return cmdarray.toArray(new String[cmdarray.size()]);
+
+    }
+
 
     public static void command (String... parameters) {
         try {
