@@ -58,7 +58,7 @@ public class LinuxOS {
     }
 
     public static void browse(URI uri) throws IOException {
-        Assert.notNull(uri);
+        assert uri != null;
 
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
             Desktop.getDesktop().browse(uri);
@@ -67,7 +67,7 @@ public class LinuxOS {
     }
 
     public static void open(File dir) throws IOException {
-        Assert.notNull(dir);
+        assert dir != null;
 
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN))
             Desktop.getDesktop().open(dir);
