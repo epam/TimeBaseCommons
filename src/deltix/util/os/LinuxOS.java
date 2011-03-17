@@ -1,12 +1,18 @@
 package deltix.util.os;
 
+import java.awt.*;
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import deltix.util.concurrent.*;
 import deltix.util.io.*;
 import deltix.util.lang.StringUtils;
+import deltix.util.lang.Util;
+
+import javax.swing.*;
 
 public class LinuxOS {
     
@@ -44,32 +50,29 @@ public class LinuxOS {
 
     public static void startScriptInTerminal(String shell, String title, File script) {
         try {
-            Runtime r = Runtime.getRuntime();
-            if (new File("/usr/bin/gnome-terminal").exists()) {
-                r.exec(new String[]{"/usr/bin/gnome-terminal", "-t", title, "-e", shell + " -c " + StringUtils.quote(script.getPath())});
-            } else if (new File("/usr/bin/xterm").exists()) {
-                r.exec(new String[]{"/usr/bin/xterm", "-T", title, "-e", shell, "-c", StringUtils.quote(script.getPath())});
-            } else if (new File("/usr/bin/konsole").exists()) {
-                r.exec(new String[]{"/usr/bin/konsole", "--title", title, "-e", shell, "-c", StringUtils.quote(script.getPath())});
-            } else {
-                throw new IllegalStateException("Cann't find any terminal. Please install 'konsole', 'gnome-terminal' or 'xtrem'.");
-            }
+            Runtime.getRuntime().exec(paramsForStartScriptInTerminal(shell, title, script));
         } catch (Throwable x) {
             throw new RuntimeException(x);
         }
     }
 
-
-    public static void startScriptInTerminal2(String title, File script, String... parameters) {
-        try {
-            Runtime r = Runtime.getRuntime();
-            r.exec(paramsForStartScriptInTerminal(title, script, parameters));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static void browse(URI uri) throws IOException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+            Desktop.getDesktop().browse(uri);
+        else
+            throw new RuntimeException("Browse functionality is not supported");
     }
 
-    public static String[] paramsForStartScriptInTerminal(String title, File script, String... parameters) {
+    public static void open(File f) throws IOException {
+        if (Desktop.isDesktopSupported())
+            Desktop.getDesktop().open(f);
+        else
+            throw new RuntimeException("Open functionality is not supported");
+    }
+
+
+    public static String[] paramsForStartScriptInTerminal(String shell, String title, File script, String... parameters) {
+
         List<String> cmdarray = new ArrayList<String>();
         if (new File("/usr/bin/gnome-terminal").exists()) {
             cmdarray.add("/usr/bin/gnome-terminal");
@@ -86,22 +89,19 @@ public class LinuxOS {
             cmdarray.add("--title");
             cmdarray.add(title);
             cmdarray.add("-e");
-            cmdarray.add("csh");
-            cmdarray.add("-c");
         } else {
             throw new IllegalStateException("Cann't find any terminal. Please install 'konsole', 'gnome-terminal' or 'xtrem'.");
         }
-        String command = "'" + script.getPath() + "'";
+        String command = shell + " -f '" + script.getPath() + "'";
 
         if (parameters != null) {
             for (String parameter : parameters) {
-                command+= " ";
-                command+= parameter;
+                command += " ";
+                command += parameter;
             }
         }
-       cmdarray.add(command);
-
-       return cmdarray.toArray(new String[cmdarray.size()]);
+        cmdarray.add(command);
+        return cmdarray.toArray(new String[cmdarray.size()]);
 
     }
 
@@ -109,7 +109,7 @@ public class LinuxOS {
     public static void command (String... parameters) {
         try {
 
-            if (parameters == null || parameters.length == 0)
+            if (Util.IS_WINDOWS_OS || parameters == null || parameters.length == 0)
                 return;
             final ProcessBuilder pb = new ProcessBuilder (parameters);
 
@@ -136,6 +136,11 @@ public class LinuxOS {
         } catch (InterruptedException e) {
             throw new UncheckedInterruptedException (e);
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Runtime.getRuntime().exec(new String[]{"gnome-terminal", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
+        Runtime.getRuntime().exec(new String[]{"xterm", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
     }
 
 }
