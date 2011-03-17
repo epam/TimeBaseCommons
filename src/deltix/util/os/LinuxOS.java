@@ -1,19 +1,17 @@
 package deltix.util.os;
 
+import deltix.util.concurrent.UncheckedInterruptedException;
+import deltix.util.io.UncheckedIOException;
+import deltix.util.lang.Util;
+
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import deltix.util.concurrent.*;
-import deltix.util.io.*;
-import deltix.util.lang.StringUtils;
-import deltix.util.lang.Util;
-import org.springframework.util.Assert;
-
-import javax.swing.*;
 
 public class LinuxOS {
     
