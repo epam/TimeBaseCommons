@@ -5,6 +5,7 @@ import java.net.*;
 import java.security.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.prefs.Preferences;
 import java.rmi.RemoteException;
 
 import deltix.installer.backend.Platform;
@@ -1189,5 +1190,19 @@ public class Util {
         final long mem = (long) (availMem * k);
 
         return (mem);
+    }
+
+    public static boolean       asAdministrator () {
+        // attempt to set a preference
+        try {
+            final String path = "/deltix/dummyPref";
+            final Preferences prefs = Preferences.systemRoot ().node (path);
+            prefs.putLong ("dummyKey",
+                           System.currentTimeMillis ());
+            prefs.flush ();
+            return true;
+        } catch (final Exception e) {
+            return false;
+        }
     }
 }

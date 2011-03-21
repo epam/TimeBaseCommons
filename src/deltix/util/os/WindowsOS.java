@@ -5,7 +5,6 @@ import deltix.util.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
-import java.util.prefs.*;
 
 
 /**
@@ -192,21 +191,6 @@ public final class WindowsOS {
                              "/K",
                              StringUtils.quote (script.getAbsolutePath ()))).start ();
     }
-
-    public static boolean asAdministrator () {
-        // attempt to set a preference
-        try {
-            final String path = "/deltix/dummyPref";
-            final Preferences prefs = Preferences.systemRoot ().node (path);
-            prefs.putLong ("dummyKey",
-                           System.currentTimeMillis ());
-            prefs.flush ();
-            return true;
-        } catch (final Exception e) {
-            return false;
-        }
-    }
-
 
     static String GET_HARD_DISK_SERIAL_NUMBERS = "strComputer = \".\"\n"
                                                  + "Set objWMIService = GetObject(\"winmgmts:\\\\\" & strComputer & \"\\root\\CIMV2\")\n"
