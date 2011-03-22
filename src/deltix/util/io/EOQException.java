@@ -5,7 +5,7 @@ import java.io.EOFException;
 /**
  * Date: Mar 30, 2010
  */
-public class EOQException extends EOFException{
+public class EOQException extends EOFException {
     
     public EOQException() {
     }
