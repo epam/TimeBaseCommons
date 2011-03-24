@@ -77,14 +77,14 @@ public class LinuxOS {
     public static String[] paramsForStartScriptInTerminal(String shell, String title, File script, String... parameters) {
 
         List<String> cmdarray = new ArrayList<String>();
-        if (new File("/usr/bin/gnome-terminal").exists()) {
-            cmdarray.add("/usr/bin/gnome-terminal");
-            cmdarray.add("-t");
-            cmdarray.add(title);
-            cmdarray.add("-e");
-        } else if (new File("/usr/bin/xterm").exists()) {
+        if (new File("/usr/bin/xterm").exists()) {
             cmdarray.add("/usr/bin/xterm");
             cmdarray.add("-T");
+            cmdarray.add(title);
+            cmdarray.add("-e");
+        } else if (new File("/usr/bin/gnome-terminal").exists()) {
+            cmdarray.add("/usr/bin/gnome-terminal");
+            cmdarray.add("-t");
             cmdarray.add(title);
             cmdarray.add("-e");
         }
