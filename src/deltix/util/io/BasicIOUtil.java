@@ -277,6 +277,27 @@ public abstract class BasicIOUtil {
         }
     }
 
+    public static void copyFile1(File sourceFile, File destFile) throws IOException {
+        
+        if (destFile.exists())
+            destFile.delete();
+
+        destFile.createNewFile();
+
+        FileChannel source = null;
+        FileChannel destination = null;
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        }
+        finally {
+            Util.close(source);
+            Util.close(destination);
+        }
+    }
+
+
     /**
     *   Copies file and creates full destination path if needed
     */
