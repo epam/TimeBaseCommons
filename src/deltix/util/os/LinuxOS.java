@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LinuxOS {
+
     
     public static boolean isX64 () {
         try {
