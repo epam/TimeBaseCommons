@@ -1,11 +1,13 @@
 package deltix.util.collections;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 
-import deltix.util.lang.*;
+import deltix.util.lang.Filter;
+import deltix.util.lang.StringUtils;
+import deltix.util.lang.Util;
 
 public class CollectionUtil {
 
@@ -66,5 +68,17 @@ public class CollectionUtil {
                 }
             }
         return elementData;
+    }
+
+    public static int[] toPrimitiveArray(Collection<Integer> values) {
+        return (int[]) toArray(values, int.class);
+    }
+
+    private static Object toArray(Collection<?> values, Class<?> componentType) {
+        Object array = Array.newInstance(componentType, values.size());
+        int count = 0;
+        for (Object value : values)
+            Array.set(array, count++, value);
+        return array;
     }
 }
