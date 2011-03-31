@@ -1,21 +1,19 @@
 package deltix.util.jgoodies;
 
+import com.jgoodies.binding.value.*;
+import com.jgoodies.common.base.*;
+import com.jgoodies.validation.util.*;
+import deltix.util.swing.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.*;
 import java.awt.event.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
 import java.util.prefs.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.filechooser.*;
-import javax.swing.filechooser.FileFilter;
-
-import com.jgoodies.binding.*;
-import com.jgoodies.binding.value.*;
-
-import com.jgoodies.validation.util.*;
-import deltix.util.swing.*;
 
 public class FileEditor extends CompositeEditor {
 
@@ -33,7 +31,7 @@ public class FileEditor extends CompositeEditor {
         if (this.prefs != null) {
             final String path = this.prefs.get (RECENT_FOLDER,
                                                 null);
-            if (!ValidationUtils.isBlank (path))
+            if (!Strings.isBlank(path))
                 field.fileChooser ().setCurrentDirectory (new File (path));
         }
 
@@ -44,9 +42,9 @@ public class FileEditor extends CompositeEditor {
                     try {
 
                         String ext = extension ();
-                        if (!ValidationUtils.isEmpty (ext)) {
+                        if (!Strings.isEmpty (ext)) {
                             String path = field.getPathField().getText ().trim ();
-                            if (!ValidationUtils.isEmpty (path)) {
+                            if (!Strings.isEmpty (path)) {
                                 if (path.lastIndexOf (".") == -1) {
                                     path += "." + ext;
                                     setEditorValue (new File (path));
@@ -84,7 +82,7 @@ public class FileEditor extends CompositeEditor {
     public Object getEditorValue () {
         final JTextField pathField = ((FileField) _ui).getPathField ();
         final String path = pathField.getText ();
-        return BindingUtils.isBlank (path) ? null : new File (path.trim ());
+        return Strings.isBlank (path) ? null : new File (path.trim ());
     }
 
     @Override

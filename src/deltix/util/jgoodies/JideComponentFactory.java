@@ -1,11 +1,11 @@
 package deltix.util.jgoodies;
 
-import java.awt.*;
-
-import javax.swing.*;
-
+import com.jgoodies.common.swing.*;
 import com.jgoodies.forms.factories.*;
 import com.jidesoft.swing.*;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class JideComponentFactory extends DefaultComponentFactory {
 
@@ -29,8 +29,8 @@ public class JideComponentFactory extends DefaultComponentFactory {
     public JComponent createSeparator (final String textWithMnemonic,
                                        final int alignment) {
         final StyledLabel label = new StyledLabel ();
-        DefaultComponentFactory.setTextAndMnemonic (label,
-                                                    textWithMnemonic);
+        MnemonicUtils.configure(label,
+                                textWithMnemonic);
 
         label.setHorizontalAlignment (alignment);
         label.addStyleRange (new StyleRange (Font.BOLD,
