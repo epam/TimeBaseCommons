@@ -83,7 +83,8 @@ public class LinuxOS {
             cmdarray.add("-T");
             cmdarray.add(title);
             cmdarray.add("-e");
-        } else if (new File("/usr/bin/gnome-terminal").exists()) {
+        } else
+        if (new File("/usr/bin/gnome-terminal").exists()) {
             cmdarray.add("/usr/bin/gnome-terminal");
             cmdarray.add("-t");
             cmdarray.add(title);
@@ -99,7 +100,7 @@ public class LinuxOS {
         else {
             throw new IllegalStateException("Cann't find supported terminal. Please install 'gnome-terminal' or 'xtrem'.");
         }
-        String command = shell + " -f '" + script.getPath() + "'";
+        String command = shell + " '" + script.getPath() + "'";
 
         if (parameters != null) {
             for (String parameter : parameters) {
