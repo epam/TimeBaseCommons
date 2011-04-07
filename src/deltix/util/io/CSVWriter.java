@@ -45,7 +45,7 @@ public class CSVWriter extends FilterWriter {
     public CSVWriter (File f, boolean append, char separator) throws IOException {
         this (new BufferedWriter (new FileWriter (f, append)), separator);
     }
-    
+        
     public CSVWriter (Writer out) {
         this (out, DEFAULT_SEPARATOR);
     }
@@ -57,6 +57,12 @@ public class CSVWriter extends FilterWriter {
     
     public CSVWriter (OutputStream os) {
         this (new OutputStreamWriter (os));
+    }
+    
+    public CSVWriter (OutputStream os, char separator, String charsetName) throws UnsupportedEncodingException {
+        this (new BufferedWriter (new OutputStreamWriter (os,
+                                                          charsetName)),
+              separator);
     }
 
     public boolean          getCloseDelegate () {
@@ -201,4 +207,5 @@ public class CSVWriter extends FilterWriter {
         if (needEscape) 
             wr.write ('"');
     }
+ 
 }
