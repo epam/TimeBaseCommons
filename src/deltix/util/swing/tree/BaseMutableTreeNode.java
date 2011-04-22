@@ -170,7 +170,6 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         if (model != null) {
             model.removeNodeFromParent (this);
         }
-        refreshTree ();
     }
 
     public void refreshTree () {

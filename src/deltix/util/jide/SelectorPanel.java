@@ -7,7 +7,7 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.text.Position.*;
+import javax.swing.text.Position.Bias;
 
 import com.jidesoft.list.*;
 import com.jidesoft.swing.*;
@@ -16,11 +16,11 @@ import deltix.util.swing.*;
 
 public abstract class SelectorPanel<T> extends JPanel {
 
-    protected CheckBoxList         _list;
-    protected QuickListFilterField _field;
-    private TriStateCheckBox       _tristateCheckBox;
+    protected CheckBoxList         list;
+    protected QuickListFilterField field;
+    private TriStateCheckBox       tristateCheckBox;
 
-    private boolean                _adjust = false;
+    private boolean                adjust = false;
 
     public SelectorPanel () {
         super (new GridBagLayout ());
@@ -29,7 +29,7 @@ public abstract class SelectorPanel<T> extends JPanel {
 
     protected void init () {
 
-        _list = new CheckBoxList () {
+        this.list = new CheckBoxList () {
 
             @Override
             public int getNextMatch (final String prefix,
@@ -39,13 +39,13 @@ public abstract class SelectorPanel<T> extends JPanel {
             }
 
         };
-        _list.getCheckBoxListSelectionModel ().setSelectionMode (ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        this.list.getCheckBoxListSelectionModel ().setSelectionMode (ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        _field = new QuickListFilterField ();
-        _field.setHintText (RB.getString ("msg.symbolsFilterHint"));
+        this.field = new QuickListFilterField ();
+        this.field.setHintText (RB.getString ("msg.symbolsFilterHint"));
 
-        _tristateCheckBox = new TriStateCheckBox (RB.getString ("btn.selectDeselectAll"),
-                                                  TriStateCheckBox.NOT_SELECTED) {
+        this.tristateCheckBox = new TriStateCheckBox (RB.getString ("btn.selectDeselectAll"),
+                                                      TriStateCheckBox.NOT_SELECTED) {
             @Override
             public void nextState () {
                 super.nextState ();
@@ -54,10 +54,10 @@ public abstract class SelectorPanel<T> extends JPanel {
 
         };
 
-        _field.setList (_list);
-        SearchableUtils.installSearchable (_list);
+        this.field.setList (this.list);
+        SearchableUtils.installSearchable (this.list);
 
-        final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
+        final CheckBoxListSelectionModel checkBoxListSelectionModel = this.list.getCheckBoxListSelectionModel ();
 
         checkBoxListSelectionModel.addListSelectionListener (new ListSelectionListener () {
             @Override
@@ -84,7 +84,7 @@ public abstract class SelectorPanel<T> extends JPanel {
 
         final StyledLabel header = new StyledLabel (getHeader ());
         header.addStyleRange (new StyleRange (Font.BOLD,
-                                               Color.BLACK));
+                                              Color.BLACK));
         c.gridy++;
         add (new TitledSeparator (header,
                                   TitledSeparator.TYPE_PARTIAL_ETCHED,
@@ -92,7 +92,7 @@ public abstract class SelectorPanel<T> extends JPanel {
              c);
 
         c.gridy++;
-        add (_tristateCheckBox,
+        add (this.tristateCheckBox,
              c);
 
         c.gridy++;
@@ -100,7 +100,7 @@ public abstract class SelectorPanel<T> extends JPanel {
                                4,
                                0,
                                4);
-        add (_field,
+        add (this.field,
              c);
 
         c.gridy++;
@@ -108,7 +108,7 @@ public abstract class SelectorPanel<T> extends JPanel {
                                4,
                                4,
                                4);
-        final JideScrollPane sp = new JideScrollPane (_list);
+        final JideScrollPane sp = new JideScrollPane (this.list);
         c.weightx = 1;
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
@@ -117,7 +117,7 @@ public abstract class SelectorPanel<T> extends JPanel {
     }
 
     public void setCellRenderer (final ListCellRenderer cellRenderer) {
-        _list.setCellRenderer (cellRenderer);
+        this.list.setCellRenderer (cellRenderer);
     }
 
     protected abstract String getHeader ();
@@ -125,40 +125,40 @@ public abstract class SelectorPanel<T> extends JPanel {
     protected abstract Collection<T> getDelegate ();
 
     public final void updateTristateCheckBox () {
-        if (!_adjust) {
-            _adjust = true;
+        if (!this.adjust) {
+            this.adjust = true;
 
             int selectedCount = 0;
-            final int size = _field.getListModel ().getSize ();
+            final int size = this.field.getListModel ().getSize ();
             for (int index = 0; index < size; index++) {
-                if (_list.getCheckBoxListSelectionModel ().isSelectedIndex (index))
+                if (this.list.getCheckBoxListSelectionModel ().isSelectedIndex (index))
                     selectedCount++;
             }
 
             if (selectedCount == 0) {
-                _tristateCheckBox.setState (TriStateCheckBox.NOT_SELECTED);
+                this.tristateCheckBox.setState (TriStateCheckBox.NOT_SELECTED);
             } else if (selectedCount == size) {
-                _tristateCheckBox.setState (TriStateCheckBox.SELECTED);
+                this.tristateCheckBox.setState (TriStateCheckBox.SELECTED);
             } else {
-                _tristateCheckBox.setState (TriStateCheckBox.DONT_CARE);
+                this.tristateCheckBox.setState (TriStateCheckBox.DONT_CARE);
             }
 
-            _adjust = false;
+            this.adjust = false;
         }
     }
 
     private void updateTristateSelection () {
-        final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
+        final CheckBoxListSelectionModel checkBoxListSelectionModel = this.list.getCheckBoxListSelectionModel ();
 
-        if (!_adjust) {
-            _adjust = true;
-            if (_tristateCheckBox.getState () == TriStateCheckBox.SELECTED) {
+        if (!this.adjust) {
+            this.adjust = true;
+            if (this.tristateCheckBox.getState () == TriStateCheckBox.SELECTED) {
                 checkBoxListSelectionModel.addSelectionInterval (0,
-                                                                 _field.getListModel ().getSize () - 1);
-            } else if (_tristateCheckBox.getState () == TriStateCheckBox.NOT_SELECTED) {
+                                                                 this.field.getListModel ().getSize () - 1);
+            } else if (this.tristateCheckBox.getState () == TriStateCheckBox.NOT_SELECTED) {
                 checkBoxListSelectionModel.clearSelection ();
             }
-            _adjust = false;
+            this.adjust = false;
         }
 
     }
@@ -173,10 +173,10 @@ public abstract class SelectorPanel<T> extends JPanel {
             model.addElement (o);
         }
 
-        _field.setListModel (model);
-        _list.setModel (_field.getDisplayListModel ());
+        this.field.setListModel (model);
+        this.list.setModel (this.field.getDisplayListModel ());
 
-        final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
+        final CheckBoxListSelectionModel checkBoxListSelectionModel = this.list.getCheckBoxListSelectionModel ();
 
         final int size = model.getSize ();
         for (int index = 0; index < size; index++) {
@@ -189,24 +189,24 @@ public abstract class SelectorPanel<T> extends JPanel {
     }
 
     public final ListModel getListModel () {
-        return _field.getListModel ();
+        return this.field.getListModel ();
     }
 
     public final CheckBoxListSelectionModel getCheckBoxListSelectionModel () {
-        return _list.getCheckBoxListSelectionModel ();
+        return this.list.getCheckBoxListSelectionModel ();
     }
 
     @SuppressWarnings("unchecked")
     public final java.util.List<T> getSelection () {
         final ArrayList<T> result = new ArrayList<T> ();
-        final DefaultListModel model = (DefaultListModel) _field.getListModel ();
+        final DefaultListModel model = (DefaultListModel) this.field.getListModel ();
         if (model != null) {
-            final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
+            final CheckBoxListSelectionModel checkBoxListSelectionModel = this.list.getCheckBoxListSelectionModel ();
 
             final int size = model.getSize ();
             for (int index = 0; index < size; index++) {
                 if (checkBoxListSelectionModel.isSelectedIndex (index)) {
-                    result.add ((T) _field.getDisplayListModel ().getElementAt (index));
+                    result.add ((T) this.field.getDisplayListModel ().getElementAt (index));
                 }
             }
         }
@@ -215,13 +215,13 @@ public abstract class SelectorPanel<T> extends JPanel {
     }
 
     public final void selectAll () {
-        _list.getCheckBoxListSelectionModel ().setSelectionInterval (0,
-                                                                     getListModel ().getSize () - 1);
+        this.list.getCheckBoxListSelectionModel ().setSelectionInterval (0,
+                                                                         getListModel ().getSize () - 1);
         updateTristateCheckBox ();
     }
 
     public final void setSelection (final java.util.List<T> prevoiusSelection) {
-        final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
+        final CheckBoxListSelectionModel checkBoxListSelectionModel = this.list.getCheckBoxListSelectionModel ();
 
         checkBoxListSelectionModel.clearSelection ();
 
@@ -237,9 +237,9 @@ public abstract class SelectorPanel<T> extends JPanel {
     }
 
     public final boolean isSelectAll () {
-        final DefaultListModel model = (DefaultListModel) _field.getListModel ();
+        final DefaultListModel model = (DefaultListModel) this.field.getListModel ();
         if (model != null) {
-            final CheckBoxListSelectionModel checkBoxListSelectionModel = _list.getCheckBoxListSelectionModel ();
+            final CheckBoxListSelectionModel checkBoxListSelectionModel = this.list.getCheckBoxListSelectionModel ();
             final int size = model.getSize ();
             for (int index = 0; index < size; index++) {
                 if (!checkBoxListSelectionModel.isSelectedIndex (index)) {
