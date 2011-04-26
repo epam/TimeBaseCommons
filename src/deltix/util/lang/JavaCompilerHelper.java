@@ -45,7 +45,10 @@ public class JavaCompilerHelper {
         final String optionString = System.getProperty("javac.options");
         final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
         JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
-        boolean ok = compile.call();
+        boolean ok;
+        synchronized (JAVA_COMPILER_INSTANCE) {
+            ok = compile.call();
+        }
 
         final boolean hasDiagnostic = dianosticListener.getDiagnostics().size() > 0;
         StringBuilder sb = null;
