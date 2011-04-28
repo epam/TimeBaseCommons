@@ -1,7 +1,6 @@
 package deltix.qsrv.hf.pub;
 
 
-import deltix.util.collections.*;
 
 /**
  *  Type of financial instrument
@@ -22,19 +21,6 @@ public enum InstrumentType {
 
     private final char             code;
     private final String           qoType;
-
-    public static InstrumentType[] VALID_VALUES;
-    static {
-        VALID_VALUES = new InstrumentType[values ().length];
-        System.arraycopy (values (),
-                          0,
-                          VALID_VALUES,
-                          0,
-                          values ().length);
-        VALID_VALUES = CollectionUtil.remove (VALID_VALUES,
-                                              SIMPLE_OPTION,
-                                              InstrumentType.class);
-    }
     
     private InstrumentType (int code, String qoType) { this.code = (char)code; this.qoType = qoType; }
          
