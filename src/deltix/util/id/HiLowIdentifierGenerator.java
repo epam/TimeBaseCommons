@@ -28,7 +28,7 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
         id++;
 
         if (id >= blockSize) {
-            base = aquireNextBlock(0);
+            base = acquireNextBlock(0);
             id = 0;
         }
 
@@ -36,7 +36,7 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
     }
 
     /** @return new base */
-    protected abstract long aquireNextBlock(long resetNextBlock);
+    protected abstract long acquireNextBlock(long resetNextBlock);
 
 
 //    private synchronized void setNext (long nextId) {

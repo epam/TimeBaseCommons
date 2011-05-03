@@ -38,27 +38,27 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     }
 
     @Override
-    protected long aquireNextBlock(long resetNextBlock) {
+    protected long acquireNextBlock(long resetNextBlock) {
         try {
 
-            final long nextBlock;
+            final long currentBlock;
             
             if (resetNextBlock != 0) {
-            	nextBlock = resetNextBlock;
+            	currentBlock = resetNextBlock;
             } else {
                 if (file.length() == 0) {
-                    nextBlock = startId;
+                    currentBlock = startId;
                 } else {
                 	raf.seek(0L);
                 	String lastBlock = raf.readLine();
-                    nextBlock = Long.parseLong(lastBlock) + blockSize;
+                    currentBlock = Long.parseLong(lastBlock);
                 }
             }
 
             raf.seek(0L);
-            raf.write(Long.toString(nextBlock).getBytes());
+            raf.write(Long.toString(currentBlock + blockSize).getBytes());  // assuming number of digits always grows
 
-            return nextBlock;
+            return currentBlock;
 
 
 
@@ -82,7 +82,12 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
         long lastUsed = next();
         try {
             raf.seek(0L);
-            raf.write(Long.toString(lastUsed - blockSize + 1).getBytes());
+
+            // storing last used may reduce number of bytes stored compared to last block, lets adjust file size
+            String block = Long.toString(lastUsed);
+            raf.write(block.getBytes());
+            raf.setLength(block.length());
+
         } catch (Throwable e) {
             e.printStackTrace();
         }

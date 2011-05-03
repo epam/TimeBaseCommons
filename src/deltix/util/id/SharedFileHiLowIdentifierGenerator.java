@@ -24,7 +24,7 @@ public final class SharedFileHiLowIdentifierGenerator extends FileBasedHiLowIden
     }
 
     @Override
-    protected long aquireNextBlock(long resetNextBlock) {
+    protected long acquireNextBlock(long resetNextBlock) {
         RandomAccessFile raf = null;
         FileChannel channel = null;
         FileLock lock = null;
