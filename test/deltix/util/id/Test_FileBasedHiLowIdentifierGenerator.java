@@ -80,7 +80,7 @@ public class Test_FileBasedHiLowIdentifierGenerator {
         final int blockSize = 500;
         Set<Long> ids = new HashSet<Long>(1000);
         Random rnd = new Random (2012);
-        for (int i=0; i < 100; i++) {
+        for (int i=0; i < 1000; i++) {
             idgen = new FileHiLowIdentifierGenerator (TEST_KEY, blockSize);
 
             long id=0;
