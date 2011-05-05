@@ -1,6 +1,9 @@
 package deltix.util.id;
 
+import deltix.util.io.IOUtil;
+
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -19,8 +22,8 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     private final FileLock lock;
 
     public FileHiLowIdentifierGenerator (String key, int blockSize)
-	    throws IOException
-	{
+        throws IOException
+    {
     	this (key, blockSize, 1);
 	}
 
@@ -29,12 +32,33 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     {
         super(key, blockSize, startId);
 
+        boolean tryMigrate = ! file.exists();
         raf = new RandomAccessFile(file, "rw");
         channel = raf.getChannel();
 
         lock = channel.tryLock();
         if (lock == null)
             throw new RuntimeException("Another program holds lock for file " + file.getAbsolutePath());
+
+        if(tryMigrate)
+            migrateIdFromOldFile ();
+    }
+
+    /** Prior to May 5 2010, we used to store last used block rather than next free block in the file */
+    private void migrateIdFromOldFile() throws IOException {
+        File oldFile = getSequenceFileOld(key);
+        if (oldFile.exists()) {
+            try {
+                String [] lines = IOUtil.readLinesFromTextFile(oldFile);
+                if (lines != null && lines.length > 0) {
+                    long nextBlock = Long.parseLong(lines[0]) + blockSize;
+                    store(nextBlock > 0 ? nextBlock : 100*blockSize);
+                }
+                oldFile.delete();
+            } catch (Exception e) {
+                throw new RuntimeException("Error reading last sequence number" + e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -79,7 +103,10 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     }
 
     private void storeLastUsed() {
-        long lastUsed = next();
+        store(next());
+    }
+
+    private void store(long lastUsed) {
         try {
             raf.seek(0L);
 
@@ -92,6 +119,5 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
             e.printStackTrace();
         }
     }
-
 
 }
