@@ -119,8 +119,9 @@ public class CurrencyCodeList {
                         else
                             return getInfoBySymbolic (CurrencyCodec.intToCode (n));
                     } catch (final NumberFormatException e) {
+                        e.printStackTrace ();
                         //
-                    }
+                    } 
                 }
 
                 return getInfoBySymbolic (s);
