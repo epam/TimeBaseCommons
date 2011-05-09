@@ -24,8 +24,9 @@ public enum InstrumentType {
     private final String           qoType;
     
     private InstrumentType (int code, String qoType) { this.code = (char)code; this.qoType = qoType; }
-         
-    //public char toChar () { return code; }
+
+    //Used by UHF CharEnumCodes
+    public char toChar () { return code; }
          
     public static InstrumentType fromChar (char code) {
     	if (code == EQUITY.code) return EQUITY;
