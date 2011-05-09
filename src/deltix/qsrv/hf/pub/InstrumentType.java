@@ -17,14 +17,15 @@ public enum InstrumentType {
     SIMPLE_OPTION('P', "SimpleOption"),
     EXCHANGE('G', "Exchange"),
     TRADING_SESSION('T', "TradingSession"),
-    STREAM('M', "Stream");
+    STREAM('M', "Stream"),
+    DATA_CONNECTOR('Q', "DataConnector");
 
     private final char             code;
     private final String           qoType;
     
     private InstrumentType (int code, String qoType) { this.code = (char)code; this.qoType = qoType; }
          
-    public char toChar () { return code; }  
+    //public char toChar () { return code; }
          
     public static InstrumentType fromChar (char code) {
     	if (code == EQUITY.code) return EQUITY;
