@@ -1,5 +1,7 @@
 package deltix.util.time;
 
+import deltix.util.lang.Util;
+
 /**
  *  Use TimeKeeper.currentTime instead of System.currentTimeMillis ().
  *  It's 5 times faster and almost equally precise.
@@ -12,13 +14,26 @@ public abstract class TimeKeeper {
     static {
         Thread  t =
             new Thread ("Time Keeper") {
+                private boolean wasBackJumpReported = false;
 
                 @Override
                 public void             run () {
                     for (;;) {
                         try {
                             for (;;) {
-                                currentTime = System.currentTimeMillis ();
+                                final long ct = System.currentTimeMillis();
+                                if (ct < currentTime) {
+                                    if (!wasBackJumpReported) {
+                                        Util.LOGGER.warning("time-back jump ignored. from " +
+                                                GMT.formatDateTimeMillis(currentTime) + " to " +
+                                                GMT.formatDateTimeMillis(ct));
+                                        wasBackJumpReported = true;
+                                    }
+                                } else {
+                                    if (wasBackJumpReported)
+                                        wasBackJumpReported = false;
+                                    currentTime = ct;
+                                }
                                 sleep (RESOLUTION);
                             }
                         } catch (Throwable x) {
