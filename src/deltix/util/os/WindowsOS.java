@@ -257,8 +257,7 @@ public final class WindowsOS {
     public static String getDiskSerialNumber (String drive) {
         String result = "";
         try {
-            File file = File.createTempFile ("getSerialNumber",
-                                             ".vbs");
+            File file = File.createTempFile ("getSerialNumber", ".vbs");
             file.deleteOnExit ();
             FileWriter fw = new java.io.FileWriter (file);
 
@@ -280,9 +279,41 @@ public final class WindowsOS {
         return String.format ("%08X",  Integer.valueOf (result.trim ()));
     }
 
+    public static String        getMBSerialNumber() {
+        String result = "";
+        try {
+            File file = File.createTempFile("getMBSerialNumber", ".vbs");
+            file.deleteOnExit();
+            FileWriter fw = new java.io.FileWriter(file);
+
+            String vbs =
+             "Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")\n"
+            + "Set colItems = objWMIService.ExecQuery _ \n"
+            + "   (\"Select * from Win32_BaseBoard\") \n"
+            + "For Each objItem in colItems \n"
+            + "    Wscript.Echo objItem.SerialNumber \n"
+            + "    exit for  ' do the first cpu only! \n"
+            + "Next \n";
+
+            fw.write(vbs);
+            fw.close();
+            Process p = Runtime.getRuntime().exec("cscript //NoLogo " + StringUtils.quote (file.getAbsolutePath ()));
+            BufferedReader input = new BufferedReader( new InputStreamReader(p.getInputStream()));
+            String line;
+            
+            while ((line = input.readLine()) != null) {
+                result += line;
+            }
+            input.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result.trim ();
+    }
 
     public static void main (String[] args) throws Exception {
         System.out.println (getDotNetHome ());
+        System.out.println (getMBSerialNumber ());
     }
 
 }
