@@ -16,7 +16,7 @@ import java.nio.channels.FileLock;
  * @see SharedFileHiLowIdentifierGenerator
  */
 public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifierGenerator implements Closeable {
-
+    private static final String FILE_MODE = System.getProperty("UHF.idGeneratorFileMode", "rwd");
     private final RandomAccessFile raf;
     private final FileChannel channel;
     private final FileLock lock;
@@ -33,7 +33,7 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
         super(key, blockSize, startId);
 
         boolean tryMigrate = ! file.exists();
-        raf = new RandomAccessFile(file, "rw");
+        raf = new RandomAccessFile(file, FILE_MODE);
         channel = raf.getChannel();
 
         lock = channel.tryLock();
@@ -81,7 +81,7 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
 
             raf.seek(0L);
             raf.write(Long.toString(currentBlock + blockSize).getBytes());  // assuming number of digits always grows
-
+            //channel.force(true); not required since we access file in "rwd" mode (d).
             return currentBlock;
 
 
