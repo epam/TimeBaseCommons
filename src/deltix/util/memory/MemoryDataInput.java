@@ -118,7 +118,7 @@ public class MemoryDataInput {
         return (mPos);
     }
 
-    private boolean         haveRoom (int n) {
+    public final boolean    checkAvailable (int n) {
         if (getAvail () < n)
             throw new AssertionError ("Cannot read " + n + " bytes; available: " + getAvail ());
 
@@ -126,7 +126,7 @@ public class MemoryDataInput {
     }
 
     public final void       readFully (byte[] b, int off, int len) {
-        assert haveRoom (len);
+        assert checkAvailable (len);
         
         System.arraycopy (mBuffer, mPos, b, off, len);
         mPos += len;
@@ -137,7 +137,7 @@ public class MemoryDataInput {
     }
 
     public final void       skipBytes (int n) {
-        assert haveRoom (n);
+        assert checkAvailable (n);
         mPos += n;
     }
 
@@ -149,7 +149,7 @@ public class MemoryDataInput {
     }
 
     public final int        readUnsignedShort () {
-        assert haveRoom (2);
+        assert checkAvailable (2);
 
         int     ret = DataExchangeUtils.readUnsignedShort (mBuffer, mPos);
         mPos += 2;
@@ -157,7 +157,7 @@ public class MemoryDataInput {
     }
 
     public final long       readUnsignedInt () {
-        assert haveRoom (4);
+        assert checkAvailable (4);
 
         long    ret = DataExchangeUtils.readUnsignedInt (mBuffer, mPos);
         mPos += 4;
@@ -165,25 +165,25 @@ public class MemoryDataInput {
     }
 
     public final int        readUnsignedByte () {
-        assert haveRoom (1);
+        assert checkAvailable (1);
 
         return (mBuffer [mPos++] & 0xFF);
     }
 
     public final boolean    readBoolean () {
-        assert haveRoom (1);
+        assert checkAvailable (1);
 
         return (mBuffer [mPos++] != 0);
     }
 
     public final byte       readByte () {
-        assert haveRoom (1);
+        assert checkAvailable (1);
 
         return (mBuffer [mPos++]);
     }
 
     public final char       readChar () {
-        assert haveRoom (2);
+        assert checkAvailable (2);
 
         char    ret = DataExchangeUtils.readChar (mBuffer, mPos);
         mPos += 2;
@@ -191,7 +191,7 @@ public class MemoryDataInput {
     }
 
     public final double     readDouble () {
-        assert haveRoom (8);
+        assert checkAvailable (8);
 
         double    ret = DataExchangeUtils.readDouble (mBuffer, mPos);
         mPos += 8;
@@ -199,7 +199,7 @@ public class MemoryDataInput {
     }
 
     public final float      readFloat () {
-        assert haveRoom (4);
+        assert checkAvailable (4);
 
         float    ret = DataExchangeUtils.readFloat (mBuffer, mPos);
         mPos += 4;
@@ -207,7 +207,7 @@ public class MemoryDataInput {
     }
 
     public final int        readInt () {
-        assert haveRoom (4);
+        assert checkAvailable (4);
 
         int    ret = DataExchangeUtils.readInt (mBuffer, mPos);
         mPos += 4;
@@ -215,7 +215,7 @@ public class MemoryDataInput {
     }
 
     public final long       readLong () {
-        assert haveRoom (8);
+        assert checkAvailable (8);
 
         long    ret = DataExchangeUtils.readLong (mBuffer, mPos);
         mPos += 8;
@@ -223,7 +223,7 @@ public class MemoryDataInput {
     }
 
     public final long       readLong48 () {
-        assert haveRoom (6);
+        assert checkAvailable (6);
 
         long    ret = DataExchangeUtils.readLong48 (mBuffer, mPos);
         mPos += 6;
@@ -231,7 +231,7 @@ public class MemoryDataInput {
     }
 
     public final long       readLongUnsignedByte () {
-        assert haveRoom (1);
+        assert checkAvailable (1);
 
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
@@ -327,7 +327,7 @@ public class MemoryDataInput {
     }
 
     public final short      readShort () {
-        assert haveRoom (2);
+        assert checkAvailable (2);
 
         short    ret = DataExchangeUtils.readShort (mBuffer, mPos);
         mPos += 2;
