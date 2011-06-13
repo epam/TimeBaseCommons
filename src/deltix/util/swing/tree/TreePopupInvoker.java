@@ -24,7 +24,11 @@ public abstract class TreePopupInvoker extends MouseAdapter {
     private void        maybeShowPopup (MouseEvent e) {
         if (e.isPopupTrigger ()) {
             JTree       tree = (JTree) e.getComponent ();            
-            TreePath    path = tree.getPathForLocation (e.getX (), e.getY ());            
+            TreePath    path = tree.getPathForLocation (e.getX (), e.getY ()); 
+            
+            if (path == null)
+                return;
+            
             JPopupMenu  menu = getMenuForPath (tree, path);
             
             if (menu != null)
