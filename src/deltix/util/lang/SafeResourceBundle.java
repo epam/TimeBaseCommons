@@ -30,7 +30,7 @@ public class SafeResourceBundle {
 
                     @Override
                     protected Object handleGetObject (String key) {
-                        return (null);
+                        return (key);
                     }                
                 }
             );
