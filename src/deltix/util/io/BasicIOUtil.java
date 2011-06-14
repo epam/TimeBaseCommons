@@ -349,6 +349,26 @@ public abstract class BasicIOUtil {
         }
     }
 
+     public static void  		removeRecursive (
+        File						file,
+        FileFilter					filter,
+        List<File>                  remains,
+        boolean                     include
+    )
+        throws IOException
+    {
+        if (file.isDirectory ()) {
+            File []	fileElements = file.listFiles (filter);
+
+            if (fileElements != null)
+                for (int iElement = 0; iElement < fileElements.length; iElement++)
+                    removeRecursive (fileElements [iElement], filter, remains, true);
+        }
+
+        if (include && !file.delete ())
+            remains.add(file);
+    }
+
     public static void  		removeRecursive (File file)
         throws IOException
     {
