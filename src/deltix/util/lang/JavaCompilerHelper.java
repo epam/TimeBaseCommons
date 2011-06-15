@@ -2,8 +2,6 @@ package deltix.util.lang;
 
 import javax.tools.*;
 
-import sun.security.action.*;
-
 import java.util.*;
 import java.io.*;
 import java.net.URI;
