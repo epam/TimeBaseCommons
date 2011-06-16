@@ -26,23 +26,13 @@ public final class WindowsOS {
         IS_VISTA = osName.startsWith ("Windows Vista");
     }
 
-    // mkshortcut.vbs
-    // static String mkshortcut =
-    // "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n" +
-    // "set oShellLink = WshShell.CreateShortcut(Wscript.Arguments.Named(\"shortcut\") & \".lnk\")\n"
-    // +
-    // "oShellLink.TargetPath = Wscript.Arguments.Named(\"target\")\n" +
-    // "oShellLink.IconLocation = Wscript.Arguments.Named(\"icon\")\n" +
-    // "oShellLink.WindowStyle = 1\n" +
-    // "oShellLink.Save";
-
     static String               mkshortcut = "set WshShell = WScript.CreateObject(\"WScript.Shell\" )\n"
                                              + "set oShellLink = WshShell.CreateShortcut(\"%s.lnk\")\n"
                                              + "oShellLink.TargetPath = %s \n" + "oShellLink.WorkingDirectory = %s\n"
                                              + "oShellLink.IconLocation = %s\n" + "oShellLink.WindowStyle = 1\n"
                                              + "oShellLink.Save";
 
-    public static final String getSystemDrive () {
+    public static String            getSystemDrive () {
         String sysdrive = System.getenv ("C:");
 
         if (sysdrive == null)
@@ -51,7 +41,7 @@ public final class WindowsOS {
         return (sysdrive);
     }
 
-    public static final String getProgramFiles () {
+    public static  String           getProgramFiles () {
         String pf = System.getenv ("ProgramFiles");
 
         if (pf == null)
@@ -60,7 +50,7 @@ public final class WindowsOS {
         return (pf);
     }
 
-    public static final String getSystemRoot () {
+    public static String            getSystemRoot () {
         String pf = System.getenv ("SystemRoot");
 
         if (pf == null)
@@ -69,7 +59,7 @@ public final class WindowsOS {
         return (pf);
     }
 
-    public static final String getAllUsersProfile () {
+    public static String            getAllUsersProfile () {
         String pf = System.getenv ("ALLUSERSPROFILE");
 
         if (pf == null)
@@ -78,7 +68,7 @@ public final class WindowsOS {
         return (pf);
     }
 
-    public static final String getPublic () {
+    public static String            getPublic () {
         String p = System.getenv ("PUBLIC");
 
         if (p == null)
@@ -87,7 +77,7 @@ public final class WindowsOS {
 
     }
 
-    public static final String getUserName () {
+    public static String            getUserName () {
         String pf = System.getenv ("USERNAME");
 
         if (pf == null)
@@ -96,7 +86,7 @@ public final class WindowsOS {
         return (pf);
     }
 
-    public static final String getUserProfile () {
+    public static String            getUserProfile () {
         String pf = System.getenv ("USERPROFILE");
 
         if (pf == null)
@@ -105,19 +95,16 @@ public final class WindowsOS {
         return (pf);
     }
 
-    public static final File getDotNetHome () {
-        return (getDotNetHome (-1));
+    public static File              getDotNetHome () {
+        return getDotNetHome (-1);
     }
 
-    public static final File getDotNetHome (int version) {
-        return (getDotNetHome (false,
-                               version));
+    public static File              getDotNetHome (int version) {
+        return getDotNetHome (false, version);
     }
 
-    public static final File getDotNetHome (boolean force32,
-                                            int version) {
-        File dotNet = new File (getSystemRoot (),
-                                "Microsoft.NET");
+    public static File              getDotNetHome (boolean force32, int version) {
+        File dotNet = new File (getSystemRoot (), "Microsoft.NET");
 
         if (!dotNet.isDirectory ())
             return (null);
@@ -125,15 +112,13 @@ public final class WindowsOS {
         File framework = null;
 
         if (!force32) {
-            framework = new File (dotNet,
-                                  "framework64");
+            framework = new File (dotNet, "framework64");
             if (!framework.isDirectory ())
                 framework = null;
         }
 
         if (framework == null) {
-            framework = new File (dotNet,
-                                  "framework");
+            framework = new File (dotNet, "framework");
 
             if (!framework.isDirectory ())
                 framework = null;
@@ -158,20 +143,22 @@ public final class WindowsOS {
         return (homes[homes.length - 1]);
     }
 
-    public static void createShortcut (File target,
-                                       File location,
-                                       File icon) throws IOException {
-        createShortcut (target,
-                        location.getAbsolutePath (),
-                        icon.getAbsolutePath ());
+    public static void              createShortcut (
+            File target,
+            File location,
+            File icon) throws IOException
+    {
+
+        createShortcut (target, location.getAbsolutePath (), icon.getAbsolutePath ());
     }
 
-    public static void createShortcut (File target,
-                                       String location,
-                                       String icon) throws IOException {
+    public static void              createShortcut (
+            File target,
+            String location,
+            String icon) throws IOException
+    {
         // create script that will make shortcut
-        File script = File.createTempFile ("shcut",
-                                           ".vbs");
+        File script = File.createTempFile ("shcut", ".vbs");
         script.deleteOnExit ();
         FileWriter writer = null;
         try {
@@ -200,7 +187,7 @@ public final class WindowsOS {
                                                  + "    Wscript.Echo objItem.Caption & \":\" & objItem.InterfaceType & \":\" & objItem.SerialNumber\n"
                                                  + "Next\n";
 
-    public static String getHardDiskSerial () {
+    public static String            getHardDiskSerial () {
         String result = "";
         try {
             File file = File.createTempFile ("getHardDiskSerial",
@@ -224,37 +211,43 @@ public final class WindowsOS {
         return result.trim ();
     }
 
-    static String GET_SERIAL_NUMBERS = "Set fso = CreateObject(\"Scripting.FileSystemObject\")\n"
-                                       + "Set drives = fso.Drives\n" + "For Each d in drives\n"
-                                       + "If d.DriveType=2 Then\n"
-                                       + " Wscript.Echo  d.DriveLetter & \":\" & d.SerialNumber\n" + "End If\n"
-                                       + "Next\n" + "Set drives = nothing\n" + "Set fso = nothing";
+//    static String GET_SERIAL_NUMBERS = "Set fso = CreateObject(\"Scripting.FileSystemObject\")\n"
+//                                       + "Set drives = fso.Drives\n" + "For Each d in drives\n"
+//                                       + "If d.DriveType=2 Then\n"
+//                                       + " Wscript.Echo  d.DriveLetter & \":\" & d.SerialNumber\n" + "End If\n"
+//                                       + "Next\n" + "Set drives = nothing\n" + "Set fso = nothing";
 
-    public static String getSerialNumbers () {
-        String result = "";
-        try {
-            File file = File.createTempFile ("getSerialNumber",
-                                             ".vbs");
-            file.deleteOnExit ();
-            FileWriter fw = new java.io.FileWriter (file);
+//    public static String getSerialNumbers () {
+//        String result = "";
+//        try {
+//            File file = File.createTempFile ("getSerialNumber",
+//                                             ".vbs");
+//            file.deleteOnExit ();
+//            FileWriter fw = new java.io.FileWriter (file);
+//
+//            String vbs = GET_SERIAL_NUMBERS;
+//            fw.write (vbs);
+//            fw.close ();
+//            Process p = Runtime.getRuntime ().exec ("cscript //NoLogo " + file.getPath ());
+//            BufferedReader input = new BufferedReader (new InputStreamReader (p.getInputStream ()));
+//            String line;
+//            while ((line = input.readLine ()) != null) {
+//                result += "%" + line;
+//            }
+//            input.close ();
+//        } catch (Exception e) {
+//            e.printStackTrace ();
+//        }
+//        return result.trim ();
+//    }
 
-            String vbs = GET_SERIAL_NUMBERS;
-            fw.write (vbs);
-            fw.close ();
-            Process p = Runtime.getRuntime ().exec ("cscript //NoLogo " + file.getPath ());
-            BufferedReader input = new BufferedReader (new InputStreamReader (p.getInputStream ()));
-            String line;
-            while ((line = input.readLine ()) != null) {
-                result += "%" + line;
-            }
-            input.close ();
-        } catch (Exception e) {
-            e.printStackTrace ();
-        }
-        return result.trim ();
+    public static String            getSystemSerial() {
+        String number = getDiskSerialNumber(System.getenv("SYSTEMDRIVE"));
+        
+        return number.length() > 0 ? number : getMBSerialNumber();
     }
 
-    public static String getDiskSerialNumber (String drive) {
+    public static String            getDiskSerialNumber (String drive) {
         String result = "";
         try {
             File file = File.createTempFile ("getSerialNumber", ".vbs");
@@ -279,7 +272,7 @@ public final class WindowsOS {
         return String.format ("%08X",  Integer.valueOf (result.trim ()));
     }
 
-    public static String        getMBSerialNumber() {
+    public static String            getMBSerialNumber() {
         String result = "";
         try {
             File file = File.createTempFile("getMBSerialNumber", ".vbs");
@@ -313,7 +306,7 @@ public final class WindowsOS {
 
     public static void main (String[] args) throws Exception {
         System.out.println (getDotNetHome ());
-        System.out.println (getMBSerialNumber ());
+        System.out.println (getSystemSerial ());
     }
 
 }
