@@ -45,6 +45,12 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
             }
         );
     }
+
+    @Override
+    public void         removeAll () {
+        super.removeAll ();
+        mC.gridy = 0;
+    }    
     
     @Override
     public void         setEnabled (boolean b) {
@@ -83,6 +89,7 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
             mC.fill = GridBagConstraints.HORIZONTAL;
         }
         else if (comp instanceof JTextArea ||
+            comp instanceof JTextPane ||
             comp instanceof JScrollPane ||
             comp instanceof JTabbedPane ||
             comp instanceof JPanel ||
