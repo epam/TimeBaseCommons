@@ -107,17 +107,18 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     }
 
     private void store(long lastUsed) {
-        try {
-            raf.seek(0L);
+        if (channel != null && channel.isOpen() && raf != null)
+            try {
+                raf.seek(0L);
 
-            // storing last used may reduce number of bytes stored compared to last block, lets adjust file size
-            String block = Long.toString(lastUsed);
-            raf.write(block.getBytes());
-            raf.setLength(block.length());
+                // storing last used may reduce number of bytes stored compared to last block, lets adjust file size
+                String block = Long.toString(lastUsed);
+                raf.write(block.getBytes());
+                raf.setLength(block.length());
 
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
     }
 
 }
