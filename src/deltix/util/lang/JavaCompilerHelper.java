@@ -1,5 +1,7 @@
 package deltix.util.lang;
 
+import deltix.util.io.ByteArrayInputStreamEx;
+import deltix.util.io.ByteArrayOutputStreamEx;
 import javax.tools.*;
 
 import java.util.*;
@@ -25,11 +27,26 @@ public class JavaCompilerHelper {
     private SpecialClassLoader      cl;
 
     public JavaCompilerHelper (ClassLoader loader) {
+        if (loader instanceof ClassDirectory)
+            init (loader, (ClassDirectory) loader);
+        else {
+            cl = new SpecialClassLoader(loader);
+            fileManager = new SpecialJavaFileManager (JAVA_FILEMGR_INSTANCE, cl);
+        }
+    }
+    
+    public JavaCompilerHelper (ClassLoader loader, ClassDirectory classDir) {
+        init (loader, classDir);
+    }
+
+    private void        init (ClassLoader loader, ClassDirectory classDir) {
         cl = new SpecialClassLoader(loader);
-        final JavaFileManager jfm = (loader instanceof ListClasses) ?
-                new ClassLoaderJavaFileManager(JAVA_FILEMGR_INSTANCE, (ListClasses) loader) :
-                JAVA_FILEMGR_INSTANCE;
-        fileManager = new SpecialJavaFileManager(jfm, cl);
+        
+        fileManager = 
+            new SpecialJavaFileManager (
+                new ClassLoaderJavaFileManager (JAVA_FILEMGR_INSTANCE, classDir), 
+                cl
+            );
     }
 
     public ClassLoader  getClassLoader () {
@@ -60,9 +77,13 @@ public class JavaCompilerHelper {
         }
 
         if (ok)
-            return cl.findClass(className);
+            return cl.findClass (className);
         else
-            throw new CompilationExceptionWithDiagnostic("compilation failed:\n" + (sb != null ? sb.toString() : ""), dianosticListener.getDiagnostics());
+            throw new CompilationExceptionWithDiagnostic (
+                "compilation failed:\n" + (sb != null ? sb : ""), 
+                code,
+                dianosticListener.getDiagnostics()
+            );
     }
 
     public Map<String, Class<?>> compileClasses(Map<String, String> mapClassName2Code) throws ClassNotFoundException {
@@ -94,8 +115,23 @@ public class JavaCompilerHelper {
                 result.put(className, cl.findClass(className));
 
             return result;
-        } else
-            throw new CompilationExceptionWithDiagnostic("compilation failed:\n" + (sb != null ? sb.toString() : ""), dianosticListener.getDiagnostics());
+        } 
+        else {
+            StringBuilder   code = new StringBuilder ();
+            
+            for (Map.Entry<String, String> entry : mapClassName2Code.entrySet ()) {
+                code.append (entry.getKey ());
+                code.append (":\n--------------------------------------------\n");
+                code.append (entry.getValue ());
+                code.append ("\n\n");
+            }
+            
+            throw new CompilationExceptionWithDiagnostic (
+                "compilation failed:\n" + (sb != null ? sb : ""), 
+                code.toString (),
+                dianosticListener.getDiagnostics()
+            );
+        }
     }
 
     private static class MemorySource extends SimpleJavaFileObject {
@@ -146,7 +182,7 @@ public class JavaCompilerHelper {
 
 
     private static class MemoryByteCode extends SimpleJavaFileObject {
-        private ByteArrayOutputStream baos;
+        private ByteArrayOutputStreamEx baos;
 
         public MemoryByteCode(String name) {
             super(URI.create("byte:///" + name + ".class"), Kind.CLASS);
@@ -159,13 +195,13 @@ public class JavaCompilerHelper {
 
         @Override
         public OutputStream openOutputStream() {
-            baos = new ByteArrayOutputStream();
+            baos = new ByteArrayOutputStreamEx();
             return baos;
         }
 
         @Override
         public InputStream openInputStream() {
-            throw new IllegalStateException();
+            return (new ByteArrayInputStreamEx (baos));
         }
 
         public byte[] getBytes() {
@@ -173,7 +209,10 @@ public class JavaCompilerHelper {
         }
     }
 
-    private static class SpecialClassLoader extends ClassLoader {
+    private static class SpecialClassLoader 
+        extends ClassLoader 
+        implements ClassDirectory
+    {
         private Map<String, MemoryByteCode> m = new HashMap<String, MemoryByteCode>();
 
         private SpecialClassLoader(ClassLoader parent) {
@@ -181,7 +220,22 @@ public class JavaCompilerHelper {
         }
 
         @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException {
+        public InputStream      getResourceAsStream (String name) {            
+            if (name.endsWith (".class")) {
+                String          cname = name.substring (0, name.length () - 6).replace ('/', '.');
+                MemoryByteCode  bc = m.get (cname);
+                
+                if (bc != null)
+                    return (bc.openInputStream ());
+            }
+            
+            return super.getResourceAsStream (name);
+        }
+        
+        @Override
+        protected Class <?>     findClass(String name) 
+            throws ClassNotFoundException 
+        {
             MemoryByteCode mbc = m.get(name);
             if (mbc == null) {
                 mbc = m.get(name.replace(".", "/"));
@@ -196,6 +250,27 @@ public class JavaCompilerHelper {
         public void addClass(String name, MemoryByteCode mbc) {
             m.put(name, mbc);
         }
+
+        public Collection <Class<?>> listClassesForPackage (String packageName) {
+            if (packageName != null && packageName.isEmpty ())
+                packageName = null;
+            else
+                packageName += '.';
+            
+            ArrayList <Class <?>>       ret = new ArrayList <Class <?>> ();
+            
+            for (String cname : m.keySet ()) {
+                if (packageName == null ? !cname.contains (".") : cname.startsWith (packageName)) {
+                    try {
+                        ret.add (loadClass (cname));
+                    } catch (ClassNotFoundException x) {
+                        throw new RuntimeException ("Unable to load own class " + cname, x);
+                    }
+                }
+            }
+            
+            return (ret);
+        }                
     }
 
     private static final String defaultJavaCompilerName

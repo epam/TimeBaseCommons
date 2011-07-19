@@ -6,12 +6,15 @@ import deltix.util.io.IOUtil;
 import deltix.util.io.RegexFilenameFilter;
 
 import java.net.URL;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  *  UNTESTED
  */
-public final class FileSystemClassLoader extends AbstractClassLoader implements ListClasses {
+public final class FileSystemClassLoader 
+    extends AbstractClassLoader 
+    implements ClassDirectory 
+{
     private final File mClassDir;
     
     public FileSystemClassLoader (File rootDir, boolean searchParentFirst) {
@@ -58,36 +61,27 @@ public final class FileSystemClassLoader extends AbstractClassLoader implements 
     private final static FilenameFilter CLASS_FILE_FILTER = new RegexFilenameFilter(".*\\.class");
 
     @Override
-    public Iterator<Class<?>> list(final String packageName) {
-        final String subfolder = packageName.replace('.', File.separatorChar);
-        final StringBuilder sb = new StringBuilder();
-
-        return new Iterator<Class<?>>() {
-            private final File[] files = new File(mClassDir, subfolder).listFiles(CLASS_FILE_FILTER);
-            private int idx = 0;
-
-            @Override
-            public boolean hasNext() {
-                return files != null && idx < files.length;
+    public Collection <Class <?>> listClassesForPackage(final String packageName) {
+        final String                subfolder = packageName.replace('.', File.separatorChar);
+        final StringBuilder         sb = new StringBuilder();
+        final ArrayList <Class <?>> ret = new ArrayList <Class <?>> ();        
+        final File                  folder = new File (mClassDir, subfolder);
+        
+        for (File classf : folder.listFiles (CLASS_FILE_FILTER)) {
+            final String            fileName = classf.getName();
+            
+            sb.setLength(0);
+            sb.append(packageName);
+            sb.append ('.');
+            sb.append (fileName, 0, fileName.length() - 6);
+            
+            try {
+                ret.add (loadClass (sb.toString ()));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
-
-            @Override
-            public Class<?> next() {
-                final File file = files[idx++];
-                sb.setLength(0);
-                final String fileName = file.getName();
-                sb.append(packageName).append('.').append(fileName, 0, fileName.length() - 6);
-                try {
-                    return loadClass(sb.toString());
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+        }
+        
+        return (ret);
+    }                  
 }

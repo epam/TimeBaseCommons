@@ -26,7 +26,7 @@ public class SimpleStringCodec {
     }
         
     public boolean                  shouldEscape (char ch) {
-        return ch == open || ch == close || (!Character.isLetterOrDigit(ch));
+        return (!Character.isLetterOrDigit (ch));
     }
     
     public final String             encode (String s) {
@@ -45,7 +45,7 @@ public class SimpleStringCodec {
         for (int i = start; i < length; i++) {
             char        ch = s.charAt (i);
 
-            if (shouldEscape (ch)) {
+            if (ch == open || shouldEscape (ch)) {
                 out.append (open);
                 out.append((int)ch);
                 out.append (close);
@@ -56,7 +56,7 @@ public class SimpleStringCodec {
                 //
                 for (;i < length;) {
                     char next = s.charAt (i);
-                    if (!shouldEscape(next) && Character.isUpperCase(next)) {
+                    if (next != open && !shouldEscape (next) && Character.isUpperCase (next)) {
                         out.append(Character.toLowerCase(next));
                         i++;
                     }

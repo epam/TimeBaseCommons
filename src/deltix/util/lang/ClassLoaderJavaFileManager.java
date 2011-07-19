@@ -5,34 +5,41 @@ import javax.lang.model.element.NestingKind;
 import javax.tools.*;
 import java.io.*;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Date: Mar 16, 2010
  * @author BazylevD
  */
 public class ClassLoaderJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
-    private final ListClasses listClasses;
+    private final ClassDirectory listClasses;
 
-    public ClassLoaderJavaFileManager(JavaFileManager fileManager, ListClasses listClasses) {
+    public ClassLoaderJavaFileManager(JavaFileManager fileManager, ClassDirectory listClasses) {
         super(fileManager);
         this.listClasses = listClasses;
     }
 
     @Override
-    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
+    public Iterable <JavaFileObject> list (
+        Location                        location, 
+        String                          packageName, 
+        Set<JavaFileObject.Kind>        kinds, 
+        boolean                         recurse
+    )
+        throws IOException 
+    {
         // first of all try listClasses
-        final Iterator<Class<?>> it = listClasses.list(packageName);
-        if (it.hasNext()) {
-            final ArrayList<JavaFileObject> list = new ArrayList<JavaFileObject>();
-            do {
-                list.add(new ClassBasedJavaFileObject(it.next()));
-            } while (it.hasNext());
-            return list;
-        } else
+        Collection <Class <?>> clist = listClasses.listClassesForPackage (packageName);
+        
+        if (clist == null || clist.isEmpty ())
             return super.list(location, packageName, kinds, recurse);
+        
+        ArrayList <JavaFileObject>    ret = new ArrayList <JavaFileObject> ();
+        
+        for (Class <?> cls : clist)        
+             ret.add (new ClassBasedJavaFileObject (cls));
+            
+        return (ret);
     }
 
     @Override
