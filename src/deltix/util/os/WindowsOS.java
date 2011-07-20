@@ -243,8 +243,12 @@ public final class WindowsOS {
 
     public static String            getSystemSerial() {
         String number = getDiskSerialNumber(System.getenv("SYSTEMDRIVE"));
-        
-        return number.length() > 0 ? number : getMBSerialNumber();
+        number = number.length() > 0 ? number : getMBSerialNumber();
+
+        if (number.length() == 0)
+            throw new IllegalStateException("Cannot resolve HD serial and MB serial numbers.");
+
+        return number;
     }
 
     public static String            getDiskSerialNumber (String drive) {
@@ -269,7 +273,10 @@ public final class WindowsOS {
         } catch (Exception e) {
             e.printStackTrace ();
         }
-        return String.format ("%08X",  Integer.valueOf (result.trim ()));
+
+        result = result.trim ();
+        
+        return result.length() > 0 ? String.format ("%08X",  Integer.valueOf (result)) : result;
     }
 
     public static String            getMBSerialNumber() {
