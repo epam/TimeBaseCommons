@@ -33,7 +33,7 @@ public final class WindowsOS {
                                              + "oShellLink.Save";
 
     public static String            getSystemDrive () {
-        String sysdrive = System.getenv ("C:");
+        String sysdrive = System.getenv("SYSTEMDRIVE");
 
         if (sysdrive == null)
             sysdrive = "C:";
@@ -313,7 +313,9 @@ public final class WindowsOS {
 
     public static void main (String[] args) throws Exception {
         System.out.println (getDotNetHome ());
+        System.out.println (getHardDiskSerial ());
+        System.out.println (getMBSerialNumber ());
+        System.out.println (getDiskSerialNumber(getSystemDrive()));
         System.out.println (getSystemSerial ());
     }
-
 }
