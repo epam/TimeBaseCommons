@@ -761,4 +761,13 @@ public class ResultSetImpl extends WrapperImpl
         throw new UnsupportedOperationException ("Not supported yet.");
     }
 
+	// Java 1.7
+	
+	public <T> T getObject(int columnIndex, Class<T> type) {
+        throw new UnsupportedOperationException ("Not supported yet.");
+	}	
+	
+	public <T> T getObject(String columnName, Class<T> type) {
+        throw new UnsupportedOperationException ("Not supported yet.");
+	}	
 }
