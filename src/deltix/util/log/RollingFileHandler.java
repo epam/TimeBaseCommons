@@ -5,9 +5,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
-import java.util.logging.Formatter;
 
-import deltix.util.lang.StringUtils;
+import deltix.util.io.UncheckedIOException;
 
 /**
  * Description: deltix.util.log.RollingFileHandler
@@ -87,7 +86,30 @@ public class RollingFileHandler extends FileHandler {
         this.pushPeriod = pushPeriod;
     }
 
+    public RollingFileHandler copy(String pattern) {
+        try {
+            LogManager logManager = LogManager.getLogManager();
+            String handlerClassName = RollingFileHandler.class.getName();
+            // read predefined FileHandler properties if any
+            int limit = parseInt(logManager.getProperty(handlerClassName + ".limit"), 10000000);
+            int count = parseInt(logManager.getProperty(handlerClassName + ".count"), 30);
+
+            RollingFileHandler handler = new RollingFileHandler(pattern, limit, count, false, pushLevel, pushPeriod);
+            handler.setLevel(getLevel());
+            handler.setFormatter(getFormatter());
+            handler.setFilter(getFilter());
+            return handler;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     ////////////////////////// FACTORY METHOD ///////////////////////
+
+    private static int parseInt(String value, int defaultValue) {
+        value = value != null ? value.trim() : null;
+        return value != null ? Integer.parseInt(value) : defaultValue;
+    }
 
     private static Level getPushLevel(LogManager manager, Level defaultLevel) {
         String pushLevelValue = manager.getProperty(RollingFileHandler.class.getName() + ".push");
@@ -97,48 +119,5 @@ public class RollingFileHandler extends FileHandler {
     private static long getPushPeriod(LogManager manager, long defaultPushPeriod) {
         String pushPeriodValue = manager.getProperty(RollingFileHandler.class.getName() + ".period");
         return pushPeriodValue != null ? Long.parseLong(pushPeriodValue) : defaultPushPeriod;
-    }
-
-    public static RollingFileHandler createByConfig(String defaultPattern,
-                                                    int defaultLimit,
-                                                    int defaultCount,
-                                                    Level defaultLevel,
-                                                    boolean append,
-                                                    Formatter defaultFormatter) {
-        try {
-            LogManager logManager = LogManager.getLogManager();
-            String handlerClassName = FileHandler.class.getName();
-            // read predefined FileHandler properties if any
-            String pattern = logManager.getProperty(handlerClassName + ".pattern");
-            String limitValue = logManager.getProperty(handlerClassName + ".limit");
-            String countValue = logManager.getProperty(handlerClassName + ".headIndex");
-            String levelValue = logManager.getProperty(handlerClassName + ".level");
-
-            Formatter formatter = defaultFormatter;
-            String formatterClass = StringUtils.trim(logManager.getProperty(handlerClassName + ".formatter"));
-            if (formatterClass != null) {
-                try {
-                    Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(formatterClass);
-                    formatter = (Formatter) clazz.newInstance();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            RollingFileHandler handler =
-                new RollingFileHandler(pattern != null ? pattern : defaultPattern,
-                                       limitValue != null ? Integer.parseInt(limitValue) : defaultLimit,
-                                       countValue != null ? Integer.parseInt(countValue) : defaultCount, append,
-                                       getPushLevel(logManager, DEFAULT_PUSH_LEVEL),
-                                       getPushPeriod(logManager, DEFAULT_PUSH_PERIOD));
-            handler.setLevel(levelValue != null ? Level.parse(levelValue) : defaultLevel);
-
-            // set formatter
-            handler.setFormatter(formatter);
-
-            return handler;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

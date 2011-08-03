@@ -1,7 +1,6 @@
 package deltix.qsrv.hf.spi.conn;
 
 import deltix.util.lang.Util;
-import deltix.qsrv.hf.spi.conn.DisconnectableEventHandler;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
 
