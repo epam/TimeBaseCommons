@@ -1,5 +1,6 @@
 package deltix.util.text;
 
+import deltix.qsrv.hf.pub.ExchangeCodec;
 import deltix.util.lang.Util;
 
 /**
@@ -116,10 +117,19 @@ public abstract class CharSequenceParser {
     }
     
     public static long  parseLong (CharSequence sc) {
-        return (parseLong (sc, 0, sc.length ()));
+        long value = -1;
+        //it is temporary solution to parse ALPHANUMERIC strings
+        try
+        {
+            value = parseLong (sc, 0, sc.length ());
+        }
+        catch (NumberFormatException e){
+           value = ExchangeCodec.codeToLong(sc);
+        }
+        return value;
     }
     
-    public static long  parseLong (final CharSequence sc, final int startIncl, final int endExcl) {
+    public static long  parseLong (CharSequence sc, final int startIncl, final int endExcl) {
         if (startIncl > endExcl)
             throw new IllegalArgumentException ("Illegal range: " + startIncl + ".." + endExcl);
         
@@ -143,8 +153,8 @@ public abstract class CharSequenceParser {
         
         for (;;) {
             if (ch != ',') {
-                int             digit = ch - '0';
 
+                int digit = ch - '0';
                 if (digit < 0 || digit > 9)
                     throw new NumberFormatException (
                         "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
