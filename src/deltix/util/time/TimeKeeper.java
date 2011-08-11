@@ -9,7 +9,9 @@ import java.util.concurrent.locks.LockSupport;
  */
 public abstract class TimeKeeper {
     public static volatile long         currentTime = System.currentTimeMillis ();
-
+    
+    public static final long            RESOLUTION = 1;
+    
     static {
         if (Util.IS_WINDOWS_OS) {
             //
@@ -58,7 +60,7 @@ public abstract class TimeKeeper {
                                     currentTime = ct;
                                 }
                                 
-                                LockSupport.parkNanos (500000);
+                                LockSupport.parkNanos (RESOLUTION * 500000);
                             }
                         } catch (Throwable x) {
                             // Ignore.
