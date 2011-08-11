@@ -43,8 +43,8 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         synchronized (mEmptyElements) {
             for (int i = 0; i < count; i++) {
                 mEmptyElements.add(elems[i]);
-                mEmptyElements.notify();
             }
+            mEmptyElements.notify();
         }
     }
 
@@ -60,8 +60,8 @@ public abstract class CircularBoundedDoubleStateQueue<E> implements DoubleStateQ
         synchronized (mReadyElements) {
             for (int i = 0; i < count; i++) {
                 mReadyElements.add(elems[i]);
-                mReadyElements.notify();
             }
+            mReadyElements.notify();
         }
     }
 
