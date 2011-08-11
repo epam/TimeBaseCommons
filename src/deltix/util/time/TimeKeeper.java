@@ -1,17 +1,38 @@
 package deltix.util.time;
 
 import deltix.util.lang.Util;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  *  Use TimeKeeper.currentTime instead of System.currentTimeMillis ().
  *  It's 5 times faster and almost equally precise.
  */
 public abstract class TimeKeeper {
-    public static final long            RESOLUTION = 10; // should be multiple x10 to avoid calling timeBeginPeriod/timeEndPeriod per each sleep
-    
     public static volatile long         currentTime = System.currentTimeMillis ();
 
     static {
+        if (Util.IS_WINDOWS_OS) {
+            //
+            // Force the Windows system clock into fast mode
+            // Workaround per   http://bugs.sun.com/view_bug.do?bug_id=6435126
+            //
+            Thread  magic =
+                new Thread () {
+                    @Override
+                    public void run() {
+                        for (;;) {
+                            try {
+                                Thread.sleep (Integer.MAX_VALUE);
+                            } catch(InterruptedException ex) {
+                            }
+                        }
+                    }
+                };        
+
+            magic.setDaemon (true);
+            magic.start ();
+        }
+        
         Thread  t =
             new Thread ("Time Keeper") {
                 private boolean wasBackJumpReported = false;
@@ -24,9 +45,11 @@ public abstract class TimeKeeper {
                                 final long ct = System.currentTimeMillis();
                                 if (ct < currentTime) {
                                     if (!wasBackJumpReported) {
-                                        Util.LOGGER.warning("time-back jump ignored. from " +
-                                                GMT.formatDateTimeMillis(currentTime) + " to " +
-                                                GMT.formatDateTimeMillis(ct));
+                                        Util.LOGGER.warning(
+                                            "time-back jump ignored. from " +
+                                            GMT.formatDateTimeMillis(currentTime) + " to " +
+                                            GMT.formatDateTimeMillis(ct)
+                                        );
                                         wasBackJumpReported = true;
                                     }
                                 } else {
@@ -34,7 +57,8 @@ public abstract class TimeKeeper {
                                         wasBackJumpReported = false;
                                     currentTime = ct;
                                 }
-                                sleep (RESOLUTION);
+                                
+                                LockSupport.parkNanos (500000);
                             }
                         } catch (Throwable x) {
                             // Ignore.
