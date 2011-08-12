@@ -18,7 +18,8 @@ public enum InstrumentType {
     EXCHANGE('G', "Exchange"),
     TRADING_SESSION('T', "TradingSession"),
     STREAM('M', "Stream"),
-    DATA_CONNECTOR('Q', "DataConnector");
+    DATA_CONNECTOR('Q', "DataConnector"),
+    SYSTEM('X', "System");
 
     private final char             code;
     private final String           qoType;
@@ -39,6 +40,7 @@ public enum InstrumentType {
         if (code == ETF.code)    return ETF;
         if (code == CUSTOM.code) return CUSTOM;
         if (code == STREAM.code) return STREAM;
+        if (code == SYSTEM.code) return SYSTEM;
     	
         throw new IllegalArgumentException ("Unknown InstrumentType code: " + code);
     }
