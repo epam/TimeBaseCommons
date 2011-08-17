@@ -677,6 +677,7 @@ public class StringUtils {
         builder.append(lineSeparator).append(topAndBottom).append(lineSeparator).
                 append(frameSymbol).append(emptyLine).append(frameSymbol).append(lineSeparator);
         for (String line : lines) {
+            line = line.trim();
             int rightPaddingLenght = Math.max(1, maxLength - paddingLength - line.length());
             builder.append(frameSymbol).
                     append(padding).append(line).append(repeat(' ', rightPaddingLenght)).
