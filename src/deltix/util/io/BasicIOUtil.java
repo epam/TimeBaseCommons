@@ -10,6 +10,7 @@ import deltix.util.lang.Util;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -91,6 +92,19 @@ public abstract class BasicIOUtil {
             Util.close(out);
         }
     }
+
+    public static Object            unmarshal(Unmarshaller u, File file)
+        throws FileNotFoundException, JAXBException
+    {
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(file);
+            return u.unmarshal(in);
+        } finally {
+            Util.close(in);
+        }
+    }
+
 
     public static void      rename (File from, File to) throws IOException {
         if (!from.renameTo (to))
