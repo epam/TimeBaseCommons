@@ -496,9 +496,21 @@ public class StringUtils {
         return str;
     }
 
-    /** @return true if input is empty string or null */
+    /** @return true if trimmed input is empty string or null */
     public static boolean isEmpty (String value) {
         return trim(value) == null;
+    }
+
+    /** @return true if input is null or empty string contains only whitespaces */
+    public static boolean isWhitespace (String value) {
+        if (value == null)
+            return true;
+
+        final int length = value.length();
+        for (int i=0; i < length; i++)
+            if ( ! Character.isWhitespace(value.charAt(i)))
+                return false;
+        return true;
     }
 
     public static CharSequence trim (CharSequence cs) {
