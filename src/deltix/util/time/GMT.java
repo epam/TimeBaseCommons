@@ -1,5 +1,8 @@
 package deltix.util.time;
 
+import deltix.qsrv.hf.pub.TimeStamp;
+import deltix.qsrv.provider.bloomberg2.Tick;
+
 import java.text.*;
 import java.util.*;
 
@@ -8,15 +11,16 @@ import java.util.*;
  */
 public abstract class GMT {	
     public static final String                  TIME_FORMAT_STR = "HH:mm:ss";
-	public static final String                  DATETIME_FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
+    public static final String                  DATETIME_FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
     public static final String                  DATETIME_MILLIS_FORMAT_STR = "yyyy-MM-dd HH:mm:ss.S";
     public static final String                  DATE_FORMAT_STR = "yyyy-MM-dd";
-	
-	public static final TimeZone                TZ = TimeZone.getTimeZone ("GMT");
+    public static final TimeZone                TZ = TimeZone.getTimeZone ("GMT");
+
     private static final SimpleDateFormat       DTFX = new SimpleDateFormat (DATETIME_MILLIS_FORMAT_STR);
     private static final SimpleDateFormat       DTF = new SimpleDateFormat (DATETIME_FORMAT_STR);
     private static final SimpleDateFormat       DF = new SimpleDateFormat (DATE_FORMAT_STR);
     private static final SimpleDateFormat       TF = new SimpleDateFormat (TIME_FORMAT_STR);
+    private static final TicksFormat            TICKS = new TicksFormat();
     
     static {
         DTF.setTimeZone (TZ);
@@ -67,6 +71,16 @@ public abstract class GMT {
     
     public static String                formatDateTimeMillis (long t) {
         return (formatDateTimeMillis (new Date (t)));
+    }
+
+    public static String                formatTicks (long milliseconds, short ticks) {
+        return TICKS.format(milliseconds, ticks);
+    }
+
+    public static String                formatTicks (long t) {
+        short ticksPart = (short) (t % TimeStamp.TICKS_PER_MS);
+        long ms = (t - ticksPart) / TimeStamp.TICKS_PER_MS;
+        return TICKS.format(ms, ticksPart);
     }
     
     public static String                formatDateTimeMillis (Date t) {

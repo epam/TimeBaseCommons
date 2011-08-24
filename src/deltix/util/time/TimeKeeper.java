@@ -19,7 +19,7 @@ public abstract class TimeKeeper {
             // Workaround per   http://bugs.sun.com/view_bug.do?bug_id=6435126
             //
             Thread  magic =
-                new Thread () {
+                new Thread ("Neverending Thread") {
                     @Override
                     public void run() {
                         for (;;) {
