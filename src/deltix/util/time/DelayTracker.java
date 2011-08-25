@@ -32,10 +32,6 @@ public final class DelayTracker {
     }
 
     public DelayTracker (long delayThreshold, String activityName, Logger logger, Level level) {
-        if (delayThreshold < 2 * TimeKeeper.RESOLUTION) {
-            logger.warning ("delayThreshold too low: " + delayThreshold + "; DelayReporter will not function correctly.");
-        }
-
         this.delayThreshold = delayThreshold;
         this.activityName = activityName;
         this.logger = logger;
@@ -43,7 +39,7 @@ public final class DelayTracker {
     }
 
     public void                 in () {
-        timeIn = TimeKeeper.currentTime;
+        timeIn = System.nanoTime ();
     }
 
     public void                 out () {
@@ -52,10 +48,10 @@ public final class DelayTracker {
             return;
         }
 
-        long    delay = TimeKeeper.currentTime - timeIn;
+        long    delay = System.nanoTime () - timeIn;
 
         if (delay >= delayThreshold && logger.isLoggable (level))
-            logger.log (level, activityName + " took " + delay * 0.001 + "s");
+            logger.log (level, activityName + " took " + delay * 1E-9 + "s");
 
         timeIn = 0;
     }
