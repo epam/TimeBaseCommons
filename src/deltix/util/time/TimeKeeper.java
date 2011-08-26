@@ -9,6 +9,27 @@ import java.util.logging.Level;
  *
  */
 public class TimeKeeper extends Thread {
+    public static void          main (String [] args) throws Exception {
+        TimeKeeper.setMode (Mode.HIGH_RESOLUTION_SYNC_BACK);
+        
+        for (;;) {
+            LockSupport.parkNanos (235327881);
+            
+            long        keepTime = TimeKeeper.currentTime;
+            long        sysTime = System.currentTimeMillis ();
+            
+            System.out.print (GMT.formatDateTimeMillis (sysTime));
+            
+            if (sysTime == keepTime)
+                System.out.println (": IN SYNC");
+            else if (sysTime < keepTime)
+                System.out.println (": Keeper is ahead by " + (keepTime - sysTime) + "ms");
+            else
+                System.out.println (": Keeper is behind by " + (sysTime - keepTime) + "ms");                                              
+        }
+    }
+    
+    
     private static final long           NOT_SCHEDULED = Long.MAX_VALUE;
     private static final boolean        DEBUG = false;
     private static final double         DISTORTION = 1;
@@ -147,7 +168,7 @@ public class TimeKeeper extends Thread {
         final long              nanoTime = nanoTime ();
 
         lastTimeMillis = System.currentTimeMillis ();
-        offset = lastTimeMillis * M - nanoTime;
+        offset = lastTimeMillis * M - nanoTime;                
     }
 
     private boolean         getSystemTimeNoRollBack () {
@@ -182,8 +203,13 @@ public class TimeKeeper extends Thread {
         return (true);
     }
 
+    private boolean         isRunawayConfirmed () {
+        return (runawayAt != IN_SYNC && lastTimeMillis >= runawayAt);
+    }
+    
     private void            set (long nanoTime) {
         assert nanoTime >= currentTimeNanos;
+        assert !isRunawayConfirmed ();    // Else we should not be increasing.
 
         currentTimeNanos = nanoTime;
         currentTime = nanoTime / M;
@@ -199,7 +225,8 @@ public class TimeKeeper extends Thread {
         long                    cpuTimeNanos = sysNanoTime + offset;
         boolean                 sysClockChanged = getSystemTimeNoRollBack ();        
 
-        if (!sysClockChanged) {  // Keep ticking
+        if (!sysClockChanged && !isRunawayConfirmed ()) {  
+            // Keep ticking
             set (cpuTimeNanos);
             return;
         }
@@ -217,7 +244,7 @@ public class TimeKeeper extends Thread {
 
             if (DEBUG) {
                 System.out.printf (
-                    "Behind; forward by %,d ns\n",
+                    "TK: + %,d ns\n",
                     cpuTimeNanos - sysNanoTime - offset
                 );
             }
@@ -236,9 +263,16 @@ public class TimeKeeper extends Thread {
         //
         //  keeper is ahead by at least 1ms
         //
-        if (runawayAt == IN_SYNC)
+        if (runawayAt == IN_SYNC) {
+            if (DEBUG) {
+                System.out.print (
+                    "TK: Ahead, raising runaway suspicion\n"                    
+                );
+            }
+            
             runawayAt = lastTimeMillis + RUNAWAY_THRESHOLD_MS;
-
+        }
+        
         if (lastTimeMillis >= runawayAt) {
             //
             //  Keeper has been consistently ahead for RUNAWAY_THRESHOLD_MS.
@@ -248,25 +282,32 @@ public class TimeKeeper extends Thread {
             long        minPossibleOffset = currentTimeNanos - sysNanoTime;
             long        targetOffset = maxCompliantTimeNanos - sysNanoTime;
 
-            if (targetOffset > minPossibleOffset) {
+            if (targetOffset >= minPossibleOffset) {
                 if (DEBUG) {
                     System.out.printf (
-                        "Ahead; back by %,d\n",
+                        "TK: -%,d (FINAL)\n",
                         offset - targetOffset
                     );
                 }
                 
                 offset = targetOffset;
+                runawayAt = IN_SYNC;
+                
                 set (maxCompliantTimeNanos);
             }
             else {
                 if (DEBUG) {
-                    System.out.println ("Ahead; suspending advance");
+                    System.out.printf (
+                        "TK: STAYING PUT; -%,d (STILL RUNAWAY)\n", 
+                        offset - minPossibleOffset
+                    );
                 }
                 
                 offset = minPossibleOffset;                          
             }
         }
+        else
+            set (cpuTimeNanos);
     }
 
     private void            doApproximateTimeMaintenance () {
