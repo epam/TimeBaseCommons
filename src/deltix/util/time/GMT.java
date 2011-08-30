@@ -73,13 +73,13 @@ public abstract class GMT {
         return (formatDateTimeMillis (new Date (t)));
     }
 
-    public static String                formatTicks (long milliseconds, short ticks) {
-        return TICKS.format(milliseconds, ticks);
+    public static String                formatNanos (long milliseconds, int nanos) {
+        return TICKS.format(milliseconds, nanos);
     }
 
-    public static String                formatTicks (long t) {
-        short ticksPart = (short) (t % TimeStamp.TICKS_PER_MS);
-        long ms = (t - ticksPart) / TimeStamp.TICKS_PER_MS;
+    public static String                formatNanos (long nanoTime) {
+        int ticksPart = (int) (nanoTime % TimeStamp.NANOS_PER_MS);
+        long ms = (nanoTime - ticksPart) / TimeStamp.NANOS_PER_MS;
         return TICKS.format(ms, ticksPart);
     }
     

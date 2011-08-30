@@ -5,7 +5,8 @@ import deltix.data.stream.TimeStampedMessage;
 public class TimeStamp implements TimeStampedMessage {
 
     /** Number of ticks per millisecond (10 pow 4) */
-    public static final int     TICKS_PER_MS = 10000;
+    //public static final int     TICKS_PER_MS = 10000;
+    public static final int     NANOS_PER_MS = 1000000;
 
     /** Time is measured in milliseconds that passed since January 1, 1970 UTC */
     @Title ("Time")
@@ -14,22 +15,25 @@ public class TimeStamp implements TimeStampedMessage {
 
     /** Number of ticks (100 ns resolution) in defined TimeStamp#timestamp */
     @Title ("Ticks Component")
-    public short                ticksComponent = 0;
+    public int                  nanosComponent = 0;
 
+//    public long                 getNanoTime() {
+//        return timestamp == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : (getNanoTime(timestamp) + nanosComponent);
+//    }
 
-    @Override
-    public long                 getTicks() {
-        return timestamp == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : (getTicks(timestamp) + ticksComponent);
-    }
-
-    public void                 setTicks(long ticks) {
-       if (ticks != TIMESTAMP_UNKNOWN) {
-            ticksComponent = (short) (ticks % TimeStamp.TICKS_PER_MS);
-            timestamp = (ticks - ticksComponent)/ TimeStamp.TICKS_PER_MS;
+    public void                 setNanoTime(long nanoSeconds) {
+       if (nanoSeconds != TIMESTAMP_UNKNOWN) {
+            nanosComponent = (int) (nanoSeconds % TimeStamp.NANOS_PER_MS);
+            timestamp = (nanoSeconds - nanosComponent) / TimeStamp.NANOS_PER_MS;
        } else {
             timestamp = TIMESTAMP_UNKNOWN;
-            ticksComponent = 0;
+            nanosComponent = 0;
        }
+    }
+
+    @Override
+    public long                 getNanoTime() {
+        return timestamp == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : (getNanoTime(timestamp) + nanosComponent);
     }
 
     @Override
@@ -39,11 +43,11 @@ public class TimeStamp implements TimeStampedMessage {
 
     public void                 setTime(long milliseconds) {
         timestamp = milliseconds;
-        ticksComponent = 0;
+        nanosComponent = 0;
     }
     
     public long                 getTime() {
-        return timestamp + (ticksComponent > 0 ? 1 : 0);
+        return timestamp + (nanosComponent > 0 ? 1 : 0);
     }
 
     public boolean              isUndefined() {
@@ -54,14 +58,18 @@ public class TimeStamp implements TimeStampedMessage {
         setTime(TIMESTAMP_UNKNOWN);
     }
 
-    public static long          getTicks (long milliseconds) {
-        return milliseconds == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : milliseconds * TICKS_PER_MS;
+    public static long          getNanoTime (long milliseconds) {
+        return milliseconds == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : milliseconds * NANOS_PER_MS;
     }
 
-     public static long          getTime(long ticks) {
-        if (ticks % TICKS_PER_MS == 0)
-            return ticks / TICKS_PER_MS;
-
-        return (ticks / TICKS_PER_MS) + 1;
+    public static long          getNanoTime (long milliseconds, int nanosComponent) {
+        return milliseconds == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : milliseconds * NANOS_PER_MS;
     }
+
+//    public static long          getTime(long nanos) {
+//        if (nanos % NANOS_PER_MS == 0)
+//            return NANOS_PER_MS / TICKS_PER_MS;
+//
+//        return (NANOS_PER_MS / TICKS_PER_MS) + 1;
+//    }
 }

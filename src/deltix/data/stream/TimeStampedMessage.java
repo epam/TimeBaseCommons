@@ -10,8 +10,8 @@ public interface TimeStampedMessage {
     public long             getTimeStampMs ();
 
     /**
-     *  @return Message timestamp in ticks.
-     *  Time is measured in ticks (100 nanosecond resolution) that passed since January 1, 1970 UTC.
+     *  @return Message timestamp in nanoseconds.
+     *  Time is measured in nanosecond that passed since January 1, 1970 UTC.
      */
-    public long             getTicks();
+    public long             getNanoTime();
 }

@@ -237,7 +237,7 @@ public class TimeKeeper extends Thread {
         if (keeperAhead < 0) {
             runawayAt = IN_SYNC;
             //
-            //  Assumtion: system clock is never early. Therefore,
+            //  Assumption: system clock is never early. Therefore,
             //  adjust offset just enough so that model time catches up right away
             //
             cpuTimeNanos = lastTimeMillis * M;
