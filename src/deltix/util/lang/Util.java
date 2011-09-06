@@ -1238,4 +1238,8 @@ public class Util {
             return false;
         }
     }
+
+    public static <K,V> HashMap<K,V> newHashMap(int size) {
+        return new HashMap<K, V>(1 + (int) (size/0.75));
+    }
 }
