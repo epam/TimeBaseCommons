@@ -4,8 +4,7 @@ import deltix.data.stream.TimeStampedMessage;
 
 public class TimeStamp implements TimeStampedMessage {
 
-    /** Number of ticks per millisecond (10 pow 4) */
-    //public static final int     TICKS_PER_MS = 10000;
+    /** Number of nanos per millisecond (10^6) */
     public static final int     NANOS_PER_MS = 1000000;
 
     /** Time is measured in milliseconds that passed since January 1, 1970 UTC */
@@ -13,13 +12,9 @@ public class TimeStamp implements TimeStampedMessage {
     @DateTimeMs
     public long                 timestamp = TIMESTAMP_UNKNOWN;
 
-    /** Number of ticks (100 ns resolution) in defined TimeStamp#timestamp */
-    @Title ("Ticks Component")
+    /** Nanoseconds part of the TimeStamp#timestamp */
+    @Title ("Nanoseconds Component")
     public int                  nanosComponent = 0;
-
-//    public long                 getNanoTime() {
-//        return timestamp == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : (getNanoTime(timestamp) + nanosComponent);
-//    }
 
     public void                 setNanoTime(long nanoSeconds) {
        if (nanoSeconds != TIMESTAMP_UNKNOWN) {
