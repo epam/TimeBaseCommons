@@ -1,7 +1,6 @@
 package deltix.util.time;
 
 import deltix.qsrv.hf.pub.TimeStamp;
-import deltix.qsrv.provider.bloomberg2.Tick;
 
 import java.text.*;
 import java.util.*;
