@@ -8,7 +8,6 @@ import java.util.logging.*;
 import java.util.prefs.Preferences;
 import java.rmi.RemoteException;
 
-import deltix.installer.backend.Platform;
 import deltix.util.os.LinuxOS;
 import deltix.util.os.WindowsOS;
 import org.xml.sax.SAXException;
