@@ -19,7 +19,7 @@ public class HCMultiMap <K, V> implements MultiMap <K, V> {
 
     /**
      *  Factory method for new collections.
-     *  Default implemetation creates an ArrayList.
+     *  Default implementation creates an ArrayList.
      *  Override to modify this behavior; for example, to create HasSets.
      *
      *  @return New collection for holding values corresponding to a single key.
@@ -42,5 +42,15 @@ public class HCMultiMap <K, V> implements MultiMap <K, V> {
 
     public Collection <V>       remove (K key) {
         return (map.remove (key));
+    }
+
+    @Override
+    public boolean              isEmpty() {
+        return map.isEmpty();
+    }
+
+    @Override
+    public int                  size() {
+        return map.size();
     }
 }

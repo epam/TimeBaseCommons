@@ -13,4 +13,8 @@ public interface MultiMap <K, V> {
     public Collection <V>       put (K key, V value);
     
     public Collection <V>       get (K key);
+
+    public boolean              isEmpty();
+
+    public int                  size();
 }
