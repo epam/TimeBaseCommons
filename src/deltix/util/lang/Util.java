@@ -290,6 +290,31 @@ public class Util {
         return (m.invoke (object, args));
     }
 
+    public static void      setFieldValue (
+        Object                  object,
+        String                  fieldName,
+        Object                  value
+    )
+        throws
+            NoSuchFieldException,
+            IllegalAccessException
+    {
+        final Field f = object.getClass().getDeclaredField(fieldName);
+        f.setAccessible(true);
+        final Class<?> type = f.getType();
+
+        if (type == long.class)
+            f.setLong(object, (Long) value);
+        else if (type == int.class)
+            f.setInt(object, (Integer) value);
+        else if (type == double.class)
+            f.setDouble(object, (Double) value);
+        else if (!type.isPrimitive())
+            f.set(object, value);
+        else
+            throw new IllegalArgumentException("field type is not supported " + type);
+    }
+
     /**
      *  Call a constructor of the specified class. Figure out the method
      *  signature from the types of the supplied arguments (which must not contain
