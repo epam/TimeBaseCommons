@@ -748,7 +748,7 @@ public class StringUtils {
 
         long mantissa = Math.abs(timestampInNanos % (long)Math.pow(10,9));
         String postfix = "";
-        if (preciseTemplate!=null && nanosMicrosPatternChars.indexOf(preciseTemplate.charAt(preciseTemplate.length()-1))!=-1)
+        if (preciseTemplate!=null && preciseTemplate.length()>0 && nanosMicrosPatternChars.indexOf(preciseTemplate.charAt(preciseTemplate.length()-1))!=-1)
         {
             if (preciseTemplate.length()>1)
                 postfix = preciseTemplate.substring(0, preciseTemplate.length()-1);
