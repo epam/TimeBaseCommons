@@ -1,7 +1,6 @@
 package deltix.util.lang;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Arrays;
@@ -12,6 +11,10 @@ import java.util.HashMap;
 import java.text.DecimalFormat;
 
 public class StringUtils {
+
+    public static final String  nanosMicrosPatternChars = "UuNn";
+    public static final String  patternChars = "GyMdkHmsSEDFwWahKzZ";
+
     public static void      setStringBuilder (StringBuilder sb, CharSequence value) {
         sb.setLength (0);
         sb.append (value);
@@ -738,6 +741,37 @@ public class StringUtils {
             target.remove(key);
             target.put(newKey, newValue);
         }
+    }
+
+
+    public static String getPreciseFormat(long timestampInNanos, String preciseTemplate){
+
+        long mantissa = Math.abs(timestampInNanos % (long)Math.pow(10,9));
+        String postfix = "";
+        if (preciseTemplate!=null && nanosMicrosPatternChars.indexOf(preciseTemplate.charAt(preciseTemplate.length()-1))!=-1)
+        {
+            if (preciseTemplate.length()>1)
+                postfix = preciseTemplate.substring(0, preciseTemplate.length()-1);
+            int millies = (int) (mantissa / Math.pow(10, 6));
+            int micros = (int) (mantissa / Math.pow(10, 3)) - millies * (int)Math.pow(10, 3);
+            postfix += addLeadingZeros(String.valueOf(millies), 3) + "," + addLeadingZeros(String.valueOf(micros), 3);
+
+            if (preciseTemplate.substring(preciseTemplate.length()-1).equalsIgnoreCase("n")) {
+               int nanos = (int) (mantissa - millies * (int)Math.pow(10, 6)- micros * (int) Math.pow(10, 3));
+               postfix += "," + addLeadingZeros(String.valueOf(nanos), 3);
+            }
+        }
+
+        return postfix;
+    }
+
+    public static String addLeadingZeros(String value, int count){
+        if (value==null || value.length()>=count)
+            return value;
+        while (value.length()<count){
+            value = "0" + value;
+        }
+        return value;
     }
 
 }
