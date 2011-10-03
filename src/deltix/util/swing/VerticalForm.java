@@ -186,6 +186,19 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     public void         addField (JLabel jl, JComponent comp) {
         addField (jl, comp, !(comp instanceof JLabel));
     }
+
+    public void         addLabel (JLabel jl, int gridx) {
+        mC.gridwidth = 1;
+        mC.gridx = 0;
+        mC.weightx = 0;
+        mC.weighty = 0;
+        mC.anchor = mLabelAncor;
+        mC.gridx = gridx;
+
+        add (jl, mC);
+
+        mC.gridy++;
+    }
     
     public void         addField (JLabel jl, JComponent comp, boolean disableWithForm) {                
         mC.gridwidth = 1;
