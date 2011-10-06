@@ -8,17 +8,37 @@ import java.io.*;
  *
  */
 public abstract class AbstractShell extends DefaultApplication {
+    private int             errorCode = 0;
+    private boolean         exitOnError = false;
+    
     protected AbstractShell (String [] args) {
         super (args);
     }
 
     protected boolean       doSet (String option, String value) throws Exception {
+        if (option.equalsIgnoreCase ("exitOnError")) {            
+            exitOnError = Boolean.parseBoolean (value);
+            System.out.println ("exitOnError: " + exitOnError);
+            return (true);
+        }
+        
         return (false);
     }
 
-    protected void          doSet () throws Exception {
+    protected void          doSet () {
+        System.out.println ("exitOnError    " + exitOnError);        
     }
 
+    protected boolean       doCommand (
+        String                  key, 
+        String                  args,
+        LineNumberReader        rd
+    )
+        throws Exception 
+    {
+        return (doCommand (key, args));
+    }
+    
     protected boolean       doCommand (String key, String args) throws Exception {
         if (key.equalsIgnoreCase ("help") || key.equalsIgnoreCase ("?")) {
             printUsage (System.err);
@@ -74,15 +94,27 @@ public abstract class AbstractShell extends DefaultApplication {
         }
     }
 
-    protected final void    runCommand (String key, String args) {
+    protected final void    error (int level) {
+        if (errorCode < level)
+            errorCode = level;
+        
+        if (exitOnError) {
+            System.err.println ("Exiting on error.");
+            System.exit (errorCode);
+        }
+    }
+    
+    protected final void    runCommand (String key, String args, LineNumberReader rd) {
         key = key.trim ();
 
         try {
-            if (!doCommand (key, args)) {
-                System.err.println (key + ": unrecognized command. (Type ? for usage)");
+            if (!doCommand (key, args, rd)) {
+                System.err.println (key + ": unrecognized command. (Type ? for usage)");                
+                error (1);
             }
         } catch (Throwable x) {
-            printException (x, true);
+            printException (x, true);            
+            error (2);
         }
     }
 
@@ -127,7 +159,7 @@ public abstract class AbstractShell extends DefaultApplication {
                     }
 
                     cmdArgs = sb.toString ();
-                    runCommand (key, cmdArgs);
+                    runCommand (key, cmdArgs, null);
 
                     if (exitWhenDone)
                         return;
@@ -138,13 +170,19 @@ public abstract class AbstractShell extends DefaultApplication {
         }
 
         runScript (new InputStreamReader (System.in), true, false);
+        System.exit (errorCode);
     }
 
     protected void        runScript (Reader in, boolean showPrompt, boolean echo)
         throws IOException, InterruptedException
     {
-        LineNumberReader    rd = new LineNumberReader (in);
-
+        LineNumberReader    rd;
+        
+        if (in instanceof LineNumberReader)
+            rd = (LineNumberReader) in;
+        else
+            rd = new LineNumberReader (in);
+        
         for (;;) {
             if (showPrompt) {
                 System.err.print ("==> ");
@@ -188,7 +226,8 @@ public abstract class AbstractShell extends DefaultApplication {
 
             if (Thread.interrupted())
                 throw new InterruptedException();
-            runCommand (key, cmdargs);
+            
+            runCommand (key, cmdargs, rd);
         }
     }
 }

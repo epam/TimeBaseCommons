@@ -18,6 +18,12 @@ exit                            Quit the shell.
 
 quit                            Quit the shell.
 
+set exitOnError true|false      false by default. When set to true, the shell 
+                                will exit on first error. When set to false,
+                                execution of commands will continue; however,
+                                if any errors were generated, the shell will exit
+                                with a non-0 error code.
+
 Shell Command-Line Options:
 
 -<option> <value>               Execute the "set" command.
