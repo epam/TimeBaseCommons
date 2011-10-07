@@ -332,18 +332,20 @@ public abstract class DefaultApplication {
 			SAXParseException	saxx = (SAXParseException) x;
 			System.err.print (
 				">>> XML Error at " + saxx.getLineNumber () + "." +
-				saxx.getColumnNumber ()
+				saxx.getColumnNumber () + ": "
 			);
 		}
 		else
-			System.err.print (">>> Error");
+			System.err.print (">>> Error: ");
 
 		Throwable   ux = Util.unwrap (x);
 
-		System.err.println (": " + ux.getClass ().getName () + ": " + ux.getMessage ());
+		
 
-  		if (wantStackTrace)
+  		if (wantStackTrace && ux.getStackTrace ().length > 0)
 			ux.printStackTrace ();
+        else
+            System.err.println (ux);
   }
 
     /**

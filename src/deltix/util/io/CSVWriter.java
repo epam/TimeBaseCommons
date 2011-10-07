@@ -175,7 +175,7 @@ public class CSVWriter extends FilterWriter {
      *  @param wr                    The CSV format writer
      *  @throws java.io.IOException  If writer fails to write
      */
-    public static void     printCell (CharSequence unescapedText, Writer wr) throws IOException {
+    public static void     printCell (CharSequence unescapedText, Appendable wr) throws IOException {
         int             len = unescapedText.length ();
         
         if (len == 0)
@@ -193,19 +193,19 @@ public class CSVWriter extends FilterWriter {
         }
         
         if (needEscape) 
-            wr.write ('"');
+            wr.append ('"');
         
         for (int ii = 0; ii < len; ii++) {
             char        ch = unescapedText.charAt (ii);
             
             if (ch == '"') 
-                wr.write ('"');
+                wr.append ('"');
                     
-            wr.write (ch);
+            wr.append (ch);
         }
         
         if (needEscape) 
-            wr.write ('"');
+            wr.append ('"');
     }
  
 }

@@ -170,6 +170,13 @@ public abstract class AbstractShell extends DefaultApplication {
         }
 
         runScript (new InputStreamReader (System.in), true, false);
+        doQuit ();
+    }
+    
+    protected void      doQuit () {
+        if (errorCode != 0)
+            System.err.println (">>> Error Level: " + errorCode);
+        
         System.exit (errorCode);
     }
 
@@ -219,8 +226,11 @@ public abstract class AbstractShell extends DefaultApplication {
 
             String      key = line.substring (0, ws);
 
-            if (key.equalsIgnoreCase ("quit") || key.equalsIgnoreCase ("exit"))
-                System.exit (0);
+            if (key.equalsIgnoreCase ("exit"))
+                break;
+
+            if (key.equalsIgnoreCase ("quit"))
+                doQuit ();
 
             String      cmdargs = line.substring (ws).trim ();
 
