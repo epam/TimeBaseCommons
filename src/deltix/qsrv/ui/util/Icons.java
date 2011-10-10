@@ -150,6 +150,9 @@ public class Icons {
     public static final Icon   CONNECT               = SwingUtil.loadIcon ("deltix/qsrv/ui/util/connect.png");
     public static final Icon   DISCONNECT            = SwingUtil.loadIcon ("deltix/qsrv/ui/util/disconnect.png");
     public static final Icon   CLOSE                 = SwingUtil.loadIcon ("deltix/qsrv/ui/util/close.png");
+    public static final Icon   STREAM                = null;
+    public static final Icon   DATA_CONNECTOR        = null;
+    public static final Icon   SYSTEM                = null;
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {
@@ -163,7 +166,10 @@ public class Icons {
             CUSTOM,
             SIMPLE_OPTION,
             EXCHANGE,
-            TRADING_SESSION
+            TRADING_SESSION,
+            STREAM,
+            DATA_CONNECTOR,
+            SYSTEM
                                                      };
 
     public static Icon forInstrumentType (InstrumentType t) {

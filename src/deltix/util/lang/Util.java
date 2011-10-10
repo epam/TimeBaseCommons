@@ -290,6 +290,48 @@ public class Util {
         return (m.invoke (object, args));
     }
 
+
+    /**
+     *  Call a method of the specified class. Unlike {@linkplain #callNonStaticMethod} figures out the method
+     *  signature from the types of the supplied arguments using recursive look up of the types base classes
+     */
+    public static Object    callNonStaticMethodRecursive (
+            Object                  object,
+            String                  methodName,
+            Object ...              args
+     )
+        throws
+            ClassNotFoundException,
+            NoSuchMethodException,
+            InvocationTargetException,
+            IllegalAccessException
+    {
+        final Method[] mm = object.getClass().getDeclaredMethods();
+        if (mm == null || mm.length == 0)
+            throw new NoSuchMethodException(object.getClass().getName() + "." + methodName);
+
+        Class[] paramTypes = new Class[args.length];
+        for (int ii = 0; ii < args.length; ii++)
+            paramTypes[ii] = args[ii].getClass();
+
+        m1:
+        for (Method method : mm) {
+            if (method.getName().equals(methodName)) {
+                final Class<?>[] types = method.getParameterTypes();
+                for (int i = 0; i < types.length; i++) {
+                    Class<?> type = types[i];
+                    if (type != paramTypes[i] && !type.isAssignableFrom(paramTypes[i]))
+                        continue m1;
+                }
+
+                method.setAccessible(true);
+                return (method.invoke(object, args));
+            }
+        }
+
+        throw new NoSuchMethodException(object.getClass().getName() + "." + methodName + " " + Util.printArray(paramTypes));
+    }
+
     public static void      setFieldValue (
         Object                  object,
         String                  fieldName,
