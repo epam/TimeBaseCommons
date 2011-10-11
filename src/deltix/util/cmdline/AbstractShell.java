@@ -10,15 +10,27 @@ import java.io.*;
 public abstract class AbstractShell extends DefaultApplication {
     private int             errorCode = 0;
     private boolean         exitOnError = false;
+    private boolean         confirm = true;
     
     protected AbstractShell (String [] args) {
         super (args);
     }
 
+    protected void          confirm (String msg) {
+        if (getConfirm ())
+            System.out.println (msg);
+    }
+        
     protected boolean       doSet (String option, String value) throws Exception {
         if (option.equalsIgnoreCase ("exitOnError")) {            
             exitOnError = Boolean.parseBoolean (value);
-            System.out.println ("exitOnError: " + exitOnError);
+            confirm ("exitOnError: " + exitOnError);
+            return (true);
+        }
+        
+        if (option.equalsIgnoreCase ("confirm")) {            
+            confirm = Boolean.parseBoolean (value);
+            confirm ("confirm: " + confirm);
             return (true);
         }
         
@@ -27,11 +39,13 @@ public abstract class AbstractShell extends DefaultApplication {
 
     protected void          doSet () {
         System.out.println ("exitOnError    " + exitOnError);        
+        System.out.println ("confirm        " + confirm);        
     }
 
     protected boolean       doCommand (
         String                  key, 
         String                  args,
+        String                  fileId,
         LineNumberReader        rd
     )
         throws Exception 
@@ -73,7 +87,7 @@ public abstract class AbstractShell extends DefaultApplication {
             FileReader  rd = new FileReader (args);
 
             try {
-                runScript (rd, false, true);
+                runScript (args, rd, false, true);
             } finally {
                 rd.close ();
             }
@@ -104,11 +118,11 @@ public abstract class AbstractShell extends DefaultApplication {
         }
     }
     
-    protected final void    runCommand (String key, String args, LineNumberReader rd) {
+    public final void    runCommand (String key, String args, String fileId, LineNumberReader rd) {
         key = key.trim ();
 
         try {
-            if (!doCommand (key, args, rd)) {
+            if (!doCommand (key, args, fileId, rd)) {
                 System.err.println (key + ": unrecognized command. (Type ? for usage)");                
                 error (1);
             }
@@ -159,7 +173,7 @@ public abstract class AbstractShell extends DefaultApplication {
                     }
 
                     cmdArgs = sb.toString ();
-                    runCommand (key, cmdArgs, null);
+                    runCommand (key, cmdArgs, null, null);
 
                     if (exitWhenDone)
                         return;
@@ -169,7 +183,7 @@ public abstract class AbstractShell extends DefaultApplication {
             }
         }
 
-        runScript (new InputStreamReader (System.in), true, false);
+        runScript ("stdin", new InputStreamReader (System.in), true, false);
         doQuit ();
     }
     
@@ -180,7 +194,7 @@ public abstract class AbstractShell extends DefaultApplication {
         System.exit (errorCode);
     }
 
-    protected void        runScript (Reader in, boolean showPrompt, boolean echo)
+    public void        runScript (String fileId, Reader in, boolean showPrompt, boolean echo)
         throws IOException, InterruptedException
     {
         LineNumberReader    rd;
@@ -237,7 +251,31 @@ public abstract class AbstractShell extends DefaultApplication {
             if (Thread.interrupted())
                 throw new InterruptedException();
             
-            runCommand (key, cmdargs, rd);
+            runCommand (key, cmdargs, fileId, rd);
         }
     }
+
+    public int          getErrorCode () {
+        return errorCode;
+    }
+
+    public void         setErrorCode (int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public boolean      getExitOnError () {
+        return exitOnError;
+    }
+
+    public void         setExitOnError (boolean exitOnError) {
+        this.exitOnError = exitOnError;
+    }
+
+    public boolean      getConfirm () {
+        return confirm;
+    }
+
+    public void         setConfirm (boolean verbose) {
+        this.confirm = verbose;
+    }        
 }
