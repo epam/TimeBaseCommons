@@ -4,6 +4,8 @@ package deltix.qsrv.hf.tickdb.lang.pub;
  *
  */
 public abstract class Location {
+    public static final int     NONE = 0xFFFF;
+    
     public static int           getStartLine (long location) {
         return ((int) (location >>> 48));
     }
