@@ -49,7 +49,10 @@ public class MemoryDataInput {
     }
     
     public final void       setBytes (byte [] buffer, int offset, int length) {
-        assert offset + length <= buffer.length :
+        assert 
+            (buffer == null ?
+                length == 0 :
+                offset + length <= buffer.length) :
             "Insufficient buffer length " + buffer.length + "; offset: " +
             offset + "; length: " + length;
         
