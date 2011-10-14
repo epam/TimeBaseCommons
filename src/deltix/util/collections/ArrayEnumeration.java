@@ -6,12 +6,18 @@ import java.util.NoSuchElementException;
 public class ArrayEnumeration <T> implements Enumeration <T> {
     private Object[] mArray;
     private int mIdx;
+    private int mEnd;
     private boolean mHasNext;
 
-    public ArrayEnumeration(Object[] array) {
+    public ArrayEnumeration (T [] array, int offset, int length) {
         mArray = array;
-        mIdx = 0;
-        mHasNext = (array != null && array.length > 0);
+        mIdx = offset;
+        mEnd = offset + length;
+        mHasNext = mIdx < mEnd;
+    }
+
+    public ArrayEnumeration (T ... array) {
+        this (array, 0, array == null ? 0 : array.length);
     }
 
     public boolean hasMoreElements() {
@@ -23,11 +29,10 @@ public class ArrayEnumeration <T> implements Enumeration <T> {
         if (mHasNext) {
             Object o = mArray[mIdx];
             mIdx++;
-            mHasNext = (mIdx < mArray.length);
+            mHasNext = (mIdx < mEnd);
             return (T) o;
         } 
         else
             throw new NoSuchElementException("No Elements left in Enumeration");
     }
-
 }

@@ -58,9 +58,9 @@ final class NodeAdapter implements TreeNode {
     
     public Enumeration      children () {
         updateChildren ();
-        return (new ArrayEnumeration (mChildNodeAdapters));
+        return (new ArrayEnumeration <NodeAdapter> (mChildNodeAdapters));
     }
-    
+     
     public boolean          getAllowsChildren () {
         updateChildren ();
         return (mChildNodeAdapters != null);
