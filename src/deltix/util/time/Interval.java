@@ -1,6 +1,6 @@
 package deltix.util.time;
 
-import deltix.qsrv.pxml.StringIntervalAdapter;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import deltix.util.text.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.logging.Logger;
@@ -9,8 +9,18 @@ import java.util.logging.Logger;
  * Represents an interval (also known as time span in some systems), which
  * can be added to, or subtracted from, a date. This class is immutable.
  */
-@XmlJavaTypeAdapter (StringIntervalAdapter.class)
+@XmlJavaTypeAdapter (Interval.StringIntervalAdapter.class)
 public abstract class Interval {
+    public static class StringIntervalAdapter extends XmlAdapter<String, Interval> {
+        public Interval unmarshal(String v) throws Exception {
+            return Interval.valueOf(v);
+        }
+
+        public String marshal(Interval v) throws Exception {
+            return v.toString();
+        }
+    }
+    
     private static final Logger LOGGER = Logger.getLogger (Interval.class.getName());
 
 
