@@ -56,6 +56,10 @@ public class CompilationException extends RuntimeException {
         this.diag = msg;
     }
 
+    public CompilationException (String msg, Element [] elems) {
+        this (msg, Location.combine (elems [0].location, elems [elems.length - 1].location));
+    }
+
     public CompilationException (String msg, Element elem) {
         this (msg, elem.location);
     }

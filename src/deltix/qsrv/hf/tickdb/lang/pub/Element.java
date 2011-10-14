@@ -46,4 +46,16 @@ public abstract class Element {
 
         return (sb.toString ());
     }
+    
+    public static void          printCommaSeparatedList (StringBuilder out, String ... strings) {
+        if (strings == null || strings.length == 0)
+            return;
+        
+        out.append (strings [0]);
+
+        for (int ii = 1; ii < strings.length; ii++) {
+            out.append (", ");
+            out.append (strings [ii]);
+        }        
+    }
 }
