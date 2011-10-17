@@ -18,6 +18,10 @@ public class DateFormatDetector {
     private static final Pattern DASH_PATTERN_MM_DD_YY    = Pattern.compile ("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{2}(.*)");
     private static final Pattern NSEP_PATTERN_YYYY_MM_DD  = Pattern.compile ("([^\\d]*)\\d\\d\\d\\d\\d\\d\\d\\d(.*)");
 
+    public  static final String MAIN_TEMPLATE_PART = "main_template";
+    public  static final String MAIN_VALUE_PART = "main_value";
+    public  static final String PRECISION_VALUE_PART = "precision_value";
+
     private enum TPS {
         BEFORE_HOURS,
         HOURS,
@@ -243,6 +247,66 @@ public class DateFormatDetector {
         
         return (success);
     }
+
+    public static String getPartOfDate(String strValue, String part) {
+
+        int[] precisions = StringUtils.precisions;
+        String foundValue = null;
+        for (int i = precisions.length - 1; i >= 0; i--) {
+            Pattern precisionPattern = Pattern.compile(String.format(StringUtils.precisionTemplate, precisions[i]));
+            Matcher matcher = precisionPattern.matcher(strValue);
+            if (matcher.find()) {
+                foundValue = matcher.group();
+
+                if (part.equalsIgnoreCase(PRECISION_VALUE_PART)) {
+                    return foundValue;
+                }
+
+                boolean condition = true;
+                int index = strValue.length() - foundValue.length() - 1;
+                while (condition && index >= 0) {
+
+                    int number;
+                    try {
+                        number = Integer.parseInt(strValue.substring(index, index + 1));
+                    } catch (Exception e) {
+                        number = -1;
+                    }
+                    if (number != -1) {
+                        condition = false;
+                    }
+                    else {
+                        index--;
+                    }
+
+
+                }
+                if (strValue.length() != foundValue.length())
+                    strValue = strValue.substring(0, index + 1);
+                break;
+            }
+        }
+
+        if (part.equalsIgnoreCase(MAIN_VALUE_PART)) {
+            return strValue;
+        }
+
+        if (part.equalsIgnoreCase(MAIN_TEMPLATE_PART)){
+            String dateTimeFormat = null;
+            if (strValue != null) {
+                dateTimeFormat = DateFormatDetector.getDateTimeFormatStringFor(strValue);
+                if (dateTimeFormat == null) {
+                    dateTimeFormat = DateFormatDetector.getDateFormatStringFor(strValue);
+                }
+                if (dateTimeFormat == null) {
+                    dateTimeFormat = DateFormatDetector.getTimeFormatStringFor(strValue);
+                }
+            }
+            return dateTimeFormat;
+        }
+
+        return null;
+    }
     
     private static void         testFormat (String s, String header, String fmt) {
         if (fmt != null) {
@@ -269,12 +333,18 @@ public class DateFormatDetector {
                     "4/2/08 23:44",
                     "15:34",
                     "x'2008-04-02 23:44",
+                    "x'2008-24-02 23:44",
                     "20080402 1200", 
                     "2008040212:00",
                     "02-04-2009 19:53:39.205" ,
                     "02-04-2009",
                     "02-04-09",
                     "02-04-09 19:53:39.205" ,
+                    "24-04-09 19:53:39.205" ,
+                    "240409 195339.205" ,
+                    "195339.205",
+                     "025747.475"
+
                 };
         
         for (String s : args) {            

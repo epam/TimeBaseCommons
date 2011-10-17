@@ -14,6 +14,8 @@ public class StringUtils {
 
     public static final String  nanosMicrosPatternChars = "UuNn";
     public static final String  patternChars = "GyMdkHmsSEDFwWahKzZ";
+    public static final int[] precisions = new int[]{6,9};
+    public static String precisionTemplate= "\\d{%s}\\z";
 
     public static void      setStringBuilder (StringBuilder sb, CharSequence value) {
         sb.setLength (0);
@@ -744,7 +746,7 @@ public class StringUtils {
     }
 
 
-    public static String getPreciseFormat(long timestampInNanos, String preciseTemplate){
+    public static String getPreciseFormat(long timestampInNanos, String preciseTemplate, String delimeter){
 
         long mantissa = Math.abs(timestampInNanos % (long)Math.pow(10,9));
         String postfix = "";
@@ -754,11 +756,11 @@ public class StringUtils {
                 postfix = preciseTemplate.substring(0, preciseTemplate.length()-1);
             int millies = (int) (mantissa / Math.pow(10, 6));
             int micros = (int) (mantissa / Math.pow(10, 3)) - millies * (int)Math.pow(10, 3);
-            postfix += addLeadingZeros(String.valueOf(millies), 3) + "," + addLeadingZeros(String.valueOf(micros), 3);
+            postfix += addLeadingZeros(String.valueOf(millies), 3) + delimeter + addLeadingZeros(String.valueOf(micros), 3);
 
             if (preciseTemplate.substring(preciseTemplate.length()-1).equalsIgnoreCase("n")) {
                int nanos = (int) (mantissa - millies * (int)Math.pow(10, 6)- micros * (int) Math.pow(10, 3));
-               postfix += "," + addLeadingZeros(String.valueOf(nanos), 3);
+               postfix += delimeter + addLeadingZeros(String.valueOf(nanos), 3);
             }
         }
 
