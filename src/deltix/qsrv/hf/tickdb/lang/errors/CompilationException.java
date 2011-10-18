@@ -10,47 +10,11 @@ public class CompilationException extends RuntimeException {
     private static final boolean        FILL_STACK_TRACE = 
         Boolean.getBoolean ("deltix.qql.trace");
     
-    private final long                  location;
+    public final long                   location;
     public final String                 diag;
-    
-    private static String       formatLocation (long location) {
-        int     startLine = Location.getStartLine (location);
         
-        if (startLine == Location.NONE)
-            return ("");
-        
-        StringBuilder   sb = new StringBuilder ();
-        
-        sb.append (startLine + 1);
-        
-        int     startPos = Location.getStartPosition (location);
-        
-        if (startPos != Location.NONE) {
-            sb.append (".");
-            sb.append (startPos + 1);
-        }
-                
-        int     endLine = Location.getEndLine (location);
-        int     endPos = Location.getEndPosition (location);
-        
-        if (endLine != startLine || endPos != startPos) {
-            sb.append ("..");
-            
-            if (endLine != startLine) {
-                sb.append (endLine + 1);                
-                sb.append (".");
-            }
-            
-            if (endPos != startPos || endLine != startLine)
-                sb.append (endPos + 1);
-        }
-        
-        sb.append (": ");
-        return (sb.toString ());
-    }
-    
     public CompilationException (String msg, long location) {
-        super (formatLocation (location) + msg);
+        super (Location.toString (location) + msg);
         
         this.location = location;
         this.diag = msg;

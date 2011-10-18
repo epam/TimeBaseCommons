@@ -37,4 +37,40 @@ public abstract class Location {
     public static long          fromTo (long fromLocation, long toLocation) {
         return ((fromLocation & 0xFFFFFFFF00000000L) | (toLocation & 0xFFFFFFFF));
     }
+    
+    public static String        toString (long location) {
+        int     startLine = Location.getStartLine (location);
+        
+        if (startLine == Location.NONE)
+            return ("");
+        
+        StringBuilder   sb = new StringBuilder ();
+        
+        sb.append (startLine + 1);
+        
+        int     startPos = Location.getStartPosition (location);
+        
+        if (startPos != Location.NONE) {
+            sb.append (".");
+            sb.append (startPos + 1);
+        }
+                
+        int     endLine = Location.getEndLine (location);
+        int     endPos = Location.getEndPosition (location);
+        
+        if (endLine != startLine || endPos != startPos) {
+            sb.append ("..");
+            
+            if (endLine != startLine) {
+                sb.append (endLine + 1);                
+                sb.append (".");
+            }
+            
+            if (endPos != startPos || endLine != startLine)
+                sb.append (endPos + 1);
+        }
+        
+        sb.append (": ");
+        return (sb.toString ());
+    }    
 }

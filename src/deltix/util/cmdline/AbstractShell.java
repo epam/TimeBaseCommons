@@ -121,6 +121,9 @@ public abstract class AbstractShell extends DefaultApplication {
     public final void    runCommand (String key, String args, String fileId, LineNumberReader rd) {
         key = key.trim ();
 
+        if (args != null && args.length () == 0)    // eliminate check
+            args = null;
+        
         try {
             if (!doCommand (key, args, fileId, rd)) {
                 System.err.println (key + ": unrecognized command. (Type ? for usage)");                
@@ -130,6 +133,9 @@ public abstract class AbstractShell extends DefaultApplication {
             printException (x, true);            
             error (2);
         }
+        
+        outWriter.flush ();
+        errWriter.flush ();
     }
 
     protected void          run () throws Throwable {
