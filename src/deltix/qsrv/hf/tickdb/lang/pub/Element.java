@@ -4,7 +4,8 @@ package deltix.qsrv.hf.tickdb.lang.pub;
  *
  */
 public abstract class Element {
-    public static final long    NO_LOCATION = 0;
+    public static final long    NO_LOCATION = 
+        Location.combine (Location.NONE, Location.NONE);
     
     public final long           location;
 

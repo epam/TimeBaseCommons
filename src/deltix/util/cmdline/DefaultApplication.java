@@ -36,8 +36,14 @@ import org.xml.sax.SAXParseException;
  * </p>
  */
 public abstract class DefaultApplication {
-    private String []                       mArgs;
-    private Map <String, IntegerArrayList>    mMap =
+    public static final PrintWriter             errWriter = 
+        new PrintWriter (new OutputStreamWriter (System.err));
+    
+    public static final PrintWriter             outWriter = 
+        new PrintWriter (new OutputStreamWriter (System.out));
+    
+    private String []                           mArgs;
+    private Map <String, IntegerArrayList>      mMap =
         new HashMap <String, IntegerArrayList> ();
 
     protected DefaultApplication (String [] args) {
@@ -112,7 +118,7 @@ public abstract class DefaultApplication {
      *
      *	@param key		The argument being looked for.
      */
-    public boolean						isArgSpecified (String key) {
+    public final boolean				isArgSpecified (String key) {
     	return (mMap.containsKey (key));
     }
 
@@ -326,27 +332,45 @@ public abstract class DefaultApplication {
     public static void					printException (
         Throwable                           x,
         boolean                             wantStackTrace
-    )
+    ) 
+    {
+        printException (x, wantStackTrace, errWriter);
+        errWriter.flush ();
+    }
+    
+    /**
+     *	Prints out a standardized diagnostic line. Handles
+     *	known wrapper exceptions intelligently, such as,
+     *	for example, prints out the line number and position
+     *	if a SAXParseException is thrown.
+     */
+    public static void					printException (
+        Throwable                           x,
+        boolean                             wantStackTrace,
+        PrintWriter                         out
+    ) 
     {
 		if (x instanceof SAXParseException) {
 			SAXParseException	saxx = (SAXParseException) x;
-			System.err.print (
+			out.write (                
 				">>> XML Error at " + saxx.getLineNumber () + "." +
 				saxx.getColumnNumber () + ": "
 			);
 		}
 		else
-			System.err.print (">>> Error: ");
+			out.write (">>> Error: ");
 
 		Throwable   ux = Util.unwrap (x);
 
-		
-
-  		if (wantStackTrace && ux.getStackTrace ().length > 0)
-			ux.printStackTrace ();
+  		if (wantStackTrace) {
+            if (ux.getStackTrace ().length > 0)             
+                ux.printStackTrace (out);        
+            else
+                out.println (ux.toString ());
+        }
         else
-            System.err.println (ux);
-  }
+            out.println (ux.getClass ().getSimpleName () + ": " + ux.getLocalizedMessage ());
+    }
 
     /**
      *	Prints out a standardized diagnostic line. Handles
@@ -355,7 +379,7 @@ public abstract class DefaultApplication {
      *	if a SAXParseException is thrown.
      */
     public void						handleException (Throwable x) {
-		printException (x, true);
+        printException (x, true);       
     }
 
     /**
@@ -372,7 +396,7 @@ public abstract class DefaultApplication {
     	}
     }
 
-    public void                     printUsageAndExit () {
+    public final void               printUsageAndExit () {
         try {
             printUsage ();
         } catch (Throwable x) {
@@ -382,7 +406,7 @@ public abstract class DefaultApplication {
         System.exit (0);
     }
 
-    public void                     printUsage ()
+    public final void               printUsage ()
         throws IOException, InterruptedException
     {
         printUsage (System.out);
