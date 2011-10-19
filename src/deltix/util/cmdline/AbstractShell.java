@@ -70,9 +70,7 @@ public abstract class AbstractShell extends DefaultApplication {
         }
 
         if (key.equalsIgnoreCase ("set")) {
-            int     argLength = args.length ();
-
-            if (argLength == 0)
+            if (args == null)
                 doSet ();
             else {
                 String []   split = StringUtils.splitAtWhitespace (args);
