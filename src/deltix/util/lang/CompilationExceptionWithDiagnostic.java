@@ -1,5 +1,6 @@
 package deltix.util.lang;
 
+import deltix.util.io.IOUtil;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.*;
@@ -25,14 +26,14 @@ public class CompilationExceptionWithDiagnostic extends RuntimeException {
     public void                     printStackTrace (PrintStream s) {
         super.printStackTrace (s);
         s.println ();
-        s.println (code);
+        IOUtil.dumpWithLineNumbers (code, s);
     }
 
     @Override
     public void                     printStackTrace (PrintWriter s) {
         super.printStackTrace (s);
         s.println ();
-        s.println (code);
+        IOUtil.dumpWithLineNumbers (code, s);
     }
 
     
