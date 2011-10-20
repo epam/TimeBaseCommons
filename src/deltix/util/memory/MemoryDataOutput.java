@@ -3,9 +3,9 @@ package deltix.util.memory;
 /**
  *  Equivalent of DataOutputStream wrapped around
  *  ByteArrayOutputStream optimized for extreme performance. This class uses
- *  no virtual method calls and presents a non-virtual public final API.
+ *  no virtual method calls and presents a non-virtual public API.
  */
-public class MemoryDataOutput {
+public final class MemoryDataOutput {
     private byte []             mBuffer;
     private int                 mPos = 0;
     private int                 mSize = 0;
@@ -18,7 +18,7 @@ public class MemoryDataOutput {
         mBuffer = new byte [capacity];
     }
     
-    public final void          makeRoom (int space) {
+    public void          makeRoom (int space) {
         int         requiredSize = mPos + space;
         
         if (mSize < requiredSize)
@@ -58,51 +58,51 @@ public class MemoryDataOutput {
      *  Seek to absolute position
      *  @param offset
      */
-    public final void           seek (int offset) {
+    public void           seek (int offset) {
         mPos = offset;
         makeRoom (0);
     }
     
-    public final int            getPosition () {
+    public int            getPosition () {
         return (mPos);
     }
     
-    public final void           skip (int numBytes) {
+    public void           skip (int numBytes) {
         makeRoom (numBytes);
         mPos += numBytes;
     }
     
-    public final byte []        getBuffer () {
+    public byte []        getBuffer () {
         return (mBuffer);
     }
     
-    public final int            getSize () {
+    public int            getSize () {
         return (mSize);
     }
     
-    public final void           writeString (CharSequence str) {
+    public void           writeString (CharSequence str) {
         if (str == null)
             writeNullString ();
         else
             writeStringNonNull (str, 0, str.length ());
     }
     
-    public final void           writeString (CharSequence str, int start, int strlen) {
+    public void           writeString (CharSequence str, int start, int strlen) {
         if (str == null) 
             writeNullString ();
         else
             writeStringNonNull (str, start, strlen);
     }
 
-    public final void           writeNullString () {
+    public void           writeNullString () {
         writeUnsignedShort (0xFFFF);
     }
     
-    public final void           writeStringNonNull (CharSequence str) {
+    public void           writeStringNonNull (CharSequence str) {
         writeStringNonNull (str, 0, str.length ());
     }
 
-    public final void           writeStringNonNull (CharSequence str, int start, int strlen) {
+    public void           writeStringNonNull (CharSequence str, int start, int strlen) {
         int     utflen = 0;
         int     c, count = 0;
 
@@ -142,84 +142,84 @@ public class MemoryDataOutput {
             else if (c > 0x07FF) {
                 mBuffer [mPos++] = (byte) (0xE0 | ((c >> 12) & 0x0F));
                 mBuffer [mPos++] = (byte) (0x80 | ((c >>  6) & 0x3F));
-                mBuffer [mPos++] = (byte) (0x80 | ((c >>  0) & 0x3F));
+                mBuffer [mPos++] = (byte) (0x80 | (c & 0x3F));
             }
             else {
                 mBuffer [mPos++] = (byte) (0xC0 | ((c >>  6) & 0x1F));
-                mBuffer [mPos++] = (byte) (0x80 | ((c >>  0) & 0x3F));
+                mBuffer [mPos++] = (byte) (0x80 | (c & 0x3F));
             }
         }
     }
 
-    public final void           write (byte[] b, int off, int len) {
+    public void           write (byte[] b, int off, int len) {
         makeRoom (len);
         System.arraycopy (b, off, mBuffer, mPos, len);
         mPos += len;
     }
 
-    public final void           write (byte[] b) {
+    public void           write (byte[] b) {
         write (b, 0, b.length);
     }
 
-    public final void           writeByte (int v) {
+    public void           writeByte (int v) {
         writeByte ((byte) v);
     }
     
-    public final void           writeByte (long v) {
+    public void           writeByte (long v) {
         writeByte ((byte) v);
     }
     
-    public final void           writeByte (byte v) {
+    public void           writeByte (byte v) {
         makeRoom (1);
         mBuffer [mPos] = v;
         mPos++;
     }
 
-    public final void           writeUnsignedByte (int v) {
+    public void           writeUnsignedByte (int v) {
         writeByte (v);
     }
 
-    public final void           writeChar (char v) {
+    public void           writeChar (char v) {
         makeRoom (2);
         DataExchangeUtils.writeChar (mBuffer, mPos, v);
         mPos += 2;
     }
 
-    public final void           writeInt (int v) {
+    public void           writeInt (int v) {
         makeRoom (4);
         DataExchangeUtils.writeInt (mBuffer, mPos, v);
         mPos += 4;
     }
 
-    public final void           writeShort (short v) {
+    public void           writeShort (short v) {
         makeRoom (2);
         DataExchangeUtils.writeShort (mBuffer, mPos, v);
         mPos += 2;
     }
 
-    public final void           writeShort (int v) {
+    public void           writeShort (int v) {
         writeShort ((short) v);
     }
 
-    public final void           writeUnsignedShort (int v) {
+    public void           writeUnsignedShort (int v) {
         makeRoom (2);
         DataExchangeUtils.writeUnsignedShort (mBuffer, mPos, v);
         mPos += 2;
     }
 
-    public final void           writeBoolean (boolean v) {
+    public void           writeBoolean (boolean v) {
         makeRoom (1);
         mBuffer [mPos] = v ? (byte) 1 : 0;
         mPos += 1;
     }
 
-    public final void           writeLong (long v) {
+    public void           writeLong (long v) {
         makeRoom (8);
         DataExchangeUtils.writeLong (mBuffer, mPos, v);
         mPos += 8;
     }
 
-    public final void           writeLong48 (long v) {
+    public void           writeLong48 (long v) {
         makeRoom (6);
         DataExchangeUtils.writeLong48 (mBuffer, mPos, v);
         mPos += 6;
@@ -228,7 +228,7 @@ public class MemoryDataOutput {
     /**
      *  Writes an unsigned int in the smallest possible number of bytes.
      */
-    public final void           writePackedUnsignedInt (int v) {
+    public void           writePackedUnsignedInt (int v) {
         if ((v & 0xC0000000) != 0)
             throw new IllegalArgumentException ("High 2 bits must be 0; v=" + v);
         
@@ -252,7 +252,7 @@ public class MemoryDataOutput {
     /**
      *  Writes an unsigned long in the smallest possible number of bytes.
      */
-    public final void           writePackedUnsignedLong (long v) {
+    public void           writePackedUnsignedLong (long v) {
         if ((v & 0xE000000000000000L) != 0)
             throw new IllegalArgumentException ("High 3 bits must be 0; v=" + v);
 
@@ -273,13 +273,13 @@ public class MemoryDataOutput {
         mBuffer [pos] = (byte) (low5bits | ((mPos - addlPos) << 5));
     }
 
-    public final void           writeDouble (double v) {
+    public void           writeDouble (double v) {
         makeRoom (8);
         DataExchangeUtils.writeDouble (mBuffer, mPos, v);
         mPos += 8;
     }
     
-    public final void           writeFloat (float v) {
+    public void           writeFloat (float v) {
         makeRoom (4);
         DataExchangeUtils.writeFloat (mBuffer, mPos, v);
         mPos += 4;
@@ -321,7 +321,7 @@ public class MemoryDataOutput {
             return (false);
     }
     
-    public final void           writeScaledDouble (double v, int precision) {
+    public void           writeScaledDouble (double v, int precision) {
         if (writeSpecialScaledDouble (v))
             return;
         
@@ -364,7 +364,7 @@ public class MemoryDataOutput {
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
     }
 
-    public final void           oldWriteScaledDouble (double v) {
+    public void           oldWriteScaledDouble (double v) {
         if (writeSpecialScaledDouble (v))
             return;
 
@@ -418,7 +418,7 @@ public class MemoryDataOutput {
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
     }
 
-    public final void           writeScaledDouble (double v) {
+    public void           writeScaledDouble (double v) {
         if (writeSpecialScaledDouble (v))
             return;
 
@@ -503,7 +503,7 @@ public class MemoryDataOutput {
         return (mPos - addlPos);
     }
     
-    public final byte []        toByteArray () {
+    public byte []        toByteArray () {
         byte []     ret = new byte [mPos];
         System.arraycopy (mBuffer, 0, ret, 0, mPos);
         return (ret);

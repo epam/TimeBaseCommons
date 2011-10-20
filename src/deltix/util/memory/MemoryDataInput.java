@@ -7,9 +7,9 @@ import deltix.util.io.UncheckedIOException;
 /**
  *  Equivalent of DataInputStream wrapped around
  *  ByteArrayInputStream optimized for extreme performance. This class uses
- *  no virtual method calls and presents a non-virtual public final API.
+ *  no virtual method calls and presents a non-virtual public API.
  */
-public class MemoryDataInput {
+public final class MemoryDataInput {
     private byte []         mBuffer;
     private int             mStart;
     private int             mPos;
@@ -48,7 +48,7 @@ public class MemoryDataInput {
         setBytes (mout);
     }
     
-    public final void       setBytes (byte [] buffer, int offset, int length) {
+    public void       setBytes (byte [] buffer, int offset, int length) {
         assert 
             (buffer == null ?
                 length == 0 :
@@ -61,25 +61,25 @@ public class MemoryDataInput {
         mStart = mPos = offset;
     }
     
-    public final void       setBytes (ByteArrayList buffer) {
+    public void       setBytes (ByteArrayList buffer) {
         setBytes (buffer.getInternalBuffer (), 0, buffer.size ());
     }
     
-    public final void       setBytes (ByteArrayOutputStreamEx buffer) {
+    public void       setBytes (ByteArrayOutputStreamEx buffer) {
         setBytes (buffer.getInternalBuffer (), 0, buffer.size ());
     }
     
-    public final void       setBytes (byte [] buffer) {
+    public void       setBytes (byte [] buffer) {
         mBuffer = buffer;
         mLimit = buffer.length;
         mStart = mPos = 0;
     }
     
-    public final void       setBytes (MemoryDataOutput out) {
+    public void       setBytes (MemoryDataOutput out) {
         setBytes (out.getBuffer (), 0, out.getSize ());
     }
     
-    public final void       reset (int newSize) {
+    public void       reset (int newSize) {
         assert newSize <= mBuffer.length :
             "Insufficient buffer length " + mBuffer.length +
             "; newSize: " + newSize;
@@ -88,70 +88,84 @@ public class MemoryDataInput {
         mStart = mPos = 0;
     }
     
-    public final byte []    getBytes () {
+    public byte []    getBytes () {
         return (mBuffer);
     }
         
     /**
      *  Returns the current position relative to start.
      */
-    public final int        getPosition () {
+    public int        getPosition () {
         return (mPos - mStart);
     }
     
-    public final int        getStart () {
+    public int        getStart () {
         return (mStart);
     }
 
-    public final int        getLength () {
+    public int        getLength () {
         return (mLimit - mStart);
     }
 
     /**
      *  Distance from current position until the end
      */
-    public final int        getAvail () {
+    public int        getAvail () {
         return (mLimit - mPos);
+    }
+
+    /**
+     *  Do we have any available bytes?
+     */
+    public boolean    hasAvail () {
+        return (mPos < mLimit);
     }
 
     /**
      *  Returns the current position relative to the byte buffer.
      */
-    public final int        getCurrentOffset () {
+    public int        getCurrentOffset () {
         return (mPos);
     }
 
-    public final boolean    checkAvailable (int n) {
+    public boolean    checkAvailable (int n) {
         if (getAvail () < n)
             throw new AssertionError ("Cannot read " + n + " bytes; available: " + getAvail ());
 
         return (true);
     }
 
-    public final void       readFully (byte[] b, int off, int len) {
+    public void       readFully (byte[] b, int off, int len) {
         assert checkAvailable (len);
         
         System.arraycopy (mBuffer, mPos, b, off, len);
         mPos += len;
     }
 
-    public final void       readFully (byte[] b) {
+    public void       readFully (byte[] b) {
         readFully (b, 0, b.length);
     }
 
-    public final void       skipBytes (int n) {
+    public void       skipBytes (int n) {
         assert checkAvailable (n);
         mPos += n;
     }
 
-    public final void       seek (int n) {
+    public void       skipBytesUpTo (int n) {
+        mPos += n;
+        
+        if (mPos > mLimit)
+            mPos = mLimit;
+    }
+
+    public void       seek (int n) {
         assert n <= getLength () :
             "Cannot seek to " + n + " bytes; length: " + getLength ();
 
         mPos = mStart + n;
     }
 
-    public final int        readUnsignedShort () {
+    public int        readUnsignedShort () {
         assert checkAvailable (2);
 
         int     ret = DataExchangeUtils.readUnsignedShort (mBuffer, mPos);
@@ -159,7 +173,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final long       readUnsignedInt () {
+    public long       readUnsignedInt () {
         assert checkAvailable (4);
 
         long    ret = DataExchangeUtils.readUnsignedInt (mBuffer, mPos);
@@ -167,25 +181,25 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final int        readUnsignedByte () {
+    public int        readUnsignedByte () {
         assert checkAvailable (1);
 
         return (mBuffer [mPos++] & 0xFF);
     }
 
-    public final boolean    readBoolean () {
+    public boolean    readBoolean () {
         assert checkAvailable (1);
 
         return (mBuffer [mPos++] != 0);
     }
 
-    public final byte       readByte () {
+    public byte       readByte () {
         assert checkAvailable (1);
 
         return (mBuffer [mPos++]);
     }
 
-    public final char       readChar () {
+    public char       readChar () {
         assert checkAvailable (2);
 
         char    ret = DataExchangeUtils.readChar (mBuffer, mPos);
@@ -193,7 +207,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final double     readDouble () {
+    public double     readDouble () {
         assert checkAvailable (8);
 
         double    ret = DataExchangeUtils.readDouble (mBuffer, mPos);
@@ -201,7 +215,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final float      readFloat () {
+    public float      readFloat () {
         assert checkAvailable (4);
 
         float    ret = DataExchangeUtils.readFloat (mBuffer, mPos);
@@ -209,7 +223,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final int        readInt () {
+    public int        readInt () {
         assert checkAvailable (4);
 
         int    ret = DataExchangeUtils.readInt (mBuffer, mPos);
@@ -217,7 +231,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final long       readLong () {
+    public long       readLong () {
         assert checkAvailable (8);
 
         long    ret = DataExchangeUtils.readLong (mBuffer, mPos);
@@ -225,7 +239,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final long       readLong48 () {
+    public long       readLong48 () {
         assert checkAvailable (6);
 
         long    ret = DataExchangeUtils.readLong48 (mBuffer, mPos);
@@ -233,13 +247,13 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final long       readLongUnsignedByte () {
+    public long       readLongUnsignedByte () {
         assert checkAvailable (1);
 
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
     
-    public final long       readPackedUnsignedLong () {        
+    public long       readPackedUnsignedLong () {        
         int     head = readByte ();
         long    ret = head & 0x1F;
         int     numAddlBytes = (head >>> 5) & 0x7;
@@ -301,7 +315,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final int       readPackedUnsignedInt () {        
+    public int       readPackedUnsignedInt () {        
         int     head = readByte ();
         int     ret = head & 0x3F;
         int     numAddlBytes = (head >>> 6) & 0x3;
@@ -329,7 +343,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final short      readShort () {
+    public short      readShort () {
         assert checkAvailable (2);
 
         short    ret = DataExchangeUtils.readShort (mBuffer, mPos);
@@ -337,7 +351,7 @@ public class MemoryDataInput {
         return (ret);
     }
 
-    public final String         readString () {
+    public String         readString () {
         CharSequence   sb = readCharSequence ();
         
         return (sb == null ? null : sb.toString ());
@@ -347,7 +361,7 @@ public class MemoryDataInput {
      *  Uses an internal buffer. The returned value is valid until the next call to
      *  this method. Returns null if the string value is null. 
      */
-    public final CharSequence   readCharSequence () {
+    public CharSequence   readCharSequence () {
         if (mStringBuilder == null)
             mStringBuilder = new StringBuilder ();
         
@@ -358,12 +372,12 @@ public class MemoryDataInput {
     /**
      *  Returns null if the string value is null. 
      */
-    public final StringBuilder  readStringBuilder (StringBuilder sb) {
+    public StringBuilder  readStringBuilder (StringBuilder sb) {
         sb.setLength (0);
         return (appendToStringBuilder (sb));
     }
 
-    public final void           skipCharSequence () {
+    public void           skipCharSequence () {
         int         utflen = readUnsignedShort ();
         
         if (utflen != 0xFFFF)
@@ -373,7 +387,7 @@ public class MemoryDataInput {
     /**
      *  Returns false if the string value is null. 
      */
-    public final StringBuilder    appendToStringBuilder (StringBuilder sb) {
+    public StringBuilder    appendToStringBuilder (StringBuilder sb) {
         int         utflen = readUnsignedShort ();
         
         if (utflen == 0xFFFF)
@@ -440,7 +454,7 @@ public class MemoryDataInput {
                             "malformed input around byte " + (count-1));
                     sb.append ((char)(((c & 0x0F) << 12) |
                                                     ((char2 & 0x3F) << 6)  |
-                                                    ((char3 & 0x3F) << 0)));
+                                                     (char3 & 0x3F)));
                     break;
                     
                 default:
@@ -459,7 +473,7 @@ public class MemoryDataInput {
         return (sb);
     }
 
-    private static final double []    SCALES = new double [MemoryDataOutput.MAX_SCALE_EXP];
+    private static double []    SCALES = new double [MemoryDataOutput.MAX_SCALE_EXP];
     
     static {
         long v = 1;
