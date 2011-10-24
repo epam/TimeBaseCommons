@@ -565,5 +565,160 @@ public final class TimeFormatter {
         }
     }
 
+    public static int   parseTimeOfDayMillis (CharSequence sc) {
+        return ((int) parseTimeOfDay (sc, 1000));
+    }
+    
+    public static long  parseTimeOfDay (
+        final CharSequence  sc, 
+        final int           scale
+    ) 
+    {
+        int                 length = sc.length ();
+        
+        if (length == 0)
+            throw new NumberFormatException ("Empty string");
+        
+        int                 pos = 0;
+        int                 n = 0;
+        int                 part = 0;
+        int                 seconds = 0;
+        int                 fs = scale;
+        
+        for (; pos < length; pos++) {
+            char            ch = sc.charAt (pos);
+            
+            switch (ch) {
+                case '.':
+                    if (scale == 1)
+                        throw new TimeOfDayParseException (
+                            "Fractional part unexpected",
+                            sc,
+                            pos
+                        );
+                    
+                    seconds += n;
+                    n = 0;
+                    part = 3;
+                    break;
+                    
+                case ':':
+                    switch (part) {
+                        case 0:
+                            seconds = n * 3600;
+                            n = 0;
+                            part = 1;
+                            break;
+                            
+                        case 1:
+                            seconds += n * 60;
+                            n = 0;
+                            part = 2;
+                            break;
+                            
+                        default:
+                            throw new TimeOfDayParseException (
+                                "':' in the wrong place",
+                                sc,
+                                pos
+                            );
+                    }
+                    break;
+                    
+                case '0': case '1': case '2': case '3': case '4': 
+                case '5': case '6': case '7': case '8': case '9': 
+                    n = n * 10 + ch - '0';
+                    
+                    switch (part) {
+                        case 0:
+                            if (n > 23)
+                                throw new TimeOfDayParseException (
+                                    "Hours value too large",
+                                    sc,
+                                    pos
+                                );                            
+                            break;
+                            
+                        case 1:
+                            if (n > 59)
+                                throw new TimeOfDayParseException (
+                                    "Minutes value too large",
+                                    sc,
+                                    pos
+                                );
+                            break;
+                            
+                        case 2:
+                            if (n > 59)
+                                throw new TimeOfDayParseException (
+                                    "Seconds value too large",
+                                    sc,
+                                    pos
+                                );
+                            break;
 
+                        case 3:
+                            if (n >= scale)
+                                throw new TimeOfDayParseException (
+                                    "Fractional part value too long; scale=" + scale,
+                                    sc,
+                                    pos
+                                );
+                            
+                            fs /= 10;
+                            break;
+                    }
+                    break;
+            }                        
+        }                
+        
+        switch (part) {
+            case 0: return (n * 3600 * scale);
+            case 1: return ((seconds + n * 60) * scale);
+            case 2: return ((seconds + n) * scale);
+            case 3: return (seconds * scale + n * fs);
+            default: throw new RuntimeException ();
+        }                
+    }    
+    
+    public static String    formatTimeofDayMillis (int timeOfDay) {
+        StringBuilder       sb = new StringBuilder ();
+        
+        formatTimeofDayMillis (timeOfDay, sb);
+        
+        return (sb.toString ());
+    }
+    
+    public static void      formatTimeofDayMillis (int timeOfDay, StringBuilder sb) {
+        int             value = timeOfDay;
+        
+        int             ms = value % 1000;
+        
+        value /= 1000;
+        
+        int             s = value % 60;
+        
+        value /= 60;
+        
+        int             m = value % 60;
+        
+        value /= 60;
+        
+        if (value >= 24)
+            throw new IllegalArgumentException ("TOD too large: " + timeOfDay);
+        
+        int             h = value;        
+        boolean         hasMillis = ms != 0;
+        boolean         hasSec = s != 0 || hasMillis;
+        
+        sb.setLength (0);
+                
+        sb.append (String.format ("%02d:%02d", h, m));
+
+        if (hasSec)
+            sb.append (String.format (":%02d", s));
+
+        if (hasMillis)
+            sb.append (String.format (".%03d", ms));
+    }
 }

@@ -37,10 +37,15 @@ public class HexCharBinDecoder extends CharBinDecoder {
     		write (cbuf [ii]);
     }    
 
-    public static byte []	decode (String s) {
+    public static byte []	decode (CharSequence s) {
     	try {
 			ByteArrayOutputStream	baos = new ByteArrayOutputStream ();
-			new HexCharBinDecoder (baos).write (s);
+			HexCharBinDecoder       dec = new HexCharBinDecoder (baos);
+            int                     length = s.length ();
+            
+            for (int ii = 0; ii < length; ii++)
+                dec.write (s.charAt (ii));
+            
 			return (baos.toByteArray ());
 		} catch (IOException iox) {
     		//	IO Exception should not be thrown when
