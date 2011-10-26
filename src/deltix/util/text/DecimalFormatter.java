@@ -39,7 +39,7 @@ public class DecimalFormatter {
             throw new IllegalArgumentException("Length");
         this.precision = precision;
         this.maxLength = maxLength;
-        this.factor = Math.round(Math.pow(10, precision+1));
+        this.factor = Math.round(Math.pow(10, precision));
     }
 
     public String format (double number) {
@@ -56,7 +56,7 @@ public class DecimalFormatter {
      */
     public static String format (double number, int precision, int maxLength) {
         long factor = 1;
-        for (int i = 0; i <= precision; i++)
+        for (int i = 0; i < precision; i++)
             factor*= 10;
         return format(number, precision, maxLength, factor);
     }
@@ -66,11 +66,8 @@ public class DecimalFormatter {
             throw new IllegalArgumentException("Precision");
         if (maxLength < 0 || maxLength > MAX_WIDTH)
             throw new IllegalArgumentException("Length");
-
-        if (Double.isNaN(number))
+        if (Double.isNaN(number)) // Infinity will be checked a bit later
             throw new IllegalArgumentException("NaN");
-//        if (Double.isInfinite(number))
-//            throw new IllegalArgumentException("Infinity");
 
         boolean sign = false;
         double factoredNumber = number;
@@ -82,15 +79,17 @@ public class DecimalFormatter {
         if (Double.isInfinite(factoredNumber) || factoredNumber > MAX)
             return formatLargeNumber (number);
 
-        long numberAsDecimal = (long) factoredNumber;
-        int smallestDigit = (int) (numberAsDecimal % 10);
-        numberAsDecimal = numberAsDecimal / 10;
-        if (smallestDigit >=5 )
-            numberAsDecimal ++; // round up;
 
-
-
-        //long numberAsDecimal = Math.round(factoredNumber);  // this call costs 8% of total time we spend in this method on avg. TODO: optimize it using %
+        //long numberAsDecimal = Math.round(factoredNumber);  // this call costs 8% of total time we spend in this method on avg.
+        long numberAsDecimal;
+        {
+            factoredNumber = factoredNumber * 10;
+            numberAsDecimal = (long) factoredNumber;
+            int smallestDigit = (int) (numberAsDecimal % 10);
+            numberAsDecimal = numberAsDecimal / 10;
+            if (smallestDigit >=5 )
+                numberAsDecimal ++; // round up;
+        }
         if (numberAsDecimal == 0)
             return "0";
 

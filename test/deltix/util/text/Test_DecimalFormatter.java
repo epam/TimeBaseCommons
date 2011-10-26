@@ -254,7 +254,6 @@ public class Test_DecimalFormatter {
         for (int i=0; i < 100000; i++) {
             double number =  rnd.nextDouble()*Math.pow(10,rnd.nextInt(8));
             assertFormat (df, number, format);
-            number = number / 10;
         }
     }
 
