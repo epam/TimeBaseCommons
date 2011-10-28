@@ -40,7 +40,7 @@ public abstract class DefaultApplication {
         new PrintWriter (new OutputStreamWriter (System.err));
     
     public static final PrintWriter             outWriter = 
-        new PrintWriter (new OutputStreamWriter (System.out));
+        new PrintWriter (new OutputStreamWriter (System.out), true);
     
     private String []                           mArgs;
     private Map <String, IntegerArrayList>      mMap =
