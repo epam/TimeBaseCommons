@@ -24,6 +24,8 @@ public final class MemoryDataOutput {
     
     public void          ensureSize (int minSize) {
         if (mSize < minSize) {
+            final int   oldSize = mSize;
+            
             mSize = minSize;
         
             int         currentSize = mBuffer.length;
@@ -34,7 +36,7 @@ public final class MemoryDataOutput {
                 } while (currentSize < minSize);
 
                 byte [] newBuffer = new byte [currentSize];
-                System.arraycopy (mBuffer, 0, newBuffer, 0, mPos);
+                System.arraycopy (mBuffer, 0, newBuffer, 0, oldSize);
                 mBuffer = newBuffer;
             }
         }
