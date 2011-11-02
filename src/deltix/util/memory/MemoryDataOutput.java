@@ -19,21 +19,24 @@ public final class MemoryDataOutput {
     }
     
     public void          makeRoom (int space) {
-        int         requiredSize = mPos + space;
+        ensureSize (mPos + space);
+    }
+    
+    public void          ensureSize (int minSize) {
+        if (mSize < minSize) {
+            mSize = minSize;
         
-        if (mSize < requiredSize)
-            mSize = requiredSize;
-        
-        int         currentSize = mBuffer.length;
-        
-        if (currentSize < requiredSize) {
-            do { 
-                currentSize = currentSize << 1; 
-            } while (currentSize < requiredSize);
-            
-            byte [] newBuffer = new byte [currentSize];
-            System.arraycopy (mBuffer, 0, newBuffer, 0, mPos);
-            mBuffer = newBuffer;
+            int         currentSize = mBuffer.length;
+
+            if (currentSize < minSize) {
+                do { 
+                    currentSize = currentSize << 1; 
+                } while (currentSize < minSize);
+
+                byte [] newBuffer = new byte [currentSize];
+                System.arraycopy (mBuffer, 0, newBuffer, 0, mPos);
+                mBuffer = newBuffer;
+            }
         }
     }
     
@@ -61,6 +64,12 @@ public final class MemoryDataOutput {
     public void           seek (int offset) {
         mPos = offset;
         makeRoom (0);
+    }
+    
+    public void             insertSpace (int offset, int length) {
+        final int   oldSize = mSize;
+        ensureSize (oldSize + length);
+        System.arraycopy (mBuffer, offset, mBuffer, offset + length, oldSize - offset);
     }
     
     public int            getPosition () {

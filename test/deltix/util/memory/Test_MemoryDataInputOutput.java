@@ -138,4 +138,29 @@ public class Test_MemoryDataInputOutput {
             }
         }
     }
+    
+    @Test
+    public void     testInsert () {
+        out.reset ();
+        out.writeString ("hello");
+        
+        int     pos = out.getPosition ();
+        
+        out.writeString ("world");
+        
+        out.insertSpace (pos, 4);
+        out.seek (pos);
+        out.writeInt (2011);
+        
+        in.setBytes (out);
+        
+        String  a = in.readString ();
+        int     b = in.readInt ();
+        String  c = in.readString ();
+        
+        assertEquals (a, "hello");
+        assertEquals (b, 2011);
+        assertEquals (c, "world");
+        assertFalse (in.hasAvail ());
+    }
 }
