@@ -148,8 +148,8 @@ public class Test_MemoryDataInputOutput {
         
         out.writeString ("world");
         
-        out.insertSpace (pos, 4);
         out.seek (pos);
+        out.insertSpace (pos, 4);
         out.writeInt (2011);
         
         in.setBytes (out);
