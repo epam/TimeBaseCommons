@@ -351,6 +351,8 @@ public class Util {
             f.setInt(object, (Integer) value);
         else if (type == double.class)
             f.setDouble(object, (Double) value);
+        else if (type == boolean.class)
+            f.setBoolean(object, (Boolean) value);
         else if (!type.isPrimitive())
             f.set(object, value);
         else
