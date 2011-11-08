@@ -3,6 +3,7 @@ package deltix.util.cmdline;
 import deltix.util.Version;
 import deltix.util.lang.StringUtils;
 import java.io.*;
+import java.lang.reflect.Method;
 
 /**
  *
@@ -96,11 +97,20 @@ public abstract class AbstractShell extends DefaultApplication {
         return (false);
     }
 
-    protected void          set (String option, String value) {
+    protected final void    set (String option, String value) {
+        Method      m;
+        
         try {
-            if (!doSet (option, value)) {
-                System.err.println ("set " + option + ": unrecognized option. (Type ? for usage)");
-            }
+            m = getClass ().getMethod ("set_" + option, String.class);
+        } catch (NoSuchMethodException x) {
+            m = null;
+        }
+        
+        try {
+            if (m != null)
+                m.invoke (this, value);
+            else if (!doSet (option, value)) 
+                System.err.println ("set " + option + ": unrecognized option. (Type ? for usage)");            
         } catch (Throwable x) {
             printException (x, true);
         }
@@ -122,11 +132,56 @@ public abstract class AbstractShell extends DefaultApplication {
         if (args != null && args.length () == 0)    // eliminate check
             args = null;
         
+        Method      m = null;
+        int         sig = -1;
+        String      mname = "cmd_" + key;
+        
         try {
-            if (!doCommand (key, args, fileId, rd)) {
-                System.err.println (key + ": unrecognized command. (Type ? for usage)");                
-                error (1);
+            m = getClass ().getMethod (mname, String.class, String.class, LineNumberReader.class);
+            sig = 3;
+        } catch (NoSuchMethodException x) {
+        }
+        
+        if (m == null) {
+            try {
+                m = getClass ().getMethod (mname, String.class);
+                sig = 1;
+            } catch (NoSuchMethodException x) {
             }
+        }
+        
+        if (m == null) {
+            try {
+                m = getClass ().getMethod (mname);
+                sig = 0;
+            } catch (NoSuchMethodException x) {
+            }
+        }
+        
+        try {
+            switch (sig) {
+                case -1:
+                    if (!doCommand (key, args, fileId, rd)) {
+                        System.err.println (key + ": unrecognized command. (Type ? for usage)");                
+                        error (1);
+                    }
+                    break;
+                    
+                case 3:
+                    m.invoke (this, args, fileId, rd);
+                    break;
+                    
+                case 1:
+                    m.invoke (this, args);
+                    break;
+                                        
+                case 0:
+                    m.invoke (this);
+                    break;
+                    
+                default:
+                    throw new RuntimeException ();
+            }            
         } catch (Throwable x) {
             printException (x, true);            
             error (2);

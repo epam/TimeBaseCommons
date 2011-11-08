@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.text.DecimalFormat;
 
 public class StringUtils {
-
+    public static final String  REGEXP_WHITESPACE = "[ \\t\\n\\r]+";
+    
     public static final String  nanosMicrosPatternChars = "UuNn";
     public static final String  patternChars = "GyMdkHmsSEDFwWahKzZ";
     public static final int[] precisions = new int[]{6,9};
