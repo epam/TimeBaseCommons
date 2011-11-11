@@ -250,6 +250,45 @@ public abstract class DefaultApplication {
     }
 
     /**
+     *	Returns file argument.
+     *
+     *	@param key		The argument being looked for.
+     *	@return			The file value of the next argument
+     *						following <i>key</i>.
+     */
+    public File 			getMandatoryFileArg (String key) {
+    	String				str = getMandatoryArgValue (key);
+    	if (str == null)
+    		return (null);
+    	else
+    		return (new File (str));
+    }
+
+    /**
+     *	Returns file arguments, or null, if the
+     *	key is not specified.
+     *
+     *	@param key		The argument being looked for.
+     *	@return			The file value of the next argument
+     *						following <i>key</i>,
+     *						or <tt>null</tt> if the key is not found.
+     */
+    public File []          getFileArgs (String key) {
+    	String []			str = getArgValues (key);
+    	if (str == null)
+    		return (null);
+        else {
+            int         n = str.length;
+            File []     ret = new File [n];
+            
+            for (int ii = 0; ii < n; ii++)
+                ret [ii] = new File (str [ii]);
+            
+    		return (ret);
+        }
+    }
+
+    /**
      *	Returns a long integer argument, or default value, if the
      *	former is not specified.
      *
