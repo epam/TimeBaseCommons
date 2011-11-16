@@ -284,6 +284,8 @@ public class WizPanel extends JPanel {
     }
     
     public void             next () {
+        WizPage     p = pageList.get (currentPageIdx + 1);
+        
         if (currentPageIdx != -1) {
             try {
                 pageList.get (currentPageIdx).onNext ();
@@ -292,10 +294,8 @@ public class WizPanel extends JPanel {
             }
         }
         
-        currentPageIdx++;
+        currentPageIdx = pageList.indexOf (p);
         invalidateSteps ();
-        
-        WizPage     p = pageList.get (currentPageIdx);
         
         setPageUI (p);
         
@@ -305,18 +305,16 @@ public class WizPanel extends JPanel {
     }
     
     public void             back () {
-        if (currentPageIdx != -1) {
-            try {
-                pageList.get (currentPageIdx).onBack ();
-            } catch (WizPage.AbortTransitionException x) {
-                return;
-            }
+        WizPage     p = pageList.get (currentPageIdx - 1);
+                
+        try {
+            pageList.get (currentPageIdx).onBack ();
+        } catch (WizPage.AbortTransitionException x) {
+            return;
         }
-        
-        currentPageIdx--;
+                
+        currentPageIdx = pageList.indexOf (p);
         invalidateSteps ();
-        
-        WizPage     p = pageList.get (currentPageIdx);
         
         setPageUI (p);
         
