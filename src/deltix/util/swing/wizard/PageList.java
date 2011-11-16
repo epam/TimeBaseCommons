@@ -11,6 +11,15 @@ public class PageList {
     
     public void         append (WizPage page) {
         pageList.add (page);
+        
+        if (wiz != null) {
+            page.setWizard (wiz);         
+            wiz.pageInserted (pageList.size () - 1);
+        }
+    }
+    
+    public int          indexOf (WizPage p) {
+        return (pageList.indexOf (p));
     }
     
     public int          size () {
@@ -27,8 +36,14 @@ public class PageList {
         if (idx < 0)
             throw new IllegalArgumentException (after + " not in list");
         
-        pageList.add (idx + 1, newPage);
-        newPage.setWizard (wiz);  
+        idx++;
+        
+        pageList.add (idx, newPage);
+        
+        if (wiz != null) {
+            newPage.setWizard (wiz);         
+            wiz.pageInserted (idx);
+        }
     }
     
     public void         remove (WizPage page) {
@@ -38,6 +53,9 @@ public class PageList {
             return;
         
         pageList.remove (idx);
+        
+        if (wiz != null)
+            wiz.pageRemoved (idx);
     }
     
     void                setWizard (WizPanel wiz) {

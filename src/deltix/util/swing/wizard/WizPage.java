@@ -18,47 +18,6 @@ public abstract class WizPage {
     protected WizPage (String header, Icon icon) {
         this.header = header;
         this.icon = icon;
-
-//        addPageListener (
-//            new PageListener () {
-//                public void     pageEventFired (PageEvent e) {
-//                    //System.out.println ("pageEventFired: " + e.getID () + " from " + e.getSource ());
-//                
-//                    allowClosing = true;
-//                    
-//                    try {
-//                        if (e.getID () == PageEvent.PAGE_CLOSING) {
-//                            pageClosing ();
-//
-//                            if (e.getSource () instanceof JButton) {
-//                                final JButton   btn = (JButton) e.getSource ();
-//                                final String    name = btn.getName ();
-//
-//                                if (name.equals (ButtonNames.NEXT))
-//                                    onNext ();
-//                                else if (name.equals (ButtonNames.BACK))
-//                                    onBack ();
-//                                else if (name.equals (ButtonNames.FINISH))
-//                                    onFinish ();
-//                                else if (name.equals (ButtonNames.CANCEL))
-//                                    onCancel ();
-//                                else
-//                                    System.out.println ("Unknown button name: " + name);
-//                            }
-//                        }
-//                        else if (e.getID () == PageEvent.PAGE_OPENED) {
-//                            if ((e.getSource () instanceof JButton) &&
-//                                ((JButton) e.getSource ()).getName ().equals (ButtonNames.BACK))
-//                                onOpenBacktrack ();
-//                            else
-//                                onOpenForward ();
-//                        }   
-//                    } catch (AbortTransitionException x) {
-//                        allowClosing = false;
-//                    }
-//                }
-//            }
-//        );
     }
 
     public WizPanel             getWizardPanel () {
@@ -138,35 +97,39 @@ public abstract class WizPage {
         return (wiz.isLastPage (this));
     }
     
-    public final void    setNextEnabled (boolean b) {
+    public final void       goBackToPage (WizPage page) {
+        wiz.goBackToPage (page);
+    }
+    
+    public final void       setNextEnabled (boolean b) {
         wiz.setNextEnabled (b);
     }
     
-    public final void    setBackEnabled (boolean b) {
+    public final void       setBackEnabled (boolean b) {
         wiz.setBackEnabled (b);
     }
     
-    public final void    setFinishEnabled (boolean b) {
+    public final void       setFinishEnabled (boolean b) {
         wiz.setFinishEnabled (b);
     }
     
-    public final void    setCancelEnabled (boolean b) {
+    public final void       setCancelEnabled (boolean b) {
         wiz.setCancelEnabled (b);
     }
     
-    public final void    setNextShown (boolean b) {
+    public final void       setNextShown (boolean b) {
         wiz.setNextShown (b);
     }
     
-    public final void    setBackShown (boolean b) {
+    public final void       setBackShown (boolean b) {
         wiz.setBackShown (b);
     }
     
-    public final void    setFinishShown (boolean b) {
+    public final void       setFinishShown (boolean b) {
         wiz.setFinishShown (b);
     }
     
-    public final void    setCancelShown (boolean b) {
+    public final void       setCancelShown (boolean b) {
         wiz.setCancelShown (b);
     }    
 }

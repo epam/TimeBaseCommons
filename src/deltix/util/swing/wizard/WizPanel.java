@@ -3,12 +3,16 @@ package deltix.util.swing.wizard;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 /**
  *
  */
 public class WizPanel extends JPanel {
+    private static final int            NO_JUMP_BACK = -1;
+    
     private Font                        titleFont = Font.decode ("Arial-BOLD-14");
     private Font                        stepFont = Font.decode ("Arial-NORMAL-12");
     private Insets                      titleInsets = new Insets (12, 12, 12, 12);
@@ -27,7 +31,9 @@ public class WizPanel extends JPanel {
     private final JPanel                buttonPanel = new JPanel (new GridBagLayout ());
     
     private int                         currentPageIdx = 0;
+    private int                         jumpBackLimit = 0;
     private PageList                    pageList;
+    private boolean                     stepsAreValid = false;
     
     public WizPanel () {
         super (new BorderLayout ());
@@ -100,15 +106,22 @@ public class WizPanel extends JPanel {
         add (buttonPanel, BorderLayout.SOUTH);
     }
     
-    private void        rebuildSteps () {
+    private void        invalidateSteps () {
+        stepsAreValid = false;
+    }
+    
+    public void         validateSteps () {
+        if (stepsAreValid)
+            return;
+        
         c.insets = stepInsets;
         steps.removeAll ();
         
         int         n = pageList.size ();
         
         for (int stepIdx = 0; stepIdx < n; stepIdx++) {
-            WizPage page = pageList.get (stepIdx);
-            Font    f;
+            final WizPage   page = pageList.get (stepIdx);
+            Font            f;
         
             if (stepIdx == currentPageIdx) {
                 title.setText (page.getTitle ());
@@ -133,53 +146,74 @@ public class WizPanel extends JPanel {
             c.gridx = 1;
             c.anchor = GridBagConstraints.WEST;
 
-            JLabel          hl = new JLabel (page.getTitle ());
-
-            hl.setFont (f);
-            steps.add (hl, c);
+            JLabel      item = new JLabel ();
+            
+            if (jumpBackLimit != NO_JUMP_BACK &&
+                stepIdx >= jumpBackLimit &&
+                stepIdx < currentPageIdx)
+            {
+                item.setText ("<html><a href=''>" + page.getTitle () + "</a></html>");
+                item.setForeground (Color.blue);
+                item.addMouseListener (
+                    new MouseAdapter () {
+                        @Override
+                        public void mouseClicked (MouseEvent e) {
+                            goBackToPage (page);
+                        }                        
+                    }
+                );
+            }           
+            else
+                item.setText (page.getTitle ());
+            
+            item.setFont (f);
+            
+            steps.add (item, c);
         }
                 
         c.gridy = n;
         c.weighty = 1;
         steps.add (new JLabel (" "), c);
+        
+        stepsAreValid = true;
     }
     
-    public void    setPageList (PageList pl) {
+    public void     setPageList (PageList pl) {
         pageList = pl;
         pageList.setWizard (this);        
         currentPageIdx = -1;
         next ();
     }
     
-    public void    setNextEnabled (boolean b) {
+    public void     setNextEnabled (boolean b) {
         next.setEnabled (b);
     }
     
-    public void    setBackEnabled (boolean b) {
+    public void     setBackEnabled (boolean b) {
         back.setEnabled (b);
     }
     
-    public void    setFinishEnabled (boolean b) {
+    public void     setFinishEnabled (boolean b) {
         finish.setEnabled (b);
     }
     
-    public void    setCancelEnabled (boolean b) {
+    public void     setCancelEnabled (boolean b) {
         cancel.setEnabled (b);
     }
     
-    public void    setNextShown (boolean b) {
+    public void     setNextShown (boolean b) {
         next.setVisible (b);
     }
     
-    public void    setBackShown (boolean b) {
+    public void     setBackShown (boolean b) {
         back.setVisible (b);
     }
     
-    public void    setFinishShown (boolean b) {
+    public void     setFinishShown (boolean b) {
         finish.setVisible (b);
     }
     
-    public void    setCancelShown (boolean b) {
+    public void     setCancelShown (boolean b) {
         cancel.setVisible (b);
     }
     
@@ -192,9 +226,57 @@ public class WizPanel extends JPanel {
         int     n = pageList.size ();
         return (n > 0 && page == pageList.get (n - 1));
     }
+    
+    public void             setJumpBackLimit (WizPage p) {
+        if (p == null)
+            jumpBackLimit = NO_JUMP_BACK;
+        else
+            jumpBackLimit = pageList.indexOf (p);
+        
+        invalidateSteps ();
+    }
     //
     //  Actions
     //
+    public void             goBackToPage (WizPage p) {
+        int     idx = pageList.indexOf (p);
+        
+        if (idx < 0)
+            throw new IllegalArgumentException (p + " is not in list");
+        
+        invalidateSteps ();
+        
+        while (currentPageIdx > idx) {
+            try {
+                pageList.get (currentPageIdx).onBack ();
+            } catch (WizPage.AbortTransitionException x) {
+                return;
+            }
+            
+            currentPageIdx--;
+        }
+        
+        setPageUI (p);
+        
+        p.setupWizardButtons ();
+        p.onOpenBacktrack ();
+        validateSteps ();
+    }
+    
+    void                    pageRemoved (int idx) {
+        if (idx < currentPageIdx)
+            currentPageIdx--;
+        
+        invalidateSteps ();
+    }
+        
+    void                    pageInserted (int idx) {
+        if (idx <= currentPageIdx)
+            currentPageIdx++;
+        
+        invalidateSteps ();
+    }
+    
     private void            setPageUI (WizPage p) {
         int dl = split.getDividerLocation ();
         split.setRightComponent (p.getUI ());
@@ -211,6 +293,7 @@ public class WizPanel extends JPanel {
         }
         
         currentPageIdx++;
+        invalidateSteps ();
         
         WizPage     p = pageList.get (currentPageIdx);
         
@@ -218,7 +301,7 @@ public class WizPanel extends JPanel {
         
         p.setupWizardButtons ();
         p.onOpenForward ();  
-        rebuildSteps ();
+        validateSteps ();
     }
     
     public void             back () {
@@ -231,6 +314,7 @@ public class WizPanel extends JPanel {
         }
         
         currentPageIdx--;
+        invalidateSteps ();
         
         WizPage     p = pageList.get (currentPageIdx);
         
@@ -238,7 +322,7 @@ public class WizPanel extends JPanel {
         
         p.setupWizardButtons ();
         p.onOpenBacktrack ();
-        rebuildSteps ();
+        validateSteps ();
     }
     
     public void             onFinish () {        
