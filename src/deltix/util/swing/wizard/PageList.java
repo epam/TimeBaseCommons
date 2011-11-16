@@ -6,6 +6,7 @@ import java.util.*;
  *
  */
 public class PageList {
+    private WizPanel                    wiz;
     private ArrayList <WizPage>         pageList = new ArrayList <WizPage> ();
     
     public void         append (WizPage page) {
@@ -27,6 +28,7 @@ public class PageList {
             throw new IllegalArgumentException (after + " not in list");
         
         pageList.add (idx + 1, newPage);
+        newPage.setWizard (wiz);  
     }
     
     public void         remove (WizPage page) {
@@ -39,8 +41,9 @@ public class PageList {
     }
     
     void                setWizard (WizPanel wiz) {
-        for (WizPage p : pageList) {
-            p.setWizard (wiz);            
-        }
+        this.wiz = wiz;
+        
+        for (WizPage p : pageList) 
+            p.setWizard (wiz);                    
     }
 }
