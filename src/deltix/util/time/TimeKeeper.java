@@ -171,6 +171,9 @@ public class TimeKeeper extends Thread {
         offset = lastTimeMillis * M - nanoTime;                
     }
 
+    /*
+        Returns true if current time goes forward
+     */
     private boolean         getSystemTimeNoRollBack () {
         final long              t = System.currentTimeMillis ();
 
@@ -190,6 +193,8 @@ public class TimeKeeper extends Thread {
 
                 setBackReported = true;
             }
+
+            return (false);
         }
         else {
             //
