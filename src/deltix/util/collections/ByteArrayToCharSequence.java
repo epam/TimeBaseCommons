@@ -15,6 +15,10 @@ public class ByteArrayToCharSequence implements CharSequence {
         start = -1;
         end = -1;
     }
+    
+    public ByteArrayToCharSequence (byte [] bytes) {
+        set (bytes, bytes.length);        
+    }
 
     public ByteArrayToCharSequence (byte [] bytes, int start, int end) {
         set (bytes, start, end);
@@ -30,6 +34,17 @@ public class ByteArrayToCharSequence implements CharSequence {
         this.bytes = bytes;
         this.start = start;
         this.end = end;
+    }
+
+    public ByteArrayToCharSequence setContent (byte [] bytes, int length) {
+        if (this.bytes == null || this.bytes.length < length) {
+            this.bytes = new byte[length];
+        }
+        System.arraycopy(bytes, 0, this.bytes, 0, length);
+        this.start = 0;
+        this.end = length;
+        
+        return this;
     }
 
     public final char             charAt (int index) {
@@ -49,7 +64,7 @@ public class ByteArrayToCharSequence implements CharSequence {
         return (new String (bytes, start, end - start));
     }
 
-    public final void             trimWhitespace () {
+    public final CharSequence     trimWhitespace () {
         while (start < end && Character.isWhitespace (bytes [start]))
             start++;
 
@@ -61,6 +76,8 @@ public class ByteArrayToCharSequence implements CharSequence {
 
             end = prev;
         }
+        
+        return this;
     }
 
     @Override
