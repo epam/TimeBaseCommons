@@ -8,7 +8,7 @@ public class ReusableObjectPool<T> {
     private final Object lock = new Object();
     private final List<T> freeItems = new ArrayList<T>();
     private final ItemFactory<T> factory;
-    private volatile int lastItem;
+    private int lastItem;
 
     public ReusableObjectPool(ItemFactory<T> factory) {
         this(factory, 256);
