@@ -38,6 +38,6 @@ public class DXDataEntry implements ArchiveEntry {
 
     @Override
     public Date getLastModifiedDate() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }

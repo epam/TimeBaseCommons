@@ -7,10 +7,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class DXDataInputStream extends ArchiveInputStream {
 
@@ -52,6 +50,8 @@ public class DXDataInputStream extends ArchiveInputStream {
     public DXDataInputStream (File file) throws IOException {
         raf = new RandomAccessFile(file, "r");
         in = new RandomAccessFileToInputStreamAdapter(raf);
+        
+        readHeader();
     }
 
     @Override
@@ -81,22 +81,44 @@ public class DXDataInputStream extends ArchiveInputStream {
             
             if (in.read(header.getBytes()) > 0) {
                 header.setBytes(header.getBytes());
-                entry.entry = new DXDataEntry(header.readLong(), header.readString());
-                entry.size = entry.entry.size;
+
+                byte type = header.readByte();
+                entry.size = header.readLong();
+                if (entry.size != -1) {
+                    String name = header.readString();
+
+                    if (type == 0) {
+                        entry.entry = new DXDataEntry(entry.size, name);
+                    } else if (type == 1) {
+                        byte[] data = new byte[(int) entry.size];
+                        if (in.read(data) == entry.size)
+                            entry.entry = new DXHeaderEntry(name, data);
+                        
+                        entry.bytesRead += entry.size;
+                    }
+
+                } else {
+                    entry = null;
+                }
             } else {
-                eof = true;
                 entry = null;
             }
+
         } catch (EOFException e) {
-            eof = true;
             entry = null;
         }
+        
+        eof = (entry == null);
 
         return entry;
     }
 
-    private void            readHeader() {
+    public  int             getVersion() {
+        return 0;
+    }
 
+    private void            readHeader() {
+        
     }
 
     @Override

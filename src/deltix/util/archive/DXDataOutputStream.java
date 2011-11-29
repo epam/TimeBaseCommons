@@ -1,6 +1,7 @@
 package deltix.util.archive;
 
 import deltix.util.lang.Util;
+import deltix.util.memory.DataExchangeUtils;
 import deltix.util.memory.MemoryDataOutput;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -30,13 +31,6 @@ public class DXDataOutputStream extends ArchiveOutputStream {
          * Current data entry.
          */
         private final DXDataEntry entry;
-
-//        /**
-//         * Offset for CRC entry in the local file header data for the
-//         * current entry starts here.
-//         */
-//
-//        private long localDataStart = 0;
         
         /**
          * Start offset in file.
@@ -47,12 +41,6 @@ public class DXDataOutputStream extends ArchiveOutputStream {
          * Data offset in file.
          */
         private long dataOffset = 0;
-        
-        /**
-         * Number of bytes read for the current entry (can't rely on
-         * Deflater#getBytesRead) when using DEFLATED.
-         */
-        private long bytesRead = 0;
         
         /**
          * Whether write() has been called at all.
@@ -76,23 +64,22 @@ public class DXDataOutputStream extends ArchiveOutputStream {
 
     /**
      * Creates a new DXDataOutputStream writing to a File.  Will use random access if possible.
-     * @param file the file to zip to
+     * @param file the archive
      * @throws IOException on error
      */
     public DXDataOutputStream (File file) throws IOException {
         (raf = new RandomAccessFile(file, "rw")).setLength(0);
-        
-        writeOut(MAGIC);
-        write(VERSION);
-        writeOut(header, MAGIC.length + 1, header.length - (MAGIC.length + 1));
+
+        System.arraycopy(MAGIC, 0, header, 0, MAGIC.length);
+        DataExchangeUtils.writeByte(header, MAGIC.length, VERSION);
+        writeOut(header, 0, header.length);
     }
 
     public void putHeaderEntry(DXHeaderEntry entry) throws IOException {
         Long offset = offsets.get(entry);
         
         if (offset != null) {
-            raf.seek(offset);
-            raf.writeLong(entry.size);
+            raf.seek(offset + ENTRY_HEADER_SIZE);
             raf.write(entry.data);
             
             raf.seek(written); // rollback to current position
@@ -122,7 +109,8 @@ public class DXDataOutputStream extends ArchiveOutputStream {
         e.offset = written;
         
         MemoryDataOutput out = new MemoryDataOutput(ENTRY_HEADER_SIZE);
-        out.writeLong(-1L); // entry length
+        out.writeByte(e.entry instanceof DXHeaderEntry ? 1 : 0);
+        out.writeLong(e.entry.getSize()); // entry length
         out.writeString(e.entry.name); // entry name
 
         if (out.getSize() > ENTRY_HEADER_SIZE)
@@ -147,7 +135,7 @@ public class DXDataOutputStream extends ArchiveOutputStream {
         long size = written - current.offset - ENTRY_HEADER_SIZE;
         
         // update entry header
-        raf.seek(current.offset);
+        raf.seek(current.offset + 1);
         raf.writeLong(size);
         raf.seek(written); // rollback to current position
         
@@ -183,10 +171,6 @@ public class DXDataOutputStream extends ArchiveOutputStream {
         }
     }
 
-    protected final void    writeOut(byte[] data) throws IOException {
-        writeOut(data, 0, data.length);
-    }
-
     @Override
     public void             write(byte[] b) throws IOException {
         write(b, 0, b.length);
@@ -204,6 +188,8 @@ public class DXDataOutputStream extends ArchiveOutputStream {
 
         if (current != null)
             closeArchiveEntry();
+
+        flush();
         
         offsets.clear();
         entries.clear();
@@ -211,11 +197,15 @@ public class DXDataOutputStream extends ArchiveOutputStream {
     }
 
     @Override
+    public void             flush() throws IOException {
+        raf.getChannel().force(true);
+    }
+
+    @Override
     public void             close() throws IOException {
         if (!finished)
             finish();
-        
-        raf.getChannel().force(true);
+                
         Util.close(raf);
     }
 

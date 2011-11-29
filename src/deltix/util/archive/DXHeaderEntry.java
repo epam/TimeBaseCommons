@@ -2,7 +2,7 @@ package deltix.util.archive;
 
 public class DXHeaderEntry extends DXDataEntry {
 
-    byte[] data;
+    public final byte[] data;
 
     public DXHeaderEntry(String name, byte[] data) {
         super(name);
