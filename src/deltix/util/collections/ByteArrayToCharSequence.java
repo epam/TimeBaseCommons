@@ -80,6 +80,22 @@ public class ByteArrayToCharSequence implements CharSequence {
         return this;
     }
 
+    public final CharSequence     trimWhitespaceC () {
+        while (start < end && (Character.isWhitespace (bytes [start]) || bytes [start] == 0))
+            start++;
+
+        while (start < end) {
+            final int       prev = end - 1;
+
+            if (!(Character.isWhitespace (bytes [prev]) || bytes [prev] == 0))
+                break;
+
+            end = prev;
+        }
+        
+        return this;
+    }
+    
     @Override
     public boolean                  equals (Object other) {
         return (
