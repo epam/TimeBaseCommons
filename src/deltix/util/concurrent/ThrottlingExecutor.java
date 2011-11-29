@@ -2,6 +2,8 @@ package deltix.util.concurrent;
 
 import deltix.util.lang.ExceptionHandler;
 import deltix.util.lang.Util;
+import deltix.util.time.TimeKeeper;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
@@ -83,7 +85,7 @@ public class ThrottlingExecutor extends Thread {
     {
         Task            task = queue.take ();
 
-        long            t0 = System.currentTimeMillis ();
+        long            t0 = TimeKeeper.currentTime;
         long            limit = t0 + MEASURABLE_INTERVAL;
         long            t1;
 
