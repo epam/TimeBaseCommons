@@ -104,7 +104,7 @@ public class ThrottlingExecutor extends Thread {
                     handler.handle (x);
             }
 
-            t1 = System.currentTimeMillis ();
+            t1 = TimeKeeper.currentTime;
 
             if (t1 >= limit)
                 break;
