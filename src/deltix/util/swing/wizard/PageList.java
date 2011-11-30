@@ -22,6 +22,10 @@ public class PageList {
         return (pageList.indexOf (p));
     }
     
+    public boolean      contains (WizPage p) {
+        return (pageList.contains (p));
+    }
+
     public int          size () {
         return (pageList.size ());
     }

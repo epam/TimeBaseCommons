@@ -264,7 +264,7 @@ public class WizPanel extends JPanel {
     }
     
     void                    pageRemoved (int idx) {
-        if (idx < currentPageIdx)
+        if (idx <= currentPageIdx)
             currentPageIdx--;
         
         invalidateSteps ();
@@ -285,15 +285,19 @@ public class WizPanel extends JPanel {
     
     public void             next () {
         WizPage     p = pageList.get (currentPageIdx + 1);
-        
+        WizPage     current = (currentPageIdx != -1) ? pageList.get (currentPageIdx) : null;
+
         if (currentPageIdx != -1) {
             try {
-                pageList.get (currentPageIdx).onNext ();
+                current.onNext ();
             } catch (WizPage.AbortTransitionException x) {
                 return;
             }
         }
-        
+
+        if (pageList.contains(current))
+            p = pageList.get(currentPageIdx + 1);
+
         currentPageIdx = pageList.indexOf (p);
         invalidateSteps ();
         
@@ -306,13 +310,17 @@ public class WizPanel extends JPanel {
     
     public void             back () {
         WizPage     p = pageList.get (currentPageIdx - 1);
-                
+        WizPage     current = pageList.get (currentPageIdx);
+
         try {
-            pageList.get (currentPageIdx).onBack ();
+            current.onBack();
         } catch (WizPage.AbortTransitionException x) {
             return;
         }
-                
+
+        if (pageList.contains(current))
+            p = pageList.get(currentPageIdx - 1);
+
         currentPageIdx = pageList.indexOf (p);
         invalidateSteps ();
         
