@@ -102,7 +102,7 @@ public class ByteQueueInputStream extends InputStream {
                 throw exception;
 
             if (q == null)
-                throw new IOException ("stream is closed");
+                throw new EOFException ("Stream is closed");
 
             size = q.size ();
 
