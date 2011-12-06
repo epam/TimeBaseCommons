@@ -63,16 +63,25 @@ public abstract class GMT {
     }
     
     public static String                formatDateTime (long t) {
+        if (t == Long.MIN_VALUE)
+            return ("<null>");
+        
         synchronized (DTF) {
             return (DTF.format (new Date (t)));
         }
     }
     
     public static String                formatDateTimeMillis (long t) {
+        if (t == Long.MIN_VALUE)
+            return ("<null>");
+        
         return (formatDateTimeMillis (new Date (t)));
     }
 
     public static String                formatNanos (long milliseconds, int nanos) {
+        if (milliseconds == Long.MIN_VALUE)
+            return ("<null>");
+        
         return TICKS.format(milliseconds, nanos);
     }
 
@@ -83,16 +92,25 @@ public abstract class GMT {
     }
     
     public static String                formatDateTimeMillis (Date t) {
+        if (t == null)
+            return ("<null>");
+        
         synchronized (DTFX) {
             return (DTFX.format (t));
         }
     }
     
     public static String                formatDate (long t) {
+        if (t == Long.MIN_VALUE)
+            return ("<null>");
+        
         return formatDate (new Date (t));
     }
 
     public static String                formatDate (Date d) {
+        if (d == null)
+            return ("<null>");
+        
         synchronized (DF) {
             return (DF.format (d));
         }
@@ -123,6 +141,9 @@ public abstract class GMT {
     }
     
     public static String                formatTime (long t) {
+        if (t == Long.MIN_VALUE)
+            return ("<null>");
+        
         synchronized (TF) {
             return (TF.format (new Date (t)));
         }
