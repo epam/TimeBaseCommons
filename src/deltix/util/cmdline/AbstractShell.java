@@ -17,7 +17,7 @@ public abstract class AbstractShell extends DefaultApplication {
         super (args);
     }
 
-    protected void          confirm (String msg) {
+    public void          confirm (String msg) {
         if (getConfirm ())
             System.out.println (msg);
     }
@@ -116,7 +116,7 @@ public abstract class AbstractShell extends DefaultApplication {
         }
     }
 
-    protected final void    error (int level) {
+    public final void    error (int level) {
         if (errorCode < level)
             errorCode = level;
         
