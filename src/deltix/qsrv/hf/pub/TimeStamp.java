@@ -17,13 +17,13 @@ public class TimeStamp implements TimeStampedMessage {
     public int                  nanosComponent = 0;
 
     public void                 setNanoTime(long nanoSeconds) {
-       if (nanoSeconds != TIMESTAMP_UNKNOWN) {
+        if (nanoSeconds != TIMESTAMP_UNKNOWN) {
             nanosComponent = (int) (nanoSeconds % TimeStamp.NANOS_PER_MS);
-            timestamp = (nanoSeconds - nanosComponent) / TimeStamp.NANOS_PER_MS;
-       } else {
-            timestamp = TIMESTAMP_UNKNOWN;
+            timestamp = nanoSeconds / TimeStamp.NANOS_PER_MS;
+        } else {
             nanosComponent = 0;
-       }
+            timestamp = TIMESTAMP_UNKNOWN;
+        }
     }
 
     @Override
