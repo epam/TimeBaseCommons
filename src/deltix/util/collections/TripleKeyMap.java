@@ -7,10 +7,7 @@ import java.util.Set;
 import java.util.Collections;
 
 /**
- * Description: deltix.util.collections.TripleKeyMap
- * Date: May 18, 2010
- *
- * @author Nickolay Dul
+ * Triple keys map.
  */
 public class TripleKeyMap<OK, MK, IK, V> {
     @SuppressWarnings("unchecked")
