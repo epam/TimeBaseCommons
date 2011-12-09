@@ -3,7 +3,9 @@ package deltix.util.io;
 import java.io.EOFException;
 
 /**
- * Date: Mar 30, 2010
+ * Signals end of queue.
+ * 
+ * @see ByteQueueInputStream
  */
 public class EOQException extends EOFException {
     
