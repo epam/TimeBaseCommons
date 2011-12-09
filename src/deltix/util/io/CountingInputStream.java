@@ -3,10 +3,9 @@ package deltix.util.io;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.EOFException;
 
 /**
- * Date: Feb 26, 2010
+ * Counts bytes as they pass through this filter stream.
  */
 public class CountingInputStream extends FilterInputStream {
     private long                    mNumBytesRead = 0;
