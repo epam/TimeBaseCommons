@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 
 import java.lang.reflect.*;
 
-/** Set of usefull methods */
+/** Set of useful methods */
 public class Util {
     public static final boolean  IS64BIT            = "64".equals(System.getProperty("sun.arch.data.model"));
     public static final boolean  IS32BIT            = "32".equals(System.getProperty("sun.arch.data.model"));
@@ -83,15 +83,7 @@ public class Util {
      *  Returns the sign of a - b
      */
     public static int           compare (long a, long b) {
-        long        diff = a - b;
-
-        if (diff < 0)
-            return (-1);
-
-        if (diff > 0)
-            return (1);
-
-        return (0);
+        return a > b ? 1 : (a == b ? 0 : -1);
     }
 
     /**
@@ -189,6 +181,27 @@ public class Util {
 
             return (diff);
         }
+    }
+
+    public static int           fastCompare (CharSequence s1, CharSequence s2) {
+
+        int         len1 = s1.length ();
+        int         len2 = s2.length ();
+
+        int         diff = len1 - len2;
+
+        if (diff != 0)
+            return (diff);
+
+        for (int ii = 0; ii < len1; ii++) {
+            int     cdiff = s1.charAt (ii) - s2.charAt (ii);
+
+            if (cdiff != 0)
+                return (cdiff);
+        }
+
+        return (diff);
+        
     }
 
     public static <T extends Comparable <T>> T  max (T a, T b) {
