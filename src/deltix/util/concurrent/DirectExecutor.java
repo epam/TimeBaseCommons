@@ -3,10 +3,7 @@ package deltix.util.concurrent;
 import java.util.concurrent.Executor;
 
 /**
- * Description: deltix.util.concurrent.DirectExecutor
- * Date: Sep 25, 2009
- *
- * @author Nickolay Dul
+ * Executes submitted task immediately in the current thread.
  */
 public class DirectExecutor implements Executor {
     public static final Executor INSTANCE = new DirectExecutor();
