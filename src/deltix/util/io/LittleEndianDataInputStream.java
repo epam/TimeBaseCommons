@@ -3,9 +3,7 @@ package deltix.util.io;
 import java.io.*;
 
 /**
- * User: PaharelauK
- * Date: Nov 30, 2007
- * Time: 10:22:17 AM
+ * Little-Endian implementation of {@link DataInput} interface
  */
 public class LittleEndianDataInputStream extends FilterInputStream implements DataInput {
 

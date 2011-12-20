@@ -9,8 +9,7 @@ import java.io.*;
 import java.net.URI;
 
 /**
- * User: BazylevD
- * Date: Dec 8, 2008
+ * Provides helper methods to compile one or several classes on-the-fly.
  */
 public class JavaCompilerHelper {
     private static final JavaCompiler           JAVA_COMPILER_INSTANCE;

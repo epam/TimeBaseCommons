@@ -9,7 +9,8 @@ import java.net.URL;
 import java.util.*;
 
 /**
- *  UNTESTED
+ *  {@link ClassLoader} implementation, which loads definitions of classes from the specified directory and implements
+ * {@link ClassDirectory} interface.
  */
 public final class FileSystemClassLoader 
     extends AbstractClassLoader 

@@ -8,8 +8,7 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Date: Mar 16, 2010
- * @author BazylevD
+ * {@link JavaFileManager} implementation based on {@link ClassLoader} and {@link ClassDirectory}
  */
 public class ClassLoaderJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
     private final ClassDirectory listClasses;
