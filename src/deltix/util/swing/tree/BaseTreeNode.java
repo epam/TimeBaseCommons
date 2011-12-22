@@ -167,6 +167,7 @@ public abstract class BaseTreeNode<T> implements TreeNode {
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     public Enumeration<?> children() {
         updateChildren();
         return (new ArrayEnumeration(mChildNodes.toArray()));
