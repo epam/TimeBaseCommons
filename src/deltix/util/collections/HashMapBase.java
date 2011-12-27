@@ -12,7 +12,7 @@ import java.util.Arrays;
 public abstract class HashMapBase
     implements Cloneable, Serializable, MemorySizeEstimator 
 {    
-    public static final int     MIN_TABLE_SIZE = 11;
+    public static final int     MIN_TABLE_SIZE = 23;
     public static final int     MIN_CAPACITY = MIN_TABLE_SIZE / 2;
     
     protected static final byte EMPTY = 0;
@@ -49,7 +49,8 @@ public abstract class HashMapBase
         if (n % 2 == 0)
             n++;
 
-        for (; !isPrime(n); n += 2) ;
+        while (!isPrime (n))
+            n += 2;
 
         return (n);
     }
