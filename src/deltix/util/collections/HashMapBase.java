@@ -10,16 +10,21 @@ import java.util.Arrays;
  * quadratic probing.
  */
 public abstract class HashMapBase
-        implements Cloneable, Serializable, MemorySizeEstimator {
+    implements Cloneable, Serializable, MemorySizeEstimator 
+{    
+    public static final int     MIN_TABLE_SIZE = 11;
+    public static final int     MIN_CAPACITY = MIN_TABLE_SIZE / 2;
+    
     protected static final byte EMPTY = 0;
     protected static final byte DELETED = 1;
     protected static final byte FILLED = 2;
 
-    private byte[] mStatus;
-    private int mThreshold;
-
-    private int mCount = 0;
-    private int mUsedCells = 0;
+    private byte []         mStatus;
+    private int             topThreshold;
+    private int             bottomThreshold = -1;
+    private double          shrinkFactor = Double.NaN;
+    private int             mCount = 0;
+    private int             mUsedCells = 0;
 
     public long getSizeInMemory() {
         return (OBJECT_OVERHEAD + mStatus.length + 3 * SIZE_OF_INT);
@@ -58,7 +63,8 @@ public abstract class HashMapBase
         allocValues(tabSize);
         allocKeys(tabSize);
         mStatus = new byte[tabSize];
-        mThreshold = tabSize / 2;
+        topThreshold = tabSize / 2;
+        setBottomThreshold ();
     }
 
     /**
@@ -67,7 +73,7 @@ public abstract class HashMapBase
      * The actual internal table size is at least 2*capacity.
      */
     public HashMapBase(int initCapacity) {
-        alloc(Math.max(11, initCapacity * 2 + 1));
+        alloc(Math.max(MIN_TABLE_SIZE, initCapacity * 2 + 1));
     }
 
     /**
@@ -78,11 +84,54 @@ public abstract class HashMapBase
     }
 
     /**
+     *  Return the load factor value, at which the table will shrink to half its size. 
+     *  For good performance, this factor should be significantly less than 0.5.
+     *  When the shrink behavior is turned off, return Double.NaN.
+     * 
+     *  @see #setShrinkFactor
+     */
+    public double           getShrinkFactor () {
+        return shrinkFactor;
+    }
+
+    /**
+     *  Configure the load factor value, at which the table will shrink to half its size. 
+     *  For good performance, this factor should be significantly less than 0.5.
+     *  To turn off the shrink behavior, set to Double.NaN.
+     * 
+     *  @see #getShrinkFactor
+     */
+    public void             setShrinkFactor (double shrinkFactor) {
+        boolean     off = Double.isNaN (shrinkFactor);
+        
+        if (!off && (shrinkFactor >= 0.5 || shrinkFactor < 0))
+            throw new IllegalArgumentException ("Illegal shrinkFactor (must be [0 .. 0.5): " + shrinkFactor);
+        
+        this.shrinkFactor = shrinkFactor;
+        setBottomThreshold ();          
+    }
+    
+    private void            setBottomThreshold () {
+        if (Double.isNaN (shrinkFactor) || topThreshold < 6)
+            bottomThreshold = -1;
+        else {
+            bottomThreshold = (int) (topThreshold * shrinkFactor);
+        }
+    }
+    
+    /**
+     * Returns the ratio of size to capacity.
+     */
+    public double   getLoadFactor () {
+        return (((double) mCount) / topThreshold);
+    }
+    
+    /**
      * Returns the number of elements after which the table will get
      * resized.
      */
-    public int getCapacity() {
-        return (mThreshold);
+    public int      getCapacity() {
+        return (topThreshold);
     }
 
     /**
@@ -124,32 +173,30 @@ public abstract class HashMapBase
 
     protected abstract Object valueArray();
 
-    protected final void rehash(int newCapacity) {
+    /**
+     *  This method may be called with any value of newTableSize, including 
+     *  the current table size. Even if specified size is the same, this method 
+     *  performs internal hash-table garbage collection, and should still be 
+     *  executed.
+     */
+    protected final void rehash (int newTableSize) {
         Object saveKeys = keyArray();
         Object saveValues = valueArray();
         byte[] saveStatus = mStatus;
 
         int tabSize = tableSize();
+        
+        alloc (newTableSize);
 
-        if (newCapacity < tabSize)
-            throw new IllegalArgumentException("Requested " +
-                    newCapacity + " elements, but size is already " +
-                    tabSize
-            );
-        else if (newCapacity == tabSize)
-            return;
-
-        alloc(newCapacity);
-
-        for (int ii = 0; ii < tabSize; ii++)
+        for (int ii = 0; ii < tabSize; ii++) {
             if (saveStatus[ii] == FILLED) {
                 int pos = rehashOne(saveKeys, saveValues, ii);
                 mStatus[pos] = FILLED;
             }
-
+        }
+        
         mUsedCells = mCount;
     }
-
 
     protected final void onPut(int pos, boolean wasNotFound) {
         mStatus[pos] = FILLED;
@@ -158,17 +205,32 @@ public abstract class HashMapBase
             mUsedCells++;
         }
 
-        if (mUsedCells >= mThreshold)
-            rehash(2 * tableSize());
+        if (mUsedCells >= topThreshold) {
+            if (mUsedCells >= mCount * 2)   // Just collect garbage
+                rehash (tableSize ());
+            else    // Grow
+                rehash (2 * tableSize());
+        }
     }
 
     protected final void onRemove(int pos) {
         mStatus[pos] = DELETED;
         mCount--;
+        
+        if (mCount < bottomThreshold) {
+            int     n = tableSize () / 2;
+        
+            assert n > mCount * 2; // just checking...
+            
+            if (n < MIN_TABLE_SIZE)
+                n = MIN_TABLE_SIZE;
+            
+            rehash (n);
+        }        
     }
 
     public void ensureCapacity(int capacity) {
-        if (mThreshold < capacity)
+        if (topThreshold < capacity)
             rehash(2 * capacity);
     }
 
