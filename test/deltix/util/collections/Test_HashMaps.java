@@ -16,16 +16,35 @@ public class Test_HashMaps {
     private static final int           ALL_NUM_KEYS = 4 << 20;
 
     @Test
+    public void         slidingWindowTest1 () 
+        throws LongHashMapBase.KeyNotFoundException 
+    {
+        slidingWindowTest (1);
+    }
+    
+    @Test
+    public void         slidingWindowTest10K () 
+        throws LongHashMapBase.KeyNotFoundException 
+    {
+        slidingWindowTest (10000);
+    }
+    
+    @Test
+    public void         slidingWindowTest100 () 
+        throws LongHashMapBase.KeyNotFoundException 
+    {
+        slidingWindowTest (100);
+    }
+    
+    @Test
     public void         testShrink () 
         throws LongHashMapBase.KeyNotFoundException 
     {
-        final double        SHRINK_FACTOR = 0.25;
-        
-        LongToLongHashMap   map = addAllRemoveAllTest (SHRINK_FACTOR);        
+        LongToLongHashMap   map = addAllRemoveAllTest (0.25);        
         int                 cap = map.getCapacity ();
         
         assertEquals (
-            "Capacity failed to drop to minimum",
+            "Capacity failed to drop to minimum: " + cap,
             HashMapBase.MIN_CAPACITY,
             cap
         );      
@@ -43,21 +62,19 @@ public class Test_HashMaps {
         );
     } 
     
-    @Test
-    public void         slidingWindowTest () 
+    public void         slidingWindowTest (int bufSize) 
         throws LongHashMapBase.KeyNotFoundException 
     {
         //
-        // this test maintains at most BUFSIZE keys in the hasmap.
+        // this test maintains at most bufSize keys in the hasmap.
         //  make sure the capacity does not grow infinitely.
         //
-        final int           BUFSIZE = 10000;
         final long          NUM_CYCLES = 8 << 20;
         
         LongToLongHashMap   map = new LongToLongHashMap ();
         
         for (long ii = 0; ii < NUM_CYCLES; ii++) {
-            long            old = ii - BUFSIZE;
+            long            old = ii - bufSize;
             
             if (old >= 0) {
                 long    v = map.remove (old);
@@ -70,17 +87,14 @@ public class Test_HashMaps {
             assertTrue (isNew);
         }
 
-        assertEquals (BUFSIZE, map.size ());
+        assertEquals (bufSize, map.size ());
         
-        double      rate = map.getLoadFactor ();
+        int                 cap = map.getCapacity ();
         
         assertTrue (
-            "Map utilization is " + rate, 
-            rate > 0.25
-        );   
-        
-        if (!Util.QUIET)
-            System.out.println ("Hash map utilization is " + rate);
+            "Map capacity = " + cap + " for bufSize = " + bufSize, 
+            cap <= Math.max (HashMapBase.MIN_CAPACITY, bufSize * 4)
+        );                   
     }
     
     public LongToLongHashMap addAllRemoveAllTest (double shrinkFactor) 
