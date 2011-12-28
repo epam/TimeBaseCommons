@@ -23,16 +23,15 @@ public class SimpleIdentifierGenerator implements ResettableIdentifierGenerator 
 
 
     @Override
-    public synchronized void markUsed (long usedId) {
-    	if (nextID <= usedId) {
-    		this.nextID = usedId + 1;
-    	}
-    }
-
-    @Override
     public synchronized void setNext (long nextId) {
     	if (nextID < nextId) {
     		this.nextID = nextId;
     	}
-    }     
+    }
+
+    @Override
+    public void reset() {
+        throw new UnsupportedOperationException();
+    }
+
 }

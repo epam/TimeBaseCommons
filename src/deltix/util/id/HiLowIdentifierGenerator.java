@@ -39,16 +39,8 @@ public abstract class HiLowIdentifierGenerator implements IdentifierGenerator {
     protected abstract long acquireNextBlock(long resetNextBlock);
 
 
-//    private synchronized void setNext (long nextId) {
-//    	id = 0;
-//    	aquireNextBlock(nextId);
-//    }
-    
-//    @Override
-//    public synchronized void markUsed (long usedId) {
-//    	long nextId =  base + id;
-//    	if (nextId <= usedId) {
-//    		setNext (usedId + 1);
-//    	}
-//    }
+    @Override
+    public void reset() throws UnsupportedOperationException {
+        // do nothing
+    }
 }

@@ -4,4 +4,11 @@ package deltix.util.id;
 public interface IdentifierGenerator {
 	/** @returns next valid order id. This method is thread safe */
     long next();
+
+    /**
+     * Special method to support UHF Failover. Method re-establishes next unique order ID from original media.
+     * @throws UnsupportedOperationException if reset/failover is not supported
+     * */
+    void reset()
+        throws UnsupportedOperationException;
 }
