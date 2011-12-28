@@ -2,10 +2,8 @@ package deltix.util.collections;
 
 /*  ##UTILS## */
 
-import deltix.util.lang.Util;
 import deltix.util.collections.generated.*;
-import deltix.util.collections.generated.LongToLongHashMap;
-import java.util.Random;
+import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -15,6 +13,20 @@ import static org.junit.Assert.*;
 public class Test_HashMaps {
     private static final int           ALL_NUM_KEYS = 4 << 20;
 
+    @Test
+    public void         testAgainstJavaMapNoShrink () 
+        throws IntegerHashMapBase.KeyNotFoundException 
+    {
+        testAgainstJavaMap (Double.NaN);
+    }
+        
+    @Test
+    public void         testAgainstJavaMapWithShrink () 
+        throws IntegerHashMapBase.KeyNotFoundException 
+    {
+        testAgainstJavaMap (0.25);
+    }
+        
     @Test
     public void         slidingWindowTest1 () 
         throws LongHashMapBase.KeyNotFoundException 
@@ -132,5 +144,59 @@ public class Test_HashMaps {
         }
                 
         return (map);
-    }      
+    }     
+    
+    public void         testAgainstJavaMap (double shrinkFactor) 
+        throws IntegerHashMapBase.KeyNotFoundException 
+     
+    {        
+        Random                  rnd = new Random (2009);
+        IntegerToIntegerHashMap map = new IntegerToIntegerHashMap ();
+        
+        map.setShrinkFactor (shrinkFactor);
+        
+        HashMap <Integer, Integer> check = new HashMap <Integer, Integer> ();
+                      
+        for (int ii = 0; ii < ALL_NUM_KEYS; ii++) {
+            {
+                int             key = rnd.nextInt (100000);
+                int             value = rnd.nextInt ();
+
+                Integer         out = check.put (key, value);
+                int             actual = map.putAndGet (key, value, -1);
+
+                if (out == null)
+                    assertEquals (-1, actual);
+                else
+                    assertEquals (out, (Object) actual);
+            }
+            
+            if (ii % 1000 == 999) {
+                int         n = map.size ();
+                
+                assertEquals (check.size (), n);
+                
+                for (Map.Entry <Integer, Integer> e : check.entrySet ()) {
+                    assertEquals ((Object) e.getValue (), (Object) map.get (e.getKey ()));
+                }
+                
+                // Remove 5/6 of all elements
+                int         m = 0;
+                int []      keys = new int [n * 5 / 6];
+                
+                for (Integer key : check.keySet ()) {
+                    keys [m++] = key;
+                    
+                    if (m == keys.length)
+                        break;
+                }
+                        
+                for (int key : keys)
+                    assertEquals (check.remove (key), (Object) map.remove (key));
+                                   
+                if (!Double.isNaN (shrinkFactor)) 
+                    assertTrue (map.getCapacity () < check.size () / shrinkFactor);        
+            }
+        }                        
+    }  
 }
