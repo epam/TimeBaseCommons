@@ -58,7 +58,7 @@ public abstract class HashMapBase
     /**
      * Allocates the internal table.
      */
-    protected void alloc(int tabSize) {
+    protected final void alloc(int tabSize) {
         tabSize = nextPrime(tabSize);
 
         allocValues(tabSize);
@@ -91,7 +91,7 @@ public abstract class HashMapBase
      * 
      *  @see #setShrinkFactor
      */
-    public double           getShrinkFactor () {
+    public final double           getShrinkFactor () {
         return shrinkFactor;
     }
 
@@ -102,7 +102,7 @@ public abstract class HashMapBase
      * 
      *  @see #getShrinkFactor
      */
-    public void             setShrinkFactor (double shrinkFactor) {
+    public final void             setShrinkFactor (double shrinkFactor) {
         boolean     off = Double.isNaN (shrinkFactor);
         
         if (!off && (shrinkFactor >= 0.5 || shrinkFactor < 0))
@@ -112,7 +112,7 @@ public abstract class HashMapBase
         setBottomThreshold ();          
     }
     
-    private void            setBottomThreshold () {
+    private final void            setBottomThreshold () {
         if (Double.isNaN (shrinkFactor) || topThreshold < 6)
             bottomThreshold = -1;
         else {
@@ -123,7 +123,7 @@ public abstract class HashMapBase
     /**
      * Returns the ratio of size to capacity.
      */
-    public double   getLoadFactor () {
+    public final double   getLoadFactor () {
         return (((double) mCount) / topThreshold);
     }
     
@@ -131,36 +131,36 @@ public abstract class HashMapBase
      * Returns the number of elements after which the table will get
      * resized.
      */
-    public int      getCapacity() {
+    public final int      getCapacity() {
         return (topThreshold);
     }
 
     /**
      * Returns the count of elements currently in the map.
      */
-    public int size() {
+    public final int size() {
         return (mCount);
     }
 
     /**
      * Returns whether the map is empty.
      */
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return (mCount == 0);
     }
 
     /**
      * Returns the size of the internal arrays.
      */
-    protected int tableSize() {
+    protected final int tableSize() {
         return (mStatus.length);
     }
 
-    protected boolean isFound(int pos) {
+    protected final boolean isFound(int pos) {
         return (mStatus[pos] == FILLED);
     }
 
-    protected boolean isCellEmpty(int pos) {
+    protected final boolean isCellEmpty(int pos) {
         return (mStatus[pos] == EMPTY);
     }
 
@@ -200,21 +200,30 @@ public abstract class HashMapBase
     }
 
     protected final void onPut(int pos, boolean wasNotFound) {
-        mStatus[pos] = FILLED;
+        mStatus [pos] = FILLED;
+        
         if (wasNotFound) {
             mCount++;
             mUsedCells++;
-        }
-
-        if (mUsedCells >= topThreshold) {
-            if (mUsedCells >= mCount * 2)   // Just collect garbage
-                rehash (tableSize ());
-            else    // Grow
-                rehash (2 * tableSize());
-        }
+            
+            if (mUsedCells >= topThreshold) {
+                if (mUsedCells >= mCount * 2)   // Just collect garbage
+                    rehash (tableSize ());
+                else    // Grow
+                    rehash (2 * tableSize());
+            }
+        }       
     }
 
-    protected final void onRemove(int pos) {
+    protected void moveEntry (int from, int to) {
+        assert mStatus [from] == FILLED;
+        assert mStatus [to] == DELETED;
+        
+        mStatus [to] = FILLED;
+        mStatus [from] = DELETED;
+    }
+    
+    protected void onRemove(int pos) {
         mStatus[pos] = DELETED;
         mCount--;
         

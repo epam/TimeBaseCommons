@@ -11,8 +11,105 @@ import static org.junit.Assert.*;
  *
  */
 public class Test_HashMaps {
+    private static class HorribleLong {
+        public final long  value;
+
+        public HorribleLong (long value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean  equals (Object obj) {
+            return (((HorribleLong) obj).value == value);
+        }
+
+        @Override
+        public int      hashCode () {
+            return (7);
+        }                
+    }
+    
     private static final int           ALL_NUM_KEYS = 4 << 20;
 
+    @Test
+    public void         smoke () {
+        ObjectToLongHashMap <HorribleLong>  map = 
+            new ObjectToLongHashMap <HorribleLong> ();
+        
+        assertEquals (0, map.size ()); 
+        
+        assertTrue (map.put (new HorribleLong (100), 100));
+        assertEquals (1, map.size ());        
+        assertEquals (100, map.get (new HorribleLong (100), -1));
+        
+        // put 200
+        
+        assertTrue (map.put (new HorribleLong (200), 200));
+        assertEquals (2, map.size ());        
+        assertEquals (100, map.get (new HorribleLong (100), -1));
+        assertEquals (200, map.get (new HorribleLong (200), -1));
+        
+        // put 300
+        
+        assertTrue (map.put (new HorribleLong (300), 300));
+        assertEquals (3, map.size ());        
+        assertEquals (300, map.get (new HorribleLong (300), -1));
+        assertEquals (100, map.get (new HorribleLong (100), -1));
+        assertEquals (200, map.get (new HorribleLong (200), -1));
+        
+        // remove 100 (creates a hole)
+        assertEquals (100, map.remove (new HorribleLong (100), -1));
+        assertEquals (2, map.size ());        
+        assertEquals (-1, map.get (new HorribleLong (100), -1));
+        // finding 200 should moves it to first spot in the (single) chain
+        assertEquals (200, map.get (new HorribleLong (200), -1));
+        assertEquals (300, map.get (new HorribleLong (300), -1));
+        // find 200 again, just in case
+        assertEquals (200, map.get (new HorribleLong (200), -1));
+        
+        // put 400 - should fill the hole left by 200
+        assertTrue (map.put (new HorribleLong (400), 400));
+        assertEquals (3, map.size ());        
+        assertEquals (300, map.get (new HorribleLong (300), -1));
+        assertEquals (400, map.get (new HorribleLong (400), -1));
+        assertEquals (200, map.get (new HorribleLong (200), -1));
+    }
+    
+    @Test
+    public void         testBadHash () {
+        ObjectToLongHashMap <HorribleLong>  unfortunateMap = 
+            new ObjectToLongHashMap <HorribleLong> ();
+        
+        final int           NUM = 10000;    // keep it even
+        
+        HorribleLong []     keys = new HorribleLong [NUM];
+        
+        for (int ii = 0; ii < NUM; ii++) {
+            HorribleLong    key = keys [ii] = new HorribleLong (ii);
+            
+            boolean     b = unfortunateMap.put (key, ii);
+            
+            assertTrue (b);
+        }
+        
+        assertEquals (NUM, unfortunateMap.size ());
+
+        for (int ii = 0; ii < NUM; ii++) {
+            long        value = unfortunateMap.get (keys [ii], -1);
+            
+            assertEquals (ii, value);
+        }
+        
+        //  Remove top half
+        for (int ii = NUM / 2; ii < NUM; ii++) {
+            long        value = unfortunateMap.remove (keys [ii], -1);
+            
+            assertEquals (ii, value);
+        }
+        
+        assertEquals (NUM / 2, unfortunateMap.size ());
+    }
+    
     @Test
     public void         testAgainstJavaMapNoShrink () 
         throws IntegerHashMapBase.KeyNotFoundException 
@@ -81,7 +178,7 @@ public class Test_HashMaps {
         // this test maintains at most bufSize keys in the hasmap.
         //  make sure the capacity does not grow infinitely.
         //
-        final long          NUM_CYCLES = 8 << 20;
+        final long          NUM_CYCLES = 10000000;
         
         LongToLongHashMap   map = new LongToLongHashMap ();
         
@@ -157,7 +254,7 @@ public class Test_HashMaps {
         
         HashMap <Integer, Integer> check = new HashMap <Integer, Integer> ();
                       
-        for (int ii = 0; ii < ALL_NUM_KEYS; ii++) {
+        for (int ii = 0; ii < 1000000; ii++) {
             {
                 int             key = rnd.nextInt (100000);
                 int             value = rnd.nextInt ();
@@ -198,5 +295,5 @@ public class Test_HashMaps {
                     assertTrue (map.getCapacity () < check.size () / shrinkFactor);        
             }
         }                        
-    }  
+    }       
 }

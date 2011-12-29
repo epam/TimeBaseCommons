@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
  *
  */
 public abstract class AbstractShell extends DefaultApplication {
+    public static final String STDIN_FILEID = "stdin";
     private int             errorCode = 0;
     private boolean         exitOnError = false;
     private boolean         confirm = true;
@@ -242,7 +243,7 @@ public abstract class AbstractShell extends DefaultApplication {
             }
         }
 
-        runScript ("stdin", new InputStreamReader (System.in), true, false);
+        runScript (STDIN_FILEID, new InputStreamReader (System.in), true, false);
         doQuit ();
     }
     
