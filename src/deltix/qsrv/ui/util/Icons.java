@@ -154,6 +154,7 @@ public class Icons {
     public static final Icon   STREAM                = null;
     public static final Icon   DATA_CONNECTOR        = null;
     public static final Icon   SYSTEM                = null;
+    public static final Icon   CLOCK                 = SwingUtil.loadIcon ("deltix/qsrv/ui/util/clock.png");
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
                                                      {
