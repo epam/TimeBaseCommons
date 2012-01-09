@@ -85,7 +85,7 @@ public class SMTPHandler extends Handler {
 
         setTo(getProperty(manager, "to", null));
         setFrom(getProperty(manager, "from", null));
-        setSmtpHost(getProperty(manager, "host", null));
+        setSmtpHost(getProperty(manager, "smtpHost", null));
         setSmtpPort(parseInt(getProperty(manager, "smtpPort", null), 0));
         setSmtpSecure(Boolean.valueOf(getProperty(manager, "smtpSecure", "false")));
         setSmtpUsername(getProperty(manager, "smtpUsername", null));
