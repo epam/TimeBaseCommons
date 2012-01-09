@@ -18,7 +18,7 @@ public abstract class SelectorPanel<T> extends JPanel {
 
     protected CheckBoxList         list;
     protected QuickListFilterField field;
-    private TriStateCheckBox       tristateCheckBox;
+    protected TriStateCheckBox       tristateCheckBox;
 
     private boolean                adjust = false;
 
