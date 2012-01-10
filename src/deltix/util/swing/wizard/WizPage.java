@@ -11,6 +11,7 @@ public abstract class WizPage {
     
     private boolean                 allowClosing = true;
     private String                  header;
+    private String                  help = null;
     private Icon                    icon;
     private WizPanel                wiz = null;
     private JComponent              ui = null;
@@ -39,7 +40,15 @@ public abstract class WizPage {
     public void                 setIcon (Icon icon) {
         this.icon = icon;
     }
-            
+
+    public void                 setHelp (String help) {
+        this.help = help;
+    }
+
+    public String               getHelp () {
+        return help;
+    }
+
     JComponent                  getUI () {
         if (ui == null)
             ui = createWizardContent ();

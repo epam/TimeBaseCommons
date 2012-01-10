@@ -147,7 +147,7 @@ public class WizPanel extends JPanel {
             c.anchor = GridBagConstraints.WEST;
 
             JLabel      item = new JLabel ();
-            
+
             if (jumpBackLimit != NO_JUMP_BACK &&
                 stepIdx >= jumpBackLimit &&
                 stepIdx < currentPageIdx)
@@ -167,6 +167,7 @@ public class WizPanel extends JPanel {
                 item.setText (page.getTitle ());
             
             item.setFont (f);
+            item.setToolTipText(page.getHelp());
             
             steps.add (item, c);
         }
