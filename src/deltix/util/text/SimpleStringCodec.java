@@ -1,13 +1,13 @@
 package deltix.util.text;
 
 /**
- *
+ * Immutable, thread-safe codec for strings
  */
 public class SimpleStringCodec {
     public static final SimpleStringCodec    DEFAULT_INSTANCE = 
         new SimpleStringCodec ();
 
-    private boolean             escapeUppercase;
+    private final boolean       escapeUppercase;
     private final char          open;
     private final char          close;
     
