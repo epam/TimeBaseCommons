@@ -30,6 +30,7 @@ public class SimpleStringCodec {
     }
     
     public final String             encode (String s) {
+        if (s == null) return null;
         StringBuilder   sb = new StringBuilder ();
         encode (s, 0, s.length (), sb);
         return (sb.toString ());
@@ -73,6 +74,7 @@ public class SimpleStringCodec {
     }
     
     public final String             decode (String s) {
+        if (s == null) return null;
         StringBuilder   sb = new StringBuilder ();
         decode (s, 0, s.length (), sb);
         return (sb.toString ());
