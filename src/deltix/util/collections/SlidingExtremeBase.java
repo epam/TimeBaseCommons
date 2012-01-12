@@ -2,9 +2,8 @@ package deltix.util.collections;
 
 /**
  * Base class for finding online extreme of a sliding window of arbitrary
- * comparable objects.
- * 
- * @see http://www.tiac.net/~cri/2001/slidingmin.html
+ * comparable objects. See also 
+ * <a href="http://www.tiac.net/~cri/2001/slidingmin.html">http://www.tiac.net/~cri/2001/slidingmin.html</a>
  */
 abstract class SlidingExtremeBase {
     private final int       windowWidth;
