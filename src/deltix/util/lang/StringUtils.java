@@ -776,7 +776,17 @@ public class StringUtils {
         }
         return value;
     }
-
+ 
+    public static String    trimTrailingWhitespace (String s) {
+        int slen = s.length ();
+        int n;
+        
+        for (n = slen; n > 0; n--)
+            if (!Character.isWhitespace (s.charAt (n - 1)))
+                break;
+                
+        return (n == slen ? s : s.substring (0, n));
+    }
 }
 
 
