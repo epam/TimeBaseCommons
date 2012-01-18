@@ -69,11 +69,14 @@ public class CurrencyCodeList {
                                    final String tag) {
         NodeList fstNm;
         try {
-            final NodeList fstNmElmntLst = element.getElementsByTagName (tag);
-            final Element fstNmElmnt = (Element) fstNmElmntLst.item (0);
+            final NodeList nodes = element.getElementsByTagName (tag);
+            if (nodes.getLength() == 0)
+                return null;
+
+            final Element fstNmElmnt = (Element) nodes.item (0);
             fstNm = fstNmElmnt.getChildNodes ();
 
-            return (fstNm.item (0)).getNodeValue ();
+            return (fstNm.item(0)).getNodeValue();
         } catch (final Throwable x) {
             return null;
         }
