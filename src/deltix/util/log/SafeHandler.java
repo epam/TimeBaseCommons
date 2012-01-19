@@ -229,6 +229,8 @@ public class SafeHandler extends Handler {
             if (buffer.size() == 1)
                 return buffer.getFirst();
 
+            Level summaryRecordLevel = Level.WARNING;
+
             StringBuilder sbuf = new StringBuilder(512);
             sbuf.append("There were published ").append(totalCount).append(" records with similar messages.");
             sbuf.append(Util.NATIVE_LINE_BREAK);
@@ -236,6 +238,10 @@ public class SafeHandler extends Handler {
 
             Throwable thrown = null;
             for (LogRecord record : buffer) {
+                // if at least one record has SEVERE level - set this level for summary record
+                if (record.getLevel() == Level.SEVERE)
+                    summaryRecordLevel = Level.SEVERE;
+
                 sbuf.append(Util.NATIVE_LINE_BREAK);
                 sbuf.append('\t');
                 // time
@@ -255,7 +261,7 @@ public class SafeHandler extends Handler {
                 sbuf.append(Util.NATIVE_LINE_BREAK);
                 sbuf.append(Util.printStackTrace(thrown));
             }
-            return new LogRecord(Level.SEVERE, sbuf.toString());
+            return new LogRecord(summaryRecordLevel, sbuf.toString());
         }
     }
 }
