@@ -6,6 +6,20 @@ package deltix.util.text;
 public final class ShellPatternCSMatcher implements CSMatcher {
     public static CSMatcher     INSTANCE = new ShellPatternCSMatcher ();
     
+    public static boolean       isPattern (CharSequence pattern) {
+        final int n = pattern.length ();
+        
+        for (int ii = 0; ii < n; ii++) {
+            switch (pattern.charAt (ii)) {
+                case '?':
+                case '*':
+                    return (true);                    
+            }
+        }
+        
+        return (false);
+    }
+    
     private ShellPatternCSMatcher () { }
     
     public boolean  matches (CharSequence text, CharSequence pattern) {

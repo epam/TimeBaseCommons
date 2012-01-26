@@ -1,9 +1,13 @@
 package deltix.util.cmdline;
 
 import deltix.util.Version;
+import deltix.util.io.Home;
+import deltix.util.io.IOUtil;
+import deltix.util.lang.ComparableComparator;
 import deltix.util.lang.StringUtils;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.util.regex.Matcher;
 
 /**
  *
@@ -18,7 +22,11 @@ public abstract class AbstractShell extends DefaultApplication {
         super (args);
     }
 
-    public void          confirm (String msg) {
+    public static String    expandPath (String path) {
+        return (path.replaceAll ("\\$\\{home\\}", Matcher.quoteReplacement (Home.get ())));
+    }
+    
+    public void             confirm (String msg) {
         if (getConfirm ())
             System.out.println (msg);
     }
@@ -84,18 +92,25 @@ public abstract class AbstractShell extends DefaultApplication {
         }
 
         if (key.equalsIgnoreCase ("exec")) {
-            FileReader  rd = new FileReader (args);
-
-            try {
-                runScript (args, rd, false, true);
-            } finally {
-                rd.close ();
-            }
-
+            doExec (args);
             return (true);
         }
 
         return (false);
+    }
+
+    public void        doExec (String args) 
+        throws InterruptedException, IOException 
+    {
+        for (File f : IOUtil.expandPath (expandPath (args), new ComparableComparator <File> (), true)) {
+            FileReader  rd = new FileReader (f);
+
+            try {
+                runScript (f.getPath (), rd, false, true);
+            } finally {
+                rd.close ();
+            }
+        }
     }
 
     protected final void    set (String option, String value) {

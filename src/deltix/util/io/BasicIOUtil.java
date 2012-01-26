@@ -4,10 +4,13 @@ import deltix.util.lang.SortedProperties;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.*;
 
 import deltix.util.lang.Util;
 
+import deltix.util.text.ShellPatternCSMatcher;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -1657,4 +1660,64 @@ public abstract class BasicIOUtil {
         }
     }
 
+    private static void     expandChildPath (
+        File                    root,
+        String []               dirs, 
+        int                     dirPos,
+        ArrayList <File>        out,
+        boolean                 assertExists,
+        Comparator <File>       comparator
+    ) 
+        throws FileNotFoundException
+    {
+        File                    cur = root;
+        
+        for (;;) {
+            if (dirPos == dirs.length) {
+                out.add (cur);
+                return;
+            }
+                
+            String          s = dirs [dirPos++];
+            
+            if (ShellPatternCSMatcher.isPattern (s)) {
+                File []     children = cur.listFiles ();
+                
+                if (assertExists && !cur.isDirectory ())
+                    throw new FileNotFoundException ("Not a directory: " + cur.getPath ()); 
+                
+                if (children == null) 
+                    return;
+                
+                if (comparator != null)
+                    Arrays.sort (children, comparator);
+                
+                for (File child : children) {
+                    if (ShellPatternCSMatcher.INSTANCE.matches (child.getName (), s))
+                        expandChildPath (child, dirs, dirPos, out, false, comparator);
+                }
+                
+                return;
+            }
+            
+            cur = new File (cur, s);
+
+            if (assertExists && !cur.exists ())
+                throw new FileNotFoundException (cur.getPath ());            
+        }        
+    }
+    
+    public static ArrayList <File>  expandPath (
+        String                          path, 
+        Comparator <File>               comparator,
+        boolean                         assertRootExists
+    ) 
+        throws FileNotFoundException 
+    {
+        String []           dirs = path.replace ('\\', '/').split ("/");
+        ArrayList <File>    files = new ArrayList <File> ();
+        
+        expandChildPath (new File (dirs [0]), dirs, 1, files, assertRootExists, comparator);
+        return (files);
+    }        
 }
