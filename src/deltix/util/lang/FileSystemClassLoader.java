@@ -67,19 +67,22 @@ public final class FileSystemClassLoader
         final StringBuilder         sb = new StringBuilder();
         final ArrayList <Class <?>> ret = new ArrayList <Class <?>> ();        
         final File                  folder = new File (mClassDir, subfolder);
-        
-        for (File classf : folder.listFiles (CLASS_FILE_FILTER)) {
-            final String            fileName = classf.getName();
-            
-            sb.setLength(0);
-            sb.append(packageName);
-            sb.append ('.');
-            sb.append (fileName, 0, fileName.length() - 6);
-            
-            try {
-                ret.add (loadClass (sb.toString ()));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+
+        final File[] files = folder.listFiles (CLASS_FILE_FILTER);
+        if(files != null) {
+            for (File classf : files) {
+                final String            fileName = classf.getName();
+
+                sb.setLength(0);
+                sb.append(packageName);
+                sb.append ('.');
+                sb.append (fileName, 0, fileName.length() - 6);
+
+                try {
+                    ret.add (loadClass (sb.toString ()));
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         
