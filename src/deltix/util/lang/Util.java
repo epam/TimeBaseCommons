@@ -354,19 +354,43 @@ public class Util {
             NoSuchFieldException,
             IllegalAccessException
     {
-        final Field f = object.getClass().getDeclaredField(fieldName);
-        f.setAccessible(true);
+        Field       f = null;
+                
+        for (
+            Class <?>   c = object.getClass ();
+            c != Object.class;
+            c = c.getSuperclass ()
+        ) 
+        {
+            try {
+                f = c.getDeclaredField (fieldName); 
+                break;
+            } catch (NoSuchFieldException x) {                
+            }                        
+        }
+        
+        if (f == null)
+            throw new NoSuchFieldException (fieldName + " in " + object.getClass ());
+        
+        f.setAccessible (true);
+        
         final Class<?> type = f.getType();
 
         if (type == long.class)
-            f.setLong(object, (Long) value);
+            f.setLong(object, ((Number) value).longValue ());
         else if (type == int.class)
-            f.setInt(object, (Integer) value);
+            f.setInt(object, ((Number) value).intValue ());
+        else if (type == short.class)
+            f.setInt(object, ((Number) value).shortValue ());
+        else if (type == byte.class)
+            f.setInt(object, ((Number) value).byteValue ());
         else if (type == double.class)
-            f.setDouble(object, (Double) value);
+            f.setDouble(object, ((Number) value).doubleValue ());
+        else if (type == float.class)
+            f.setDouble(object, ((Number) value).doubleValue ());
         else if (type == boolean.class)
             f.setBoolean(object, (Boolean) value);
-        else if (!type.isPrimitive())
+        else if (!type.isPrimitive ())
             f.set(object, value);
         else
             throw new IllegalArgumentException("field type is not supported " + type);
