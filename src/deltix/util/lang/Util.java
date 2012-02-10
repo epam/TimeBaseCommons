@@ -345,6 +345,7 @@ public class Util {
         throw new NoSuchMethodException(object.getClass().getName() + "." + methodName + " " + Util.printArray(paramTypes));
     }
 
+    @SuppressWarnings ("unchecked")
     public static void      setFieldValue (
         Object                  object,
         String                  fieldName,
@@ -389,9 +390,13 @@ public class Util {
         else if (type == float.class)
             f.setDouble(object, ((Number) value).doubleValue ());
         else if (type == boolean.class)
-            f.setBoolean(object, (Boolean) value);
-        else if (!type.isPrimitive ())
+            f.setBoolean(object, (Boolean) value);        
+        else if (!type.isPrimitive ()) {
+            if (type.isEnum () && value instanceof String) 
+                value = Enum.valueOf ((Class <? extends Enum>) type, (String) value);            
+            
             f.set(object, value);
+        }
         else
             throw new IllegalArgumentException("field type is not supported " + type);
     }
