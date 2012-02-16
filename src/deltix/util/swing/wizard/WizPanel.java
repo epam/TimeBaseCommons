@@ -1,5 +1,6 @@
 package deltix.util.swing.wizard;
 
+import deltix.util.swing.shapes.Spacer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,15 +30,18 @@ public class WizPanel extends JPanel {
     private final JLabel                title = new JLabel (" ");
     private final JPanel                steps = new JPanel (new GridBagLayout ());    
     private final JPanel                buttonPanel = new JPanel (new GridBagLayout ());
-    
+    private final JPanel                statusArea = new JPanel ();
     private int                         currentPageIdx = 0;
     private int                         jumpBackLimit = 0;
     private PageList                    pageList;
     private boolean                     stepsAreValid = false;
     
     public WizPanel () {
-        super (new BorderLayout ());
-                  
+        super (new BorderLayout ());                  
+        
+        statusArea.setBorder (BorderFactory.createLoweredBevelBorder ()); 
+        statusArea.setVisible (false);
+        
         back.addActionListener (
             new ActionListener () {
                 public void     actionPerformed (ActionEvent e) {
@@ -69,13 +73,21 @@ public class WizPanel extends JPanel {
                 }
             }
         );
-        
+                
         c.insets = buttonInsets;
         c.gridx = 0;
         c.gridy = 0;
-        c.weightx = 1;
-        buttonPanel.add (new JLabel (), c);
+        c.weightx = 100;
+        c.fill = GridBagConstraints.BOTH;        
+        buttonPanel.add (statusArea, c);
         c.gridx++;
+        
+        c.weightx = 1;
+        c.insets = new Insets (0, 0, 0, 0);
+        buttonPanel.add (new Spacer (1, 1), c);
+        c.gridx++;
+        
+        c.insets = buttonInsets;
         
         c.weightx = 0;
         buttonPanel.add (back, c);
@@ -178,7 +190,16 @@ public class WizPanel extends JPanel {
         
         stepsAreValid = true;
     }
-    
+        
+    /**
+     *  Returns the status area, which is a JPanel to the left of the 
+     *  navigation buttons. This panel is initially invisible. Please keep it
+     *  invisible when there is nothing of value in it.
+     */
+    public JPanel   getStatusArea () {
+        return (statusArea);
+    }
+        
     public void     setPageList (PageList pl) {
         pageList = pl;
         pageList.setWizard (this);        
