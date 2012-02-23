@@ -53,7 +53,7 @@ public class QuickLogger {
         flusher.setDaemon (true);
         flusher.start ();
 
-        ShutdownHook.closeOnShutdown (writer);
+        ShutdownHook.closeOnShutdown (writer); // TODO: May be a problem, better to switch to Spring-based destroy-method or something like that
     }
 
     private static void     writeTime () throws IOException {
