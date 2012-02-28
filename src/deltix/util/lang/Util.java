@@ -1,6 +1,7 @@
 package deltix.util.lang;
 
 import java.io.*;
+import java.lang.management.*;
 import java.net.*;
 import java.security.*;
 import java.util.*;
@@ -939,6 +940,84 @@ public class Util {
         t.printStackTrace(pwr);
         pwr.close();
         return swr.toString();
+    }
+    
+    public static Map<Thread, ThreadInfo>   getAllStackTraces() {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+        Map<Thread, ThreadInfo> info = new HashMap<Thread, ThreadInfo>();
+
+        for (Thread thread : traces.keySet())
+            info.put(thread, bean.getThreadInfo(new long[] {thread.getId()}, true, true)[0]);
+
+        return info;
+    }
+
+    public static String       getThreadStackTrace(Thread thread, ThreadInfo info) {
+        StringBuilder sb = new StringBuilder("\"" + thread.getName() + "\"" +
+                (thread.isDaemon() ? " daemon" : "") + " priority=" + thread.getPriority());
+
+        if (info.getLockName() != null)
+            sb.append(" on ").append(info.getLockName());
+
+        if (info.getLockOwnerName() != null)
+            sb.append(" owned by \"" + info.getLockOwnerName() + "\" id=" + info.getLockOwnerId());
+
+//        if (isSuspended()) {
+//            sb.append(" (suspended)");
+//        }
+//        if (isInNative()) {
+//            sb.append(" (in native)");
+//        }
+
+        sb.append('\n');
+        sb.append("Thread State: ").append(thread.getState()).append("\n");
+        StackTraceElement[] stackTrace = info.getStackTrace();
+
+        for (int i = 0; i < stackTrace.length; i++) {
+            StackTraceElement ste = stackTrace[i];
+            sb.append("\tat " + ste.toString());
+            sb.append('\n');
+            LockInfo lock = info.getLockInfo();
+
+            if (i == 0 && lock != null) {
+                Thread.State ts = info.getThreadState();
+                switch (ts) {
+                    case BLOCKED:
+                        sb.append("\t-  blocked on ").append(lock);
+                        sb.append('\n');
+                        break;
+                    case WAITING:
+                        sb.append("\t-  waiting on ").append(lock);
+                        sb.append('\n');
+                        break;
+                    case TIMED_WAITING:
+                        sb.append("\t-  waiting on ").append(lock);
+                        sb.append('\n');
+                        break;
+                    default:
+                }
+            }
+
+            for (MonitorInfo mi : info.getLockedMonitors()) {
+                if (mi.getLockedStackDepth() == i) {
+                    sb.append("\t-  locked " + mi);
+                    sb.append('\n');
+                }
+            }
+        }
+
+        LockInfo[] locks = info.getLockedSynchronizers();
+        if (locks.length > 0) {
+            sb.append("\n\tLocked ownable synchronizers:");
+            sb.append('\n');
+            for (LockInfo li : locks) {
+                sb.append("\t- ").append(li.toString());
+                sb.append('\n');
+            }
+        }
+        sb.append('\n');
+        return sb.toString();
     }
 
     public static RuntimeException asRuntimeException(Throwable exception) {
