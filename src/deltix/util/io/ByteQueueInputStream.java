@@ -5,7 +5,7 @@ import deltix.util.vsocket.ChannelClosedException;
 import java.io.*;
 
 /**
- *  Input stream reqading from an embedded queue. Read operations block
+ *  Input stream regarding from an embedded queue. Read operations block
  *  for more data, or until the {@link #finish} method is called.
  */
 public class ByteQueueInputStream extends InputStream {
@@ -15,6 +15,10 @@ public class ByteQueueInputStream extends InputStream {
     
     public ByteQueueInputStream (int capacity) {
         q = new ByteQueue (capacity);
+    }
+
+    public ByteQueueInputStream(ByteQueue q) {
+        this.q = q;
     }
 
     @Override
@@ -30,6 +34,19 @@ public class ByteQueueInputStream extends InputStream {
 
     public synchronized void        putError (IOException exception) {
         this.exception = exception;
+        notify ();
+    }
+
+    public synchronized void        putData (byte data)
+            throws IOException
+    {
+        if (endOfQueue)
+            throw new EOQException("Finished");
+
+        if (q == null)
+            throw new EOFException ("Closed");
+
+        q.offer (data);
         notify ();
     }
 
