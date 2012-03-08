@@ -16,7 +16,7 @@ import deltix.util.text.SimpleMessageFormat;
 import deltix.util.time.TimerRunner;
 
 /**
- * Description: deltix.util.log.SafeHandler
+ * Prevents large amount of similar messages from swamping log files.
  * Date: 8/4/11
  *
  * @author Nickolay Dul
