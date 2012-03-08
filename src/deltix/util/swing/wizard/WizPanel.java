@@ -82,6 +82,7 @@ public class WizPanel extends JPanel {
         buttonPanel.add (statusArea, c);
         c.gridx++;
         
+        c.fill = GridBagConstraints.NONE;
         c.weightx = 1;
         c.insets = new Insets (0, 0, 0, 0);
         buttonPanel.add (new Spacer (1, 1), c);
