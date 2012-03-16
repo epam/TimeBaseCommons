@@ -14,6 +14,11 @@ public class HTMLPane extends JTextPane {
         setContentType ("text/html");
     }
 
+    public HTMLPane (String text) {
+        this ();
+        setText (text);
+    }
+
     public HTMLDocument     getHTMLDocument () {
         return ((HTMLDocument) super.getDocument ());
     }
