@@ -52,7 +52,7 @@ public class DetailFormatter extends Formatter {
         // message
         String message = record.getMessage ();
         Object[] params = record.getParameters();
-        if (params != null) {
+        if (params != null && params.length > 0) {
             SimpleMessageFormat.format(sbuf, message, params);
         } else {
             sbuf.append(message);

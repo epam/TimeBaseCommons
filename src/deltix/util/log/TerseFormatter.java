@@ -34,8 +34,8 @@ public class TerseFormatter extends Formatter {
 
         // message
         String message = record.getMessage ();
-        Object [] params = record.getParameters();
-        if (params != null) {
+        Object[] params = record.getParameters();
+        if (params != null && params.length > 0) {
             SimpleMessageFormat.format(sbuf, message, params);
         } else {
             sbuf.append(message);
