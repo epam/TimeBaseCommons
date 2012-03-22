@@ -30,7 +30,7 @@ public abstract class JAXBContextFactory {
     {
         Unmarshaller    unmarshaller = context.createUnmarshaller ();
 
-        unmarshaller.setEventHandler (AbortingValidationEventHandler.INSTANCE);
+        unmarshaller.setEventHandler (SkipValidationEventHandler.INSTANCE);
 
         return (unmarshaller);
     }
