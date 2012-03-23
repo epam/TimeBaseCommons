@@ -21,6 +21,8 @@ public enum InstrumentType {
     DATA_CONNECTOR('Q', "DataConnector"),
     SYSTEM('X', "System");
 
+    //NB: If you plan to extend this enum, please support isTradable() method below!
+
     private final char             code;
     private final String           qoType;
     
@@ -57,6 +59,10 @@ public enum InstrumentType {
         
         throw new IllegalArgumentException("Unknown InstrumentType qoType: " + qoType);
     }
-    
+
+    /** @return true if instrument of this type can accumulate positions and appear in trade orders */
+    public boolean isTradable() {
+        return (ordinal() <= SIMPLE_OPTION.ordinal());
+    }
     
 }
