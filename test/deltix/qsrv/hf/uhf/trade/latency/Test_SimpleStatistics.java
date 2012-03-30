@@ -1,8 +1,7 @@
-package deltix.qsrv.hf.framework.trade.latency;
+package deltix.qsrv.hf.uhf.trade.latency;
 
 import java.util.Random;
 
-import deltix.qsrv.hf.uhf.trade.latency.SimpleStatistics;
 import org.junit.Assert;
 import org.junit.Test;
 
