@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.uhf.position;
+package deltix.qsrv.hf.uhf.oms.position;
 
 import java.util.Collection;
 import java.util.Collections;

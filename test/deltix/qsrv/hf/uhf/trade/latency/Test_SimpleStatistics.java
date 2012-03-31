@@ -2,6 +2,7 @@ package deltix.qsrv.hf.uhf.trade.latency;
 
 import java.util.Random;
 
+import deltix.qsrv.hf.uhf.oms.atom.latency.SimpleStatistics;
 import org.junit.Assert;
 import org.junit.Test;
 

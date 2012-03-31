@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.uhf.trade.latency;
+package deltix.qsrv.hf.uhf.oms.atom.latency;
 
 public class SimpleStatistics {
     private final int movingFrameSize;
