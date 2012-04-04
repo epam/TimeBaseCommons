@@ -67,18 +67,32 @@ public abstract class SwingUtil {
     }
 
     public static ImageIcon	    loadIcon (String relPath) {
-            Image       img = loadImage (relPath);
+        return (new ImageIcon (loadImage (relPath)));
+    }
+
+    public static ImageIcon	    loadIconOrNull (String relPath) {
+        Image       img = loadImageOrNull (relPath);
         
         return (img == null ? null : new ImageIcon (img));
     }
 
+    public static Image			loadImageOrNull (String relPath) {
+        InputStream     is = 
+            Util.class.getClassLoader ().getResourceAsStream (relPath);
+        
+        if (is == null)
+            return (null);
+        
+        return (loadImageAndCloseStream (is, relPath));
+    }
+    
     public static Image			loadImage (String relPath) {
-        return (
-            loadImageAndCloseStream (
-                Util.class.getClassLoader ().getResourceAsStream (relPath),
-                relPath
-            )
-        );
+        Image   ret = loadImageOrNull (relPath);
+        
+        if (ret == null)
+            throw new UncheckedIOException (relPath);
+        
+        return (ret);
     }
     
 	public static Image			loadImage (Class <?> cls, String relPath) {
