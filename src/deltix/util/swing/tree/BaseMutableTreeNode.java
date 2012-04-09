@@ -52,7 +52,9 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         return null;
     }
 
-    protected final JTree tree;
+    protected final JTree           tree;
+    private         ReloadTreeTask  currentReloadTask  = null;
+    private         DeleteNodeTask  currentDeleteTask  = null;
 
     public BaseMutableTreeNode (final Object userObject,
                                 final boolean allowsChildren,
@@ -69,7 +71,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     public BaseMutableTreeNode (final JTree tree) {
-        this (null, true, tree);
+        this(null, true, tree);
     }
 
 
@@ -89,10 +91,22 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         }
     }
 
-    public void reload () {
-        clear ();
-        updateChildren ();
-        refreshTree ();
+    public  void reload () {
+        if (!preProcess(currentReloadTask, false)){
+            return;
+        }
+        currentReloadTask = new ReloadTreeTask(this);
+        currentReloadTask.execute();
+    }
+
+    private boolean preProcess (SwingWorker task, final boolean interruptIfRun) {
+        if (task != null && !task.isDone () && !task.isCancelled ()) {
+            if (interruptIfRun) {
+                task.cancel (false);
+            } else
+                return false;
+        }
+        return true;
     }
 
     public String getLabelText () {
@@ -158,7 +172,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     protected DefaultTreeModel getActualDefaultTreeModel () {
-        final TreeModel model = getActualModel ();
+        final TreeModel model = getActualModel();
         if (model instanceof DefaultTreeModel) {
             return (DefaultTreeModel) model;
         }
@@ -166,9 +180,14 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
     }
 
     public void delete () {
-        final DefaultTreeModel model = getActualDefaultTreeModel ();
-        if (model != null) {
-            model.removeNodeFromParent (this);
+        if (this.parent != null) {
+            synchronized (this.parent) {
+                if (!preProcess(currentDeleteTask, false)) {
+                    return;
+                }
+                currentDeleteTask = new DeleteNodeTask(this);
+                currentDeleteTask.execute();
+            }
         }
     }
 
@@ -379,4 +398,61 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
         }
     }
+
+    public  static class ReloadTreeTask extends SwingWorker<Object, Object> {
+        private BaseMutableTreeNode processedNode;
+
+        public ReloadTreeTask(BaseMutableTreeNode processedNode) {
+            this.processedNode = processedNode;
+        }
+
+        @Override
+        public Object doInBackground() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        processedNode.clear();
+                        processedNode.updateChildren();
+                        processedNode.refreshTree();
+                    }
+                });
+            return this;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                if (!isCancelled())
+                    get();
+            }  catch (Throwable ignore) {
+          }
+        }
+    }
+
+    public  static class DeleteNodeTask extends SwingWorker<Object, Object> {
+        private BaseMutableTreeNode processedNode;
+
+        public DeleteNodeTask(BaseMutableTreeNode processedNode) {
+            this.processedNode = processedNode;
+        }
+
+        @Override
+        public Object doInBackground() {
+            final DefaultTreeModel model = processedNode.getActualDefaultTreeModel();
+            if (model != null) {
+                model.removeNodeFromParent(processedNode);
+            }
+            return this;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                if (!isCancelled())
+                    get();
+            } catch (Throwable ignore) {
+            }
+        }
+    }
+
 }
