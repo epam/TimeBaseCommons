@@ -14,6 +14,7 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     protected GridBagConstraints mC                = new GridBagConstraints ( );
     protected Set<Component>     mSwitchComponents = new HashSet<Component> ( );
     protected int                mLabelAncor       = GridBagConstraints.WEST;
+    private Font                labelFont = Font.decode ("Arial-BOLD-11");
 
 //    public VerticalForm (int labelAnchor) {
 //        this();
@@ -46,6 +47,14 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
         );
     }
 
+    public Font         getLabelFont () {
+        return labelFont;
+    }
+
+    public void         setLabelFont (Font labelFont) {
+        this.labelFont = labelFont;
+    }
+    
     @Override
     public void         removeAll () {
         super.removeAll ();
@@ -163,6 +172,15 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
             SwingUtil.setDeepEnabled (comp, isEnabled ());
     }
     
+    public JLabel       createLabel (String text) {
+        JLabel      label = new JLabel (text);
+        
+        if (labelFont != null)
+            label.setFont (labelFont);
+        
+        return (label);
+    }
+    
     public void         addLine () {
         addRow (new Line (Line.HORIZONTAL));
     }
@@ -180,7 +198,7 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     }
     
     public void         addField (String label, JComponent comp, boolean disableWithForm) {
-        addField (new JLabel (label), comp, disableWithForm);
+        addField (createLabel (label), comp, disableWithForm);
     }
     
     public void         addField (JLabel jl, JComponent comp) {
