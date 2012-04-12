@@ -7,6 +7,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
+    public static final Font        DEFAULT_LABEL_FONT = Font.decode ("Arial-BOLD-11");
+    
     public interface VerticalWeightComponent {
         public double       getVerticalWeight ();
     }
@@ -14,7 +16,7 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     protected GridBagConstraints mC                = new GridBagConstraints ( );
     protected Set<Component>     mSwitchComponents = new HashSet<Component> ( );
     protected int                mLabelAncor       = GridBagConstraints.WEST;
-    private Font                labelFont = Font.decode ("Arial-BOLD-11");
+    private Font                labelFont = DEFAULT_LABEL_FONT;
 
 //    public VerticalForm (int labelAnchor) {
 //        this();
