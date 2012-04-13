@@ -194,13 +194,15 @@ public class VerticalForm extends JPanel implements SwingUtil.DeepEnabler {
     public void         addLine (Color color) {
         addRow (new Line (Line.HORIZONTAL, new BasicStroke (1), color));
     }
-    
-    public void         addField (String label, JComponent comp) {
-        addField (label, comp, !(comp instanceof JLabel));        
+     
+    public JComponent   addField (String label, JComponent comp) {
+        return (addField (label, comp, !(comp instanceof JLabel)));        
     }
     
-    public void         addField (String label, JComponent comp, boolean disableWithForm) {
-        addField (createLabel (label), comp, disableWithForm);
+    public JComponent   addField (String label, JComponent comp, boolean disableWithForm) {
+        JLabel  lc = createLabel (label);
+        addField (lc, comp, disableWithForm);
+        return (lc);
     }
     
     public void         addField (JLabel jl, JComponent comp) {
