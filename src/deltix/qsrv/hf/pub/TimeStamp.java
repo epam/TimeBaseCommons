@@ -53,6 +53,10 @@ public class TimeStamp implements TimeStampedMessage {
         setTime(TIMESTAMP_UNKNOWN);
     }
 
+    public static long          getMilliseconds (long nanoSeconds) {
+        return nanoSeconds != TIMESTAMP_UNKNOWN ? nanoSeconds / TimeStamp.NANOS_PER_MS : TIMESTAMP_UNKNOWN;
+    }
+
     public static long          getNanoTime (long milliseconds) {
         return milliseconds == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : milliseconds * NANOS_PER_MS;
     }
