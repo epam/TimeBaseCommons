@@ -330,6 +330,15 @@ public abstract class AbstractShell extends DefaultApplication {
         }
     }
 
+    public String       getKey(String line) {
+        int         ws = 0;
+        int         len = line.length();
+
+        while (ws < len && !Character.isWhitespace (line.charAt (ws)))
+            ws++;
+        return line.substring (0, ws);
+    }
+
     public int          getErrorCode () {
         return errorCode;
     }
