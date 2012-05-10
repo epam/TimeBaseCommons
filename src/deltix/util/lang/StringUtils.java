@@ -18,6 +18,23 @@ public class StringUtils {
     public static final int[] precisions = new int[]{6,9};
     public static String precisionTemplate= "\\d{%s}\\z";
 
+    public static String[] keywords = {
+            "assert",
+            "abstract", "boolean", "break", "byte",
+            "case", "catch", "char", "class",
+            "const", "continue", "default", "do",
+            "double", "else", "extends", "false",
+            "final", "finally", "float", "for",
+            "goto", "if", "implements", "import",
+            "instanceof", "int", "interface",
+            "long", "native", "new", "null", "package",
+            "private", "protected", "public",
+            "return", "short", "static", "super",
+            "switch", "synchronized", "this",
+            "throw", "throws", "transient", "true",
+            "try", "void", "volatile", "while"
+    };
+
     public static void      setStringBuilder (StringBuilder sb, CharSequence value) {
         sb.setLength (0);
         sb.append (value);
@@ -275,6 +292,16 @@ public class StringUtils {
         }
 
         return true;
+    }
+
+    public static boolean isReservedWord(String value){
+        for (String keyword: keywords){
+            if (keyword.equals(value)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static int          parseDecimalInt (byte [] bytes, int offset, int len) {
