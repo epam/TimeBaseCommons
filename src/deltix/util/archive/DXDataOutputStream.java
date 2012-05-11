@@ -196,6 +196,11 @@ public class DXDataOutputStream extends ArchiveOutputStream {
         finished = true;
     }
 
+    // return bytes written
+    public long             count() {
+        return written;
+    }
+
     @Override
     public void             flush() throws IOException {
         raf.getChannel().force(true);
