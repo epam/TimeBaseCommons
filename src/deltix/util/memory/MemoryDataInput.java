@@ -190,7 +190,7 @@ public final class MemoryDataInput {
     public boolean    readBoolean () {
         assert checkAvailable (1);
 
-        return (mBuffer [mPos++] != 0);
+        return (mBuffer [mPos++] == 1);
     }
 
     public byte       readByte () {
