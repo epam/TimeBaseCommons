@@ -32,6 +32,14 @@ public class InstrumentKey
         symbol = copy.getSymbol ();
     }
 
+    public InstrumentKey (String value) {
+        int colon = value.indexOf(':');
+        if (colon < 0)
+            throw new IllegalArgumentException(value);
+        instrumentType = InstrumentType.valueOf(value.substring(colon+1));
+        symbol = value.substring(0, colon);
+    }
+
     public CharSequence         getSymbol () {
         return (symbol);
     }
