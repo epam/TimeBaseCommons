@@ -1157,6 +1157,7 @@ public class Util {
      *  @exception ArrayIndexOutOfBoundsException
      *                          If <code>atIdx</code> is greater than array length.
      */
+    @SuppressWarnings("unchecked")
     public static <T>  T []    arrayadd (T [] array, int atIdx, T newObject) {
         if (array == null && newObject == null)
             throw new IllegalArgumentException ("array == null && newObject == null");
