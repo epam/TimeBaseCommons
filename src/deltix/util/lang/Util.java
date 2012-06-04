@@ -1143,7 +1143,7 @@ public class Util {
      *
      *  @exception IllegalArgumentException If both arguments are null.
      */
-    public static Object []    arrayadd (Object [] array, Object newObject) {
+    public static <T> T []    arrayadd (T [] array, T newObject) {
         return (arrayadd (array, arraylen (array), newObject));
     }
 
@@ -1157,7 +1157,7 @@ public class Util {
      *  @exception ArrayIndexOutOfBoundsException
      *                          If <code>atIdx</code> is greater than array length.
      */
-    public static Object []    arrayadd (Object [] array, int atIdx, Object newObject) {
+    public static <T>  T []    arrayadd (T [] array, int atIdx, T newObject) {
         if (array == null && newObject == null)
             throw new IllegalArgumentException ("array == null && newObject == null");
 
@@ -1180,7 +1180,7 @@ public class Util {
 
         ret [atIdx] = newObject;
 
-        return (ret);
+        return (T[])ret;
     }
 
     /**
