@@ -164,6 +164,7 @@ public class TimeKeeper extends Thread {
     
     private TimeKeeper () {
         super ("TimeKeeper");
+        setDaemon(true);
 
         final long              nanoTime = nanoTime ();
 
