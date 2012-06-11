@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.schema;
+package deltix.util.xml;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.XmlElement;
