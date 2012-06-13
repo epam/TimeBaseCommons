@@ -53,7 +53,7 @@ public class InstrumentKey
     }
 
     public static int           hashCode (InstrumentType type, CharSequence symbol) {
-        return (type.hashCode () + Util.hashCode (symbol));
+        return (23 * type.ordinal()  + Util.hashCode (symbol));
     }
 
     public static int           hashCode (InstrumentIdentity id) {
