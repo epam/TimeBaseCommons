@@ -4,9 +4,15 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import deltix.util.id.Identifiable;
 import deltix.util.lang.Filter;
 import deltix.util.lang.StringUtils;
+import deltix.util.lang.Transformer;
 import deltix.util.lang.Util;
 
 public class CollectionUtil {
@@ -38,7 +44,7 @@ public class CollectionUtil {
             builder.append (value).append (separator);
         builder.setLength (builder.length () - separator.length ());
         builder.append (tail);
-        return builder.toString ();
+        return builder.toString();
     }
 
     public static <T extends Enum<T>> EnumSet<T> toEnumSet (Class<T> elementType,
@@ -72,6 +78,34 @@ public class CollectionUtil {
 
     public static int[] toPrimitiveArray(Collection<Integer> values) {
         return (int[]) toArray(values, int.class);
+    }
+
+    public static <T, E extends Identifiable<T>> Map<T, E> identifiableToMap(Collection<E> values) {
+        Map<T, E> result = new HashMap<T, E>(values.size());
+        for (E value : values)
+            result.put(value.getId(), value);
+        return result;
+    }
+
+    public static <T, E extends Identifiable<T>> Set<T> identifiableToSet(Collection<E> values) {
+        Set<T> result = new HashSet<T>(values.size());
+        for (E value : values)
+            result.add(value.getId());
+        return result;
+    }
+
+    public static <T, E> Set<T> convertToSet(Collection<E> values, Transformer<T, ? super E> transformer) {
+        Set<T> result = new HashSet<T>(values.size());
+        for (E value : values)
+            result.add(transformer.transform(value));
+        return result;
+    }
+
+    public static <T, E> Map<T, E> convertToMap(Collection<E> values, Transformer<T, ? super E> transformer) {
+        Map<T, E> result = new HashMap<T, E>(values.size());
+        for (E value : values)
+            result.put(transformer.transform(value), value);
+        return result;
     }
 
     private static Object toArray(Collection<?> values, Class<?> componentType) {
