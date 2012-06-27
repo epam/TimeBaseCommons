@@ -1,5 +1,7 @@
 package deltix.util.swing;
 
+import com.jidesoft.combobox.AbstractComboBox;
+import com.jidesoft.combobox.DateComboBox;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Util;
 import deltix.util.io.StreamPump;
@@ -11,6 +13,8 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -326,6 +330,39 @@ public abstract class SwingUtil {
             setChildrenDeepEnabled ((Container) c, b);
     }
 
+    public static void          setDeepEnabled (Component c, boolean editable, boolean enabled) {
+        if (c instanceof DeepEnabler) {
+            c.setEnabled (editable);
+            return;
+        }
+
+        if ((c instanceof JLabel ||
+                c instanceof JToolBar ||
+                c instanceof JTabbedPane ||
+                c instanceof JScrollBar))
+            c.setEnabled (true);
+        else if (c instanceof JTextField) {
+            JTextField      tf = (JTextField) c;
+            tf.setEnabled (enabled);
+            tf.setEditable (editable);
+        }
+        else if (c instanceof JTextArea) {
+            JTextArea      tf = (JTextArea) c;
+            tf.setEnabled (enabled);
+            tf.setEditable (editable);
+        }
+        else if (c.getParent() instanceof AbstractComboBox) {
+            AbstractComboBox      cb = (AbstractComboBox) c.getParent();
+            cb.setEnabled (editable);
+            cb.setEditable (editable);
+        }
+        else
+            c.setEnabled (editable);
+
+        if (c instanceof Container)
+            setChildrenDeepEnabled ((Container) c, editable);
+    }
+
     public static void setDeepEditable(Component c, boolean b) {
         if (c instanceof JEditorPane) {
             ((JEditorPane) c).setEditable(b);
@@ -419,39 +456,57 @@ public abstract class SwingUtil {
      return button;
    }
 
-   public static String       getText (Component comp) {
-       if (comp instanceof JTextField)
-           return (((JTextField) comp).getText ()); 
-       else if (comp instanceof JLabel)
-           return (((JLabel) comp).getText ());
-       else if (comp instanceof JCheckBox)
-           return (((JCheckBox) comp).isSelected () ? "true" : "false");
-       else if (comp instanceof JTextArea)
-           return (((JTextArea) comp).getText ());
-       else if (comp instanceof JScrollPane)
-           return (getText (((JScrollPane) comp).getViewport ().getView ()));
-       else if (comp instanceof JComboBox)
-           return (((JComboBox) comp).getSelectedItem ().toString ());
-       else
-           throw new IllegalArgumentException (comp.toString ());
-   }
+    public static String getText(Component comp) {
+        if      (comp instanceof JTextField  )
+            return (((JTextField) comp).getText ());
+        else if (comp instanceof JLabel      )
+            return (((JLabel) comp).getText ());
+        else if (comp instanceof JCheckBox   )
+            return (((JCheckBox) comp).isSelected () ? "true" : "false");
+        else if (comp instanceof JTextArea   )
+            return (((JTextArea) comp).getText ());
+        else if (comp instanceof JScrollPane )
+            return (getText (((JScrollPane) comp).getViewport ().getView ()));
+        else if (comp instanceof JComboBox   )
+            return (((JComboBox) comp).getSelectedItem ().toString ());
+        else if (comp instanceof DateComboBox) {
+            DateComboBox dateComboBox = (DateComboBox) comp;
+            Object selectedDate = dateComboBox.getSelectedItem ();
+            if (selectedDate instanceof Calendar){
+                return dateComboBox.getFormat().format(((Calendar) selectedDate).getTime());
+            }
+            return selectedDate.toString();
+        }
+        else
+            throw new IllegalArgumentException (comp.toString ());
+    }
       
-   public static void       setText (Component comp, String text) {
-       if (comp instanceof JTextField)
-            ((JTextField) comp).setText (text); 
-       else if (comp instanceof JLabel)
-            ((JLabel) comp).setText (text);
-       else if (comp instanceof JCheckBox)
-            ((JCheckBox) comp).setSelected (Boolean.parseBoolean (text));
-       else if (comp instanceof JTextArea)
-           ((JTextArea) comp).setText (text);
-       else if (comp instanceof JScrollPane)
-           setText (((JScrollPane) comp).getViewport ().getView (), text);
-       else if (comp instanceof JComboBox)
-            ((JComboBox) comp).setSelectedItem (text);
-       else
-           throw new IllegalArgumentException (comp.toString ());
-   }
+    public static void setText(Component comp, String text) {
+        if      (comp instanceof JTextField  )
+            ((JTextField) comp).setText(text);
+        else if (comp instanceof JLabel      )
+            ((JLabel) comp).setText(text);
+        else if (comp instanceof JCheckBox   )
+            ((JCheckBox) comp).setSelected    (Boolean.parseBoolean(text));
+        else if (comp instanceof JTextArea   )
+            ((JTextArea) comp).setText (text);
+        else if (comp instanceof JScrollPane )
+            setText(((JScrollPane) comp).getViewport ().getView(), text);
+        else if (comp instanceof JComboBox   )
+            ((JComboBox) comp).setSelectedItem(text                      );
+        else if (comp instanceof DateComboBox) {
+            DateComboBox dateComboBox = (DateComboBox) comp;
+            try {
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(dateComboBox.getFormat().parse(text));
+                dateComboBox.setSelectedItem(calendar);
+            }catch (Throwable t) {
+                throw new IllegalArgumentException (comp.toString ());
+            }
+        }
+        else
+            throw new IllegalArgumentException (comp.toString ());
+    }
    
    @SuppressWarnings ("unchecked")
    public static <T extends Container> T findParent (Component c, Class <? extends T> cls) {
