@@ -814,6 +814,42 @@ public class StringUtils {
                 
         return (n == slen ? s : s.substring (0, n));
     }
+
+    /**
+     * <p>Abbreviates a String using ellipses.</p>
+     *
+     * <p>Specifically:
+     * <ul>
+     * <li>If <code>value</code> is less than <code>maxWidth</code> characters long, return it.</li>
+     * <li>Else abbreviate it to <code>(substring(value, 0, max-3) + "...")</code>.</li>
+     * <li>If <code>maxWidth</code> is less than <code>4</code>, throw an <code>IllegalArgumentException</code>.</li>
+     * </ul>
+     * </p>
+     *
+     * <pre>
+     * StringUtils.abbreviate(null, *) = null
+     * StringUtils.abbreviate("", 4) = ""
+     * StringUtils.abbreviate("abcdefg", 6) = "abc..."
+     * StringUtils.abbreviate("abcdefg", 7) = "abcdefg"
+     * StringUtils.abbreviate("abcdefg", 8) = "abcdefg"
+     * StringUtils.abbreviate("abcdefg", 4) = "a..."
+     * StringUtils.abbreviate("abcdefg", 3) = IllegalArgumentException
+     * </pre>
+     *
+     * @param value the String to check, may be null
+     * @param maxWidth maximum length of result String, must be at least 4
+     * @return abbreviated String, <code>null</code> if null String input
+     * @throws IllegalArgumentException if the width is too small
+     */
+    public static String abbreviate(String value, int maxWidth) {
+        if (value == null)
+            return null;
+        if (maxWidth < 4)
+            throw new IllegalArgumentException("Minimum abbreviation width is 4");
+        if (value.length() <= maxWidth)
+            return value;
+        return value.substring(0, maxWidth - 3) + "...";
+    }
 }
 
 
