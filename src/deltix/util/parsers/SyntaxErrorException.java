@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.lang.errors;
+package deltix.util.parsers;
 
 /**
  *
