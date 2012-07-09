@@ -17,7 +17,9 @@ public abstract class Element {
      *  Convert the element to correct QQL. This method is used for
      *  serialization.
      */
-    public abstract void        print (StringBuilder s);
+    public void                 print (StringBuilder s) {
+        throw new UnsupportedOperationException (getClass ().getName ());
+    }
 
     public final int            getStartLine () {
         return (Location.getStartLine (location));
