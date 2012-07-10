@@ -1,5 +1,8 @@
 package deltix.util.lang;
 
+import java.math.*;
+import java.util.concurrent.atomic.*;
+
 public class MathUtil {
     public static final double  TWO_PI = Math.PI * 2;
 
@@ -203,6 +206,43 @@ public class MathUtil {
         return (X >= 0) ? 1.0 - dCND : dCND;
     }
 
+    public static Number    negate (Number n) {
+        if (n instanceof Integer)
+            return (new Integer (-n.intValue ()));
+        
+        if (n instanceof Long)
+            return (new Long (-n.longValue ()));
+        
+        if (n instanceof Double)
+            return (new Double (-n.doubleValue ()));
+        
+        if (n instanceof Float)
+            return (new Float (-n.floatValue ()));
+        
+        if (n instanceof Byte)
+            return (new Byte ((byte) -n.byteValue ()));
+        
+        if (n instanceof Short)
+            return (new Short ((short) -n.shortValue ()));
+        
+        if (n instanceof BigDecimal)
+            return (((BigDecimal) n).negate ());
+        
+        if (n instanceof BigInteger)
+            return (((BigInteger) n).negate ());
+        
+        if (n instanceof AtomicInteger)
+            return (new AtomicInteger (-n.intValue ()));
+        
+        if (n instanceof AtomicLong)
+            return (new AtomicLong (-n.longValue ()));
+        
+        if (n == null)
+            return (null);
+        
+        throw new UnsupportedOperationException (String.valueOf (n));                        
+    }
+    
     public static void main (String [] args) {
         for (double k = -5; k <= 5; k+= 0.5)
             System.out.println (cumulativeStdNormalDistribution (k));
