@@ -53,4 +53,9 @@ public class HCMultiMap <K, V> implements MultiMap <K, V> {
     public int                  size() {
         return map.size();
     }
+
+    @Override
+    public Set<K>               keySet() {
+        return map.keySet();
+    }
 }

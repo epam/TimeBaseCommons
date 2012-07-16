@@ -17,4 +17,6 @@ public interface MultiMap <K, V> {
     public boolean              isEmpty();
 
     public int                  size();
+
+    public Set<K>               keySet();
 }
