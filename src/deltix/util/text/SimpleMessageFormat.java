@@ -2,12 +2,21 @@ package deltix.util.text;
 
 /**
  * Faster pragmatic alternative to Java's standard class MessageFormat.
+ * <ul>
+ * <li>PROS: 10x faster, thread safe, consumes less memory,  uses StringBuilder instead of slower StringBuffer.</li>
+ * <li>CONS: doesn't support formatting like {2,number,integer} but instead calls String.valueOf() for each argument. Doesn't care about locale (which is good and bad).</li>
+ * </ul>
+ *  This simplified variation of Java Message format. Arguments can be referred by index using '{index}' notation.
+ *  For example:
+ *  <pre>
+ *      log (ErrorLevel.DEBUG, "Hello {0} {1}", firstName, lastName);
+ *  </pre>
+ * If you want to use left figure bracket in your output string wrap it in single quotes ('). For example:
+ *  <pre>
+ *      log (ErrorLevel.DEBUG, "Here goes left figure bracket '{' that needs quotes and right bracket } that doesn't need escaping", ...);
+ *  </pre>
+ * If your want to use single quote, specify it twice (''). Double quotes (") character does not need any escaping.
  *
- * PROS: 10x faster, thread safe, consumes less memory,  uses StringBuilder instead of slower StringBuffer.
- * CONS: doesn't support formatting like {2,number,integer} but instead calls String.valueOf() for each argument. Doesn't care about locale (which is good and bad).
- *
- *
- * TODO: If you format the same message over and over with different arguments, we can parse once and cache... 
  * @see java.text.MessageFormat
  */
 public class SimpleMessageFormat {
