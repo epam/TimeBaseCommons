@@ -9,7 +9,7 @@ public class TimeStamp implements TimeStampedMessage {
 
     /** Time is measured in milliseconds that passed since January 1, 1970 UTC */
     @Title ("Time")
-    @DateTimeMs
+    @FieldType("TIMESTAMP")
     public long                 timestamp = TIMESTAMP_UNKNOWN;
 
     /** Nanoseconds part of the TimeStamp#timestamp */
