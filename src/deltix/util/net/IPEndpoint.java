@@ -1,5 +1,7 @@
 package deltix.util.net;
 
+import deltix.util.lang.StringUtils;
+
 /**
  *
  */
@@ -70,5 +72,21 @@ public final class IPEndpoint {
     @Override
     public String               toString () {
         return (protocol + ":" + host + ":" + port);
+    }
+    
+    public static IPEndpoint    valueOf (String s) {
+        int     a = s.indexOf (':');
+        int     b = s.lastIndexOf (':');
+        
+        if (a < 0 || b < 0 || a >= b)
+            throw new NumberFormatException (s);
+        
+        return (
+            new IPEndpoint (
+                s.substring (a + 1, b), 
+                Integer.parseInt (s.substring (b + 1)),
+                IPType.valueOf (s.substring (0, a))
+            )
+        );
     }
 }
