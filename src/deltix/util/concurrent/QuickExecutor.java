@@ -14,6 +14,16 @@ public class QuickExecutor {
     public static final boolean         DEBUG_TASKS = false;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
+    public static int                           getThreadsCount() {
+
+        String count = System.getProperty("QuickExecutor.threads");
+        try {
+            return Integer.parseInt(count);
+        } catch (NumberFormatException e) {
+            return 300;
+        }
+    }
+
     public enum TaskState {
         IDLE,
 
@@ -163,7 +173,7 @@ public class QuickExecutor {
             try {
                 while (!stop) {
                     if (task == null) {
-                        if (workers.size() < 1000)
+                        if (workers.size() < threads)
                             LockSupport.park ();
                         else
                             break;
@@ -210,7 +220,7 @@ public class QuickExecutor {
 
     public static synchronized QuickExecutor getGlobalInstance () {
         if (globalInstance == null)
-            globalInstance = new QuickExecutor ("Global Executor");
+            globalInstance = new QuickExecutor ("Global Executor", getThreadsCount());
 
         return (globalInstance);
     }
@@ -228,8 +238,11 @@ public class QuickExecutor {
 
     private volatile boolean                shutdownInProgress = false;
 
-    private QuickExecutor (String name) {
+    private final int                       threads;
+
+    private QuickExecutor (String name, int threads) {
         this.name = name;
+        this.threads = threads;
     }
 
 //    public void             start () {
