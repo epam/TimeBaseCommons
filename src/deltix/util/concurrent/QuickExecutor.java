@@ -18,9 +18,9 @@ public class QuickExecutor {
 
         String count = System.getProperty("QuickExecutor.threads");
         try {
-            return Integer.parseInt(count);
+            return count != null ? Integer.parseInt(count) : 500;
         } catch (NumberFormatException e) {
-            return 300;
+            return 500;
         }
     }
 
