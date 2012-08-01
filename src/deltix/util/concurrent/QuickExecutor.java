@@ -300,6 +300,8 @@ public class QuickExecutor {
         synchronized (workers) {
             workerSnapshot = workers.toArray (new Worker [workers.size ()]);
         }
+
+        //Util.LOGGER.log (Level.WARNING, "Workers: " + workerSnapshot.length);
                
         for (Worker w : workerSnapshot)
             w.terminate ();
