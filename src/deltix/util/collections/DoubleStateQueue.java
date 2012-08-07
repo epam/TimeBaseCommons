@@ -45,4 +45,6 @@ public interface DoubleStateQueue<E> {
     
     /** Bulk version of addReadyElement */
    void addEmptyElements(int count, E[] elems);
+
+   void clearUnsafe();
 }
