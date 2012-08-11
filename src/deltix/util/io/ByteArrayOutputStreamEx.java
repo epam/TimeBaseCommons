@@ -33,13 +33,19 @@ public class ByteArrayOutputStreamEx extends ByteArrayOutputStream {
      *  data being placed in the buffer.
      */
     public void             reset (int position) {    
-        if (position > buf.length) {
-            byte newbuf [] = new byte [Math.max (buf.length << 1, position)];
+        ensureCapacity (position);       
+        count = position;
+    }
+
+    /**
+     *  Make sure buffer capacity is at least the specified size.
+     */
+    public void             ensureCapacity (int n) {    
+        if (n > buf.length) {
+            byte newbuf [] = new byte [Math.max (buf.length << 1, n)];
             System.arraycopy (buf, 0, newbuf, 0, count);
             buf = newbuf;
-        }
-        
-        count = position;
+        }        
     }
 
     public synchronized int capacity() {
