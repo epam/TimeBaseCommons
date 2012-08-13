@@ -46,11 +46,7 @@ public abstract class AbstractDialog extends JDialog {
         mainAction = new AbstractAction(actionButtonTitle) {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                boolean successful = process();
-                if (successful){
-                    notifyListeners();
-                    dispose();
-                }
+                processMainAction();
             }
         };
         setName(name);
@@ -75,9 +71,9 @@ public abstract class AbstractDialog extends JDialog {
         add(createButtonPanel(), gc);
 
         //key stroke for buttons Enter and Escape to close window
-        KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+/*        KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(enter, "ENTER");
-        getRootPane().getActionMap().put("ENTER", cancelAction);
+        getRootPane().getActionMap().put("ENTER", mainAction);*/
         SwingUtil.setEscapeHandler(this, cancelAction);
 
         setMinimumSize(new Dimension(MIN_WIDTH,
@@ -100,6 +96,14 @@ public abstract class AbstractDialog extends JDialog {
             listener.stateChanged(ce);
         }
     }
+
+    public void  processMainAction(){
+        boolean successful = process();
+        if (successful){
+            notifyListeners();
+            dispose();
+        }
+    };
 
     public abstract boolean process();
 
