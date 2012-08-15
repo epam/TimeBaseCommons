@@ -13,6 +13,7 @@ import java.util.logging.LogRecord;
 import deltix.util.lang.StringUtils;
 import deltix.util.lang.Util;
 import deltix.util.text.SimpleMessageFormat;
+import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimerRunner;
 
 /**
@@ -93,7 +94,7 @@ public class SafeHandler extends Handler {
                 onTimer();
             }
         };
-        Util.GLOBAL_TIMER.scheduleAtFixedRate(timerTask, pushIntervalMillis, pushIntervalMillis);
+        GlobalTimer.INSTANCE.scheduleAtFixedRate(timerTask, pushIntervalMillis, pushIntervalMillis);
     }
 
     private void onTimer() {

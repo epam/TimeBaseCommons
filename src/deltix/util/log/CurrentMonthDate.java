@@ -1,6 +1,6 @@
 package deltix.util.log;
 
-import deltix.util.lang.Util;
+import deltix.util.time.GlobalTimer;
 
 import java.util.TimerTask;
 import java.util.Calendar;
@@ -36,7 +36,7 @@ public class CurrentMonthDate extends TimerTask {
     private static CurrentMonthDate create () {
         final long now = System.currentTimeMillis();
         CurrentMonthDate result = new CurrentMonthDate();
-        Util.GLOBAL_TIMER.scheduleAtFixedRate(result, result.goodUntil - now, MILLISECONDS_IN_DAY);
+        GlobalTimer.INSTANCE.scheduleAtFixedRate(result, result.goodUntil - now, MILLISECONDS_IN_DAY);
         return result;
     }
 

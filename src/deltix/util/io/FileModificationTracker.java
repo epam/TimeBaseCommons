@@ -5,6 +5,7 @@ import java.util.logging.*;
 import java.util.*;
 
 import deltix.util.lang.Util;
+import deltix.util.time.GlobalTimer;
 
 /**
  *
@@ -72,7 +73,7 @@ public class FileModificationTracker {
     public final void               schedulePeriodicCheck (long delay, long period) {
         cancelPeriodicCheck ();
         mTask = createTimerTask ();
-        Util.GLOBAL_TIMER.schedule (mTask, delay, period);
+        GlobalTimer.INSTANCE.schedule (mTask, delay, period);
     }
     
     public final void               cancelPeriodicCheck () {

@@ -1,6 +1,7 @@
 package deltix.qsrv.hf.spi.conn;
 
 import deltix.util.lang.Util;
+import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
 
@@ -264,7 +265,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                 }
             };
 
-        Util.GLOBAL_TIMER.schedule (reconnectTask, currentReconnectInterval);
+        GlobalTimer.INSTANCE.schedule (reconnectTask, currentReconnectInterval);
 
         Logger          lg = logger;
 
