@@ -78,6 +78,17 @@ public class JDBCUtils {
     }
     
     /**
+     *  Converts NULL to NaN
+     */
+    public static double            getDouble (ResultSet rs, int column) 
+        throws SQLException
+    {
+        double  ret = rs.getDouble (column);
+        
+        return (rs.wasNull () ? Double.NaN : ret);             
+    }    
+    
+    /**
      *  Converts NaN to NULL
      */
     public static void              updateDouble (ResultSet rs, int idx, double v) 
@@ -507,4 +518,15 @@ public class JDBCUtils {
         }
     }
     
+    /**
+     *  Returns n comma-separated question marks     
+     */
+    public static String    nqs (int n) {
+        char []     cs = new char [n * 2 - 1];
+        
+        for (int ii = 0; ii < cs.length; ii++)
+            cs [ii] = (ii & 1) == 0 ? '?' : ',';
+        
+        return (new String (cs));
+    }
 }
