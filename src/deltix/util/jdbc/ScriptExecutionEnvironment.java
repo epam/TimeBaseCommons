@@ -9,7 +9,7 @@ import java.sql.*;
 public class ScriptExecutionEnvironment {
     private Connection                          mConnection;
     private String []                           mParameterValues;
-    private ScriptExecutionLogger               mLogger;
+    private ScriptExecutionLogger               mLogger;                
     private FilenameResolver                    mScriptFinder;
     
     public ScriptExecutionEnvironment (
@@ -35,7 +35,30 @@ public class ScriptExecutionEnvironment {
     }
     
     public ScriptExecutionEnvironment () {
-        this (null, null, ClassLoaderFilenameResolver.STD_CLASSPATH_RESOLVER);
+        this (
+            null, 
+            new ScriptExecutionLogger () {
+                @Override
+                public int  getWidth () {
+                    return (80);
+                }
+
+                @Override
+                public void logResults (String text) {
+                    System.out.println (text);
+                }
+
+                @Override
+                public void logCommand (String cmd) {
+                    System.out.println ("=========================");
+                    System.out.println (new java.util.Date () + ":");
+                    System.out.println (cmd);
+                    System.out.println ("=========================");
+                    System.out.println ();
+                }        
+            }, 
+            ClassLoaderFilenameResolver.STD_CLASSPATH_RESOLVER
+        );
     }
     
     /**

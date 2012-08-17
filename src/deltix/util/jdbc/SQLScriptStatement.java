@@ -9,6 +9,7 @@ class SQLScriptStatement implements ScriptStatement {
         mSQL = sql;
     }
 
+    @Override
     public void execute (ScriptExecutionEnvironment env) 
         throws SQLException, InterruptedException
     {
@@ -41,8 +42,12 @@ class SQLScriptStatement implements ScriptStatement {
                     
                     logger.logResults (sb.toString ());
                 }
-                else
-                    stmt.execute (exeSQL);
+                else {
+                    int     nmod = stmt.executeUpdate (exeSQL);
+                    
+                    if (logger != null)
+                        logger.logResults (nmod + " rows changed.");
+                }
                 
                 stmt.close ();
             } finally {
