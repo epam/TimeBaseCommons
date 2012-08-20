@@ -253,8 +253,12 @@ public abstract class AbstractShell extends DefaultApplication {
                     if (exitWhenDone)
                         return;
                 }
-                else
+                else if (ii < args.length)
                     doSet (option, args [ii++]);
+                else {
+                    System.err.println (arg + " ??");
+                    System.exit (2);
+                }
             }
         }
 
