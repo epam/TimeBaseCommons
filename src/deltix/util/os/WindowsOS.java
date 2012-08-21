@@ -1,5 +1,6 @@
 package deltix.util.os;
 
+import deltix.util.io.ProcessHelper;
 import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
 
@@ -310,7 +311,13 @@ public final class WindowsOS {
         }
         return result.trim ();
     }
-
+ 
+    public static int           start (String cmd) 
+    	throws IOException, InterruptedException
+    {
+        return (ProcessHelper.execAndWait ("cmd", "/c", "start", cmd));
+    }
+    
     public static void main (String[] args) throws Exception {
         System.out.println (getDotNetHome ());
         System.out.println (getHardDiskSerial ());

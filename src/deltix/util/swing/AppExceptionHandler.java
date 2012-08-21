@@ -9,9 +9,13 @@ public class AppExceptionHandler {
     public AppExceptionHandler () {
     }
     
-    public void     handle (Throwable x) {
+    public static void      staticHandle (Throwable x) {
         assert currentApp != null;
         
         currentApp.handle (x);
+    }
+    
+    public void             handle (Throwable x) {
+        staticHandle (x);
     }
 }

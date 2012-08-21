@@ -1,4 +1,4 @@
-package deltix.snmp.script;
+package deltix.util.net;
 
 import deltix.util.io.ByteArrayOutputStreamEx;
 import deltix.util.lang.Util;
