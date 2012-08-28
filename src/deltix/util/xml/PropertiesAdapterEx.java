@@ -22,8 +22,7 @@ public class PropertiesAdapterEx extends XmlAdapter<PropertiesAdapterEx.Property
 
     @Override
     public PropertyList marshal(Properties v) throws Exception {
-        PropertyList propList = new PropertyList();
-        propList.property = new ArrayList<PropertyEntry>(v.size());
+        PropertyList propList = new PropertyList(v.size());
         for (String key : v.stringPropertyNames()) {
             String value = v.getProperty(key);
             if (value != null && value.length() > 0)
@@ -36,6 +35,14 @@ public class PropertiesAdapterEx extends XmlAdapter<PropertiesAdapterEx.Property
 
     @XmlType
     public static final class PropertyList {
+        public PropertyList() {
+            this(5);
+        }
+
+        public PropertyList(int capacity) {
+            property = new ArrayList<PropertyEntry>(capacity);
+        }
+
         @XmlElement
         List<PropertyEntry> property;
     }
