@@ -21,6 +21,14 @@ package deltix.util.text;
  */
 public class SimpleMessageFormat {
 
+    public static String safeFormat (String format, Object[] args) {
+        try {
+            return format(format, args);
+        } catch (InvalidFormatException e) {
+            return e.getMessage();
+        }
+    }
+
     public static String format (String format, Object []args) {
         final StringBuilder sb = new StringBuilder (256);
         format (sb, format, args);
