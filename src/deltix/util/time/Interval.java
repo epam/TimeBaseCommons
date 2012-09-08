@@ -179,11 +179,13 @@ public abstract class Interval {
         if (result < minValue) {
             LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
             result = minValue;
-}
+        }
         if (result > maxValue) {
             LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
             result = maxValue;
         }
         return result;
     }
+
+
 }
