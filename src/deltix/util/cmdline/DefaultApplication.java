@@ -229,7 +229,7 @@ public abstract class DefaultApplication {
     	if (str == null)
     		return (defval);
     	else
-    		return (Integer.parseInt (str));
+    		return (Integer.parseInt (str.trim()));
     }
 
     /**
