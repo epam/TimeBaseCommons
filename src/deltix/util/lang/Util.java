@@ -948,7 +948,22 @@ public class Util {
         pwr.close();
         return swr.toString();
     }
-    
+
+    public static String printStackTrace(StackTraceElement[] stack) {
+        final int stackSize = stack.length;
+        if (stackSize > 0) {
+            final StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < stackSize; i++) {
+                sb.append(stack[i]);
+                if (i < stackSize - 1)
+                    sb.append("\n\t");
+            }
+            return sb.toString();
+        }
+
+        return "";
+    }
+
     public static Map<Thread, ThreadInfo>   getAllStackTraces() {
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
         Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
