@@ -383,7 +383,7 @@ public class Util {
 
         if (type.isPrimitive()) {
             if (value == null)
-                throw new IllegalArgumentException("Attempt to set NULL value to primitive type " + type.getSimpleName());
+                throw new IllegalArgumentException("Attempt to set NULL value to a field of primitive type (" + f.getDeclaringClass().getSimpleName() + "." + fieldName + ")");
 
             if (type == long.class)
                 f.setLong(object, ((Number) value).longValue ());
