@@ -16,20 +16,46 @@ public class NetUtils {
     public void             checkUrl (String s) 
         throws IOException, InterruptedException 
     {
-        getUrl (s, 1);
+        checkUrl (s, 1000, 1000);
+    }
+    
+    public void             checkUrl (String s, int connectTimeout, int readTimeout) 
+        throws IOException, InterruptedException 
+    {
+        getUrl (s, 1, connectTimeout, readTimeout);
     }
     
     public byte []          getUrl (String s) 
         throws IOException, InterruptedException         
     {
-        return (getUrl (s, Integer.MAX_VALUE));
+        return (getUrl (s, 1000, 1000));
+    }
+    
+    public byte []          getUrl (String s, int connectTimeout, int readTimeout) 
+        throws IOException, InterruptedException         
+    {
+        return (getUrl (s, Integer.MAX_VALUE, connectTimeout, readTimeout));
     }
     
     public byte []          getUrl (String s, int size) 
         throws IOException, InterruptedException 
     {
-        URL                     url = new URL (s);        
-        InputStream             is = url.openStream ();
+        return (getUrl (s, size, 1000, 1000));
+    }
+    
+    public byte []          getUrl (String s, int size, int connectTimeout, int readTimeout) 
+        throws IOException, InterruptedException 
+    {
+        URL                     url = new URL (s);  
+        
+        URLConnection           urlConn = url.openConnection ();
+       
+        urlConn.setConnectTimeout (connectTimeout);
+        urlConn.setReadTimeout (readTimeout);
+        urlConn.setAllowUserInteraction (false);         
+        urlConn.setDoOutput (false);
+          
+        InputStream             is = urlConn.getInputStream ();
         
         try {            
             ByteArrayOutputStreamEx bos = new ByteArrayOutputStreamEx ();
