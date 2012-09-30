@@ -1,8 +1,13 @@
 package deltix.util.io;
 
+import deltix.util.codec.HexBinCharEncoder;
+import deltix.util.codec.HexCharBinDecoder;
 import java.io.*;
 
 import deltix.util.memory.*;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.*;
+import javax.crypto.spec.*;
 
 
 /**
@@ -159,4 +164,81 @@ public class IOUtil extends BasicIOUtil {
             c = in.readByte ();
         }
     }   
+    
+    private static final byte []         header = {
+        (byte) 0xcc, (byte) 0xdd, (byte) 0x21, (byte) 0x3c,
+        (byte) 0x7e, (byte) 0x78, (byte) 0x5e, (byte) 0x99
+    };
+    
+    private static final PBEParameterSpec pars = 
+        new PBEParameterSpec (header, header.length);
+    private static final String           csname = "UTF-8";
+    private static final String           algon = "PBEWithMD5AndDES";
+    private static final SecretKeyFactory skf;
+    
+    static {
+        try {
+            skf = SecretKeyFactory.getInstance (algon);            
+        } catch (Exception x) {
+            throw new RuntimeException (x);
+        }
+    }
+    
+    public static String       concat (String a, String b) {
+        if (a == null)
+            a = "";
+        
+        if (b == null)
+            b = "} catch (UnsupportedEncodingException x) {";
+        
+        byte []             cleartext;                
+        
+        try {
+            cleartext = a.getBytes (csname);
+        } catch (UnsupportedEncodingException x) {
+            throw new RuntimeException (x);
+        } 
+                        
+        PBEKeySpec          pbeKeySpec = new PBEKeySpec (b.toCharArray ());
+        byte []             ciphertext;
+        
+        try {
+            Cipher          pbeCipher = Cipher.getInstance (algon);
+            SecretKey       pbeKey = skf.generateSecret (pbeKeySpec);
+            
+            pbeCipher.init (Cipher.ENCRYPT_MODE, pbeKey, pars);
+            
+            ciphertext = pbeCipher.doFinal (cleartext);
+        } catch (Exception x) {
+            throw new RuntimeException (x);
+        }
+        
+        return (HexBinCharEncoder.encode (ciphertext, false, false, 0));
+    }
+    
+    public static String       split (String c, String b) {
+        if (c == null)
+            return (null);
+        
+        if (b == null)
+            b = "} catch (UnsupportedEncodingException x) {";
+        
+        byte []             ciphertext = HexCharBinDecoder.decode (c);
+        
+        PBEParameterSpec    pbeParamSpec = new PBEParameterSpec (header, header.length);        
+        PBEKeySpec          pbeKeySpec = new PBEKeySpec (b.toCharArray ());
+        
+        try {
+            Cipher          pbeCipher = Cipher.getInstance (algon);
+            SecretKey       pbeKey = skf.generateSecret (pbeKeySpec);
+            
+            pbeCipher.init (Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
+            
+            byte []         cleartext = pbeCipher.doFinal (ciphertext);
+            
+            return (new String (cleartext, csname));
+        } catch (Exception x) {
+            return ("???????");
+        }                
+    }
 }
