@@ -513,14 +513,7 @@ public class Util {
         while (result != null) {
             Throwable nested;
 
-            if (result instanceof SAXException)
-                nested = ((SAXException) result).getException ();
-            else if (result instanceof RemoteException)
-                nested = ((RemoteException) result).detail;
-            else if (result instanceof InvocationTargetException)
-                nested = ((InvocationTargetException) result).getTargetException ();
-            else
-                nested = result.getCause();
+            nested = result.getCause ();
 
             if (nested == null)
                 break;
