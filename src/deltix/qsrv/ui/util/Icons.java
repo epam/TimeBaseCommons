@@ -35,6 +35,7 @@ public class Icons {
     public static final Icon   TABLE_REFRESH         = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_refresh.png"      );
     public static final Icon   SERVER                = SwingUtil.loadIcon("deltix/qsrv/ui/util/server.png"             );
     public static final Icon   MAXIMIZE              = SwingUtil.loadIcon("deltix/qsrv/ui/util/maximize.gif"           );
+    public static final Icon   CLOSE_WINDOW          = SwingUtil.loadIcon("deltix/qsrv/ui/util/close_window.png"       );
     public static final Icon   OPEN                  = SwingUtil.loadIcon("deltix/qsrv/ui/util/open.png"               );
     public static final Icon   MINUS                 = SwingUtil.loadIcon("deltix/qsrv/ui/util/minus.png"              );
     public static final Icon   MINUS2                = SwingUtil.loadIcon("deltix/qsrv/ui/util/minus2.png"             );
