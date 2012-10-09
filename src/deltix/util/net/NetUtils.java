@@ -8,15 +8,29 @@ import java.io.*;
 /**
  *
  */
-public class NetUtils {
+public class NetUtils {    
     public static final NetUtils    INSTANCE = new NetUtils ();
+    public static final int         DEFAULT_TIMEOUT = 1000;
     
     private NetUtils () { }
+    
+    public boolean          isUrlAccessible (String s) {
+        return (isUrlAccessible (s, 1000, 1000));
+    }
+    
+    public boolean          isUrlAccessible (String s, int connectTimeout, int readTimeout) {
+        try {
+            checkUrl (s, connectTimeout, readTimeout);
+            return (true);
+        } catch (Throwable x) {
+            return (false);
+        }
+    }
     
     public void             checkUrl (String s) 
         throws IOException, InterruptedException 
     {
-        checkUrl (s, 1000, 1000);
+        checkUrl (s, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
     }
     
     public void             checkUrl (String s, int connectTimeout, int readTimeout) 
@@ -40,7 +54,7 @@ public class NetUtils {
     public byte []          getUrl (String s, int size) 
         throws IOException, InterruptedException 
     {
-        return (getUrl (s, size, 1000, 1000));
+        return (getUrl (s, size, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT));
     }
     
     public byte []          getUrl (String s, int size, int connectTimeout, int readTimeout) 

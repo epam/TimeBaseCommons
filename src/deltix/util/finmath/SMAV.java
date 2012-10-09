@@ -5,7 +5,7 @@ import deltix.util.collections.DoubleQueue;
 /**
  *  Simple Moving Average with Variance
  */
-public class SMAV implements MovingAverage {
+public class SMAV {
     private final DoubleQueue   q;
     private double              mSum = 0;
     private double              mSumSquares = 0;
@@ -26,12 +26,10 @@ public class SMAV implements MovingAverage {
         return (mSumSquares);
     }
     
-    @Override
     public double       getLastRegisteredValue () {
         return (q.youngest ());
     }
     
-    @Override
     public double       getAverage () {
         return (mSum / q.size ());
     }
@@ -47,13 +45,11 @@ public class SMAV implements MovingAverage {
         return (Math.sqrt (getVariance ()));
     }
 
-    @Override
     public double       update (double value) {
         register (value);
         return (getAverage ());
     }
         
-    @Override
     public void         register (double value) {
         if (q.isFull ()) {
             double  old = q.poll ();
@@ -66,7 +62,6 @@ public class SMAV implements MovingAverage {
         mSumSquares += value * value;
     }
 
-    @Override
     public void         clear () {
         q.clear ();
         mSum = 0;
