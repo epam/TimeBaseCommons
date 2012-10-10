@@ -54,7 +54,7 @@ public class QuickExecutor {
         }
 
         protected QuickTask () {
-            this (reuse());
+            this (getGlobalInstance());
         }
 
         protected boolean                   killSupported () {
