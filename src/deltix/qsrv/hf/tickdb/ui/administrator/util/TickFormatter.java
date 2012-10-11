@@ -1,5 +1,6 @@
 package deltix.qsrv.hf.tickdb.ui.administrator.util;
 
+import java.io.*;
 import java.text.*;
 import java.util.*;
 import java.util.logging.*;
@@ -40,11 +41,22 @@ public class TickFormatter extends Formatter{
 
         final Throwable throwable = record.getThrown ();
         if (throwable != null) {
-            buffer.append (throwable.toString ());
+            if (Level.SEVERE.equals(record.getLevel())){
+                buffer.append (getStackTrace(throwable));
+            }else{
+                buffer.append(throwable.toString());
+            }
             buffer.append (lineSeparator);
         }
         
         return buffer.toString ();
+    }
+
+    public static String getStackTrace(Throwable aThrowable) {
+        final Writer result = new StringWriter();
+        final PrintWriter printWriter = new PrintWriter(result);
+        aThrowable.printStackTrace(printWriter);
+        return result.toString();
     }
 
 }
