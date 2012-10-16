@@ -118,7 +118,11 @@ public class WizPanel extends JPanel {
         add (split, BorderLayout.CENTER);
         add (buttonPanel, BorderLayout.SOUTH);
     }
-    
+
+    public JSplitPane getSplitPane() {
+        return split;
+    }
+
     private void        invalidateSteps () {
         stepsAreValid = false;
     }
