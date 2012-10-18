@@ -72,20 +72,19 @@ public class TokenReplacingReader extends Reader {
         return read(cbuf, 0, cbuf.length);
     }
 
-    
+
     @Override
     public int read(char cbuf[], int off, int len) throws IOException {
         int charsRead = 0;
-        for (int i = 0; i < len; i++) {
+        while (charsRead < len) {
             int nextChar = read();
-            charsRead = i;
-            if (nextChar == -1) {
+            if (nextChar == -1) { // EOF?
                 if (charsRead == 0) {
-                    charsRead = -1;
+                    return -1; // none read
                 }
                 break;
             }
-            cbuf[off + i] = (char) nextChar;
+            cbuf[off + (charsRead++)] = (char) nextChar;
         }
         return charsRead;
     }
