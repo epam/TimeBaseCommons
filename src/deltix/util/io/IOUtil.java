@@ -5,7 +5,6 @@ import deltix.util.codec.HexCharBinDecoder;
 import java.io.*;
 
 import deltix.util.memory.*;
-import java.security.NoSuchAlgorithmException;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
