@@ -12,15 +12,15 @@ import net.jcip.annotations.GuardedBy;
  */
 public class QuickExecutor {
     public static final boolean         DEBUG_TASKS = false;
+    public static final int             INITIAL_THREADS_COUNT = 1000;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
     public static int                           getThreadsCount() {
 
-        String count = System.getProperty("QuickExecutor.threads");
         try {
-            return count != null ? Integer.parseInt(count) : 500;
+            return Integer.parseInt(System.getProperty("QuickExecutor.threads"));
         } catch (NumberFormatException e) {
-            return 500;
+            return INITIAL_THREADS_COUNT;
         }
     }
 
@@ -142,14 +142,14 @@ public class QuickExecutor {
     }
 
     private class Worker extends Thread {
-        QuickTask               task;
+        volatile QuickTask               task;
         volatile boolean        stop = false;
 
-        Worker (int idx) {
-            this (null, idx);
-
-            freePool.push (this);
-        }
+//        Worker (int idx) {
+//            this (null, idx);
+//
+//            freePool.push (this);
+//        }
         
         Worker (QuickTask task, int idx) {
             super ("Worker #" + idx + " for " + QuickExecutor.this);
@@ -173,10 +173,8 @@ public class QuickExecutor {
             try {
                 while (!stop) {
                     if (task == null) {
-                        if (workers.size() < threads)
-                            LockSupport.park ();
-                        else
-                            break;
+
+                        LockSupport.park ();
 
                         if (interrupted() && stop)
                             break;
@@ -199,8 +197,10 @@ public class QuickExecutor {
                         if (!task.setDone ()) {
                             task = null;
 
-                            if (!stop)
+                            if (!stop && getWorkersSize() < threads)
                                 freePool.push (this);
+                            else
+                                break;
                         }
                     }
                 }
@@ -210,7 +210,9 @@ public class QuickExecutor {
                 synchronized (workers) {
                     workers.remove (this);
                 }
-                LOGGER.fine (this + " is terminating.");
+
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine (this + " is terminating.");
             }
         }
     }
@@ -243,6 +245,8 @@ public class QuickExecutor {
     private QuickExecutor (String name, int threads) {
         this.name = name;
         this.threads = threads;
+        if (threads != INITIAL_THREADS_COUNT)
+            LOGGER.info(this + " has custom threads limit: " + threads);
     }
 
 //    public void             start () {
@@ -264,6 +268,7 @@ public class QuickExecutor {
 
         try {
             w = freePool.pop ();
+            assert w.task == null;
 
             w.wakeUp (task);
         } catch (EmptyStackException x) {
@@ -279,6 +284,12 @@ public class QuickExecutor {
         }
 
         return (w);
+    }
+    
+    private int getWorkersSize() {
+        synchronized (workers) {
+            return workers.size();
+        }
     }
 
     public synchronized static QuickExecutor    reuse() {
@@ -300,8 +311,6 @@ public class QuickExecutor {
         synchronized (workers) {
             workerSnapshot = workers.toArray (new Worker [workers.size ()]);
         }
-
-        //Util.LOGGER.log (Level.WARNING, "Workers: " + workerSnapshot.length);
                
         for (Worker w : workerSnapshot)
             w.terminate ();
