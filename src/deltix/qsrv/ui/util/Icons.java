@@ -164,6 +164,7 @@ public class Icons {
     public static final Icon   ARROW_UP2             = SwingUtil.loadIcon("deltix/qsrv/ui/util/arrow_up.png"           );
     public static final Icon   SEND_MESSAGE          = SwingUtil.loadIcon("deltix/qsrv/ui/util/send_message.png"       );
     public static final Icon   CLEAR_BIN             = SwingUtil.loadIcon("deltix/qsrv/ui/util/clear.gif"              );
+    public static final Icon   ERASER                = SwingUtil.loadIcon("deltix/qsrv/ui/util/eraser.png"             );
 
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
