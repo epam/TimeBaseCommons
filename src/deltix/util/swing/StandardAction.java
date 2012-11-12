@@ -86,6 +86,9 @@ public abstract class StandardAction extends AbstractAction {
         Icon            icon = null;
 
         try {
+            //WARNING 
+            //rb could be SafeResourceBundle, in which case it doesn't throw 
+            //MissingResourceException for missing keys
             String      imageResourcePath = rb.getString (nameKey + ".img");
             icon = SwingUtil.loadIcon (imageResourcePath);
         } catch (MissingResourceException x) {
