@@ -718,6 +718,38 @@ public abstract class BasicIOUtil {
         return (is);
     }
 
+    public static void          copyResource (String path, String encoding, Writer wr)
+        throws IOException, InterruptedException
+    {
+        InputStream             is = openResourceAsStream (path);
+
+        try {
+            InputStream         bis = is;
+            Writer              bwr = wr;
+            
+            if (!(bis instanceof BufferedInputStream))
+                bis = new BufferedInputStream (bis);
+            
+            if (!(bwr instanceof BufferedWriter))
+                bwr = new BufferedWriter (wr);
+            
+            InputStreamReader   rd = new InputStreamReader (bis, encoding);
+            
+            for (;;) {
+                int             ch = rd.read ();
+                
+                if (ch < 0)
+                    break;
+                
+                bwr.write (ch);
+            }
+            
+            is.close ();
+        } finally {
+            Util.close (is);
+        }
+    }
+    
     public static void          copyResource (String path, OutputStream os)
         throws IOException, InterruptedException
     {
