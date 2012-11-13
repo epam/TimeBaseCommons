@@ -280,16 +280,20 @@ public class QuickExecutor {
             w.start ();
 
             if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine ("# Workers: " + workers.size ());
+                LOGGER.fine ("# Workers: " + getWorkersSize());
         }
 
         return (w);
     }
     
-    private int getWorkersSize() {
+    public int                                  getWorkersSize() {
         synchronized (workers) {
             return workers.size();
         }
+    }
+
+    public int                                  getIdleWorkersSize() {
+        return freePool.size();
     }
 
     public synchronized static QuickExecutor    reuse() {
