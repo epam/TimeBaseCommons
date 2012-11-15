@@ -18,6 +18,11 @@ public class FileResource extends Resource {
     }
 
     @Override
+    public long             getLastModified() throws IOException {
+        return (file.lastModified());
+    }
+
+    @Override
     public InputStream      openStream () throws IOException {
         return (new FileInputStream (file));
     }
