@@ -1,9 +1,13 @@
 package deltix.util.concurrent;
 
-import deltix.util.lang.Util;
+import deltix.util.collections.SimpleSet;
+
 import java.util.*;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.*;
+
+import deltix.util.time.GlobalTimer;
+import deltix.util.time.TimeKeeper;
 import net.jcip.annotations.GuardedBy;
 
 /**
@@ -12,17 +16,9 @@ import net.jcip.annotations.GuardedBy;
  */
 public class QuickExecutor {
     public static final boolean         DEBUG_TASKS = false;
-    public static final int             INITIAL_THREADS_COUNT = 1000;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
-    public static int                           getThreadsCount() {
-
-        try {
-            return Integer.parseInt(System.getProperty("QuickExecutor.threads"));
-        } catch (NumberFormatException e) {
-            return INITIAL_THREADS_COUNT;
-        }
-    }
+    public static int                   DELAY = 1000 * 60 * 5;
 
     public enum TaskState {
         IDLE,
@@ -36,6 +32,42 @@ public class QuickExecutor {
          *  Scheduled while running; will be re-run when finished.
          */
         REARMED
+    }
+
+    /**
+     *  Sweeper task runs every "DELAY" interval and clean-up threads from free pool.
+     */
+    private class SweeperTask extends TimerTask {
+
+        @Override
+        public void run() {
+
+            if (shutdownInProgress)
+                return;
+
+            LOGGER.fine ("Running sweeper having idle workers: " + getIdleWorkersSize());
+
+            long time = TimeKeeper.currentTime;
+            int length = getIdleWorkersSize();
+
+            for (int i = 0; i < length; i++) {
+                Worker w;
+
+                synchronized (freePool) {
+                    w = freePool.peekFirst();
+                }
+
+                if (w == null)
+                    break;
+
+                if (time - w.timestamp > DELAY) {
+                    w = pollWorker(false);
+                    if (w != null)
+                        terminateWorker(w);
+                }
+            }
+
+        }
     }
 
     public static abstract class QuickTask {
@@ -142,15 +174,10 @@ public class QuickExecutor {
     }
 
     private class Worker extends Thread {
-        volatile QuickTask               task;
+        volatile QuickTask      task;
         volatile boolean        stop = false;
+        volatile long           timestamp = Long.MIN_VALUE; // time of getting into free pool
 
-//        Worker (int idx) {
-//            this (null, idx);
-//
-//            freePool.push (this);
-//        }
-        
         Worker (QuickTask task, int idx) {
             super ("Worker #" + idx + " for " + QuickExecutor.this);
 
@@ -196,16 +223,14 @@ public class QuickExecutor {
                     } finally {
                         if (!task.setDone ()) {
                             task = null;
-
-                            if (!stop && getWorkersSize() < threads)
-                                freePool.push (this);
-                            else
-                                break;
+                            freeWorker(this);
                         }
                     }
                 }
             } finally {
-                freePool.remove (this);
+                synchronized (freePool) {
+                    freePool.remove (this);
+                }
 
                 synchronized (workers) {
                     workers.remove (this);
@@ -222,7 +247,7 @@ public class QuickExecutor {
 
     public static synchronized QuickExecutor getGlobalInstance () {
         if (globalInstance == null)
-            globalInstance = new QuickExecutor ("Global Executor", getThreadsCount());
+            globalInstance = new QuickExecutor ("Global Executor");
 
         return (globalInstance);
     }
@@ -230,27 +255,22 @@ public class QuickExecutor {
     private final String                    name;
 
     @GuardedBy ("freePool")
-    private final Stack <Worker>            freePool = new Stack <Worker> ();
+    private final LinkedList <Worker>       freePool = new LinkedList<Worker>();
     
     @GuardedBy ("workers")
-    private final Set <Worker>              workers = new HashSet <Worker> ();
+    private final SimpleSet <Worker>        workers = new SimpleSet<Worker>();
     
     @GuardedBy ("workers")
     private int                             workerId = 1;
 
     private volatile boolean                shutdownInProgress = false;
 
-    private final int                       threads;
+    //private int                             depth; // free pool depth
 
-    private QuickExecutor (String name, int threads) {
+    private QuickExecutor (String name) {
         this.name = name;
-        this.threads = threads;
-        if (threads != INITIAL_THREADS_COUNT)
-            LOGGER.info(this + " has custom threads limit: " + threads);
+        GlobalTimer.INSTANCE.schedule(new SweeperTask(), DELAY, DELAY);
     }
-
-//    public void             start () {
-//    }
 
     @Override
     public String           toString () {
@@ -264,26 +284,47 @@ public class QuickExecutor {
         if (shutdownInProgress)
             throw new IllegalStateException ("Shutdown in progress");
 
-        Worker      w;
+        Worker      w = pollWorker(true);
 
-        try {
-            w = freePool.pop ();
+        if (w != null) {
             assert w.task == null;
-
             w.wakeUp (task);
-        } catch (EmptyStackException x) {
+        } else {
             synchronized (workers) {
                 w = new Worker (task, workerId++);
                 workers.add (w);
             }
 
-            w.start ();
+            w.start();
 
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine ("# Workers: " + getWorkersSize());
         }
 
         return (w);
+    }
+
+    private void                                freeWorker(Worker w) {
+        synchronized (freePool) {
+            w.timestamp = TimeKeeper.currentTime;
+            freePool.add(w);
+        }
+    }
+
+    private void                                terminateWorker(Worker w) {
+        w.terminate();
+        synchronized (workers) {
+            workers.remove(w);
+        }
+    }
+
+    private Worker                              pollWorker(boolean last) {
+        synchronized (freePool) {
+            Worker w = last ? freePool.pollLast() : freePool.pollFirst();
+            if (w != null)
+                w.timestamp = Long.MIN_VALUE;
+            return w;
+        }
     }
     
     public int                                  getWorkersSize() {
@@ -293,7 +334,9 @@ public class QuickExecutor {
     }
 
     public int                                  getIdleWorkersSize() {
-        return freePool.size();
+        synchronized (freePool) {
+            return freePool.size();
+        }
     }
 
     public synchronized static QuickExecutor    reuse() {
@@ -334,10 +377,10 @@ public class QuickExecutor {
                             break;
 
                         LOGGER.warning (w + " failed to terminate in 1s, interrupting again ...");
-                        w.interrupt ();
+                        w.terminate ();
                     }
                 } catch (InterruptedException x) {
-                    Util.LOGGER.log (Level.WARNING, "While shutting down " + this, x);
+                    LOGGER.log (Level.WARNING, "While shutting down " + this, x);
                 }
             }
         }
