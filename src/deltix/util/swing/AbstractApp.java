@@ -9,11 +9,16 @@ import javax.swing.*;
 import deltix.util.*;
 import deltix.util.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AbstractApp 
     extends JFrame 
-    implements UncaughtExceptionHandler
+    implements UncaughtExceptionHandler, SimpleActionHolder
 {    
+    
+    private final Map<String, SimpleAction> simpleActions = new HashMap<String, SimpleAction>();
+    
     public AbstractApp () {
         this (DO_NOTHING_ON_CLOSE);
     }
@@ -149,6 +154,15 @@ public class AbstractApp
         
         super.setTitle (title);
     }
-    
+
+    @Override
+    public void putSimpleAction(SimpleAction action) {
+        simpleActions.put(action.getNameKey(), action);
+    }
+
+    @Override
+    public SimpleAction getSimpleAction(String name) {
+        return simpleActions.get(name);
+    }    
     
 }
