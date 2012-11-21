@@ -27,6 +27,73 @@ public class NetUtils {
         }
     }
     
+    public String           encodeUrl (String s) {
+        try {
+            return (URLEncoder.encode (s, "UTF-8"));
+        } catch (UnsupportedEncodingException x) {
+            throw new RuntimeException (x);
+        }
+    }
+    
+    public String           formatUrl (
+        String                  protocol, 
+        String                  host, 
+        int                     port
+    ) 
+    {
+        return (formatUrl (protocol, host, port, null));
+    }
+    
+    public String           formatUrl (
+        String                  protocol, 
+        String                  host, 
+        int                     port,
+        String                  path
+    ) 
+    {
+        return (formatUrl (protocol, host, port, path, null, null));
+    }
+    
+    public String           formatUrl (
+        String                  protocol, 
+        String                  host, 
+        int                     port,
+        String                  path,
+        String                  user,
+        String                  password
+    ) 
+    {        
+        StringBuilder   sb = new StringBuilder ();
+        
+        sb.append (protocol);
+        sb.append ("://");
+        
+        if (user != null) {
+            sb.append (encodeUrl (user));
+            
+            if (password != null) {
+                sb.append (':');
+                sb.append (encodeUrl (password));
+            }
+            
+            sb.append ('@');
+        }
+        
+        sb.append (encodeUrl (host));
+        
+        if (port != 0) {
+            sb.append (':');
+            sb.append (port);
+        }
+        
+        if (path != null) {
+            sb.append ('/');
+            sb.append (encodeUrl (path));
+        }
+        
+        return (sb.toString ());
+    }
+    
     public void             checkUrl (String s) 
         throws IOException, InterruptedException 
     {
