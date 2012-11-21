@@ -1,5 +1,7 @@
 package deltix.util.text;
 
+import deltix.util.lang.Util;
+
 import java.math.BigDecimal;
 
 /**
@@ -19,6 +21,10 @@ public class DecimalFormatter {
     public static final int MAX_WIDTH = 21;
     public static final int MAX_PRECISION = 15;
     private static final long MAX = Long.MAX_VALUE / 10;
+
+    private static final int DEFAULT_DECIMAL_FORMATTER_PRECISION = Util.getIntSystemProperty("UHF.defaultDecimalFormatPrecision", 2, 0, 100);
+    public static final DecimalFormatter DEFAULT = new DecimalFormatter(DEFAULT_DECIMAL_FORMATTER_PRECISION);
+
 
     private final int maxLength;
     private final int precision;
