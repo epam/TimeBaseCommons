@@ -53,11 +53,7 @@ public final class SimpleAction extends StandardAction {
             throw new RuntimeException (
                 "Did not find public void " + nameKey + " () in class " +
                 mObject.getClass () + " or any of its ancestors."
-            );
-        
-        if (delegate instanceof SimpleActionHolder) {
-            ((SimpleActionHolder) delegate).putSimpleAction(this);
-        }
+            );        
     }
 
     private void setCursor ( Cursor cursor ) {
