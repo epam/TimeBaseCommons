@@ -27,6 +27,12 @@ public class ConstantInstrumentKey
             return (new ConstantInstrumentKey (id));
     }
 
+    // JAXB
+    protected ConstantInstrumentKey () {
+        instrumentType = null;
+        symbol = null;
+    }
+
     public ConstantInstrumentKey (InstrumentType instrumentType, CharSequence symbol) {
         this.instrumentType = instrumentType;
         this.symbol = symbol.toString ();
