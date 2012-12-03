@@ -17,7 +17,20 @@ public abstract class Resource {
 
         return (new NetResource (url));
     }
-    
+
+    public static Resource          create2 (String url)
+            throws IOException
+    {
+        if (url.startsWith("http:"))
+            return new NetResource(url);
+
+        final File f = new File(url);
+        if (f.exists())
+            return new FileResource(f);
+        else
+            throw new FileNotFoundException(url);
+    }
+
     public abstract long            getSize () throws IOException;
 
     public abstract long            getLastModified () throws IOException;
