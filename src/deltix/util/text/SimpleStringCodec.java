@@ -30,12 +30,16 @@ public class SimpleStringCodec {
     }
     
     public final String             encode (String s) {
+        return encode2(s);
+    }
+
+    public final String             encode2 (CharSequence s) {
         if (s == null) return null;
         StringBuilder   sb = new StringBuilder ();
         encode (s, 0, s.length (), sb);
         return (sb.toString ());
     }
-    
+
     public final void               encode (
         CharSequence                    s, 
         int                             start,
