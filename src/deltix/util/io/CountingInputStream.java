@@ -16,7 +16,7 @@ public class CountingInputStream extends FilterInputStream {
     public CountingInputStream(InputStream delegate, int notifyThreshold ) {
         super (delegate);
         this.notifyThreshold = notifyThreshold;
-    }   
+    }
 
     public long                 getNumBytesRead () {
         return (mNumBytesRead);
