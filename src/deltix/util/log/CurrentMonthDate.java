@@ -18,8 +18,7 @@ import java.text.SimpleDateFormat;
  * @author Andy
 */
 public class CurrentMonthDate extends TimerTask {
-    private final static long MILLISECONDS_IN_DAY 	= TimeUnit.DAYS.toMillis(1);
-    private final static Logger LOGGER = Logger.getLogger (CurrentMonthDate.class.getName());
+    private final static long MILLISECONDS_IN_DAY = TimeUnit.DAYS.toMillis(1);
 
     private final String [] MONTH_CODES = new SimpleDateFormat().getDateFormatSymbols().getShortMonths();
     private final Calendar c = Calendar.getInstance();
@@ -84,12 +83,14 @@ public class CurrentMonthDate extends TimerTask {
 
 
     @Override
-    public void run() {
+    public final void run() {
         try {
             // runs at midnight - optional taks that rolls currentMonthDay forward to avoid doing it during logging (if possible)
             roll (System.currentTimeMillis());
         } catch (Throwable e) {
-            LOGGER.log (Level.SEVERE, e.getMessage(), e);
+            // this should not happened in the current roll() stack
+            // !!! DO NOT USE Logger here !!! TerseFormatter creates CurrentMonthDate statically and hangs during initialization (#13116)
+            System.out.println("Error while rolling CurrentMonthDate: " + e.getMessage());
         }
     }
 }
