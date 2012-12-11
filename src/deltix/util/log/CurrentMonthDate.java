@@ -4,8 +4,6 @@ import deltix.util.time.GlobalTimer;
 
 import java.util.TimerTask;
 import java.util.Calendar;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.concurrent.TimeUnit;
 import java.text.SimpleDateFormat;
 
