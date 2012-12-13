@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.text.DecimalFormat;
 
 public class StringUtils {
-    public static final String  REGEXP_WHITESPACE = "[ \\t\\n\\r]+";
-    
-    public static final String  nanosMicrosPatternChars = "UuNn";
-    public static final String  patternChars = "GyMdkHmsSEDFwWahKzZ";
-    public static final int[] precisions = new int[]{6,9};
-    public static String precisionTemplate= "\\d{%s}\\z";
+    public static final String REGEXP_WHITESPACE       = "[ \\t\\n\\r]+";
+
+    public static final String nanosMicrosPatternChars = "UuNn";
+    public static final char   NANOS_CHARACTER         = 'n';
+    public static final char   MICROS_CHARACTER        = 'u';
+    public static final String patternChars            = "GyMdkHmsSEDFwWahKzZ";
+    public static final int[]  precisions              = new int[]{6, 9};
+    public static       String precisionTemplate       = "(\\d{%s}\\z)|(\\d{3},\\d{3}\\z)|(\\d{3},\\d{3},\\d{3}\\z)";
 
     public static String[] keywords = {
             "assert",
@@ -803,15 +805,15 @@ public class StringUtils {
         }
         return value;
     }
- 
+
     public static String    trimTrailingWhitespace (String s) {
         int slen = s.length ();
         int n;
-        
+
         for (n = slen; n > 0; n--)
             if (!Character.isWhitespace (s.charAt (n - 1)))
                 break;
-                
+
         return (n == slen ? s : s.substring (0, n));
     }
 
