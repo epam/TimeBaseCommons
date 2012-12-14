@@ -1,7 +1,10 @@
 package deltix.util.xml;
 
-import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
+import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.bind.v2.model.annotation.*;
 import deltix.util.lang.IKVMUtil;
+import java.util.*;
+import javax.xml.bind.*;
 
 /**
  * Patched version of JAXB's RuntimeAnnotationReader that marks java.lang.Exception as @XmlTransient
@@ -23,5 +26,15 @@ public class JAXBStackTraceSuppressor
         } catch (NoSuchMethodException unexpected) {
             throw new RuntimeException (unexpected);
         }
+    }
+    
+    public static JAXBContext      createContext (String packPath) 
+        throws JAXBException 
+    {
+        Map<String, Object> jaxbConfig = new HashMap<String, Object>();
+        AnnotationReader reader = new JAXBStackTraceSuppressor();
+        jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, reader);
+
+        return JAXBContextFactory.newInstance (packPath, jaxbConfig);            
     }
 }

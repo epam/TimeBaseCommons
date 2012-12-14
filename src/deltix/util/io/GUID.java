@@ -1,9 +1,6 @@
 package deltix.util.io;
 
-import deltix.util.concurrent.UncheckedInterruptedException;
-import java.io.*;
 import java.net.*;
-import java.util.Calendar;
 
 /**
  *  Globally unique identifier generator, based on the fact that on any system at any
@@ -21,7 +18,7 @@ public class GUID {
     private static long staticCounter;
     private final String guid;
 
-    public GUID () {
+    public static StringBuilder     getSystemUniqueString () {
         StringBuilder       s = new StringBuilder ();
         synchronized (lock) {
             if (seed == null)
@@ -36,7 +33,17 @@ public class GUID {
             s.append ('_'); // separator
             s.append (Long.toString (++staticCounter, Character.MAX_RADIX));
         }
-        guid = s.toString();
+        return (s);
+    }
+    
+    public static StringBuilder     getGloballyUniqueString () {
+        StringBuilder   s = getSystemUniqueString ();
+        appendLocalIPAddressToString (s);
+        return (s);
+    }
+    
+    public GUID () {        
+        guid = getSystemUniqueString ().toString();
     }
 
     public static void          appendLocalIPAddressToString (StringBuilder s) {
@@ -54,8 +61,6 @@ public class GUID {
             s.append (String.format ("%02x", b & 0xFF));
         }
     }
-
-
 
     @Override
     public String               toString () {
