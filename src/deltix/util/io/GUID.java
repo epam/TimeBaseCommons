@@ -25,7 +25,7 @@ public class GUID {
                 seed = new GUIDSeed();
 
             // first 4 character is port
-            // followed by serveral characters that represent local port hold timestamp
+            // followed by several characters that represent local port hold timestamp
             // followed by space as separator
             // followed by process-unique counter
             s.append (String.format ("%04x", seed.port));
