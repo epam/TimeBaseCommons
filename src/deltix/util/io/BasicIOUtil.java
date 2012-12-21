@@ -843,6 +843,18 @@ public abstract class BasicIOUtil {
         return (ret.toArray (new ZipEntry [ret.size ()]));
     }
 
+    public static void          extractZipFile (File zip, File destDir)
+        throws IOException, InterruptedException
+    {
+        InputStream         is = new FileInputStream (zip);
+        
+        try {
+            extractZipStream (is, destDir);
+        } finally {
+            Util.close (is);
+        }
+    }
+    
     public static void          extractZipStream (InputStream is, File destDir)
         throws IOException, InterruptedException
     {
