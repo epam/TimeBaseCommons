@@ -29,7 +29,7 @@ public class SystemInfo {
             if (path == null)
                 path = Shell32Util.getFolderPath(WindowsUtils.CSIDL_APPDATA);
 
-            return path;
+            return path != null ? path : getUserProfile();
         } else {
             return getUserProfile();
         }
