@@ -60,7 +60,9 @@ public class NetResource extends Resource {
 
     @Override
     public InputStream      openStream () throws IOException {
-        return (url.openStream ());
+        URLConnection connection = url.openConnection();
+        connection.setUseCaches(false);
+        return (connection.getInputStream());
     }
 
     @Override
