@@ -20,19 +20,21 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     private final RandomAccessFile raf;
     private final FileChannel channel;
     private final FileLock lock;
+    private final boolean storeLastUsedOnClose;
 
-    public FileHiLowIdentifierGenerator (String key, int blockSize)
+    public FileHiLowIdentifierGenerator (String key, int blockSize, boolean storeLastUsedOnClose)
         throws IOException
     {
-    	this (key, blockSize, 1);
+    	this (key, blockSize, 1, storeLastUsedOnClose);
 	}
 
-    public FileHiLowIdentifierGenerator (String key, int blockSize, long startId)
+    public FileHiLowIdentifierGenerator (String key, int blockSize, long startId, boolean storeLastUsedOnClose)
         throws IOException
     {
         super(key, blockSize, startId);
 
         boolean tryMigrate = ! file.exists();
+        this.storeLastUsedOnClose = storeLastUsedOnClose;
         raf = new RandomAccessFile(file, FILE_MODE);
         channel = raf.getChannel();
 
@@ -93,7 +95,8 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
 
     @Override
     public void close() throws IOException {
-        storeLastUsed();
+        if (storeLastUsedOnClose)
+            storeLastUsed();
         if (lock != null)
             lock.release();
         if (channel != null)
