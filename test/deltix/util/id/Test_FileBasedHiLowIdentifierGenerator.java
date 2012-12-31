@@ -1,7 +1,6 @@
 package deltix.util.id;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,9 +9,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Andy
@@ -21,21 +18,7 @@ import static org.junit.Assert.fail;
 /*  ##UHF.FRAMEWORK## */
 public class Test_FileBasedHiLowIdentifierGenerator {
 
-    private static final String TEST_KEY = "test";
-
     private FileHiLowIdentifierGenerator idgen;
-
-    private static FileHiLowIdentifierGenerator createFileIdGenerator (int blockSize) throws IOException {
-        return createFileIdGenerator(blockSize, false);
-    }
-
-    private static FileHiLowIdentifierGenerator createFileIdGenerator (int blockSize, boolean storeLastUsed) throws IOException {
-        return new FileHiLowIdentifierGenerator (TEST_KEY, blockSize, storeLastUsed);
-    }
-    @Before
-    public void init () throws InterruptedException {
-        deleteFile();
-    }
 
     @After
     public void clean () throws IOException {
@@ -44,43 +27,39 @@ public class Test_FileBasedHiLowIdentifierGenerator {
     }
 
     @Test(timeout=60000)
-    public void testNextBlock () throws IOException {
+    public void testNextBlock () throws Exception {
         final int blockSize = 5;
-        idgen = createFileIdGenerator (blockSize);
+        idgen = createFileIdGenerator ("testNextBlock", blockSize);
         for (int i=1; i < 100; i ++)
             assertEquals (i, idgen.next());
 
-        idgen.close();
-        idgen = null;
     }
 
     @Test(timeout=60000)
-    public void testReuse() throws IOException {
+    public void testReuse() throws Exception {
         final int blockSize = 500;
 
-        idgen = createFileIdGenerator (blockSize, true);
+        idgen = createFileIdGenerator ("testReuse", blockSize, true);
         idgen.close();
-        idgen = createFileIdGenerator (blockSize, true);
+        idgen = createFileIdGenerator ("testReuse", blockSize, true);
         idgen.close();
-        idgen = createFileIdGenerator (blockSize, true);
+        idgen = createFileIdGenerator ("testReuse", blockSize, true);
         assertEquals (1, idgen.next());
         idgen.close();
-        idgen = createFileIdGenerator (blockSize, true);
-        assertEquals (2, idgen.next());
+        idgen = createFileIdGenerator ("testReuse", blockSize, true);
+        assertEquals(2, idgen.next());
         assertEquals (3, idgen.next());
         idgen.close();
-        idgen = createFileIdGenerator (blockSize, true);
+        idgen = createFileIdGenerator ("testReuse", blockSize, true);
         assertEquals (4, idgen.next());
-        assertEquals (5, idgen.next());
+        assertEquals(5, idgen.next());
         assertEquals (6, idgen.next());
         idgen.close();
-        idgen = createFileIdGenerator (blockSize, true);
+        idgen = createFileIdGenerator ("testReuse", blockSize, true);
         assertEquals (7, idgen.next());
         assertEquals (8, idgen.next());
-        assertEquals (9, idgen.next());
+        assertEquals(9, idgen.next());
         assertEquals(10, idgen.next());
-        idgen.close();
-        idgen = null;
     }
 
 
@@ -90,7 +69,7 @@ public class Test_FileBasedHiLowIdentifierGenerator {
         Set<Long> ids = new HashSet<Long>(1000);
         Random rnd = new Random (2012);
         for (int i=0; i < 1000; i++) {
-            idgen = createFileIdGenerator (blockSize);
+            idgen = createFileIdGenerator ("testRandom", blockSize);
             //System.out.print('.');
             for (int j=0; j < rnd.nextInt(4*blockSize); j++) {   // crazy loop condition
                 long id = idgen.next();
@@ -99,26 +78,39 @@ public class Test_FileBasedHiLowIdentifierGenerator {
                 assertTrue("unique id:" + id, ids.add(id));
             }
             idgen.close();
+            idgen = null;
         }
-        idgen = null;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Test(timeout=60000)
-    public void testBug() throws IOException {
+    public void testBug() throws Exception {
         final int blockSize = 500;
-        idgen = createFileIdGenerator (blockSize, true);
+        idgen = createFileIdGenerator ("testBug", blockSize, true);
         while (idgen.next() < 425)
             ; // do nothing
         idgen.close();
-        idgen = createFileIdGenerator (blockSize);
+        idgen = createFileIdGenerator ("testBug", blockSize);
         assertEquals(426, idgen.next());
-        idgen = null;
     }
 
+    /// Internal stuff
 
-    private static void deleteFile() throws InterruptedException {
-        File file = FileBasedHiLowIdentifierGenerator.getSequenceFile(TEST_KEY);
+    private FileHiLowIdentifierGenerator createFileIdGenerator (String fileKey, int blockSize) throws IOException, InterruptedException {
+        return createFileIdGenerator(fileKey, blockSize, false);
+    }
+
+    private FileHiLowIdentifierGenerator createFileIdGenerator (String fileKey, int blockSize, boolean storeLastUsed) throws IOException, InterruptedException {
+        if (usedFileKeys.add(fileKey))
+            deleteFile(fileKey);
+
+        return new FileHiLowIdentifierGenerator (fileKey, blockSize, storeLastUsed);
+    }
+
+    private Set<String> usedFileKeys = new HashSet<String>();
+
+    private static void deleteFile(String fileKey) throws InterruptedException {
+        File file = FileBasedHiLowIdentifierGenerator.getSequenceFile(fileKey);
 
         int numberOfAttempts = 5;
         while (file.exists()) {
@@ -129,5 +121,6 @@ public class Test_FileBasedHiLowIdentifierGenerator {
             Thread.sleep(250);
         }
     }
+
 
 }
