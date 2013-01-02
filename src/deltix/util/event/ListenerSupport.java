@@ -8,12 +8,6 @@ public class ListenerSupport<L> {
     private final Class<L> componentType;
     private volatile L[] listeners;
 
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public ListenerSupport(L[] listeners) {
-        this((Class<L>) listeners.getClass().getComponentType(), listeners);
-    }
-
     @SuppressWarnings("unchecked")
     public ListenerSupport(Class<L> componentType, L ... listeners) {
         this.componentType = componentType;
