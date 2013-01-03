@@ -198,6 +198,40 @@ public class StringUtils {
         return (d);
     }
 
+    public static long      parseMemorySize (String text) {
+        long        k = 1;
+        int         n = text.length ();
+
+        if (n == 0)
+            throw new NumberFormatException ();
+
+        char        c = text.charAt (n - 1);
+
+        if (c == 'B') {
+            n--;
+
+            if (n == 0)
+                throw new NumberFormatException (text);
+
+            c = text.charAt (n - 1);
+        }
+
+        if (c == 'K') {
+            k = 1L << 10;
+            n--;
+        }
+        else if (c == 'M') {
+            k = 1L << 20;
+            n--;
+        }
+        else if (c == 'G') {
+            k = 1L << 30;
+            n--;
+        }
+
+        return ((long) (k * Double.parseDouble (text.substring (0, n))));
+    }
+
     private static void         hex (int n, StringBuilder out) {
         n = n & 0xF;
 
