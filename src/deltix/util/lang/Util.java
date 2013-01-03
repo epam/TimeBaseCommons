@@ -359,21 +359,8 @@ public class Util {
             throw new NullPointerException(fieldName);
 
 
-        Field       f = null;
+        Field       f = findFieldByName (object, fieldName);
                 
-        for (
-            Class <?>   c = object.getClass ();
-            c != Object.class;
-            c = c.getSuperclass ()
-        ) 
-        {
-            try {
-                f = c.getDeclaredField (fieldName); 
-                break;
-            } catch (NoSuchFieldException x) {                
-            }                        
-        }
-        
         if (f == null)
             throw new NoSuchFieldException (fieldName + " in " + object.getClass ());
         
@@ -407,6 +394,28 @@ public class Util {
             
             f.set(object, value);
          }
+    }
+
+    /**
+     * Find class field hierarchically by name
+     */
+    public static Field findFieldByName(Object object, String fieldName) {
+        Field f = null;
+
+        for (
+                Class <?>   c = object.getClass ();
+                c != Object.class;
+                c = c.getSuperclass ()
+                )
+        {
+            try {
+                f = c.getDeclaredField(fieldName);
+                break;
+            } catch (NoSuchFieldException x) {
+            }
+        }
+
+        return f;
     }
 
     /**
