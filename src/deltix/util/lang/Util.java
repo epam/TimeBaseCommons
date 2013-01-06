@@ -1215,14 +1215,15 @@ public class Util {
      *  @exception ArrayIndexOutOfBoundsException
      *                          If <code>atIdx</code> is out of bounds.
      */
-    public static Object []    arraydel (Object [] array, int atIdx) {
+    @SuppressWarnings ("unchecked")
+    public static <T> T []    arraydel (T [] array, int atIdx) {
         int                 oldDim = array.length;
 
         if (atIdx < 0 || atIdx >= oldDim)
             throw new ArrayIndexOutOfBoundsException (atIdx);
 
         Class               compType = array.getClass ().getComponentType ();
-        Object []           ret = (Object []) Array.newInstance (compType, oldDim - 1);
+        T []                ret = (T []) Array.newInstance (compType, oldDim - 1);
         int                 shiftIdx = atIdx + 1;
 
         System.arraycopy (array, 0, ret, 0, atIdx);
@@ -1235,7 +1236,7 @@ public class Util {
      *  Find an element in the specified array that equals to the specified element
      *  and remove it. If element is not found, return <code>array</code>.
      */
-    public static Object []     arraydel (Object [] array, Object elem) {
+    public static <T> T []     arraydel (T [] array, Object elem) {
         int             idx = indexOf (array, elem);
 
         if (idx < 0)

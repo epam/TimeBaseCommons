@@ -9,7 +9,7 @@ import java.util.Enumeration;
  *	to java.util.LinkedList. Entries cannot be shared between two or more
  *	QuickLists. This class is not synchronized.
  */
-public final class QuickList <T extends QuickList.Entry> implements java.io.Serializable {
+public class QuickList <T extends QuickList.Entry> implements java.io.Serializable {
     /**
      *  Turn this on if problems are suspected in the use of this class
      */
@@ -31,11 +31,13 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 			mCur = entry;
 		}
 		
+        @Override
 		public boolean		hasMoreElements () {
 			return (!(mCur instanceof BoundaryEntry));
 		}
 		
-		@SuppressWarnings("unchecked") public T		nextElement () {
+		@SuppressWarnings("unchecked") @Override
+        public T		nextElement () {
 			T				e = (T) mCur;
 			mCur = mCur.next ();
 			return (e);
@@ -167,6 +169,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	of the chain.
 	 */
 	public static final class BoundaryEntry extends Entry {
+        @Override
     	public boolean		safeUnlink () {
     		throw new IllegalArgumentException (
     			"Cannot unlink a BoundaryEntry."
@@ -174,8 +177,8 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
     	}
 	}
 	
-	private BoundaryEntry		mHead;
-	private BoundaryEntry		mTail;
+	private final BoundaryEntry		mHead;
+	private final BoundaryEntry		mTail;
 	
 	/**
 	 *	Creates an empty list.
@@ -188,21 +191,21 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 		mTail.mPrevious = mHead;
 	}
 	
-	public boolean		isEmpty () {
+	public final boolean		isEmpty () {
 		return (mHead.mNext == mTail);
 	}
 	
 	/**
 	 *	Returns the head instance of BoundaryEntry.
 	 */
-	public BoundaryEntry	getHeadBoundaryEntry () {
+	public final BoundaryEntry	getHeadBoundaryEntry () {
 		return (mHead);
 	}
 	
 	/**
 	 *	Returns the tail instance of BoundaryEntry.
 	 */
-	public BoundaryEntry	getTailBoundaryEntry () {
+	public final BoundaryEntry	getTailBoundaryEntry () {
 		return (mTail);
 	}
 	
@@ -210,7 +213,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	Returns the first entry without unlinking it
 	 *	from the list, or <code>null</code> if the list is empty.
 	 */
-	@SuppressWarnings("unchecked") public T        getFirst () {
+	@SuppressWarnings("unchecked") public final T        getFirst () {
 		Entry			first = mHead.mNext;
 		
 		return (first == mTail ? null : (T) first);
@@ -220,7 +223,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	Returns the first entry without unlinking it
 	 *	from the list, or the tail boundary entry if the list is empty.
 	 */
-	public Entry	getFirstOrTail () {
+	public final Entry	getFirstOrTail () {
 		return (mHead.mNext);
 	}
 	
@@ -228,7 +231,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	Returns the last entry without unlinking it
 	 *	from the list, or <code>null</code> if the list is empty.
 	 */
-	@SuppressWarnings("unchecked") public T        getLast () {
+	@SuppressWarnings("unchecked") public final T        getLast () {
 		Entry			last = mTail.mPrevious;
 		
 		return (last == mHead ? null : (T) last);
@@ -238,7 +241,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	Returns the last entry without unlinking it
 	 *	from the list, or the head boundary entry if the list is empty.
 	 */
-	public Entry	getLastOrHead () {
+	public final Entry	getLastOrHead () {
 		return (mTail.mPrevious);
 	}
 	
@@ -247,7 +250,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	no knowledge of what just happened and continue to point to their
 	 *	former neighbors).
 	 */
-	public void		clear () {
+	public final void		clear () {
         if (DO_ASSERTIONS) {
             while (mHead.mNext != mTail)
                 mHead.mNext.unlink ();
@@ -340,14 +343,14 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	/**
 	 *	Links a chain of entries at the head of the list.
 	 */
-	public void		linkChainFirst (Entry firstInChain, Entry lastInChain) {
+	public final void		linkChainFirst (Entry firstInChain, Entry lastInChain) {
 		linkChainBetween (mHead, firstInChain, lastInChain, mHead.mNext);
 	}
 	
 	/**
 	 *	Links a chain of entries at the tail of the list.
 	 */
-	public void		linkChainLast (Entry firstInChain, Entry lastInChain) {
+	public final void		linkChainLast (Entry firstInChain, Entry lastInChain) {
 		linkChainBetween (mTail.mPrevious, firstInChain, lastInChain, mTail);
 	}
 	
@@ -368,14 +371,14 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	/**
 	 *	Links the entry at the head of the list.
 	 */
-	public void		linkFirst (T e) {
+	public final void		linkFirst (T e) {
 		linkChainFirst (e, e);
 	}
 	
 	/**
 	 *	Links the entry at the tail of the list.
 	 */
-	public void		linkLast (T e) {
+	public final void		linkLast (T e) {
 		linkChainLast (e, e);
 	}
 	
@@ -398,7 +401,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	The other list is made invalid by this call and should not be used
 	 *	unless clear'ed beforehand.
 	 */
-	public void		linkFirst (QuickList l) {
+	public final void		linkFirst (QuickList l) {
 		if (!l.isEmpty ())
 			linkChainFirst (l.mHead.mNext, l.mTail.mPrevious);
 	}
@@ -408,7 +411,7 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	 *	The other list is made invalid by this call and should not be used
 	 *	unless clear'ed beforehand.
 	 */
-	public void		linkLast (QuickList l) {
+	public final void		linkLast (QuickList l) {
 		if (!l.isEmpty ())
 			linkChainLast (l.mHead.mNext, l.mTail.mPrevious);
 	}
@@ -438,12 +441,12 @@ public final class QuickList <T extends QuickList.Entry> implements java.io.Seri
 	/**
 	 *	Returns an enumeration of all entries.
 	 */
-	@SuppressWarnings("unchecked") public Enumeration <T>		entries () {
+	@SuppressWarnings("unchecked") public final Enumeration <T>		entries () {
 		return (new EntryEnumeration (mHead.mNext));
 	}
 
     @SuppressWarnings("unchecked")
-    public int              size() {
+    public final int              size() {
         if (isEmpty())
             return 0;
         T first = getFirst();
