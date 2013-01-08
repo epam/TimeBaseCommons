@@ -8,6 +8,7 @@ import java.util.*;
 public class ArrayCollection <T> extends AbstractCollection <T> {
     private final T []        array;
 
+    @SafeVarargs
     public ArrayCollection (T ... array) {
         this.array = array;
     }
