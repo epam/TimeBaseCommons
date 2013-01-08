@@ -19,12 +19,7 @@ public class WordMatcherBuilder implements WordMatcher {
             add (cs);
     }
     
-    public WordMatcherBuilder (Collection <? extends CharSequence> ... adds) {
-        for (Collection <? extends CharSequence> c : adds)
-            for (CharSequence cs : c)
-                add (cs);
-    }
-    
+
     public void             add (CharSequence s) {
         mMaxLength = Math.max (mMaxLength, s.length ());        
         mRoot.add (s, 0);
@@ -66,7 +61,7 @@ public class WordMatcherBuilder implements WordMatcher {
     
     /**
      *  A relatively slow, interpreted version of matching logic. Used for testing.
-     *  @param s        String to match
+     *  @param bytes    String to match
      *  @return         Whether it matches the vocabulary.
      */
     public boolean          matches (byte [] bytes, int offset, int length) {
