@@ -16,6 +16,7 @@ public class ArrayEnumeration <T> implements Enumeration <T> {
         mHasNext = mIdx < mEnd;
     }
 
+    @SafeVarargs
     public ArrayEnumeration (T ... array) {
         this (array, 0, array == null ? 0 : array.length);
     }
