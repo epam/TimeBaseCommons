@@ -34,7 +34,7 @@ public class CharSequenceSet extends HashSet <String> {
         addAll (b);
     }
 
-    @SafeVarargs
+    @SuppressWarnings(value = {"unchecked", "varargs"})
     public CharSequenceSet (Set <String> ... unionMembers) {
         for (Set <String> s : unionMembers)
             addAll (s);

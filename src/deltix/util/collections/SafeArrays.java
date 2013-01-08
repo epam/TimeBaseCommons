@@ -4,10 +4,11 @@ package deltix.util.collections;
  * @author Jacob Alber
  */
 public class SafeArrays {
-    @SafeVarargs
-    public static <Generic> Generic[] asArray(Generic... array) {
-        return array;
-    }
+
+//    @SafeVarargs
+//    public static <Generic> Generic[] asArray(Generic... array) {
+//        return array;
+//    }
 
     public static <Generic> void safeArrayCopy(Generic[] src, int srcPos, Generic[] dest, int destPos, int length) {
         System.arraycopy(src, srcPos, dest, destPos, length);
