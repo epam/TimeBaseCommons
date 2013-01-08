@@ -71,11 +71,7 @@ public abstract class SelectorPanel<T> extends JPanel {
         c.gridx = 0;
         c.gridy = 0;
 
-        final Insets insets = new Insets (4,
-                                          4,
-                                          4,
-                                          4);
-        c.insets = insets;
+        c.insets = new Insets (4, 4, 4, 4);
 
         c.anchor = GridBagConstraints.WEST;
         c.weightx = 1;
@@ -116,6 +112,7 @@ public abstract class SelectorPanel<T> extends JPanel {
              c);
     }
 
+    @SuppressWarnings("unchecked")
     public void setCellRenderer (final ListCellRenderer cellRenderer) {
         this.list.setCellRenderer (cellRenderer);
     }
@@ -163,6 +160,7 @@ public abstract class SelectorPanel<T> extends JPanel {
 
     }
 
+    @SuppressWarnings("unchecked")
     protected void rebuildModel () {
 
         final java.util.List<T> prevoiusSelection = getSelection ();
