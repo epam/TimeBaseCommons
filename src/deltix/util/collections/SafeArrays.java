@@ -4,6 +4,7 @@ package deltix.util.collections;
  * @author Jacob Alber
  */
 public class SafeArrays {
+    @SafeVarargs
     public static <Generic> Generic[] asArray(Generic... array) {
         return array;
     }
