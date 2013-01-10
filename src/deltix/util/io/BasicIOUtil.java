@@ -17,6 +17,15 @@ import javax.xml.bind.Unmarshaller;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.CopyOption;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.regex.*;
 
 /**
@@ -314,6 +323,11 @@ public abstract class BasicIOUtil {
         }
     }
 
+    public static void	copyFile7 (File src, File dest)
+        throws IOException, InterruptedException
+    {
+        Files.copy(Paths.get(src.toURI()), Paths.get(dest.toURI()), StandardCopyOption.REPLACE_EXISTING);
+    }    
 
     /**
     *   Copies file and creates full destination path if needed
@@ -1150,6 +1164,59 @@ public abstract class BasicIOUtil {
             }
         }
     }
+    
+    /**
+     *  Native Java7-way, copies files from the specified directory to the specified directory.
+     *  @param from -- directory to copy files from
+     *  @param to   -- directory to copy files to
+     *  @param create -- if true and to directory does not exist create it.
+     *  @param recursive -- if true also copies child directories
+     *  @param filter -- if not null only copies files that satisfy the specified filter
+     *  @param excludeFilter -- if not null does not copy files that satisfy the filter
+     */
+    public static void copyDirectory7 (
+        final File from,
+        final File to,
+        final boolean create,
+        final boolean recursive,
+        final FilenameFilter filter,
+        final FilenameFilter excludeFilter
+    )
+        throws IOException, InterruptedException
+    {
+        
+        final SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+            private Path fromPath = Paths.get(from.toURI());
+            private Path toPath = Paths.get(to.toURI());
+            private StandardCopyOption copyOption = StandardCopyOption.REPLACE_EXISTING;
+    
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Path targetPath = toPath.resolve(fromPath.relativize(dir));
+                if(!Files.exists(targetPath)){
+                    if (create) {
+                        Files.createDirectory(targetPath);                        
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                final String fileName = file.toFile().getName();
+                if (
+                        ((filter == null) || (filter.accept(from, fileName)))
+                        &&
+                        ((excludeFilter == null) || (!excludeFilter.accept(to, fileName)))
+                   ) {
+                    Files.copy(file, toPath.resolve(fromPath.relativize(file)), copyOption);                                        
+                }
+                return FileVisitResult.CONTINUE;
+            }        
+        };
+        
+        Files.walkFileTree(Paths.get(from.toURI()), EnumSet.of(FileVisitOption.FOLLOW_LINKS), recursive ? Integer.MAX_VALUE : 1, visitor);
+    }    
 
     private static String	getCmdAsString (String [] arr) {
         StringBuffer	sb = new StringBuffer ();
