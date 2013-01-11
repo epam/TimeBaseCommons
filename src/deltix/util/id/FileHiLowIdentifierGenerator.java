@@ -19,10 +19,10 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     private final FileLock lock;
     private final boolean storeLastUsedOnClose;
 
-    public FileHiLowIdentifierGenerator (String key, int blockSize, boolean storeLastUsedOnClose)
+    public FileHiLowIdentifierGenerator (String key, int blockSize, boolean writeLastUsedOnClose)
         throws IOException
     {
-    	this (key, blockSize, 1, storeLastUsedOnClose);
+    	this (key, blockSize, 1, writeLastUsedOnClose);
 	}
 
     public FileHiLowIdentifierGenerator (String key, int blockSize, long startId, boolean writeLastUsedOnClose)
