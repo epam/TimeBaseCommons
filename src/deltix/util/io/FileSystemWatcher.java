@@ -26,14 +26,14 @@ public class FileSystemWatcher {
         void onEvent(Path path, Path file, WatchEvent.Kind event);
     }
 
-    private final static FileSystemWatcher INSTANCE = new FileSystemWatcher();
-    private final static Logger LOGGER = Logger.getLogger(FileSystemWatcher.class.getName());
+    private final static FileSystemWatcher      INSTANCE = new FileSystemWatcher();
+    private final static Logger                 LOGGER = Logger.getLogger(FileSystemWatcher.class.getName());
     
     public static FileSystemWatcher getInstance() {
         return INSTANCE;
     }
     
-    private WatchingThread  watcher;
+    private WatchingThread                      watcher;
     
     private FileSystemWatcher() {                 
     }
@@ -175,7 +175,7 @@ public class FileSystemWatcher {
                     pathLtns.remove(handler);
 
                     if (pathLtns.isEmpty()) {
-                        for (Map.Entry<WatchKey, Path> kv : keyMap.entrySet()) {
+                        for (Map.Entry<WatchKey, Path> kv : new HashMap<>(keyMap).entrySet()) {
                             if (!kv.getValue().equals(path)) {
                                 continue;
                             }
@@ -242,22 +242,5 @@ public class FileSystemWatcher {
 
             Util.close(watcher);
         }
-    }
-    
-    public static void main(String[] args) throws Throwable {
-        final EventHandler h = new EventHandler() {
-            @Override
-            public void onEvent(Path path, Path file, Kind event) {
-                System.out.println(path + ", " + file + ", " + event);
-            }
-        };
-        FileSystemWatcher.getInstance().subscribe(h, 
-                new java.io.File("/home/agudkov/projects/qs/main/custom").toPath(),
-                true,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_MODIFY,
-                StandardWatchEventKinds.ENTRY_DELETE);
-        
-        System.in.read();
-    }
+    }        
 }
