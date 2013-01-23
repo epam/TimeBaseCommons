@@ -1,18 +1,14 @@
 package deltix.util.io;
 
 import deltix.util.lang.Util;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +16,100 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * <p>Allows to scan and watch the file system folders.</p>
+ * <p>An example of using:
+ * <pre>
+ *    final FileSystemWatcher.EventHandler h = new FileSystemWatcher.EventHandler() {
+ *           @Override
+ *           public void onEvent(File file, FileSystemWatcher.EventType event) {
+ * 
+ *               System.out.println(file + " " + event);
+ *               
+ *               // subscribe again for recursive monitoring
+ *               if (file.isDirectory() &&
+ *                      (event == FileSystemWatcher.EventType.SCANNED ||
+ *                       event == FileSystemWatcher.EventType.CREATED)) {
+ *                     try {
+ *                         FileSystemWatcher.getInstance().subscribe(this, file, FileSystemWatcher.EventType.SCANNED, FileSystemWatcher.EventType.CREATED, FileSystemWatcher.EventType.MODIFIED, FileSystemWatcher.EventType.DELETED);
+ *                     } catch (IOException e) {                            
+ *                         e.printStackTrace();
+ *                     }
+ *               }
+ *           }
+ *       };
+ * 
+ *       FileSystemWatcher.getInstance().subscribe(h, new java.io.File("/home/user/projects/qs/main/custom"), FileSystemWatcher.EventType.SCANNED, FileSystemWatcher.EventType.CREATED, FileSystemWatcher.EventType.MODIFIED, FileSystemWatcher.EventType.DELETED);
+ *       
+ *       // ...do something...
+ *       
+ *       FileSystemWatcher.getInstance().unsubscribe(h); 
+ * 
+ */
 public class FileSystemWatcher {
+    public enum EventType {
+        /**
+         * A file/folder exists in the target folder by the moment of subscription.
+         */
+        SCANNED,
+        
+        /**
+         * A new file/folder is created in the target folder.
+         */
+        CREATED,
+        
+        /**
+         * A new file/folder is modified in the target folder.
+         */
+        MODIFIED,
+        
+        /**
+         * A new file/folder is deleted from the target folder.
+         */        
+        DELETED;
+        
+        public boolean includedInto(EventType... events) {
+            for (EventType event : events) {
+                if (this == event) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        private static WatchEvent.Kind[] toWatchEventKind(EventType... events) {
+            final List<WatchEvent.Kind> result = new ArrayList<>();
+            for (EventType event : events) {
+                switch (event) {
+                    case CREATED:
+                        result.add(StandardWatchEventKinds.ENTRY_CREATE);
+                        break;
+                    case MODIFIED:
+                        result.add(StandardWatchEventKinds.ENTRY_MODIFY);
+                        break;
+                    case DELETED:
+                        result.add(StandardWatchEventKinds.ENTRY_DELETE);
+                        break;
+                }
+            }
+            return result.toArray(new WatchEvent.Kind[result.size()]);
+        }
+
+        private static EventType toEventType(WatchEvent.Kind event) {
+            switch (event.name().charAt(6)) {
+                case 'C': //StandardWatchEventKinds.ENTRY_CREATE:
+                    return CREATED;
+                case 'M': //StandardWatchEventKinds.ENTRY_MODIFY:
+                    return MODIFIED;
+                case 'D': //StandardWatchEventKinds.ENTRY_DELETE:
+                    return DELETED;
+            }
+            return null;
+        }        
+    }
     
     public interface EventHandler {
-        void onEvent(Path path, Path file, WatchEvent.Kind event);
+        void onEvent(File file, EventType event);
     }
 
     private final static FileSystemWatcher      INSTANCE = new FileSystemWatcher();
@@ -38,15 +124,13 @@ public class FileSystemWatcher {
     private FileSystemWatcher() {                 
     }
     
-    public void subscribe(EventHandler handler, Path path, WatchEvent.Kind... events) throws IOException {
-        subscribe(handler, path, false, events);
-    }
-    
-    public synchronized void subscribe(EventHandler handler, Path path, boolean recursively, WatchEvent.Kind... events) throws IOException {
-        if (!path.isAbsolute() ||
-                !path.toFile().exists() ||
-                !path.toFile().isDirectory()) {
-            throw new IOException(path + " isn't a folder.");
+    public synchronized void subscribe(EventHandler handler, File folder, EventType... events) throws IOException {
+        if (!folder.exists()) {
+            throw new IOException(folder + " doesn't exist.");
+        }
+
+        if (!folder.isDirectory()) {
+            throw new IOException(folder + " isn't a folder.");
         }
         
         if (watcher == null) {
@@ -54,7 +138,7 @@ public class FileSystemWatcher {
             watcher.start();
         }
                 
-        watcher.subscribe(handler, path, recursively, events);
+        watcher.subscribe(handler, folder, events);
     }
 
     public synchronized void unsubscribe(EventHandler handler) throws IOException {        
@@ -68,7 +152,8 @@ public class FileSystemWatcher {
             watcher.interrupt();
             try {
                 watcher.join();
-            } catch (InterruptedException e) {                
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             watcher = null;
         }        
@@ -98,29 +183,15 @@ public class FileSystemWatcher {
             }
         }
         
-        private void subscribe(EventHandler handler, final Path startPath, boolean recursively, WatchEvent.Kind... events) throws IOException {
+        private void subscribe(final EventHandler handler, final File folder, EventType... events) throws IOException {
                         
-            synchronized (pathMap) {
+            final Path path = folder.toPath();
+            final WatchEvent.Kind[] stdEvents = EventType.toWatchEventKind(events);
             
-                final List<Path> paths = new ArrayList<>();              
-                paths.add(startPath);
+            synchronized (pathMap) {            
                 
-                if (recursively) {
-                    Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
+                if (stdEvents.length > 0) {
 
-                        @Override
-                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                                throws IOException {
-                            if (!dir.equals(startPath) && attrs.isDirectory()) {
-                                paths.add(dir);
-                            }
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });                    
-                }
-
-                for (Path path : paths) {
-                    
                     final String pathStr = path.toAbsolutePath().toString();
 
                     final boolean newPath = !pathMap.containsKey(pathStr);
@@ -140,7 +211,13 @@ public class FileSystemWatcher {
                     pathLtns.add(handler);
 
                     if (newPath) {
-                        keyMap.put(path.register(watcher, events), path);
+                        keyMap.put(path.register(watcher, stdEvents), path);
+                    }
+                }
+                
+                if (EventType.SCANNED.includedInto(events)) {
+                    for (File file : folder.listFiles()) {
+                        handler.onEvent(file, EventType.SCANNED);
                     }
                 }
             }                        
@@ -169,7 +246,7 @@ public class FileSystemWatcher {
 
                     final List<EventHandler> pathLtns = pathMap.get(pathStr);
                     if (pathLtns == null) {
-                        return;
+                        continue;
                     }
 
                     pathLtns.remove(handler);
@@ -195,7 +272,7 @@ public class FileSystemWatcher {
         @SuppressWarnings("unchecked")
         public void run() {
             while (!isInterrupted()) {
-                // wait for key to be signaled
+
                 final WatchKey key;
                 try {
                     key = watcher.take();
@@ -214,9 +291,12 @@ public class FileSystemWatcher {
                     if (kind ==  StandardWatchEventKinds.OVERFLOW) {
                         continue;
                     }
+                    
+                    final EventType eventType = EventType.toEventType(kind);
+                    if (eventType == null) {
+                        continue;
+                    }
 
-                    // The filename is the
-                    // context of the event.
                     final WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     final Path file = ev.context();
 
@@ -229,7 +309,7 @@ public class FileSystemWatcher {
                         
                         for (EventHandler handler : pathMap.get(path.toAbsolutePath().toString())) {
                             try {
-                                handler.onEvent(path, file, kind);
+                                handler.onEvent(path.resolve(file).toFile(), eventType);
                             } catch (Throwable t) {
                                 LOGGER.log(Level.WARNING, "An error while event processing.", t);
                             }
@@ -242,5 +322,5 @@ public class FileSystemWatcher {
 
             Util.close(watcher);
         }
-    }        
+    }            
 }
