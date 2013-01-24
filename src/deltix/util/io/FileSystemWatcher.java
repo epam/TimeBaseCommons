@@ -203,13 +203,11 @@ public class FileSystemWatcher {
                         pathMap.put(pathStr, pathLtns);
                     } else {
                         pathLtns = pathMap.get(pathStr);
-
-                        if (pathLtns.contains(handler)) {
-                            throw new IOException(handler + " already subscribed to " + pathStr);
-                        }
                     }
 
-                    pathLtns.add(handler);
+                    if (!pathLtns.contains(handler)) {
+                        pathLtns.add(handler);
+                    }
 
                     if (newPath) {
                         keyMap.put(path.register(watcher, stdEvents), path);

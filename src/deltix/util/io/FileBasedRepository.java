@@ -5,7 +5,6 @@ import deltix.util.repository.Repository;
 import deltix.util.repository.RepositoryEvent;
 import deltix.util.repository.RepositoryEventHandler;
 import deltix.util.repository.SCMDRepositoryEvent;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class FileBasedRepository<T> implements Repository<T>, Closeable {
+public abstract class FileBasedRepository<T> implements Repository<T> {
         
     protected final File                            root;
     @SuppressWarnings("NonConstantLogger")
@@ -182,15 +181,7 @@ public abstract class FileBasedRepository<T> implements Repository<T>, Closeable
             }
         };        
     }
-    
-    protected final void start() {
-        try {
-            FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }        
-    }
-
+        
     @Override
     public Collection<T> getItems() {
         final List<T> result = new ArrayList<>();
@@ -247,17 +238,32 @@ public abstract class FileBasedRepository<T> implements Repository<T>, Closeable
             }                        
         }                           
     }
-
-    @Override
-    public void close() throws IOException {
-        synchronized (items) {
-            handlers.clear();
-            eventHandlers.clear();
+    
+    protected final void start() {                 
+        checkHoldsLock();
+        
+        try {
+            FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    protected final void stop() throws IOException {
+        checkHoldsLock();
+        
+        handlers.clear();
+        eventHandlers.clear();
+
+        FileSystemWatcher.getInstance().unsubscribe(fsEventHandler);
+    }
     
-    protected Object getLock() {
+    protected final Object getLock() {
         return items;
+    }
+    
+    protected final void checkHoldsLock() { 
+        assert Thread.holdsLock(items) : "Thread should hold the lock.";
     }
     
     protected abstract boolean isSubscribableFolder(File folder);
