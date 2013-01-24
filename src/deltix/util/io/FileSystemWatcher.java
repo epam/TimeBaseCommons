@@ -44,7 +44,8 @@ import java.util.logging.Logger;
  *       // ...do something...
  *       
  *       FileSystemWatcher.getInstance().unsubscribe(h); 
- * 
+ * </pre>
+ * </p>
  */
 public class FileSystemWatcher {
     public enum EventType {
