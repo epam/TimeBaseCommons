@@ -18,6 +18,7 @@ public enum SCMDRepositoryEvent implements RepositoryEvent {
      */
     DELETED;        
     
+    @Override
     public boolean isInto(RepositoryEvent... events) {
         if (events != null) {
             for (int i = 0; i < events.length; i++) {
