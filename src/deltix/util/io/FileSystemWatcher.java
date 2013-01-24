@@ -21,13 +21,13 @@ import java.util.logging.Logger;
  * <p>An example of using:
  * <pre>
  *    final FileSystemWatcher.EventHandler h = new FileSystemWatcher.EventHandler() {
- *           @Override
+ *           {@literal @}Override
  *           public void onEvent(File file, FileSystemWatcher.EventType event) {
  * 
  *               System.out.println(file + " " + event);
  *               
  *               // subscribe again for recursive monitoring
- *               if (file.isDirectory() &&
+ *               if (file.isDirectory() &amp;&amp;
  *                      (event == FileSystemWatcher.EventType.SCANNED ||
  *                       event == FileSystemWatcher.EventType.CREATED)) {
  *                     try {
