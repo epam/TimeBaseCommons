@@ -60,16 +60,16 @@ public class FileSystemWatcher {
         CREATED,
         
         /**
-         * A new file/folder is modified in the target folder.
+         * A file/folder is modified in the target folder.
          */
         MODIFIED,
         
         /**
-         * A new file/folder is deleted from the target folder.
+         * A file/folder is deleted from the target folder.
          */        
         DELETED;
         
-        public boolean includedInto(EventType... events) {
+        public boolean isInto(EventType... events) {
             for (EventType event : events) {
                 if (this == event) {
                     return true;
@@ -216,7 +216,7 @@ public class FileSystemWatcher {
                     }
                 }
                 
-                if (EventType.SCANNED.includedInto(events)) {
+                if (EventType.SCANNED.isInto(events)) {
                     for (File file : folder.listFiles()) {
                         handler.onEvent(file, EventType.SCANNED);
                     }
