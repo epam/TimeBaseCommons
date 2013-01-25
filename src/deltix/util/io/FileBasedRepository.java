@@ -1,9 +1,9 @@
 package deltix.util.io;
 
 import deltix.util.io.FileSystemWatcher.EventType;
-import deltix.util.repository.Repository;
-import deltix.util.repository.RepositoryEvent;
+import deltix.util.repository.AbstractRepository;
 import deltix.util.repository.RepositoryEventHandler;
+import deltix.util.repository.RepositoryItemFilter;
 import deltix.util.repository.SCMDRepositoryEvent;
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public abstract class FileBasedRepository<T> implements Repository<T> {
+public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
         
     protected final File                            root;
-    @SuppressWarnings("NonConstantLogger")
-    protected final Logger                          logger = Logger.getLogger(getClass().getName());
     
-    private final List<RepositoryEventHandler<T>>   handlers = new ArrayList<>();
-    private final Map<RepositoryEvent, List<RepositoryEventHandler<T>>> eventHandlers = new HashMap<>();    
     private final Map<Path, FileItem>               items = new HashMap<>();    
     private final FileSystemWatcher.EventHandler    fsEventHandler;
     
@@ -41,14 +36,11 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
                     synchronized (items) {
 
                         final FileItem fItem = items.remove(path);
-                        final List<RepositoryEventHandler<T>> hdrs = eventHandlers.get(SCMDRepositoryEvent.DELETED);
 
                         if (fItem != null) { // if a file
                             try {
-                                if (hdrs != null) {
-                                    for (RepositoryEventHandler<T> handler : hdrs) {
-                                        handler.onEvent(fItem.item, SCMDRepositoryEvent.DELETED);
-                                    }
+                                for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.DELETED)) {
+                                    handler.onEvent(fItem.item, SCMDRepositoryEvent.DELETED);
                                 }
                             } catch (Throwable t) {
                                 logger.log(Level.WARNING, "An error while preparing item for " + path, t);
@@ -59,10 +51,8 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
                                 if (iKv.getKey().startsWith(path)) {
                                     final FileItem deletedItem = items.remove(iKv.getKey());
 
-                                    if (hdrs != null) {
-                                        for (RepositoryEventHandler<T> handler : hdrs) {
-                                            handler.onEvent(deletedItem.item, SCMDRepositoryEvent.DELETED);
-                                        }
+                                    for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.DELETED)) {
+                                        handler.onEvent(deletedItem.item, SCMDRepositoryEvent.DELETED);
                                     }
                                 }
                             }
@@ -104,12 +94,8 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
                                     final FileItem fItem = new FileItem(file, prepareItem(file));
                                     items.put(path, fItem);
 
-                                    final List<RepositoryEventHandler<T>> hdrs = eventHandlers.get(e);
-                                    
-                                    if (hdrs != null) {
-                                        for (RepositoryEventHandler<T> handler : hdrs) {
-                                            handler.onEvent(fItem.item, e);
-                                        }
+                                    for (RepositoryEventHandler<T> handler : getHandlers(e)) {
+                                        handler.onEvent(fItem.item, e);
                                     }
                                 } catch (Throwable t) {
                                     logger.log(Level.WARNING, "An error while preparing item for " + path, t);
@@ -132,7 +118,7 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
                                             fItem = new FileItem(file, prepareItem(file));
                                             items.put(path, fItem);
 
-                                            for (RepositoryEventHandler<T> handler : eventHandlers.get(SCMDRepositoryEvent.CREATED)) {
+                                            for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.CREATED)) {
                                                 handler.onEvent(fItem.item, SCMDRepositoryEvent.CREATED);
                                             }
                                         } catch (Throwable t) {
@@ -145,12 +131,8 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
                                         try {
                                             items.remove(path);
 
-                                            final List<RepositoryEventHandler<T>> hdrs = eventHandlers.get(SCMDRepositoryEvent.DELETED);
-                                            
-                                            if (hdrs != null) {
-                                                for (RepositoryEventHandler<T> handler : hdrs) {
-                                                    handler.onEvent(fItem.item, SCMDRepositoryEvent.DELETED);
-                                                }
+                                            for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.DELETED)) {
+                                                handler.onEvent(fItem.item, SCMDRepositoryEvent.DELETED);
                                             }
                                         } catch (Throwable t) {
                                             logger.log(Level.WARNING, "An error while preparing item for " + path, t);
@@ -162,12 +144,8 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
 
                                             fItem.item = prepareItem(file);
                                             
-                                            final List<RepositoryEventHandler<T>> hdrs = eventHandlers.get(SCMDRepositoryEvent.MODIFIED);
-                                            
-                                            if (hdrs != null) {
-                                                for (RepositoryEventHandler<T> handler : hdrs) {
-                                                    handler.onEvent(fItem.item, SCMDRepositoryEvent.MODIFIED);
-                                                }
+                                            for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.MODIFIED)) {
+                                                handler.onEvent(fItem.item, SCMDRepositoryEvent.MODIFIED);
                                             }
                                         } catch (Throwable t) {
                                             logger.log(Level.WARNING, "An error while preparing item for " + path, t);
@@ -183,64 +161,27 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
     }
         
     @Override
-    public Collection<T> getItems() {
+    public final Collection<T> getItems() {
+        return getItems(null);
+    }
+        
+    @Override
+    public final Collection<T> getItems(RepositoryItemFilter<T> filter) {
         final List<T> result = new ArrayList<>();
         synchronized (items) {
             for (FileItem fItem : items.values()) {
-                result.add(fItem.item);
+                final T item = fItem.item;
+                if (filter == null || filter.accepted(item)) {
+                    result.add(item);
+                }
             }
         }
         return result;
-    }    
+    }        
     
     @Override
-    public void subscribe(RepositoryEventHandler<T> handler, RepositoryEvent... events) {
-        if (events == null || events.length == 0) {
-            throw new IllegalArgumentException("You haven't specified any events.");
-        }
-        
-        synchronized (items) {
-            
-            if (handlers.contains(handler)) {
-                throw new IllegalArgumentException("Handler " + handler + " has been subscribed already.");
-            }
-            
-            handlers.add(handler);
-            
-            for (RepositoryEvent event : events) {
-                List<RepositoryEventHandler<T>> evntHandlers = this.eventHandlers.get(event);
-                if (evntHandlers == null) {
-                    evntHandlers = new ArrayList<>();
-                    eventHandlers.put(event, evntHandlers);
-                }
-                
-                evntHandlers.add(handler);
-            }
-            
-            if (SCMDRepositoryEvent.SCANNED.isInto(events)) {
-                for (FileItem fItem : items.values()) {
-                    handler.onEvent(fItem.item, SCMDRepositoryEvent.SCANNED);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void unsubscribe(RepositoryEventHandler<T> handler) {
-        synchronized (items) {
-            
-            if (!handlers.remove(handler)) {
-                return;
-            }
-            
-            for (List<RepositoryEventHandler<T>> evntHandlers : this.eventHandlers.values()) {
-                evntHandlers.remove(handler);
-            }                        
-        }                           
-    }
-    
-    protected final void start() {                 
-        checkHoldsLock();
+    protected void start() {                 
+        super.start();
         
         try {
             FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
@@ -249,23 +190,13 @@ public abstract class FileBasedRepository<T> implements Repository<T> {
         }
     }
 
-    protected final void stop() throws IOException {
-        checkHoldsLock();
-        
-        handlers.clear();
-        eventHandlers.clear();
+    @Override
+    protected void stop() throws IOException {
+        super.stop();
 
         FileSystemWatcher.getInstance().unsubscribe(fsEventHandler);
     }
-    
-    protected final Object getLock() {
-        return items;
-    }
-    
-    protected final void checkHoldsLock() { 
-        assert Thread.holdsLock(items) : "Thread should hold the lock.";
-    }
-    
+        
     protected abstract boolean isSubscribableFolder(File folder);
     
     protected abstract boolean isItemFile(File file);
