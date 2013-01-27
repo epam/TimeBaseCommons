@@ -566,7 +566,7 @@ public class StringUtils {
     }
 
     /** @return true if trimmed input is empty string or null */
-    public static boolean isEmpty (String value) {
+    public static boolean isEmpty (CharSequence value) {
         return trim(value) == null;
     }
 
