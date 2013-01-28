@@ -13,6 +13,8 @@ import javax.crypto.spec.*;
  *
  */
 public class IOUtil extends BasicIOUtil {
+    public static final String NOT_DECRYPTED = "???????";
+
     /**
      *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
      *  that many characters in raw 2-byte form.
@@ -237,7 +239,7 @@ public class IOUtil extends BasicIOUtil {
             
             return (new String (cleartext, csname));
         } catch (Exception x) {
-            return ("???????");
+            return (NOT_DECRYPTED);
         }                
     }
 }
