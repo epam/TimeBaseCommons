@@ -567,7 +567,8 @@ public class StringUtils {
 
     /** @return true if trimmed input is empty string or null */
     public static boolean isEmpty (CharSequence value) {
-        return trim(value) == null;
+        CharSequence s = trim(value);
+        return s == null || s.length() == 0;
     }
 
     /** @return true if input is null or empty string contains only whitespaces */
