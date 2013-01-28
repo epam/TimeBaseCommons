@@ -1,0 +1,58 @@
+package deltix.util.vfs;
+
+import deltix.util.io.StreamPump;
+import deltix.util.lang.Util;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class VFiles {
+ 
+    public static long copyFile(VFile from, VFile to) throws IOException, InterruptedException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            return StreamPump.pump(in, out);
+        } finally {
+            Util.close(in);
+            Util.close(out);
+        }
+    }
+    
+    public static <T extends VFileSystem> T unmount(T fs) {
+        if (fs != null) {
+            try {
+                fs.unmount();
+            } catch (Throwable t) {
+            }
+        }
+        return null;
+    }
+    
+    static URL appendRelativePath(URL root, String relativePath) throws MalformedURLException {
+        relativePath = relativePath.trim();
+        if (relativePath.startsWith(".")) {
+            throw new MalformedURLException("Relative names '.' and '..' aren't supported yet.");
+        }
+        relativePath = relativePath.replace('\\', '/');
+        final String rootPath = root.getPath();
+        return rootPath.endsWith("/") || relativePath.startsWith("/") ?
+                new URL(root, rootPath + relativePath) : new URL(root, rootPath + '/' + relativePath);
+    }
+    
+    static String getName(URL url) {
+        return getName(url.getPath());
+    }
+    
+    static String getName(String path) {
+        final int i = path.lastIndexOf("/");
+        return i > -1
+                ? (path.length() > 1 ? path.substring(i + 1) : "/")
+                : path;
+    }    
+    
+    private VFiles() {        
+    }
+}
