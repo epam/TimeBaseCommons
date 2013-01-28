@@ -6,28 +6,28 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
-public class VirtualFileSystemFactory {
+public class VFileSystemFactory {
     
-    private static final VirtualFileSystemFactory INSTANCE = new VirtualFileSystemFactory();
+    private static final VFileSystemFactory INSTANCE = new VFileSystemFactory();
 
-    public static VirtualFileSystemFactory getInstance() {
+    public static VFileSystemFactory getInstance() {
         return INSTANCE;
     }
    
-    private VirtualFileSystemFactory() {        
+    private VFileSystemFactory() {        
     }
     
-    public VirtualFileSystem mount(URL url) throws IOException {
+    public VFileSystem mount(URL url) throws IOException {
         return mount(url, null);
     }
 
-    public VirtualFileSystem mount(URL url, Properties props) throws IOException {
+    public VFileSystem mount(URL url, Properties props) throws IOException {
         final String protocol = url.getProtocol();
         final String path = url.getPath();
         switch (protocol) {
             case "file":
                 if (path != null && path.toLowerCase().endsWith(".zip")) {
-                    return new ZipFileSystem(new File(path));
+                    return new ZipFileSystem(new File(path), props);
                 } else {
                     try {
                         return new LocalFileSystem(new File(url.toURI()));
@@ -36,16 +36,12 @@ public class VirtualFileSystemFactory {
                     }
                 }
             case "jar":
-                return new ZipFileSystem(new File(path));
+                return new ZipFileSystem(new File(path), props);
             case "http":
-                return new HttpFileSystem(null);
-            case "https":
-                return new HttpsFileSystem();
-            case "sftp":
-                return new SftpFileSystem();
+                return new HttpFileSystem(url);
         }
         
         throw new IllegalArgumentException("Unsupported protocol: " + protocol);
-    }
+    }    
     
 }

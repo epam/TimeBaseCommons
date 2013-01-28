@@ -1,66 +1,183 @@
 package deltix.util.vfs;
 
+import deltix.util.lang.Util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpFileSystem implements VirtualFileSystem {
+public class HttpFileSystem implements VFileSystem<HttpFileSystem.HttpFile> {
 
     private final URL root;
 
     HttpFileSystem(URL root) {
         this.root = root;
     }        
-    
+
     @Override
-    public boolean exists(String path) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public HttpFile getRoot() throws IOException {                        
+        return new HttpFile(root);
     }
 
     @Override
-    public boolean isDirectory(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void unmount() throws IOException {        
     }
+        
+    public class HttpFile implements VFile, VFileAttributes {
 
-    @Override
-    public boolean isFile(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        private final URL       url;
+        private final String    absolutePath;
+        private final String    name;
+        
+        private HttpFile(URL url) {
+            this.url = url;
+            this.absolutePath = url.getPath();            
+            this.name = VFiles.getName(url);
+        }
+        
+        @Override
+        public boolean exists() throws IOException {
+            final HttpURLConnection connection = openHeaderConnection();
 
-    @Override
-    public String[] listFiles(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+            try {
+                return (connection.getResponseCode() == HttpURLConnection.HTTP_OK);
+            } finally {
+                connection.disconnect();
+            }
+        }
 
-    @Override
-    public String[] listDirectories(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        @Override
+        public VFileAttributes getAttributes() {
+            return this;
+        }
+                
+        @Override
+        public void delete() throws IOException {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+        
+        @Override
+        public OutputStream openToWrite() throws IOException {
+            throw new UnsupportedOperationException("Not supported.");
+        }
 
-    @Override
-    public void mkdirs(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        @Override
+        public InputStream openToRead() throws IOException {
+            return new HttpInputStream(openGetConnection());
+        }
 
-    @Override
-    public void delete(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        @Override
+        public long creationTime() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
 
-    @Override
-    public OutputStream openToWrite(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        @Override
+        public boolean isDirectory() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
 
-    @Override
-    public InputStream openToRead(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        @Override
+        public boolean isFile() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
 
-    @Override
-    public void unmount() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        @Override
+        public long lastModifiedTime() {
+            final HttpURLConnection connection = openHeaderConnection();
+
+            try {
+                return (connection.getLastModified());
+            } finally {
+                connection.disconnect();
+            }
+        }
+
+        @Override
+        public long size() {
+            final HttpURLConnection connection = openHeaderConnection();
+
+            try {
+                return (connection.getContentLength());
+            } finally {
+                connection.disconnect();
+            }
+        }
+        
+        @Override
+        public String absolutePath() {
+            return absolutePath;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public VFile get(String path) throws IOException {
+            return new HttpFile(VFiles.appendRelativePath(url, path));
+        }
+
+        @Override
+        public void walkTree(VFileVisitor<VFile> visitor) throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void mkdirs() throws IOException {
+            throw new UnsupportedOperationException("Not supported.");
+        }                       
+        
+        private HttpURLConnection openHeaderConnection() {
+            try {
+                final HttpURLConnection result = (HttpURLConnection) url.openConnection();
+                result.setUseCaches(false);
+                result.setRequestMethod("HEAD");
+                result.setDoInput(true);
+                result.setDoOutput(false);
+
+                result.connect();
+
+                return result;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        private HttpURLConnection openGetConnection() {
+            try {
+                final HttpURLConnection result = (HttpURLConnection) url.openConnection();
+                result.setUseCaches(false);
+                
+                result.connect();
+                
+                return result;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }        
+        
+        private class HttpInputStream extends InputStream {
+
+            private final HttpURLConnection connection;
+            private final InputStream delegate;
+
+            public HttpInputStream(HttpURLConnection connection) throws IOException {
+                this.connection = connection;
+                delegate = connection.getInputStream();
+            }
+                                    
+            @Override
+            public int read() throws IOException {
+                return delegate.read();
+            }
+
+            @Override
+            public void close() throws IOException {
+                Util.close(delegate);
+                connection.disconnect();
+            }                                    
+        } 
     }
-    
 }

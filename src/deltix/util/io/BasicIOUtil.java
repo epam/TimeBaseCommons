@@ -324,9 +324,8 @@ public abstract class BasicIOUtil {
     }
 
     public static void	copyFile7 (File src, File dest)
-        throws IOException, InterruptedException
-    {
-        Files.copy(Paths.get(src.toURI()), Paths.get(dest.toURI()), StandardCopyOption.REPLACE_EXISTING);
+        throws IOException, InterruptedException {
+        Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }    
 
     /**

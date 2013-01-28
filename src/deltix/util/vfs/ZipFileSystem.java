@@ -1,159 +1,225 @@
 package deltix.util.vfs;
 
 import deltix.util.lang.Util;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
+import deltix.util.vfs.VFileVisitor.VFileVisitResult;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
-public class ZipFileSystem implements VirtualFileSystem {
-
-    private final File zip;
+public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
+    public static final String          ZFS_WRITE_MODE = "ZFS_WRITE_MODE";
     
+    private boolean                     writeMode;
+    private final ZipInputStream        zin;
+    private final ZipOutputStream       zout;
+
+    public ZipFileSystem(InputStream in) throws IOException {        
+        writeMode = false;
+        zin = new ZipInputStream(in);
+        zout = null;
+    }
+    
+    public ZipFileSystem(OutputStream out) throws IOException {        
+        writeMode = true;
+        zin = null;
+        zout = new ZipOutputStream(out);
+    }
+
     public ZipFileSystem(File file) throws IOException {
-        if (!file.isAbsolute() &&
-                !file.exists() &&
-                !file.isFile()) {
-            throw new IOException("Cannot find zip file: " + file);
+        this(file, null);
+    }
+    
+    public ZipFileSystem(File file, Properties properties) throws IOException {
+        
+        writeMode = properties != null
+                && properties.getProperty(ZFS_WRITE_MODE, "false").
+                toLowerCase().equals("true");
+
+        if (writeMode) {
+            zin = null;
+            zout = new ZipOutputStream(new FileOutputStream(file));
+        } else {
+            zin = new ZipInputStream(new FileInputStream(file));
+            zout = null;
         }
-        
-        zip = file;
-    }
-    
-    @Override
-    public boolean exists(String path) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    }                
 
     @Override
-    public boolean isDirectory(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public ZipFile getRoot() throws IOException {
+        return new ZipFile(null);
     }
 
-    @Override
-    public boolean isFile(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String[] listFiles(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String[] listDirectories(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void mkdirs(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void delete(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public OutputStream openToWrite(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public InputStream openToRead(String path) throws PathNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Iterator<ReadeableZipEntry> openToRead() throws IOException {
-        
-        return new Iterator<ReadeableZipEntry>() {
-
-            @Override
-            public boolean hasNext() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ReadeableZipEntry next() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
-    }
-    
-    public void extractTo(File folder) throws IOException {
-        if (!folder.exists()) {
-            folder.mkdirs();
-        } else if (!folder.isDirectory()) {
-            throw new IOException(folder + " isn't a folder");
-        }
-        
-        final ZipFile zipFile = new ZipFile(zip);
-        final Enumeration<? extends ZipEntry> e = zipFile.entries();
-        
-        final byte[] buffer = new byte[4096];
-        
-        while (e.hasMoreElements()) {
-            final ZipEntry entry = e.nextElement();
-            File destinationFilePath = new File(folder, entry.getName());
-
-            destinationFilePath.getParentFile().mkdirs();
-
-            if (entry.isDirectory()) {
-                continue;
-            } else {
-                
-                InputStream bis = null;
-                BufferedOutputStream bos = null;
-                try {
-                    bis = new BufferedInputStream(zipFile.getInputStream(entry));
-                    bos = new BufferedOutputStream(new FileOutputStream(destinationFilePath), buffer.length);
-
-                    int b;
-                    while ((b = bis.read(buffer)) != -1) {
-                        bos.write(buffer, 0, b);
-                    }
-                    bos.flush();
-
-                } finally {
-                    Util.close(bis);
-                    Util.close(bos);
-                }
-            }
-        }                        
-    }
-    
     @Override
     public void unmount() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        if (writeMode) {
+            Util.close(zout);
+        } else {
+            Util.close(zin);
+        }
+    }    
     
-    public class ReadeableZipEntry implements Closeable {
-        public final ZipEntry entry;
-        public final InputStream content;
-
-        private ReadeableZipEntry(ZipEntry entry, InputStream content) {
-            this.entry = entry;
-            this.content = content;
-        }       
+    public class ZipFile implements VFile, VFileAttributes {
         
-        @Override
-        public void close() throws IOException {
-            content.close();
+        private final String absolutePath;
+        private final String name;
+        private final ZipEntry entry;
+        
+        protected ZipFile(ZipEntry entry) {            
+            this.entry = entry;
+            this.absolutePath = entry != null ? '/' + entry.getName() : "/";
+            this.name = VFiles.getName(absolutePath);
         }
         
-    }
+        @Override
+        public boolean exists() throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
+        @Override
+        public VFileAttributes getAttributes() {
+            return this;
+        }
+
+        @Override
+        public VFile get(String path) throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void walkTree(VFileVisitor<VFile> visitor) throws IOException {
+            if (writeMode) {
+                throw new IOException("Cannot walk in write mode.");
+            }
+            doWalkTree(visitor);
+        }
+
+        private VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) {            
+            try {               
+                if (isDirectory()) {
+                    if  (visitor.preVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                        return VFileVisitResult.TERMINATE;
+                    }
+                    ZipEntry nextEntry;
+                    while ((nextEntry = zin.getNextEntry()) != null) {
+                        if (new ZipFile(nextEntry).doWalkTree(visitor) == VFileVisitResult.TERMINATE) {
+                            return VFileVisitResult.TERMINATE;
+                        }
+                    }
+                    if (visitor.postVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                        return VFileVisitResult.TERMINATE;
+                    }
+                } else {
+                    if (visitor.visitFile(this) == VFileVisitResult.TERMINATE) {
+                        return VFileVisitResult.TERMINATE;
+                    }
+                }
+            } catch (IOException e) {
+                return visitor.visitFailed(this, e);
+            } catch (Throwable t) {
+                return visitor.visitFailed(this, new IOException(t));
+            } 
+            return VFileVisitResult.CONTINUE;
+        }
+        
+        @Override
+        public void mkdirs() throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void delete() throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public OutputStream openToWrite() throws IOException {
+            if (!writeMode) {
+                throw new IOException("Cannot write in read mode.");
+            }
+            if (entry == null) {
+                throw new IOException("Cannot write to root.");
+            }
+            
+            return new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                    zout.write(b);
+                }
+
+                @Override
+                public void flush() throws IOException {
+                    zout.flush();
+                }
+                
+                @Override
+                public void close() throws IOException {
+                    zout.closeEntry();
+                }                                
+            };
+        }
+
+        @Override
+        public InputStream openToRead() throws IOException {
+            if (writeMode) {
+                throw new IOException("Cannot read in write mode.");
+            }
+            if (entry == null) {
+                throw new IOException("Cannot read from root.");
+            }
+            
+            return new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return zin.read();
+                }
+                
+                @Override
+                public void close() throws IOException {
+                    zin.closeEntry();
+                }                                
+            };
+        }
+
+        @Override
+        public String absolutePath() {
+            return absolutePath;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public long creationTime() {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public boolean isDirectory() {
+            return entry == null || entry.isDirectory();
+        }
+
+        @Override
+        public boolean isFile() {
+            return !isDirectory();
+        }
+
+        @Override
+        public long lastModifiedTime() {
+            return entry == null ? 0 : entry.getTime();
+        }
+
+        @Override
+        public long size() {
+            return isDirectory() ? 0 : entry.getSize();
+        }               
+    }        
 }
