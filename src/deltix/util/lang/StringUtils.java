@@ -565,10 +565,16 @@ public class StringUtils {
         return str;
     }
 
-    /** @return true if trimmed input is empty string or null */
+    /** @return true if trimmed input is blank string or null */
     public static boolean isEmpty (CharSequence value) {
-        CharSequence s = trim(value);
-        return s == null || s.length() == 0;
+        if (value == null)
+            return true;
+
+        final int length = value.length();
+        for (int i=0; i < length; i++)
+            if (value.charAt(i) != ' ')
+                return false;
+        return true;
     }
 
     /** @return true if input is null or empty string contains only whitespaces */
