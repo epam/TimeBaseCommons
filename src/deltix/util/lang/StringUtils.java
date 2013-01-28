@@ -572,13 +572,13 @@ public class StringUtils {
 
         final int length = value.length();
         for (int i=0; i < length; i++)
-            if (value.charAt(i) != ' ')
+            if (value.charAt(i) > ' ')
                 return false;
         return true;
     }
 
     /** @return true if input is null or empty string contains only whitespaces */
-    public static boolean isWhitespace (String value) {
+    public static boolean isWhitespace (CharSequence value) {
         if (value == null)
             return true;
 
