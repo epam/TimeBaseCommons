@@ -2,6 +2,8 @@ package deltix.util.vfs;
 
 import deltix.util.lang.Util;
 import deltix.util.vfs.VFileVisitor.VFileVisitResult;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,7 +21,59 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
     private boolean                     writeMode;
     private final ZipInputStream        zin;
     private final ZipOutputStream       zout;
-
+    
+    public static void unzip(VFile vin, final File to) throws IOException {
+        InputStream in = null;
+        try {
+            in = new BufferedInputStream(vin.openToRead(), 8192);            
+            unzip(in, to);            
+        } finally {
+            Util.close(in);
+        }        
+    }
+    
+    public static void unzip(InputStream in, final File to) throws IOException {
+        
+        if (!to.exists()) {
+            to.mkdirs();
+        } else if (!to.isDirectory()) {
+            throw new IOException(to + " isn't a folder.");
+        }
+        
+        final ZipFileSystem fs = new ZipFileSystem(in);
+        try {
+            final byte[] buff = new byte[8192];
+            fs.getRoot().doWalkTree(new SimpleVFileVisitor<VFile>() {
+                @Override
+                public VFileVisitResult visitFile(VFile file) {
+                    final File localFile = new File(to, file.getAttributes().absolutePath());
+                    localFile.getParentFile().mkdirs();
+                    
+                    InputStream in = null;
+                    OutputStream out = null;
+                    int l;
+                    try {
+                        in = file.openToRead();
+                        out = new BufferedOutputStream(new FileOutputStream(localFile), buff.length);                        
+                        while ((l = in.read(buff)) > -1) {
+                            out.write(buff, 0, l);
+                        }                       
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        Util.close(in);
+                        Util.close(out);
+                    }
+                    
+                    return VFileVisitResult.CONTINUE;                    
+                }
+            });
+            
+        } finally {
+            VFiles.unmount(fs);
+        }
+    }
+    
     public ZipFileSystem(InputStream in) throws IOException {        
         writeMode = false;
         zin = new ZipInputStream(in);

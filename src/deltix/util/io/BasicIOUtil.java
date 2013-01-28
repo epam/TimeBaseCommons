@@ -567,6 +567,11 @@ public abstract class BasicIOUtil {
     }
 
     public static String []     readLinesFromReader (Reader r)
+        throws IOException, InterruptedException {
+        return readLinesFromReader (r, false);
+    }
+
+    public static String []     readLinesFromReader (Reader r, boolean trim)
         throws IOException, InterruptedException
     {
         BufferedReader      brd;
@@ -583,10 +588,17 @@ public abstract class BasicIOUtil {
 
             if (line == null)
                 break;
-
+            
             if (Thread.interrupted ())
                 throw new InterruptedException ();
 
+            if (trim) {
+                line = line.trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+            }
+            
             lines.add (line);
         }
 
