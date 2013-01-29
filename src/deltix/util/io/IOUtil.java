@@ -13,7 +13,8 @@ import javax.crypto.spec.*;
  *
  */
 public class IOUtil extends BasicIOUtil {
-    public static final String NOT_DECRYPTED = "???????";
+    public static final String NOT_DECRYPTED      = "???????";
+    public static final String TB_SECURE_CONN_KEY = "SECURE_CONN_KEY";
 
     /**
      *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
