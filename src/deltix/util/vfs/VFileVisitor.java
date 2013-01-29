@@ -8,11 +8,11 @@ public interface VFileVisitor<T extends VFile> {
         CONTINUE, TERMINATE;
     }
     
-    VFileVisitResult preVisitDirectory(T dir);
+    VFileVisitResult preVisitDirectory(T dir) throws IOException, InterruptedException;
 
-    VFileVisitResult visitFile(T file);    
+    VFileVisitResult visitFile(T file) throws IOException, InterruptedException;    
     
-    VFileVisitResult postVisitDirectory(T dir);
+    VFileVisitResult postVisitDirectory(T dir) throws IOException, InterruptedException;
     
-    VFileVisitResult visitFailed(T fileOrDir, IOException e);
+    VFileVisitResult visitFailed(T fileOrDir, IOException e) throws IOException, InterruptedException;
 }

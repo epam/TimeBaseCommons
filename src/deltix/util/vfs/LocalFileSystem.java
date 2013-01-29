@@ -54,34 +54,33 @@ public class LocalFileSystem implements VFileSystem<LocalFileSystem.LocalFile> {
         }
 
         @Override
-        public void walkTree(VFileVisitor<VFile> visitor) throws IOException {
+        public void walkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {
             doWalkTree(visitor);
         }
         
-        private VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) throws IOException {            
-            try {
-                if (isDirectory()) {
-                    if (visitor.preVisitDirectory(this) == VFileVisitResult.TERMINATE) {
-                        return VFileVisitResult.TERMINATE;
-                    }
-                    for (File subFile : file.listFiles()) {
-                        if (new LocalFile(subFile).doWalkTree(visitor) == VFileVisitResult.TERMINATE) {
-                            return VFileVisitResult.TERMINATE;                            
-                        }
-                    }
-                    if (visitor.postVisitDirectory(this) == VFileVisitResult.TERMINATE) {
-                        return VFileVisitResult.TERMINATE;
-                    }
-                } else {
-                    if (visitor.visitFile(this) == VFileVisitResult.TERMINATE) {
+        private VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {                        
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
+            
+            if (isDirectory()) {
+                if (visitor.preVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
+                }
+                for (File subFile : file.listFiles()) {
+                    if (new LocalFile(subFile).doWalkTree(visitor) == VFileVisitResult.TERMINATE) {
                         return VFileVisitResult.TERMINATE;
                     }
                 }
-            } catch (IOException e) {
-                return visitor.visitFailed(this, e);
-            } catch (Throwable t) {
-                return visitor.visitFailed(this, new IOException(t));
-            } 
+                if (visitor.postVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
+                }
+            } else {
+                if (visitor.visitFile(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
+                }
+            }
+            
             return VFileVisitResult.CONTINUE;
         }
 

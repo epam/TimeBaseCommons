@@ -12,7 +12,7 @@ public interface VFile {
     
     boolean exists() throws IOException;
     
-    void walkTree(VFileVisitor<VFile> visitor) throws IOException;
+    void walkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException;
     
     void mkdirs() throws IOException;
                 

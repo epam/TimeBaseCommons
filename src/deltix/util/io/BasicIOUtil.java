@@ -33,6 +33,7 @@ import java.util.regex.*;
  */
 public abstract class BasicIOUtil {
     public static final String  CR = System.getProperty ("line.separator");
+    public static final String  TEMP_FILE_PREFIX = "~";
 
     /**
      *  Closes a Socket without throwing an exception. Checks for null.

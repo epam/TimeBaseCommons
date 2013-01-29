@@ -1,6 +1,8 @@
 package deltix.util.vfs;
 
+import deltix.util.io.ByteCountingInputStream;
 import deltix.util.lang.Util;
+import deltix.util.progress.ProgressIndicator;
 import deltix.util.vfs.VFileVisitor.VFileVisitResult;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,7 +24,11 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
     private final ZipInputStream        zin;
     private final ZipOutputStream       zout;
     
-    public static void unzip(VFile vin, final File to) throws IOException {
+    public static void unzip(VFile vin, final File to) throws IOException, InterruptedException {
+        unzip(vin, to, null);
+    }
+    
+    public static void unzip(VFile vin, final File to, ProgressIndicator progress) throws IOException, InterruptedException {
         InputStream in = null;
         try {
             in = new BufferedInputStream(vin.openToRead(), 8192);            
@@ -31,8 +37,12 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
             Util.close(in);
         }        
     }
+
+    public static void unzip(InputStream in, final File to) throws IOException, InterruptedException {
+        unzip(in, to, null);
+    }
     
-    public static void unzip(InputStream in, final File to) throws IOException {
+    public static void unzip(InputStream in, final File to, final ProgressIndicator progress) throws IOException, InterruptedException {
         
         if (!to.exists()) {
             to.mkdirs();
@@ -45,7 +55,10 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
             final byte[] buff = new byte[8192];
             fs.getRoot().doWalkTree(new SimpleVFileVisitor<VFile>() {
                 @Override
-                public VFileVisitResult visitFile(VFile file) {
+                public VFileVisitResult visitFile(VFile file) throws IOException, InterruptedException {                                        
+                    
+                    checkNotInterrupted();
+                    
                     final File localFile = new File(to, file.getAttributes().absolutePath());
                     localFile.getParentFile().mkdirs();
                     
@@ -54,12 +67,22 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
                     int l;
                     try {
                         in = file.openToRead();
+                        
+                        if (progress != null) {
+                            in = new ByteCountingInputStream(in) {
+                                @Override
+                                public void numBytesChanged() {
+                                    progress.setWorkDone(getNumBytesRead());
+                                }
+                            };
+                        }
+                        
                         out = new BufferedOutputStream(new FileOutputStream(localFile), buff.length);                        
+                                                
                         while ((l = in.read(buff)) > -1) {
+                            checkNotInterrupted();
                             out.write(buff, 0, l);
                         }                       
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
                     } finally {
                         Util.close(in);
                         Util.close(out);
@@ -147,38 +170,37 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
         }
 
         @Override
-        public void walkTree(VFileVisitor<VFile> visitor) throws IOException {
+        public void walkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {
             if (writeMode) {
                 throw new IOException("Cannot walk in write mode.");
             }
             doWalkTree(visitor);
         }
 
-        private VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) {            
-            try {               
-                if (isDirectory()) {
-                    if  (visitor.preVisitDirectory(this) == VFileVisitResult.TERMINATE) {
-                        return VFileVisitResult.TERMINATE;
-                    }
-                    ZipEntry nextEntry;
-                    while ((nextEntry = zin.getNextEntry()) != null) {
-                        if (new ZipFile(nextEntry).doWalkTree(visitor) == VFileVisitResult.TERMINATE) {
-                            return VFileVisitResult.TERMINATE;
-                        }
-                    }
-                    if (visitor.postVisitDirectory(this) == VFileVisitResult.TERMINATE) {
-                        return VFileVisitResult.TERMINATE;
-                    }
-                } else {
-                    if (visitor.visitFile(this) == VFileVisitResult.TERMINATE) {
+        private VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
+
+            if (isDirectory()) {
+                if (visitor.preVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
+                }
+                ZipEntry nextEntry;
+                while ((nextEntry = zin.getNextEntry()) != null) {
+                    if (new ZipFile(nextEntry).doWalkTree(visitor) == VFileVisitResult.TERMINATE) {
                         return VFileVisitResult.TERMINATE;
                     }
                 }
-            } catch (IOException e) {
-                return visitor.visitFailed(this, e);
-            } catch (Throwable t) {
-                return visitor.visitFailed(this, new IOException(t));
-            } 
+                if (visitor.postVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
+                }
+            } else {
+                if (visitor.visitFile(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
+                }
+            }
+            
             return VFileVisitResult.CONTINUE;
         }
         

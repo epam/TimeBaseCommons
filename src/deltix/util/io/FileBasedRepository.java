@@ -33,7 +33,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                 
                 if (event == EventType.DELETED) { // a file or folder is deleted                    
 
-                    synchronized (items) {
+                    synchronized (lock) {
 
                         final FileItem fItem = items.remove(path);
 
@@ -64,14 +64,17 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                     switch (event) {
                         case SCANNED:
                         case CREATED:
-                            if (isSubscribableFolder(file)) {
-                                try {
-                                    FileSystemWatcher.getInstance().subscribe(this, file, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
-                                } catch (IOException e) {
-                                    logger.log(Level.WARNING, "An error while subscription to " + file, e);
+                            synchronized (lock) {
+
+                                if (isSubscribableFolder(file)) {
+                                    try {
+                                        FileSystemWatcher.getInstance().subscribe(this, file, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
+                                    } catch (IOException e) {
+                                        logger.log(Level.WARNING, "An error while subscription to " + file, e);
+                                    }
                                 }
+                                break;
                             }
-                            break;
                     }
                    
                 } else if (isItemFile(file)) { // a file item
@@ -85,7 +88,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                             
                             final SCMDRepositoryEvent e = event == EventType.SCANNED ? SCMDRepositoryEvent.SCANNED : SCMDRepositoryEvent.CREATED;
                             
-                            synchronized (items) {                                
+                            synchronized (lock) {                                
                                 if (items.containsKey(path)) { // already exists
                                     break;
                                 }
@@ -103,7 +106,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                             }
                             break;
                         case MODIFIED:
-                            synchronized (items) {                                
+                            synchronized (lock) {                                
                                 
                                 FileItem fItem = items.get(path);
 
@@ -159,6 +162,10 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
             }
         };        
     }
+    
+    public File getRoot() {
+        return root;
+    }
         
     @Override
     public final Collection<T> getItems() {
@@ -168,7 +175,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     @Override
     public final Collection<T> getItems(RepositoryItemFilter<T> filter) {
         final List<T> result = new ArrayList<>();
-        synchronized (items) {
+        synchronized (lock) {
             for (FileItem fItem : items.values()) {
                 final T item = fItem.item;
                 if (filter == null || filter.accepted(item)) {

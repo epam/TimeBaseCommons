@@ -120,7 +120,7 @@ public class HttpFileSystem implements VFileSystem<HttpFileSystem.HttpFile> {
         }
 
         @Override
-        public void walkTree(VFileVisitor<VFile> visitor) throws IOException {
+        public void walkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
