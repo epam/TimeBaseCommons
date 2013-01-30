@@ -20,17 +20,7 @@ public class VFiles {
             Util.close(out);
         }
     }
-    
-    public static <T extends VFileSystem> T unmount(T fs) {
-        if (fs != null) {
-            try {
-                fs.unmount();
-            } catch (Throwable t) {
-            }
-        }
-        return null;
-    }
-    
+        
     public static URL appendRelativePath(URL root, String relativePath) throws MalformedURLException {
         relativePath = relativePath.trim();
         if (relativePath.startsWith(".")) {

@@ -93,7 +93,7 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
             });
             
         } finally {
-            VFiles.unmount(fs);
+            Util.close(fs);
         }
     }
     
@@ -134,7 +134,7 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
     }
 
     @Override
-    public void unmount() throws IOException {
+    public void close() throws IOException {
         if (writeMode) {
             Util.close(zout);
         } else {

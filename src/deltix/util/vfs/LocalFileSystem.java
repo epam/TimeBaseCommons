@@ -27,7 +27,7 @@ public class LocalFileSystem implements VFileSystem<LocalFileSystem.LocalFile> {
     }
 
     @Override
-    public void unmount() throws IOException {        
+    public void close() throws IOException {        
     }        
     
     public class LocalFile implements VFile, VFileAttributes {

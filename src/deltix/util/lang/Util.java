@@ -581,14 +581,26 @@ public class Util {
 
     /**
      *  Closes a Closeable without throwing an exception. Checks for null.
+     *  Allows to do:
+     *  <pre>
+     *  stream = Util.close(stream);
+     *  </pre>
+     * instead of:
+     *  <pre>
+     *  Util.close(stream);
+     *  stream = null;
+     *  </pre>
+     * if required
      */
-    public static void			close (Closeable closeable) {
+    public static <T extends Closeable> T close (T closeable) {
         if (closeable != null)
             try {
                 closeable.close ();
             } catch (Exception x) {
                 handleException (x);
             }
+        
+        return null;
     }
 
 

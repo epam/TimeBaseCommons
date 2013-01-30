@@ -21,7 +21,7 @@ public class HttpFileSystem implements VFileSystem<HttpFileSystem.HttpFile> {
     }
 
     @Override
-    public void unmount() throws IOException {        
+    public void close() throws IOException {        
     }
         
     public class HttpFile implements VFile, VFileAttributes {
