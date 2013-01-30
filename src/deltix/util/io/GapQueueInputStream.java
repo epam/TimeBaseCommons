@@ -1,24 +1,28 @@
 package deltix.util.io;
 
-import deltix.util.collections.*;
-import deltix.util.vsocket.ChannelClosedException;
-import java.io.*;
+import deltix.util.collections.ByteQueue;
+import deltix.util.collections.GapByteQueue;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
 
 /**
  *  Input stream regarding from an embedded queue. Read operations block
  *  for more data, or until the {@link #finish} method is called.
  */
-public class ByteQueueInputStream extends InputStream {
-    private ByteQueue               q;
+public class GapQueueInputStream extends InputStream {
+    private GapByteQueue            q;
     private boolean                 endOfQueue = false;
     private IOException             exception;
-    
-    public ByteQueueInputStream (int capacity) {
-        q = new ByteQueue (capacity);
+
+    public GapQueueInputStream(int capacity) {
+        q = new GapByteQueue (capacity);
     }
 
-    public ByteQueueInputStream(ByteQueue q) {
-        this.q = q;
+    public GapQueueInputStream(GapByteQueue queue) {
+        q = queue;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class ByteQueueInputStream extends InputStream {
         notify ();
     }
 
-    public synchronized void        putData (byte data)
+    public synchronized boolean     putData (byte [] data, int offset, int length, int position)
             throws IOException
     {
         if (endOfQueue)
@@ -46,21 +50,12 @@ public class ByteQueueInputStream extends InputStream {
         if (q == null)
             throw new EOFException ("Closed");
 
-        q.offer (data);
-        notify ();
-    }
+        if (q.write(data, offset, length, position)) {
+            notify ();
+            return true;
+        }
 
-    public synchronized void        putData (byte [] data, int offset, int length)
-            throws IOException
-    {
-        if (endOfQueue)
-            throw new EOQException("Finished");            
-        
-        if (q == null)
-            throw new EOFException ("Closed");
-
-        q.offer (data, offset, length);
-        notify ();
+        return false;
     }
 
     @Override
@@ -69,10 +64,12 @@ public class ByteQueueInputStream extends InputStream {
         if (q == null)
             throw new EOFException ("Closed");
 
-        if (q.size() == 0 && endOfQueue)
+        int size = q.size();
+
+        if (size == 0 && endOfQueue)
             throw new EOQException("Finished");        
 
-        return q.size();
+        return size;
     }
 
     protected void                  waitUnchecked () throws IOException {
@@ -107,6 +104,11 @@ public class ByteQueueInputStream extends InputStream {
     public synchronized boolean     isClosed() {
         return q == null || endOfQueue;
     }
+
+//    @Override
+//    public synchronized long skip(long n) throws IOException {
+//        return super.skip(n);
+//    }
 
     @Override
     public synchronized int         read (byte [] b, int off, int len)
