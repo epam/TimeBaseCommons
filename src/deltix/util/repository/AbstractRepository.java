@@ -29,22 +29,20 @@ public abstract class AbstractRepository<T> implements Repository<T> {
         
         synchronized (lock) {
             
-            if (handlers.contains(handler)) {
-                throw new IllegalArgumentException("Handler " + handler + " has been subscribed already.");
+            if (!handlers.contains(handler)) {
+                handlers.add(handler);
+
+                for (RepositoryEvent event : events) {
+                    List<RepositoryEventHandler<T>> evntHandlers = this.eventHandlers.get(event);
+                    if (evntHandlers == null) {
+                        evntHandlers = new ArrayList<>();
+                        eventHandlers.put(event, evntHandlers);
+                    }
+
+                    evntHandlers.add(handler);
+                }                
             }
-            
-            handlers.add(handler);
-            
-            for (RepositoryEvent event : events) {
-                List<RepositoryEventHandler<T>> evntHandlers = this.eventHandlers.get(event);
-                if (evntHandlers == null) {
-                    evntHandlers = new ArrayList<>();
-                    eventHandlers.put(event, evntHandlers);
-                }
-                
-                evntHandlers.add(handler);
-            }
-            
+                        
             if (SCMDRepositoryEvent.SCANNED.isInto(events)) {
                 for (T item : getItems()) {
                     handler.onEvent(item, SCMDRepositoryEvent.SCANNED);
@@ -66,7 +64,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
             }                        
         }                           
     }
-    
+        
     protected final void checkHoldsLock() { 
         assert Thread.holdsLock(lock) : "Thread should hold the lock.";
     }    
