@@ -120,6 +120,7 @@ public class FileSystemWatcher {
         return INSTANCE;
     }
     
+    private final Object                        lock = new Object();
     private WatchingThread                      watcher;
     
     private FileSystemWatcher() {                 
@@ -160,12 +161,16 @@ public class FileSystemWatcher {
         }        
     }   
     
+    public Object getLock() {
+        return lock;
+    }
+    
     private class WatchingThread extends Thread {
         
         private final WatchService                          watcher;
-        private final Map<String, List<EventHandler>>       pathMap = new HashMap<>();
+        private final Map<Path, List<EventHandler>>         pathMap = new HashMap<>();
         private final Map<WatchKey, Path>                   keyMap = new HashMap<>();
-                
+        
         private WatchingThread() {
             super(FileSystemWatcher.class.getSimpleName());
             
@@ -179,7 +184,7 @@ public class FileSystemWatcher {
         }
 
         private boolean isEmpty() {
-            synchronized (pathMap) {
+            synchronized (lock) {
                 return pathMap.isEmpty();
             }
         }
@@ -189,20 +194,18 @@ public class FileSystemWatcher {
             final Path path = folder.toPath();
             final WatchEvent.Kind[] stdEvents = EventType.toWatchEventKind(events);
             
-            synchronized (pathMap) {            
+            synchronized (lock) {            
                 
                 if (stdEvents.length > 0) {
 
-                    final String pathStr = path.toAbsolutePath().toString();
-
-                    final boolean newPath = !pathMap.containsKey(pathStr);
+                    final boolean newPath = !pathMap.containsKey(path);
 
                     final List<EventHandler> pathLtns;
                     if (newPath) {
                         pathLtns = new ArrayList<>();
-                        pathMap.put(pathStr, pathLtns);
+                        pathMap.put(path, pathLtns);
                     } else {
-                        pathLtns = pathMap.get(pathStr);
+                        pathLtns = pathMap.get(path);
                     }
 
                     if (!pathLtns.contains(handler)) {
@@ -223,11 +226,11 @@ public class FileSystemWatcher {
         }
 
         private void unsubscribe(EventHandler handler) {                        
-            synchronized (pathMap) {                
+            synchronized (lock) {                
                 
                 final List<Path> paths = new ArrayList<>();
 
-                for (Map.Entry<String, List<EventHandler>> kv : pathMap.entrySet()) {
+                for (Map.Entry<Path, List<EventHandler>> kv : pathMap.entrySet()) {
                     if (!kv.getValue().contains(handler)) {
                         continue;
                     }
@@ -241,9 +244,7 @@ public class FileSystemWatcher {
 
                 for (Path path : paths) {
 
-                    final String pathStr = path.toAbsolutePath().toString();
-
-                    final List<EventHandler> pathLtns = pathMap.get(pathStr);
+                    final List<EventHandler> pathLtns = pathMap.get(path);
                     if (pathLtns == null) {
                         continue;
                     }
@@ -261,12 +262,12 @@ public class FileSystemWatcher {
                             keyMap.remove(key);
                         }
 
-                        pathMap.remove(pathStr);
+                        pathMap.remove(path);
                     }
                 }
             }
         }        
-        
+                
         @Override
         @SuppressWarnings("unchecked")
         public void run() {
@@ -299,7 +300,7 @@ public class FileSystemWatcher {
                     final WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     final Path file = ev.context();
 
-                    synchronized (pathMap) {
+                    synchronized (lock) {
                         
                         final Path path = keyMap.get(key);
                         if (path == null) {

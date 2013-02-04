@@ -13,12 +13,13 @@ public abstract class AbstractRepository<T> implements Repository<T> {
         
     @SuppressWarnings("NonConstantLogger")
     protected final Logger                          logger = Logger.getLogger(getClass().getName());
-    protected final Object                          lock = new Object();
+    protected final Object                          lock;
     
     private final List<RepositoryEventHandler<T>>   handlers = new ArrayList<>();
     private final Map<RepositoryEvent, List<RepositoryEventHandler<T>>> eventHandlers = new HashMap<>();    
     
-    protected AbstractRepository() {
+    protected AbstractRepository(Object lock) {
+        this.lock = lock;
     }
             
     @Override
