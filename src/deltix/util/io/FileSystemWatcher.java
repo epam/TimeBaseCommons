@@ -177,6 +177,7 @@ public class FileSystemWatcher {
             setDaemon(true);
             
             try {
+                System.out.println("Preparing WatchingThread");
                 watcher = FileSystems.getDefault().newWatchService();
             } catch (IOException e) {
                 throw new RuntimeException(e);

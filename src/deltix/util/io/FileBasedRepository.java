@@ -7,7 +7,11 @@ import deltix.util.repository.RepositoryItemFilter;
 import deltix.util.repository.SCMDRepositoryEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,13 +20,14 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
+    private static final int                        TEMP_FILE_LIFE_TIME = 10 * 60 * 1000;
         
     protected final File                            root;
     
     private final Map<Path, FileItem>               items = new HashMap<>();    
     private final FileSystemWatcher.EventHandler    fsEventHandler;
     
-    protected FileBasedRepository(File root) {
+    protected FileBasedRepository(final File root) {
         super(FileSystemWatcher.getInstance().getLock());
         
         this.root = root;
@@ -35,6 +40,43 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                 }
             }
         };
+        
+        try {
+            // clean-up the old temp files/folders if exist
+            Files.walkFileTree(root.toPath(), new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    final File fDir = dir.toFile();
+                    
+                    if (root.equals(fDir.getParentFile()) &&
+                            dir.getFileName().startsWith(IOUtil.TEMP_FILE_PREFIX)
+                            && System.currentTimeMillis() - attrs.creationTime().toMillis() > TEMP_FILE_LIFE_TIME) { // older than 10 mins                
+                        
+                        IOUtil.deleteFileOrDir(fDir);
+                        
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                    return FileVisitResult.CONTINUE;
+                }                
+                
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    final File fFile = file.toFile();
+                    
+                    if (root.equals(fFile.getParentFile()) &&
+                            file.getFileName().startsWith(IOUtil.TEMP_FILE_PREFIX)
+                            && System.currentTimeMillis() - attrs.creationTime().toMillis() > TEMP_FILE_LIFE_TIME) { // older than 10 mins                
+                        
+                        IOUtil.deleteFileOrDir(fFile);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+                
+            });
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Cannot clean-up the folder " + root + " from the temporary files.", e);
+        }
     }
     
     public final File getRoot() {
@@ -229,7 +271,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     
     protected abstract T prepareItem(File file) throws IOException;
     
-    private class FileItem {
+    protected class FileItem {
         private long        lastModified;
         private T           item;        
 
