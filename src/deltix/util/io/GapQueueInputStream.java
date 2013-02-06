@@ -89,7 +89,7 @@ public class GapQueueInputStream extends InputStream {
             if (q == null)
                 throw new EOFException ("Stream is closed");
 
-            if (!q.isEmpty ())
+            if (q.size() > 0)
                 break;
 
             if (endOfQueue)
@@ -106,9 +106,36 @@ public class GapQueueInputStream extends InputStream {
     }
 
 //    @Override
-//    public synchronized long skip(long n) throws IOException {
-//        return super.skip(n);
+//    public synchronized long skip (long n) throws IOException {
+//        long remaining = n;
+//
+//        int         size;
+//
+//        while (remaining > 0) {
+//            if (exception != null)
+//                throw exception;
+//
+//            if (q == null)
+//                throw new EOFException ("Stream is closed");
+//
+//            size = q.size ();
+//
+//            if (size > 0) {
+//                if (size > remaining)
+//                    size = (int) remaining;
+//
+//                remaining -= q.skip(size);
+//            }
+//
+//            if (endOfQueue)
+//                return (-1);
+//
+//            waitUnchecked();
+//        }
+//
+//        return (n - remaining);
 //    }
+
 
     @Override
     public synchronized int         read (byte [] b, int off, int len)

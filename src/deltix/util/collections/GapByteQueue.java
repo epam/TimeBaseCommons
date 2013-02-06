@@ -24,6 +24,7 @@ public class GapByteQueue {
             this.offset = start;
             this.length = length;
 
+            assert offset >= 0 && offset < capacity;
             assert length > 0;
         }
         
@@ -32,7 +33,7 @@ public class GapByteQueue {
             if (end < capacity)
                 return pos >= offset && pos < end;
 
-            return pos >= offset || pos < end % capacity;
+            return pos >= offset || pos < (end % capacity);
         }
     }
 
@@ -42,10 +43,8 @@ public class GapByteQueue {
 
         int available() {
             Gap first = gaps.getFirst();
-            if (first != null)
-                return absolute(first.offset);
 
-            return size;
+            return first != null ? absolute(first.offset) : size;
         }
 
         boolean write(int offset, int length) {
@@ -53,24 +52,26 @@ public class GapByteQueue {
             Gap next = gaps.getFirst();
 
             if (next == null) {
-                int total = (tail - head <= 0 ? capacity : 0) + (tail - head);
-
-                if (total != size) {
+                int total = total();
+                if (total() > size) {
                     gaps.linkFirst(new Gap((head + size - length) % capacity, total - size));
                     return size > length;
                 }
 
-                return size > 0;
+                return true;
             }
 
             // find gap
             while (next != null && !next.contains(offset))
                 next = (Gap) next.next();
 
-            assert next != null;
+            if (next == null) { // gap containing data block does not exists
+                assert ((offset + length) % capacity) == tail;
+                return size > length;
+            }
 
             if (next.offset == offset) { // left side check
-                if (next.length == length) {
+                if (next.length <= length) {
                     next.unlink();
                 } else {
                     next.length = next.length - length;
@@ -80,22 +81,35 @@ public class GapByteQueue {
                 int off = offset - next.offset + capacity;
                 if (off + length == next.length) { // right side check
                     next.length -= length;
-                } else { // new gap inside this one
+                } else {
                     int len = next.length;
                     next.length = off;
-                    QuickList.linkAfter(next, new Gap(offset + length, len - next.length - length));
+
+                    if (len - next.length - length > 0) // new gap inside this one
+                        QuickList.linkAfter(next, new Gap(offset + length, len - next.length - length));
                 }
-            } else  {
+            } else {
                 if ((offset - next.offset + length) == next.length) { // right side check
                     next.length -= length;
-                } else { // new gap inside this one
+                } else {
                     int len = next.length;
                     next.length = offset - next.offset;
-
-                    Gap gap = new Gap((offset + length) % capacity, len - next.length - length);
-                    QuickList.linkAfter(next, gap);
+                    if (len - next.length - length > 0) { // new gap inside this one
+                        Gap gap = new Gap((offset + length) % capacity, len - next.length - length);
+                        QuickList.linkAfter(next, gap);
+                    }
                 }
             }
+
+//            int total = total();
+//
+//            next = gaps.getFirst();
+//            while (next != null) {
+//                total -= next.length;
+//                next = (Gap) next.next();
+//            }
+//
+//            assert total == size;
 
             return available() > 0;
         }
@@ -110,19 +124,21 @@ public class GapByteQueue {
     private int                     absolute(int offset) {
         return (offset - head < 0 ? capacity : 0) + (offset - head);
     }
+    
+    private int                     total() {
+        return (tail - head <= 0 && size > 0 ? capacity : 0) + (tail - head);
+    }
 
     public boolean                  write (byte [] src, int offset, int length, int position) {
         assert size + length <= capacity :
                 "size: " + size + "; length: " + length + "; capacity: " + capacity;
-
-        int oldTail = tail;
 
         assert position >= 0 && position < capacity;
 
         int                 end = position + length;
         int                 excess = end - capacity;
 
-        boolean overhead = absolute(position) + length > absolute(tail);
+        boolean overhead = absolute(position) + length > total();
 
         if (excess > 0) {
             int             n = capacity - position;
@@ -135,17 +151,11 @@ public class GapByteQueue {
         else {
             System.arraycopy (src, offset, buffer, position, length);
             tail = overhead ? (excess == 0 ? 0 : end) : tail;
-
-//            if (excess == 0)
-//                tail = 0;
-//            else
-//                tail = overhead ? end : tail;
         }
-        if (oldTail < tail)
-            assert true;
+
+        size += length;
 
         assert tail >= 0 && tail <= capacity;
-        size += length;
 
         return gaps.write(position, length);
     }
@@ -194,17 +204,19 @@ public class GapByteQueue {
         size -= length;
     }
 
-    /**
-     *  Equivalent to (head + offset) % capacity for 0 &lt;= offset &lt; capacity
-     *  but a bit faster.
-     */
-    private int                 logicalToInternal (int srcOffset) {
-        int     ret = head + srcOffset;
+    public int                 skip (int length) {
+        assert size >= length : "size: " + size + "; length: " + length;
 
-        if (ret >= capacity)
-            ret -= capacity;
+        int                 end = head + length;
+        int                 excess = end - capacity;
 
-        return (ret);
+        if (excess > 0)
+            head = excess;
+        else
+            head = excess == 0 ? 0 : end;
+
+        size -= length;
+        return length;
     }
 
     public void                 clear () {
@@ -213,9 +225,9 @@ public class GapByteQueue {
         tail = 0;
     }
 
-    public boolean        isEmpty () {
-        return (size == 0);
-    }
+//    public boolean        isEmpty () {
+//        return (size == 0);
+//    }
 
     public int            size () {
         return available();
