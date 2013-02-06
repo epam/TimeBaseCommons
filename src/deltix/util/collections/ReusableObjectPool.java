@@ -1,9 +1,13 @@
 package deltix.util.collections;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReusableObjectPool<T> {
+import deltix.util.lang.Util;
+
+public class ReusableObjectPool<T> implements Closeable {
 
     private final Object lock = new Object();
     private final List<T> freeItems = new ArrayList<T>();
@@ -43,5 +47,18 @@ public class ReusableObjectPool<T> {
     public interface ItemFactory<T> {
         T createItem();
     }
-    
+
+
+    @Override
+    public void close() throws IOException {
+        // close items in the pool and make the pool unusable
+        synchronized (lock) {
+            for (int i = lastItem; i >= 0; i--) {
+                final Object item = freeItems.get(i);
+                if (item instanceof Closeable)
+                    Util.close((Closeable) item);
+            }
+            freeItems.clear();
+        }
+    }
 }
