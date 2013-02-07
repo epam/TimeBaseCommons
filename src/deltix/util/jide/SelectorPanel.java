@@ -212,6 +212,20 @@ public abstract class SelectorPanel<T> extends JPanel {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
+    public final java.util.List<T> getListModelItems () {
+        final ArrayList<T> result = new ArrayList<T> ();
+        final DefaultListModel model = (DefaultListModel) this.field.getListModel ();
+        if (model != null) {
+            final int size = model.getSize ();
+            for (int index = 0; index < size; index++) {
+                    result.add ((T) this.field.getDisplayListModel ().getElementAt (index));
+            }
+        }
+
+        return result;
+    }
+
     public final void selectAll () {
         this.list.getCheckBoxListSelectionModel ().setSelectionInterval (0,
                                                                          getListModel ().getSize () - 1);
