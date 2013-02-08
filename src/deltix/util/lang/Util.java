@@ -514,6 +514,7 @@ public class Util {
         );
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T unwrap (T instance) {
         while (instance instanceof Wrapper)
             instance = ((Wrapper<T>)instance).getNestedInstance();
@@ -521,7 +522,17 @@ public class Util {
         return instance;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T unwrap (Object instance, Class<T> upToClass) {
+        boolean found = false;
+        
+        while (!(found = instance.getClass() == upToClass) &&
+                instance instanceof Wrapper)
+            instance = ((Wrapper<T>)instance).getNestedInstance();
 
+        return found ? (T) instance : null;
+    }
+    
     /**
      *	Gets to the bottom of the exception.
      */
