@@ -513,7 +513,15 @@ public class Util {
             }
         );
     }
-    
+
+    public static <T> T unwrap (T instance) {
+        while (instance instanceof Wrapper)
+            instance = ((Wrapper<T>)instance).getNestedInstance();
+
+        return instance;
+    }
+
+
     /**
      *	Gets to the bottom of the exception.
      */
