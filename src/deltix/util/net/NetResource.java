@@ -60,8 +60,14 @@ public class NetResource extends Resource {
 
     @Override
     public InputStream      openStream () throws IOException {
+        return (openStream(0));
+    }
+
+    @Override
+    public InputStream      openStream(int timeout) throws IOException {
         URLConnection connection = url.openConnection();
         connection.setUseCaches(false);
+        connection.setConnectTimeout(timeout);
         return (connection.getInputStream());
     }
 

@@ -36,4 +36,10 @@ public abstract class Resource {
     public abstract long            getLastModified () throws IOException;
 
     public abstract InputStream     openStream () throws IOException;
+
+    /**
+     * @param timeout specifies timeout value, in milliseconds.A timeout of zero is
+     * interpreted as an infinite timeout.
+     */
+    public abstract InputStream     openStream (int timeout) throws IOException;
 }

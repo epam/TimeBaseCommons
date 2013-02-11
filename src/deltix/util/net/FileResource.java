@@ -28,6 +28,11 @@ public class FileResource extends Resource {
     }
 
     @Override
+    public InputStream      openStream(int timeout) throws IOException {
+        return openStream();
+    }
+
+    @Override
     public String           toString () {
         return (file.getPath ());
     }
