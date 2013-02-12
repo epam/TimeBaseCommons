@@ -265,7 +265,9 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
         FileSystemWatcher.getInstance().unsubscribe(fsEventHandler);
     }
     
-    protected abstract boolean isSubscribableFolder(File folder);
+    protected boolean isSubscribableFolder(File folder) {
+        return false;
+    }
     
     protected abstract boolean isItemFile(File file);
     
