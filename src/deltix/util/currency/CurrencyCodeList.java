@@ -16,9 +16,10 @@ import deltix.util.text.*;
 
 @Depends("deltix/util/currency/CurrencyCodes.xml")
 public class CurrencyCodeList {
-    private static final CurrencyInfo[]            numericIndex  = new CurrencyInfo[1000];
-    private static final Map<CharSequence, CurrencyInfo> symbolicIndex = new HashMap<CharSequence, CurrencyInfo> (1000);
-    private static int                             TEXT_MARKER   = 0x8000;
+    private static final int                             amount        =   1000;
+    private static final CurrencyInfo[]                  numericIndex  = new CurrencyInfo[amount];
+    private static final Map<CharSequence, CurrencyInfo> symbolicIndex = new HashMap<CharSequence, CurrencyInfo>(amount);
+    private static       int                             TEXT_MARKER   = 0x8000;
 
     static {
         read ("deltix/util/currency/CurrencyCodes.xml");
@@ -101,7 +102,7 @@ public class CurrencyCodeList {
     }
 
     public static CurrencyInfo getInfoByNumeric (final int code) {
-        return (numericIndex[code]);
+        return (code >= 0  && code < amount ?  numericIndex[code] : null);
     }
 
     public static CurrencyInfo getInfoBySymbolic (final CharSequence code) {
@@ -126,9 +127,8 @@ public class CurrencyCodeList {
                         else
                             return getInfoBySymbolic (CurrencyCodec.intToCode (n));
                     } catch (final NumberFormatException e) {
-                        e.printStackTrace ();
-                        //
-                    } 
+                        return null;
+                    }
                 }
 
                 return getInfoBySymbolic (s);
