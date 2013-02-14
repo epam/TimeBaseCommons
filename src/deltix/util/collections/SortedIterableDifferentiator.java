@@ -1,11 +1,9 @@
-package deltix.qsrv.cep.pub.blueprint;
-
-import deltix.util.collections.CursorFromIterator;
+package deltix.util.collections;
 
 /**
  *  Utility for differentiating two sorted sets of objects.
  */
-public class EPObjectDifferentiator <T extends EPObject> {
+public class SortedIterableDifferentiator <T extends Comparable <T>> {
     public void         diffCollections (Iterable <T> from, Iterable <T> to) {
         CursorFromIterator <T>      ifrom = new CursorFromIterator <T> (from);
         CursorFromIterator <T>      ito = new CursorFromIterator <T> (to);
@@ -31,7 +29,7 @@ public class EPObjectDifferentiator <T extends EPObject> {
                 else {
                     T       vto = ito.get ();
                     
-                    int     cmp = vfrom.getId ().compareTo (vto.getId ());
+                    int     cmp = vfrom.compareTo (vto);
                     
                     if (cmp < 0) {
                         objectRemoved (vfrom);
@@ -51,19 +49,12 @@ public class EPObjectDifferentiator <T extends EPObject> {
         }
     }
 
-    public void         diffObject (T from, T to) {
-        int d = from.diff (to);
-        
-        if (d != 0)
-            objectChanged (from, to, d);
+    public void         diffObject (T from, T to) {        
     }
 
     protected void      objectRemoved (T p) {
     }
 
     protected void      objectAdded (T p) {
-    }
-
-    protected void      objectChanged (T from, T to, int props) {
     }        
 }
