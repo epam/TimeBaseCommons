@@ -1,5 +1,8 @@
 package deltix.util.collections;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Fixed size circular buffer of byte values
  */
@@ -36,35 +39,35 @@ public final class ByteQueue {
             tail = 0;                
     }
 
-    public void                 insert (byte [] src, int offset, int length) {
-        if (capacity - size < length) {
-            // increase buffer
-            if (tail > head) {
-                byte[] temp = new byte[capacity + length];
-                System.arraycopy (buffer, head, temp, length + head, size);
-                buffer = temp;                
-            } else {
-                byte[] temp = new byte[capacity + length];
-                System.arraycopy (buffer, 0, temp, 0, tail);
-                System.arraycopy (buffer, head, temp, capacity - head + length, capacity - head);
-                buffer = temp;
-            }
-            capacity += length;
-        }
-        
-        if (head > length) {
-            System.arraycopy (src, offset, buffer, head - length, length);
-            head -= length;
-        } else {
-            int remains = length - head;
-            System.arraycopy (src, offset, buffer, capacity - remains, remains);
-            System.arraycopy (src, offset + remains, buffer, 0, head);
-
-            head = capacity - remains;
-        }
-        size += length;
-
-    }
+//    public void                 insert (byte [] src, int offset, int length) {
+//        if (capacity - size < length) {
+//            // increase buffer
+//            if (tail > head) {
+//                byte[] temp = new byte[capacity + length];
+//                System.arraycopy (buffer, head, temp, length + head, size);
+//                buffer = temp;
+//            } else {
+//                byte[] temp = new byte[capacity + length];
+//                System.arraycopy (buffer, 0, temp, 0, tail);
+//                System.arraycopy (buffer, head, temp, capacity - head + length, capacity - head);
+//                buffer = temp;
+//            }
+//            capacity += length;
+//        }
+//
+//        if (head > length) {
+//            System.arraycopy (src, offset, buffer, head - length, length);
+//            head -= length;
+//        } else {
+//            int remains = length - head;
+//            System.arraycopy (src, offset, buffer, capacity - remains, remains);
+//            System.arraycopy (src, offset + remains, buffer, 0, head);
+//
+//            head = capacity - remains;
+//        }
+//        size += length;
+//
+//    }
     
     public void                 offer (byte [] src, int offset, int length) {
         assert size + length <= capacity :
@@ -87,7 +90,20 @@ public final class ByteQueue {
             tail = excess == 0 ? 0 : end;
         }  
         
-        size += length;        
+        size += length;
+    }
+
+    public void                 poll(OutputStream out) throws IOException {
+        int end = head + size;
+
+        if (end - capacity > 0) {
+            out.write(buffer, head, capacity - head);
+            out.write(buffer, 0, tail);
+        } else {
+            out.write(buffer, head, tail - head);
+        }
+
+        clear();
     }
     
     public byte                 poll () {
@@ -100,7 +116,7 @@ public final class ByteQueue {
         
         if (head == capacity)
             head = 0;
-        
+
         return (value);
     }   
 
@@ -168,7 +184,7 @@ public final class ByteQueue {
     }
 
     public void                 skip (int length) {
-        assert size >= length : "skip length " + length + " > size: " + size;
+        assert size >= length && length >= 0 : "skip length " + length + " > size: " + size;
         
         size -= length;
         head += length;
