@@ -32,14 +32,6 @@ public class InstrumentKey
         symbol = copy.getSymbol ();
     }
 
-    public InstrumentKey (String value) {
-        int colon = value.indexOf(':');
-        if (colon < 0)
-            throw new IllegalArgumentException(value);
-        instrumentType = InstrumentType.valueOf(value.substring(colon+1));
-        symbol = value.substring(0, colon);
-    }
-
     public CharSequence         getSymbol () {
         return (symbol);
     }
@@ -121,5 +113,22 @@ public class InstrumentKey
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         instrumentType = (InstrumentType) ois.readObject();
         symbol = (CharSequence) ois.readObject();
+    }
+
+    /**
+    *   Creates InstrumentKey from String representation.
+    *   @param value    string in format Symbol:InstrumentType
+    *   @return         new InstrumentKey.
+    **/
+    public static InstrumentKey               valueOf(String value) {
+        InstrumentKey key = new InstrumentKey();
+        int colon = value.indexOf(':');
+        if (colon < 0)
+            throw new IllegalArgumentException("Cannot parse " + value + ". Expecting Symbol:InstrumentType format");
+
+        key.instrumentType = InstrumentType.valueOf(value.substring(colon+1));
+        key.symbol = value.substring(0, colon);
+
+        return key;
     }
 }
