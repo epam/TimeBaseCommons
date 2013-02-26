@@ -4,6 +4,7 @@ import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
 
 import java.io.*;
+import java.util.logging.Logger;
 
 /**
  * Date: May 28, 2010
@@ -11,6 +12,8 @@ import java.io.*;
  * @author alex
  */
 public class Executor {
+    
+    public static final Logger LOG = Logger.getLogger("deltix.util.os");
 
     static class StreamGrabber extends Thread {
         private InputStream is;

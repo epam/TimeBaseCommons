@@ -24,8 +24,9 @@ public class TokenReplacingReader extends Reader {
     }
 
     @Override
-    public int read(CharBuffer target) throws IOException {
-        throw new RuntimeException("Operation Not Supported");
+    public int read(CharBuffer target) throws IOException {                                        
+        
+        return read(target.array(), 0, target.limit());
     }
 
     @Override
@@ -60,7 +61,7 @@ public class TokenReplacingReader extends Reader {
             this.tokenValue = this.tokenResolver.resolveToken(this.tokenNameBuffer
                             .toString());
 
-            if (this.tokenValue == null) {
+            if (this.tokenValue == null || this.tokenValue.length() == 0) {
                     this.tokenValue = "${" + this.tokenNameBuffer.toString() + "}";
             }
             return this.tokenValue.charAt(this.tokenValueIndex++);

@@ -893,6 +893,56 @@ public class StringUtils {
             return value;
         return value.substring(0, maxWidth - 3) + "...";
     }
+    
+  /**
+     * Compares two strings using only letters and digits. For example:
+     * <pre>
+     * compareSignatures(",a_ b++ 3=c", "__a%b3c+") 
+     * </pre>
+     * returns true.
+     * @param signature1
+     * @param signature2
+     * @return true if the signatures contains the same sequence of letters and digits
+     */
+    public static boolean matchSignatures(String signature1, String signature2) {
+        
+        int i1 = 0;
+        int i2 = 0;
+
+        while (true) {
+            char c1 = 0;
+
+            while (i1 < signature1.length()) {
+                char c = signature1.charAt(i1++);
+
+                if (Character.isLetterOrDigit(c)) {
+                    c1 = c;
+                    break;
+                }
+            }
+
+            char c2 = 0;
+
+            while (i2 < signature2.length()) {
+                char c = signature2.charAt(i2++);
+
+                if (Character.isLetterOrDigit(c)) {
+                    c2 = c;
+                    break;
+                }
+            }
+
+            if (c1 + c2 == 0) {
+                break;
+            }
+
+            if (c1 != c2) {
+                return false;
+            }
+        }
+
+        return true;
+    }   
 }
 
 

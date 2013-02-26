@@ -3,6 +3,8 @@ package deltix.util.os;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.io.UncheckedIOException;
 import deltix.util.lang.Util;
+import deltix.util.text.table.AlignedNoWhitespacesTable;
+import deltix.util.text.table.Row;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -113,12 +115,37 @@ public class LinuxOS {
 
     }
 
+    public static LiveProcess[] getProcessList() throws Exception {
+        final List<LiveProcess> result = new ArrayList<>();                
+                
+        final AlignedNoWhitespacesTable psTable = new AlignedNoWhitespacesTable(
+                    command(new StringBuilder(), "ps", "-eo", "pid,comm,cmd")
+                );
 
-    public static void command (String... parameters) {
+        final int pid = psTable.getColumn("PID").getIndex();
+        final int name = psTable.getColumn("COMMAND").getIndex();
+        final int cmd = psTable.getColumn("CMD").getIndex();
+        
+        for (Row row : psTable) {
+            result.add(
+                    new LiveProcess(Integer.parseInt(row.getValue(pid).toString()),
+                    row.getValue(name).toString(),
+                    row.getValue(cmd).toString()));
+
+        }
+        
+        return result.toArray(new LiveProcess[result.size()]);
+    }
+    
+    public static void command (String... parameters) throws IOException {
+        command(System.out, parameters);
+    }
+    
+    public static <T extends Appendable> T command (T out, String... parameters) throws IOException {
         try {
 
             if (Util.IS_WINDOWS_OS || parameters == null || parameters.length == 0)
-                return;
+                return out;
             final ProcessBuilder pb = new ProcessBuilder (parameters);
 
             pb.redirectErrorStream (true);
@@ -131,24 +158,25 @@ public class LinuxOS {
 
                 if (line == null)
                     break;
-                System.out.println (line);
+                
+                out.append (line);
+                out.append (Util.NATIVE_LINE_BREAK);
             }
 
             final int exitVal = proc.waitFor ();
             if (exitVal != 0)
-                throw new IOException (parameters[0] + " function failed with error code " + exitVal);
-
-        } catch (IOException e) {
-            throw new UncheckedIOException (e);
+                throw new ExecutionException(parameters[0] + " function failed with error code " + exitVal, exitVal);
 
         } catch (InterruptedException e) {
-            throw new UncheckedInterruptedException (e);
+            throw new IOException (e);
         }
-    }
-
+        
+        return out;
+    }        
+    
     public static void main(String[] args) throws IOException {
         Runtime.getRuntime().exec(new String[]{"gnome-terminal", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
         Runtime.getRuntime().exec(new String[]{"xterm", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
     }
-
+    
 }

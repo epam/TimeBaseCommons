@@ -16,6 +16,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.CopyOption;
 import java.nio.file.FileVisitOption;
@@ -539,10 +540,8 @@ public abstract class BasicIOUtil {
         throws IOException, InterruptedException
     {
         return (readFromReader (new InputStreamReader (is)));
-    }
-
-    /**
-     */
+    }    
+    
     public static String		readFromReader (Reader r)
         throws IOException, InterruptedException
     {
@@ -605,7 +604,47 @@ public abstract class BasicIOUtil {
 
         return (lines.toArray (new String [lines.size ()]));
     }
+    
+    public static <T extends Appendable> T readFromReaderWithProperties (Reader r, final Properties props, final T to)
+        throws IOException, InterruptedException
+    {                
+        
+        if (!(r instanceof BufferedReader))
+            r = new BufferedReader (r);
 
+        if (props != null) {
+            r = new TokenReplacingReader(r, new TokenReplacingReader.ITokenResolver() {
+
+                @Override
+                public String resolveToken(String token) {
+                    return props.getProperty(token);
+                }
+            });
+        }
+        
+        CharBuffer			tmpContent = CharBuffer.allocate(4096);
+
+        for (;;) {
+            int         numRead = r.read (tmpContent);
+
+            if (Thread.interrupted ())
+                throw new InterruptedException ();
+
+            if (numRead < 0)
+                break;
+
+            to.append (tmpContent, 0, numRead);
+        }
+        
+        return to;
+    }
+    
+    public static void replaceProperties (Reader r, Appendable w, Properties props)
+        throws IOException, InterruptedException
+    {                
+        readFromReaderWithProperties(r, props, w);
+    }
+    
     public static String getFileText (File file) throws IOException, InterruptedException {
         FileInputStream is = new FileInputStream(file);
         try {
@@ -614,7 +653,7 @@ public abstract class BasicIOUtil {
             is.close();
         }
     }
-
+    
     public static void		writeTextFile (String filepath, String content)
         throws IOException
     {
