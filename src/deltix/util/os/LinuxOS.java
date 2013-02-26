@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 public class LinuxOS {
 
@@ -136,6 +138,14 @@ public class LinuxOS {
         
         return result.toArray(new LiveProcess[result.size()]);
     }
+
+    public static void commandNoError (String... parameters) {
+        try {
+            command(null, parameters);
+        } catch (Exception e) {
+            Executor.LOG.log(Level.FINE, "An error while execution " + Arrays.toString(parameters), e);
+        }
+    }
     
     public static void command (String... parameters) throws IOException {
         command(System.out, parameters);
@@ -159,8 +169,10 @@ public class LinuxOS {
                 if (line == null)
                     break;
                 
-                out.append (line);
-                out.append (Util.NATIVE_LINE_BREAK);
+                if (out != null) {
+                    out.append (line);
+                    out.append (Util.NATIVE_LINE_BREAK);
+                }
             }
 
             final int exitVal = proc.waitFor ();
