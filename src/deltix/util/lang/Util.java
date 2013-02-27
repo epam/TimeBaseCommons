@@ -1078,6 +1078,8 @@ public class Util {
     public static RuntimeException asRuntimeException(Throwable exception) {
         if (exception instanceof RuntimeException)
             return (RuntimeException) exception;
+        else if (exception instanceof Error)
+            throw (Error) exception;
         else
             return new RuntimeException(exception);
     }
