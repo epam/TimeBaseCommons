@@ -68,10 +68,10 @@ public class NetUtils {
         sb.append (protocol);
         sb.append ("://");
         
-        if (user != null) {
+        if (user != null && !user.isEmpty ()) {
             sb.append (encodeUrl (user));
             
-            if (password != null) {
+            if (password != null && !password.isEmpty ()) {
                 sb.append (':');
                 sb.append (encodeUrl (password));
             }
