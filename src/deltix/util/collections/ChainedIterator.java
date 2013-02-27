@@ -15,12 +15,14 @@ public class ChainedIterator <T> implements Iterator <T> {
         this.metaIterator = metaIterator;
     }
 
+    @SafeVarargs
     public ChainedIterator (Iterator <? extends T> ... chain) {
-        this (new ArrayIterator <Iterator <? extends T>> (chain));
+        this (new ArrayIterator <> (chain));
     }
     
+    @SafeVarargs @SuppressWarnings ("unchecked")
     public ChainedIterator (Iterable <? extends T> ... chain) {
-        this (new IterableToIteratorTransformer (new ArrayIterator <Iterable <? extends T>> (chain)));
+        this (new IterableToIteratorTransformer (new ArrayIterator <> (chain)));
     }
     
     @Override

@@ -8,6 +8,7 @@ import java.util.Iterator;
 public class ChainedIterable <T> implements Iterable <T> {
     private final Iterable <? extends T> []         chain;
     
+    @SafeVarargs
     public ChainedIterable (Iterable <? extends T> ... chain) {
         this.chain = chain;
     }
