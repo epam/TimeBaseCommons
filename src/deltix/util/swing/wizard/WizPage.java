@@ -56,7 +56,7 @@ public abstract class WizPage {
         return (ui);
     }
 
-    protected final void        abortTransition () {
+    public final void        abortTransition () {
         throw new AbortTransitionException ();
     }
     
