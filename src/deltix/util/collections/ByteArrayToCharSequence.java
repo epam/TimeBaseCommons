@@ -43,7 +43,18 @@ public class ByteArrayToCharSequence implements CharSequence {
         System.arraycopy(bytes, 0, this.bytes, 0, length);
         this.start = 0;
         this.end = length;
-        
+
+        return this;
+    }
+
+    public ByteArrayToCharSequence setContent (byte [] bytes, int srcPos, int length) {
+        if (this.bytes == null || this.bytes.length < length) {
+            this.bytes = new byte[length];
+        }
+        System.arraycopy(bytes, srcPos, this.bytes, 0, length);
+        this.start = 0;
+        this.end = length;
+
         return this;
     }
 
