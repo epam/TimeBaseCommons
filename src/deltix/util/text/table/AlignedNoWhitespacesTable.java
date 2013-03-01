@@ -67,7 +67,7 @@ public class AlignedNoWhitespacesTable implements Table {
         
         if (line != null) {
 
-            final List<ANWColumn> parsedCols = new ArrayList<>();
+            final List<ANWColumn> parsedCols = new ArrayList<ANWColumn>();
 
             final StringBuilder colName = new StringBuilder();
             int colNameStart = 0;
