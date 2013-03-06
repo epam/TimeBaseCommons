@@ -103,10 +103,16 @@ public class ByteArrayInputStreamEx extends java.io.ByteArrayInputStream {
         count = n;
     }
 
-    public byte [] toByteArray () {
+    public byte []      toByteArray () {
     	byte []		ret = new byte [count - pos];
     	SafeArrays.safeArrayCopy (buf, pos, ret, 0, count - pos);
 		return (ret);
+    }
+
+    public void         setBuffer (ByteArrayOutputStreamEx baos) {
+        buf = baos.getInternalBuffer ();
+        pos = 0;
+        count = baos.size ();
     }
 
 }
