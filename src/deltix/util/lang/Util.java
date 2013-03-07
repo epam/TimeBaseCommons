@@ -622,6 +622,11 @@ public class Util {
         return null;
     }
 
+    public static void closeAll(Iterable<? extends Disposable> values) {
+        for (Disposable value : values) {
+            Util.close(value);
+        }
+    }
 
     /**
      *	@return true if two arrays contain identical bytes
