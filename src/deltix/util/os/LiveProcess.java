@@ -27,7 +27,7 @@ public class LiveProcess {
     public static LiveProcess[] list() throws Exception {
         
         if (Util.IS_WINDOWS_OS) {
-            throw new UnsupportedOperationException("Not implemented yet for Windows OS.");
+            throw new UnsupportedOperationException("Not implemented for Windows OS yet.");
         }
         
         return LinuxOS.getProcessList();                                   
@@ -60,6 +60,10 @@ public class LiveProcess {
     }
      
     public void kill() {
+        kill(false);
+    }
+    
+    public void kill(boolean immediately) {
         if (Util.IS_WINDOWS_OS) {
             throw new UnsupportedOperationException("Not implemented yet for Windows OS.");
         }
@@ -68,7 +72,11 @@ public class LiveProcess {
         
         try {
             
-            LinuxOS.command(out, "kill", "-9", Integer.toString(pid));
+            if (immediately) {
+                LinuxOS.command(out, "kill", "-9", Integer.toString(pid));
+            } else {
+                LinuxOS.command(out, "kill", Integer.toString(pid));
+            }
 
         } catch (IOException e) {
             Executor.LOG.fine(out.toString());
