@@ -6,9 +6,11 @@ import org.junit.Assert;
 import java.text.MessageFormat;
 
 /**
+ * ##UTILS##
  * @author Andy
  *         Date: Jul 22, 2009 5:19:17 PM
  */
+
 public class TestSimpleMessageFormat {
 
 
@@ -69,13 +71,30 @@ public class TestSimpleMessageFormat {
        assertValid ("'{braces}' {0}", "{braces} nobraces", "nobraces");
     }
 
+// Previous behavior:
+//    @Test
+//    public void testBadQuotes () {
+//       assertInvalid ("'",   "Format error at position 0: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \"'\"", 123);
+//       assertInvalid (" '",  "Format error at position 1: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \" '\"", 123);
+//       assertInvalid ("' ",  "Format error at position 0: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \"' \"", 123);
+//       assertInvalid (" ' ", "Format error at position 1: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \" ' \"", 123);
+//       assertInvalid ("'''", "Format error at position 2: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \"'''\"", 123);
+//    }
+
+
     @Test
-    public void testBadQuotes () {
-       assertInvalid ("'",   "Format error at position 0: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \"'\"", 123);
-       assertInvalid (" '",  "Format error at position 1: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \" '\"", 123);
-       assertInvalid ("' ",  "Format error at position 0: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \"' \"", 123);
-       assertInvalid (" ' ", "Format error at position 1: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \" ' \"", 123);
-       assertInvalid ("'''", "Format error at position 2: String contains single quote, which is a special escape character. Use '' to print single quote. Format string: \"'''\"", 123);
+    public void singleQuoteTest() {
+        assertValid("Order amount can't be less than 1", "Order amount can't be less than 1");
+        assertValid("'", "'");
+        assertValid(" '", " '");
+        assertValid("' ", "' ");
+        assertValid(" ' ", " ' ");
+
+        // now we even allow this:
+        assertValid("This can't be true don't you think?", "This cant be true dont you think?");
+
+        assertValid(" '' ", " ' "); // double quote -> first one is escape character
+        assertValid("'''", "''");
     }
 
     @Test
@@ -98,7 +117,9 @@ public class TestSimpleMessageFormat {
     public void testMessageFormatJavadocCases () {
         assertInvalid ("ab {0'}' de", "Format error at position 5: Argument index contains non-digit character: '''. Format string: \"ab {0'}' de\"", 123);
     }
-    
+
+
+
     @Test
     public void performance () {
         int cnt = 100000;

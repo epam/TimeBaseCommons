@@ -43,14 +43,15 @@ public class SimpleMessageFormat {
                final char ch = format.charAt(i);
                if (ch == '\'') {
                    final int quoteEnd = format.indexOf ('\'', i+1);
-                   if (quoteEnd < 0)
-                       throw new InvalidFormatException(format, i, "String contains single quote, which is a special escape character. Use '' to print single quote");
-
-                   if (i + 1 == quoteEnd)
-                        sb.append ('\'');  // '' represents a single quote
-                   else
-                        sb.append (format, i+1, quoteEnd);
-                   i = quoteEnd;
+                   if (quoteEnd < 0) {
+                       sb.append('\''); // this is just a single quote
+                   } else {
+                       if (i + 1 == quoteEnd)
+                            sb.append ('\'');  // '' represents a single quote
+                       else
+                            sb.append (format, i+1, quoteEnd);
+                       i = quoteEnd;
+                   }
                } else
                if (ch == '{') {
                    int bracesEnd = format.indexOf('}', i+1);
