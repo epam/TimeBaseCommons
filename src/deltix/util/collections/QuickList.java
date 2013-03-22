@@ -1,5 +1,6 @@
 package deltix.util.collections;
 
+import deltix.util.memory.*;
 import java.util.Enumeration;
 
 /**
@@ -180,6 +181,10 @@ public class QuickList <T extends QuickList.Entry> implements java.io.Serializab
 	private final BoundaryEntry		mHead;
 	private final BoundaryEntry		mTail;
 	
+    public static final int            MEMORY_SIZE =
+        3 * MemorySizeEstimator.OBJECT_OVERHEAD +
+        3 * MemorySizeEstimator.SIZE_OF_POINTER;
+        
 	/**
 	 *	Creates an empty list.
 	 */

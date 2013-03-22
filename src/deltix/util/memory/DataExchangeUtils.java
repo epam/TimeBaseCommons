@@ -177,6 +177,19 @@ public class DataExchangeUtils {
     }
 
     /**
+     *  
+     */
+    public static long  	readUnsigned40 (byte [] bytes, int offset) {
+        return (
+			lb (bytes, offset) << 32 |
+			lb (bytes, offset + 1) << 24 |
+			readByte (bytes, offset + 2) << 16 |
+			readByte (bytes, offset + 3) << 8 |
+			readByte (bytes, offset + 4)
+		);
+    }
+
+    /**
      * Java uses big-endian numbers encoding. This method parses little-endian encoded 40-bit (!) long.
      * @see #readLong(byte[], int)
      * @see #readLittleEndianLong(byte[])
@@ -277,6 +290,20 @@ public class DataExchangeUtils {
 		b (bytes, offset + 3, l >>> 16);
 		b (bytes, offset + 4, l >>> 8);
 		b (bytes, offset + 5, l);
+    }
+
+    /**
+     *  Useful for compressing timestamps. 48 bits cover approximately
+     *  years -2000 .. 6000, which is usually enough.
+     */
+    public static void  	writeUnsigned40 (byte [] bytes, int offset, long l) {
+        assert l <= 0xFFFFFFFFFFL && l >= 0 : l;
+
+		b (bytes, offset,     l >>> 32);
+		b (bytes, offset + 1, l >>> 24);
+		b (bytes, offset + 2, l >>> 16);
+		b (bytes, offset + 3, l >>> 8);
+		b (bytes, offset + 4, l);
     }
 
     public static double   	readDouble (byte [] bytes, int offset) {
