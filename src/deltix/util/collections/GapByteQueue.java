@@ -1,7 +1,5 @@
 package deltix.util.collections;
 
-import java.util.LinkedList;
-
 /**
  *
  */
@@ -19,7 +17,7 @@ public class GapByteQueue {
 
         int offset;
         int length;
-        
+
         private Gap(int start, int length) {
             this.offset = start;
             this.length = length;
@@ -27,7 +25,7 @@ public class GapByteQueue {
             assert offset >= 0 && offset < capacity;
             assert length > 0;
         }
-        
+
         boolean contains(int pos) {
             int end = offset + length;
             if (end < capacity)
@@ -49,25 +47,22 @@ public class GapByteQueue {
 
         boolean write(int offset, int length) {
 
+            int total = total();
+
+            int space = 0; // space used by gaps
+
+            // find gap which contains data block
             Gap next = gaps.getFirst();
-
-            if (next == null) {
-                int total = total();
-                if (total() > size) {
-                    gaps.linkFirst(new Gap((head + size - length) % capacity, total - size));
-                    return size > length;
-                }
-
-                return true;
+            while (next != null && !next.contains(offset)) {
+                space += next.length;
+                next = (Gap) next.next();
             }
 
-            // find gap
-            while (next != null && !next.contains(offset))
-                next = (Gap) next.next();
-
             if (next == null) { // gap containing data block does not exists
-                assert ((offset + length) % capacity) == tail;
-                return size > length;
+                if (total > space + size)
+                    gaps.linkLast(new Gap((head + space + size - length) % capacity, total - space - size));
+
+                return gaps.isEmpty() || available() > 0;
             }
 
             if (next.offset == offset) { // left side check
@@ -124,7 +119,7 @@ public class GapByteQueue {
     private int                     absolute(int offset) {
         return (offset - head < 0 ? capacity : 0) + (offset - head);
     }
-    
+
     private int                     total() {
         return (tail - head <= 0 && size > 0 ? capacity : 0) + (tail - head);
     }
@@ -159,7 +154,7 @@ public class GapByteQueue {
 
         return gaps.write(position, length);
     }
-    
+
     public int                  available() {
         return gaps.available();
     }
@@ -225,11 +220,11 @@ public class GapByteQueue {
         tail = 0;
     }
 
-//    public boolean        isEmpty () {
-//        return (size == 0);
-//    }
-
     public int            size () {
         return available();
+    }
+
+    public int              capacity() {
+        return capacity;
     }
 }
