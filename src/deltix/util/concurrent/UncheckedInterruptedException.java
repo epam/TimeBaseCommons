@@ -9,5 +9,13 @@ public class UncheckedInterruptedException extends RuntimeException {
     
     public UncheckedInterruptedException (Throwable ix) {
         super (ix);
-    }                  
+    }           
+    
+    public static void      uncheckedWait (Object obj) {
+        try {
+            obj.wait ();
+        } catch (InterruptedException x) {
+            throw new UncheckedInterruptedException (x);
+        }
+    }
 }
