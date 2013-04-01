@@ -147,6 +147,14 @@ public class LinuxOS {
         }
     }
     
+    public static void chown (File file, String user, boolean deep) throws IOException {
+        if (deep) {
+            command(null, new String[] {"chown", "-R", user, file.getAbsolutePath()});
+        } else {
+            command(null, new String[] {"chown", user, file.getAbsolutePath()});
+        }
+    }
+
     public static void command (String... parameters) throws IOException {
         command(System.out, parameters);
     }
@@ -162,7 +170,7 @@ public class LinuxOS {
 
             final Process proc = pb.start ();
             final BufferedReader rd = new BufferedReader (new InputStreamReader (proc.getInputStream ()));
-
+           
             for (; ;) {
                 final String line = rd.readLine ();
 
