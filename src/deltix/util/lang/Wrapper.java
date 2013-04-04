@@ -10,7 +10,7 @@ package deltix.util.lang;
  *      service = ((Wrapper&lt;TradingService&gt;)service).getNestedInstance();
  * }
  *</pre>
- * You can use {@link Util.unwrap(Object)}.
+ * You can use {@link Util#unwrap(Object)}.
  */
 public interface Wrapper<T> {
     /** @return 'wrapped' instance, never null */
