@@ -11,7 +11,7 @@ public class Dump {
             if ((ii & 15) == 0)
                 System.out.printf ("%04X: ", ii);
             
-            System.out.printf ("%02X ", bytes [ii]);
+            System.out.printf ("%02X ", bytes [offset + ii]);
             
             if ((ii & 15) == 15)
                 System.out.println ();
@@ -25,7 +25,7 @@ public class Dump {
             if ((ii & 15) == 0)
                 System.out.printf ("%020d: ", base + ii);
             
-            System.out.printf ("%02X ", bytes [ii]);
+            System.out.printf ("%02X ", bytes [offset + ii]);
             
             if ((ii & 15) == 15)
                 System.out.println ();
