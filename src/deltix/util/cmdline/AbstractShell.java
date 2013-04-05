@@ -132,6 +132,11 @@ public abstract class AbstractShell extends DefaultApplication {
         }
     }
 
+    public final void    error (String text, int level) {
+        System.err.println (">>> Error: " + text);
+        error (level);
+    }
+    
     public final void    error (int level) {
         if (errorCode < level)
             errorCode = level;
@@ -177,10 +182,8 @@ public abstract class AbstractShell extends DefaultApplication {
         try {
             switch (sig) {
                 case -1:
-                    if (!doCommand (key, args, fileId, rd)) {
-                        System.err.println (key + ": unrecognized command. (Type ? for usage)");                
-                        error (1);
-                    }
+                    if (!doCommand (key, args, fileId, rd)) 
+                        error (key + ": unrecognized command. (Type ? for usage)", 1);                    
                     break;
                     
                 case 3:
@@ -254,7 +257,7 @@ public abstract class AbstractShell extends DefaultApplication {
                         return;
                 }
                 else if (ii < args.length)
-                    doSet (option, args [ii++]);
+                    set (option, args [ii++]);
                 else {
                     System.err.println (arg + " ??");
                     System.exit (2);
