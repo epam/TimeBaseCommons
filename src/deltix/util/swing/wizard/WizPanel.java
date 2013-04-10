@@ -223,7 +223,11 @@ public class WizPanel extends JPanel {
     public void     setFinishEnabled (boolean b) {
         finish.setEnabled (b);
     }
-    
+
+    public boolean  isFinishEnabled () {
+        return finish.isEnabled ();
+    }
+
     public void     setCancelEnabled (boolean b) {
         cancel.setEnabled (b);
     }
