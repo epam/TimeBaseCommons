@@ -112,15 +112,32 @@ public abstract class AbstractShell extends DefaultApplication {
             }
         }
     }
-
+    
     protected final void    set (String option, String value) {
         Method      m;
+        Object      arg = value;
         
         try {
             m = getClass ().getMethod ("set_" + option, String.class);
         } catch (NoSuchMethodException x) {
             m = null;
         }
+        
+        if (m == null)
+            try {
+                m = getClass ().getMethod ("set_" + option, int.class);
+                arg = Integer.parseInt (value);
+            } catch (NoSuchMethodException x) {
+                m = null;
+            }
+        
+        if (m == null)
+            try {
+                m = getClass ().getMethod ("set_" + option, long.class);
+                arg = Long.parseLong (value);
+            } catch (NoSuchMethodException x) {
+                m = null;
+            }
         
         try {
             if (m != null)
