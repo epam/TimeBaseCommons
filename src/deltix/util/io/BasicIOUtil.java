@@ -465,10 +465,16 @@ public abstract class BasicIOUtil {
     public static String []     readLinesFromClassPath (String relPath)
         throws IOException, InterruptedException
     {
+        return readLinesFromClassPath (relPath, false);
+    }
+    
+    public static String []     readLinesFromClassPath (String relPath, boolean trim)
+        throws IOException, InterruptedException
+    {
         InputStream		is = openResourceAsStream (relPath);
 
         try {
-            return (readLinesFromReader (new InputStreamReader (is)));
+            return (readLinesFromReader (new InputStreamReader (is), trim));
         } finally {
             Util.close (is);
         }
