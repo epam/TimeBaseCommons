@@ -95,7 +95,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     private volatile ReconnectIntervalAdjuster  adjuster = null;
     private volatile Logger                     logger = Util.LOGGER;
     private volatile Level                      logLevel = Level.FINE;
-    private volatile String                     logprefix = getDefaultPrefix(getClass());
+    private volatile String                     logprefix;
 
     @GuardedBy ("this")
     private Reconnector                         reconnector = null;
@@ -116,6 +116,14 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
 
     @GuardedBy ("this")
     private String                              lastExceptionAsString;
+
+    public ReconnectableImpl() {
+        this.logprefix = getDefaultPrefix(getClass());
+    }
+
+    public ReconnectableImpl(String logprefix) {
+        this.logprefix = logprefix;
+    }
 
     public ReconnectIntervalAdjuster        getAdjuster () {
         return adjuster;
@@ -192,7 +200,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
 
         Logger          lg = logger;
 
-        if (lg != null)
+        if (lg != null && lg.isLoggable(logLevel))
             lg.log (logLevel, "[{0}] Disconnected", logprefix);
 
         onDisconnected();
@@ -219,7 +227,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                 String          check = x.toString ();
                 Logger          lg = logger;
 
-                if (lg != null) {
+                if (lg != null && lg.isLoggable(logLevel)) {
                     //  Prevent verbose output
                     if (check.equals (lastExceptionAsString))
                         lg.log (logLevel, "[" + logprefix + "] Reconnect failed due to: " + lastExceptionAsString);
@@ -269,7 +277,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
 
         Logger          lg = logger;
 
-        if (lg != null)
+        if (lg != null && lg.isLoggable(logLevel))
             lg.log (logLevel, "[" + logprefix + "] Next reconnect in " + currentReconnectInterval + " ms");
     }
 
