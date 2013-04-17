@@ -178,7 +178,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
 
         Logger          lg = logger;
 
-        if (lg != null)
+        if (lg != null && lg.isLoggable(logLevel))
             lg.log (logLevel, "[{0}] Connected", logprefix);
 
         onReconnected();
