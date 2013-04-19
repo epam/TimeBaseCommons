@@ -164,9 +164,13 @@ public class Icons {
     public static final Icon ZOOM_OUT            = SwingUtil.loadIcon("deltix/qsrv/ui/util/zoom_out.png"           );
 
     public static final Icon SF_ARROW_UP         = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_up.png"        );
+    public static final Icon SF_ARROW_UP_FOCUS   = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_up_focus.png"  );
     public static final Icon SF_ARROW_DOWN       = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_down.png"      );
+    public static final Icon SF_ARROW_DOWN_FOCUS = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_down_focus.png");
     public static final Icon SF_DELETE           = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_delete.png"          );
+    public static final Icon SF_DELETE_FOCUS     = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_delete_focus.png"    );
     public static final Icon SF_NEW_ITEM         = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_new_item.png"        );
+    public static final Icon SF_NEW_ITEM_FOCUS   = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_new_item_focus.png"  );
 
 
     public static final Icon[] INSTRUMENT_TYPE_ICONS =
