@@ -15,6 +15,8 @@ public class AbstractApp
     implements UncaughtExceptionHandler
 {    
     
+    public static final String LOOK_AND_FEEL_FAILURE_CLASS = "com.sun.java.swing.plaf.windows.XPStyle$Skin";
+
     public AbstractApp () {
         this (DO_NOTHING_ON_CLOSE);
     }
@@ -149,6 +151,30 @@ public class AbstractApp
             title = title + " - Version " + Version.VERSION_STRING;
         
         super.setTitle (title);
+    }
+
+
+    //temporary error catching solution
+    //if NPE or InternalError has been thrown and stack trace contains link on the LOOK_AND_FEEL_FAILURE_CLASS
+    //then we make decision to hide error on UI;
+    //this stub doesn't influence on app functionality
+    public static boolean lookAndFeelRepaintIssue(Throwable t) {
+        try {
+            if (!(t instanceof NullPointerException || t instanceof InternalError)) {
+                return false;
+            }
+
+            StackTraceElement[] stackTrace = t.getStackTrace();
+            for (StackTraceElement elem : stackTrace) {
+                if (LOOK_AND_FEEL_FAILURE_CLASS.equals(elem.getClassName())) {
+                    return true;
+                }
+            }
+        } catch (Throwable x) {
+            return false;
+        }
+
+        return false;
     }
     
 }
