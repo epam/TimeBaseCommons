@@ -1,6 +1,7 @@
 package deltix.qsrv.hf.spi.conn;
 
 import deltix.util.lang.Util;
+import deltix.util.log.LazyLogger;
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
@@ -97,6 +98,8 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     private volatile Level                      logLevel = Level.FINE;
     private volatile String                     logprefix;
 
+    private volatile LazyLogger                 lazyLogger = null;
+
     @GuardedBy ("this")
     private Reconnector                         reconnector = null;
 
@@ -171,6 +174,10 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         this.logger = logger;
     }
 
+    public void                             setLazyLogger(LazyLogger lazyLogger) {
+        this.lazyLogger = lazyLogger;
+    }
+
     public void                             setLogPrefix(String logprefix) {
         this.logprefix = logprefix;
     }
@@ -184,10 +191,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
             lastExceptionAsString = null;
         }
 
-        Logger          lg = logger;
-
-        if (lg != null && lg.isLoggable(logLevel))
-            lg.log (logLevel, "[{0}] Connected", logprefix);
+        log ("[{0}] Connected", logprefix);
 
         onReconnected();
     }
@@ -198,12 +202,48 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
             timeDisconnected = System.currentTimeMillis ();
         }
 
-        Logger          lg = logger;
-
-        if (lg != null && lg.isLoggable(logLevel))
-            lg.log (logLevel, "[{0}] Disconnected", logprefix);
+        log("[{0}] Disconnected", logprefix);
 
         onDisconnected();
+    }
+
+    private void log(String msg, Object ... params) {
+        LazyLogger lz = lazyLogger;
+
+        if (lz != null) {
+            lz.log (logLevel, msg, params);
+        } else {
+            Logger          lg = logger;
+
+            if (lg != null && lg.isLoggable(logLevel))
+                lg.log (logLevel, msg, params);
+        }
+    }
+
+    private void log(String msg, Object param) {
+        LazyLogger lz = lazyLogger;
+
+        if (lz != null) {
+            lz.log (logLevel, msg, param);
+        } else {
+            Logger          lg = logger;
+
+            if (lg != null && lg.isLoggable(logLevel))
+                lg.log (logLevel, msg, param);
+        }
+    }
+
+    private void log(String msg, Throwable x) {
+        LazyLogger lz = lazyLogger;
+
+        if (lz != null) {
+            lz.log (logLevel, msg, x);
+        } else {
+            Logger          lg = logger;
+
+            if (lg != null && lg.isLoggable(logLevel))
+                lg.log (logLevel, msg, x);
+        }
     }
 
     public boolean             isConnected () {
@@ -223,18 +263,14 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                         System.currentTimeMillis () - timeDisconnected,
                         this
                     );
-            } catch (Exception x) {
+            } catch (Throwable x) {
                 String          check = x.toString ();
-                Logger          lg = logger;
 
-                if (lg != null && lg.isLoggable(logLevel)) {
-                    //  Prevent verbose output
-                    if (check.equals (lastExceptionAsString))
-                        lg.log (logLevel, "[" + logprefix + "] Reconnect failed due to: " + lastExceptionAsString);
-                    else {
-                        lg.log (logLevel, "[" + logprefix + "] Reconnect failed", x);
-                        lastExceptionAsString = check;
-                    }
+                if (check.equals (lastExceptionAsString)) {
+                    log ("[{0}] Reconnect failed due to: {1}", logprefix, lastExceptionAsString);
+                } else {
+                    log ("[" + logprefix + "] Reconnect failed", x);
+                    lastExceptionAsString = check;
                 }
 
                 reschedule = true;
@@ -275,10 +311,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
 
         GlobalTimer.INSTANCE.schedule (reconnectTask, currentReconnectInterval);
 
-        Logger          lg = logger;
-
-        if (lg != null && lg.isLoggable(logLevel))
-            lg.log (logLevel, "[" + logprefix + "] Next reconnect in " + currentReconnectInterval + " ms");
+        log("[{0}] Next reconnect in {1}", logprefix, currentReconnectInterval);
     }
 
     public synchronized void                scheduleReconnect () {
