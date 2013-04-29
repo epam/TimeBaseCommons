@@ -19,6 +19,8 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
 
     private boolean overrideThumb = false;
 
+    protected static final int MOUSE_HANDLE_BEFORE_MIN = 5;
+
     public DrawnSliderUI(RangeSlider slider) {
         super(slider);
         this.slider = slider;
@@ -94,32 +96,54 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
         Rectangle rect = trackRect;
 
         if (slider.getOrientation() == JSlider.VERTICAL) {
+            int minBeforeY = yPositionForValue(leftDefaultArea);
             int minY = yPositionForValue(slider.getLowValue());
             int maxY = yPositionForValue(slider.getHighValue());
 
-            Rectangle minRect = new Rectangle(rect.x + rect.width / 2, minY - _lowerIconV.getIconHeight() / 2, _lowerIcon.getIconWidth(), _lowerIconV.getIconHeight());
+            Rectangle minBeforeRect = new Rectangle(
+                    rect.x + rect.width / 2,
+                    minBeforeY,
+                    _lowerIcon.getIconWidth(),
+                    _lowerIconV.getIconHeight());
+
+            if (minBeforeRect.contains(x, y)){
+                return MOUSE_HANDLE_BEFORE_MIN;
+            }
+
+            Rectangle minRect = new Rectangle(
+                    rect.x + rect.width / 2,
+                    minY - _lowerIconV.getIconHeight() / 2,
+                    _lowerIcon.getIconWidth(),
+                    _lowerIconV.getIconHeight());
             if (minRect.contains(x, y)) {
                 return MOUSE_HANDLE_MIN;
             }
 
-            if (false) {
-                Rectangle maxRect = new Rectangle(rect.x, maxY - _upperIconV.getIconHeight() / 2, _upperIconV.getIconWidth(), _upperIconV.getIconHeight());
-                if (maxRect.contains(x, y)) {
-                    return MOUSE_HANDLE_MAX;
-                }
+            Rectangle maxRect = new Rectangle(rect.x,
+                    maxY - _upperIconV.getIconHeight() / 2,
+                    _upperIconV.getIconWidth(),
+                    _upperIconV.getIconHeight());
+            if (maxRect.contains(x, y)) {
+                return MOUSE_HANDLE_MAX;
             }
 
-            //disable middle area that allows to move both thumbs
-/*            Rectangle midRect = new Rectangle(rect.x - _middleIcon.getIconWidth(), maxY - _middleIconV.getIconHeight() / 2, _middleIconV.getIconWidth(), _middleIconV.getIconHeight());
-            if (midRect.contains(x, y)) {
-                return MOUSE_HANDLE_MIDDLE;
-            }*/
-
             return MOUSE_HANDLE_NONE;
-        }
-        else {
+        } else {
+            int minBeforeX = xPositionForValue(leftDefaultArea);
             int minX = xPositionForValue(slider.getLowValue());
             int maxX = xPositionForValue(slider.getHighValue());
+
+
+            Rectangle minBeforeRect = new Rectangle(
+                    minBeforeX,
+                    rect.y,
+                    _lowerIcon.getIconWidth(),
+                    _lowerIconV.getIconHeight());
+
+            if (minBeforeRect.contains(x, y)){
+                return MOUSE_HANDLE_BEFORE_MIN;
+            }
+
 
             Rectangle minRect = new Rectangle(
                     minX - _lowerIcon.getIconWidth() / 2,
@@ -132,18 +156,15 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
                 return MOUSE_HANDLE_MIN;
             }
 
-            if (false) {
-                Rectangle maxRect = new Rectangle(maxX - _upperIcon.getIconWidth() / 2, rect.y, _upperIcon.getIconWidth(), _upperIcon.getIconHeight());
-                if (maxRect.contains(x, y)) {
-                    return MOUSE_HANDLE_MAX;
-                }
-            }
 
-            //disable middle area that allows to move both thumbs
-/*            Rectangle midRect = new Rectangle(maxX - _middleIcon.getIconWidth() / 2, rect.y - _middleIcon.getIconHeight(), _middleIcon.getIconWidth(), _middleIcon.getIconHeight());
-            if (midRect.contains(x, y)) {
-                return MOUSE_HANDLE_MIDDLE;
-            }*/
+            Rectangle maxRect = new Rectangle(
+                    maxX - _upperIcon.getIconWidth() / 2,
+                    rect.y,
+                    _upperIcon.getIconWidth(),
+                    _upperIcon.getIconHeight());
+            if (maxRect.contains(x, y)) {
+                return MOUSE_HANDLE_MAX;
+            }
 
             return MOUSE_HANDLE_NONE;
         }
@@ -165,12 +186,12 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
         this.overrideThumb = overrideThumb;
     }
 
-    public int getXLocation(int value){
-         return xPositionForValue(value);
+    public int getXLocation(int value) {
+        return xPositionForValue(value);
     }
 
-    public int getYLocation(int value){
-         return yPositionForValue(value);
+    public int getYLocation(int value) {
+        return yPositionForValue(value);
     }
 
     protected class RangeTrackListener extends TrackListener {
@@ -234,7 +255,11 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
             }
 
             RangeSlider rangeSlider = slider;
+            DrawnSliderUI sliderUI = (DrawnSliderUI) slider.getUI();
             switch (handle) {
+                case MOUSE_HANDLE_BEFORE_MIN:
+                    sliderUI.setLeftDefaultArea(Math.min(newValue, rangeSlider.getLowValue()));
+                    break;
                 case MOUSE_HANDLE_MIN:
                     rangeSlider.setLowValue(leftDefaultArea == 0 ?
                             Math.min(newValue, rangeSlider.getHighValue()) :
@@ -288,6 +313,10 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
             }
 
             switch (getMouseHandle(e.getX(), e.getY())) {
+                case MOUSE_HANDLE_BEFORE_MIN:
+                    setMouseRollover(MOUSE_HANDLE_BEFORE_MIN);
+                    setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
+                    break;
                 case MOUSE_HANDLE_MIN:
                     setMouseRollover(MOUSE_HANDLE_MIN);
                     setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
@@ -313,7 +342,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-               //implement restore
+                //implement restore
                 //slider.repaint();
             }
         }

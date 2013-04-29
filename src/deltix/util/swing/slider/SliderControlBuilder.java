@@ -133,6 +133,9 @@ public class SliderControlBuilder {
         int high = slider.getHighValue();
         int max = slider.getMaximum();
         int min = slider.getMinimum();
+        int beforeMin = sliderUI.getLeftDefaultArea();
+
+        ((Graphics2D) g).setStroke(new BasicStroke(2.0f));
 
         //paint minumum
         g.setColor(Color.BLACK);
@@ -144,8 +147,27 @@ public class SliderControlBuilder {
                 (int) (sliderX + sliderUI.getXLocation(max)),
                 (int) (sliderY + slider.getBounds().height + 15));
 
+        if (beforeMin> 0 && beforeMin < value){
+            g.setColor(Color.BLACK);
+            int position = beforeMin == value ? value : beforeMin;
+            g.drawRoundRect(
+                    (int) (sliderX + sliderUI.getXLocation(position)-5),
+                    (int) sliderY,
+                    6,
+                    slider.getHeight(),
+                    2,
+                    2);
 
-        if (sliderUI.getLeftDefaultArea() > 0) {
+            //paint first static area label
+            String drawnString = String.format("Data Cache:%sM", sliderUI.getLeftDefaultArea());
+            g.setColor(SliderOptions.CACHE_AREA_COLOR);
+            g.drawString(drawnString,
+                    (int) (sliderX +  5),
+                    (int) (sliderY + slider.getBounds().height + 15));
+        }
+
+
+        if (value > 0 && value < high) {
 
             //paint changing area label
             String drawnString = String.format("-Xms%sM", slider.getValue());
@@ -157,18 +179,10 @@ public class SliderControlBuilder {
                             sliderUI.getXLocation(sliderUI.getLeftDefaultArea()) + ((sliderUI.getXLocation(slider.getLowValue() - sliderUI.getLeftDefaultArea())) - drawnStringWidth) / 2),
                     (int) (sliderY - 5));
 
-
-            //paint first static area label
-            drawnString = String.format("Data Cache:%sM", sliderUI.getLeftDefaultArea());
-            g.setColor(SliderOptions.CACHE_AREA_COLOR);
-            g.drawString(drawnString,
-                    (int) (sliderX +  5),
-                    (int) (sliderY + slider.getBounds().height + 15));
         }
 
         //paint changing area thumb
         g.setColor(Color.BLACK);
-        ((Graphics2D) g).setStroke(new BasicStroke(2.0f));
         int position = value == max ? max : value == min ? min : value;
         g.drawRoundRect(
                 (int) (sliderX + sliderUI.getXLocation(position)-5),
