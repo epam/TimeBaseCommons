@@ -341,11 +341,20 @@ public class QuickExecutor {
 
     public synchronized static QuickExecutor    reuse() {
         usages++;
+        //LOGGER.log(Level.WARNING, "QuickExecutor usages: " + usages, new Exception());
+
         return getGlobalInstance();
     }
 
     public synchronized static void             shutdown() {
         usages--;
+
+        //LOGGER.log(Level.WARNING, "QuickExecutor usages: " + usages, new Exception());
+
+        assert usages >=0;
+        if (usages < 0)
+            LOGGER.log(Level.SEVERE, "QuickExecutor usages violated.", new Exception());
+
         if (usages <= 0)
             globalInstance.shutdown(true);
     }
