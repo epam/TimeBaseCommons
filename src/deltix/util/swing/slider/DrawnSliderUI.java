@@ -4,6 +4,8 @@ import com.jidesoft.plaf.basic.BasicRangeSliderUI;
 import com.jidesoft.swing.RangeSlider;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
@@ -11,11 +13,11 @@ import java.awt.event.MouseEvent;
  * User: TurskiyS
  * Date: 4/8/13
  */
-public class DrawnSliderUI extends BasicRangeSliderUI {
+public class DrawnSliderUI extends BasicRangeSliderUI{
 
     private RangeSlider slider;
 
-    private int leftDefaultArea = 0;
+    private int beforeMin = 0;
 
     private boolean overrideThumb = false;
 
@@ -50,11 +52,11 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
 
             Rectangle bounds = slider.getBounds();
 
-            if (leftDefaultArea > 0 && low != 0) {
+            if (beforeMin > 0 && low != 0) {
                 g.setColor(SliderOptions.CACHE_AREA_COLOR);
                 g.fillRect(borderWidth,
                         borderWidth,
-                        x1 = xPositionForValue(leftDefaultArea) - borderWidth,
+                        x1 = xPositionForValue(beforeMin) - borderWidth,
                         bounds.height - 2 * borderWidth);
             }
 
@@ -96,49 +98,51 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
         Rectangle rect = trackRect;
 
         if (slider.getOrientation() == JSlider.VERTICAL) {
-            int minBeforeY = yPositionForValue(leftDefaultArea);
+            int minBeforeY = yPositionForValue(beforeMin);
             int minY = yPositionForValue(slider.getLowValue());
             int maxY = yPositionForValue(slider.getHighValue());
 
+
+
             Rectangle minBeforeRect = new Rectangle(
-                    rect.x + rect.width / 2,
-                    minBeforeY,
-                    _lowerIcon.getIconWidth(),
-                    _lowerIconV.getIconHeight());
+                    rect.x + rect.width *2/3,
+                    minBeforeY -5,
+                    rect.width/3,
+                    SliderOptions.DRAWN_THUMB_SIZE_PX);
 
             if (minBeforeRect.contains(x, y)){
                 return MOUSE_HANDLE_BEFORE_MIN;
             }
 
             Rectangle minRect = new Rectangle(
-                    rect.x + rect.width / 2,
-                    minY - _lowerIconV.getIconHeight() / 2,
-                    _lowerIcon.getIconWidth(),
-                    _lowerIconV.getIconHeight());
+                    rect.x + rect.width / 3,
+                    minY - 3,
+                    rect.width/3,
+                    SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (minRect.contains(x, y)) {
                 return MOUSE_HANDLE_MIN;
             }
 
             Rectangle maxRect = new Rectangle(rect.x,
-                    maxY - _upperIconV.getIconHeight() / 2,
-                    _upperIconV.getIconWidth(),
-                    _upperIconV.getIconHeight());
+                    maxY - 1,
+                    rect.width/3,
+                    SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (maxRect.contains(x, y)) {
                 return MOUSE_HANDLE_MAX;
             }
 
             return MOUSE_HANDLE_NONE;
         } else {
-            int minBeforeX = xPositionForValue(leftDefaultArea);
+            int minBeforeX = xPositionForValue(beforeMin);
             int minX = xPositionForValue(slider.getLowValue());
             int maxX = xPositionForValue(slider.getHighValue());
 
 
             Rectangle minBeforeRect = new Rectangle(
-                    minBeforeX,
-                    rect.y,
-                    _lowerIcon.getIconWidth(),
-                    _lowerIconV.getIconHeight());
+                    minBeforeX -5,
+                    rect.y+rect.height*2/3,
+                    SliderOptions.DRAWN_THUMB_SIZE_PX,
+                    rect.height/3);
 
             if (minBeforeRect.contains(x, y)){
                 return MOUSE_HANDLE_BEFORE_MIN;
@@ -146,10 +150,10 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
 
 
             Rectangle minRect = new Rectangle(
-                    minX - _lowerIcon.getIconWidth() / 2,
-                    rect.y,//rect.y + rect.height / 2,
-                    _lowerIcon.getIconWidth(),
-                    _lowerIcon.getIconHeight()
+                    minX - 3,
+                    rect.y+rect.height/3,//rect.y + rect.height / 2,
+                    SliderOptions.DRAWN_THUMB_SIZE_PX,
+                    rect.height/3
             );
 
             if (minRect.contains(x, y)) {
@@ -158,10 +162,10 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
 
 
             Rectangle maxRect = new Rectangle(
-                    maxX - _upperIcon.getIconWidth() / 2,
+                    maxX - 1,
                     rect.y,
-                    _upperIcon.getIconWidth(),
-                    _upperIcon.getIconHeight());
+                    SliderOptions.DRAWN_THUMB_SIZE_PX,
+                    rect.height/3);
             if (maxRect.contains(x, y)) {
                 return MOUSE_HANDLE_MAX;
             }
@@ -174,12 +178,12 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
         slider.getModel().setValue(slider.getLowValue() + delta);
     }
 
-    public void setLeftDefaultArea(int leftDefaultArea) {
-        this.leftDefaultArea = leftDefaultArea;
+    public void setBeforeMin(int beforeMin) {
+        this.beforeMin = beforeMin;
     }
 
-    public int getLeftDefaultArea() {
-        return leftDefaultArea;
+    public int getBeforeMin() {
+        return beforeMin;
     }
 
     public void setOverrideThumb(boolean overrideThumb) {
@@ -258,12 +262,16 @@ public class DrawnSliderUI extends BasicRangeSliderUI {
             DrawnSliderUI sliderUI = (DrawnSliderUI) slider.getUI();
             switch (handle) {
                 case MOUSE_HANDLE_BEFORE_MIN:
-                    sliderUI.setLeftDefaultArea(Math.min(newValue, rangeSlider.getLowValue()));
+                    sliderUI.setBeforeMin(Math.min(newValue, rangeSlider.getLowValue()));
+                    ChangeEvent ce = new ChangeEvent(slider);
+                    for(ChangeListener cl : slider.getChangeListeners()){
+                        cl.stateChanged(ce);
+                    }
                     break;
                 case MOUSE_HANDLE_MIN:
-                    rangeSlider.setLowValue(leftDefaultArea == 0 ?
+                    rangeSlider.setLowValue(beforeMin == 0 ?
                             Math.min(newValue, rangeSlider.getHighValue()) :
-                            Math.max(Math.min(newValue, rangeSlider.getHighValue()), leftDefaultArea));
+                            Math.max(Math.min(newValue, rangeSlider.getHighValue()), beforeMin));
                     break;
                 case MOUSE_HANDLE_MAX:
                     rangeSlider.setHighValue(Math.max(rangeSlider.getLowValue(), newValue));

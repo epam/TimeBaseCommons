@@ -31,6 +31,8 @@ public class SliderOptions {
 
     public  static       float    STROKE_WIDTH                = 2.0f;
 
+    public  static       int      DRAWN_THUMB_SIZE_PX         = 6;
+
     private              boolean  overrideThumb               = false;
 
     private              boolean  lowThumbEnabled             = true;
