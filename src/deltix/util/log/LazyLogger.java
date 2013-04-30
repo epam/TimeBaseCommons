@@ -135,6 +135,8 @@ public class LazyLogger {
 
 
     private void            doLog(LogRecord lr) {
+        lr.setLoggerName(name);
+
         if (logger != null) {
             poll();
             logger.log(lr);
@@ -155,7 +157,6 @@ public class LazyLogger {
 
                 started = true;
             }
-
         }
     }
 
