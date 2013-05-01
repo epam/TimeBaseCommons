@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.management.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,6 +195,29 @@ public class LinuxOS {
         return out;
     }        
     
+    public static int   getCurrentProcessId () {
+        // something like '<pid>@<hostname>', at least in SUN / Oracle JVMs
+        final String    jvmName = ManagementFactory.getRuntimeMXBean ().getName ();
+        final int       index = jvmName.indexOf ('@');
+
+        if (index < 1) 
+            throw new UnsupportedOperationException ();        
+
+        try {
+            return (Integer.parseInt (jvmName.substring (0, index)));
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        
+        throw new UnsupportedOperationException ();
+    }
+    
+    public static int           kill (int pid) 
+        throws IOException, InterruptedException 
+    {
+        return (Runtime.getRuntime ().exec ("kill -9 " + pid).waitFor ());
+    }
+            
     public static void main(String[] args) throws IOException {
         Runtime.getRuntime().exec(new String[]{"gnome-terminal", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
         Runtime.getRuntime().exec(new String[]{"xterm", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});

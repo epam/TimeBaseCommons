@@ -4,6 +4,9 @@ import deltix.util.io.ProcessHelper;
 import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
 
+import com.sun.jna.*;
+import com.sun.jna.platform.win32.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -316,6 +319,18 @@ public final class WindowsOS {
     	throws IOException, InterruptedException
     {
         return (ProcessHelper.execAndWait ("cmd", "/c", "start", cmd));
+    }
+    
+    public static int           getCurrentProcessId () {
+        Kernel32    kernel32 = (Kernel32) Native.loadLibrary ("kernel32", Kernel32.class);
+        
+        return (kernel32.GetCurrentProcessId ());
+    }
+    
+    public static int           kill (int pid) 
+        throws IOException, InterruptedException 
+    {
+        return (Runtime.getRuntime ().exec ("taskkill /T /F /PID " + pid).waitFor ());
     }
     
     public static void main (String[] args) throws Exception {
