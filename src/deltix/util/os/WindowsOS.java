@@ -322,9 +322,7 @@ public final class WindowsOS {
     }
     
     public static int           getCurrentProcessId () {
-        Kernel32    kernel32 = (Kernel32) Native.loadLibrary ("kernel32", Kernel32.class);
-        
-        return (kernel32.GetCurrentProcessId ());
+        return (Kernel32.INSTANCE.GetCurrentProcessId ());
     }
     
     public static int           kill (int pid) 
