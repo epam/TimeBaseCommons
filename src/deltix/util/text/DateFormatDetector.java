@@ -18,6 +18,9 @@ public class DateFormatDetector {
     private static final Pattern DASH_PATTERN_MM_DD_YY    = Pattern.compile("([^\\d]*)\\d{1,2}-\\d{1,2}-\\d{2}(.*)"    );
     private static final Pattern NSEP_PATTERN_YYYY_MM_DD  = Pattern.compile("([^\\d]*)\\d\\d\\d\\d\\d\\d\\d\\d(.*)"    );
 
+    public static final String DF_AM_MARKER = "AM";
+    public static final String DF_PM_MARKER = "PM";
+
     private enum TPS {
         BEFORE_HOURS,
         HOURS,
@@ -149,16 +152,21 @@ public class DateFormatDetector {
         return (timeFormat.toString ());
     }
     
-    private static boolean      getTimeFormatStringFor (
-        CharSequence                text, 
-        int                         timeStartIdx,
-        StringBuilder               timeFormat
-    )
-    {
+    private static boolean getTimeFormatStringFor(
+            CharSequence  text,
+            int           timeStartIdx,
+            StringBuilder timeFormat   ) {
+
+        String value = text.toString();
+        boolean hasAmOrPmMarker = value.endsWith(DF_AM_MARKER) || value.endsWith(DF_PM_MARKER);
+        if (hasAmOrPmMarker){
+            text = text.subSequence(0, text.length() - DF_AM_MARKER.length());
+        }
+
         int             limit = text.length ();
         boolean         success = false;
         TPS             state = TPS.BEFORE_HOURS;
-        
+
         for (int ii = timeStartIdx; ii <= limit; ii++) {
             char        c;
             boolean     isdigit;
@@ -239,7 +247,11 @@ public class DateFormatDetector {
                 }
             else
                 appendToFormat (c, timeFormat);
-        }       
+        }
+
+        if (hasAmOrPmMarker){
+            timeFormat.append("a");
+        }
         
         return (success);
     }
