@@ -97,6 +97,9 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
     protected int getMouseHandle(int x, int y) {
         Rectangle rect = trackRect;
 
+        int results = 0;
+        int[][] matchedRects = new int[][]{{-1, -1, -1}, {0, 0, 0}};
+
         if (slider.getOrientation() == JSlider.VERTICAL) {
             int minBeforeY = yPositionForValue(beforeMin);
             int minY = yPositionForValue(slider.getLowValue());
@@ -105,33 +108,37 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle minBeforeRect = new Rectangle(
-                    rect.x + rect.width *2/3,
+                    rect.x, //+ rect.width *2/3,
                     minBeforeY -5,
-                    rect.width/3,
+                    rect.width,//3,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
 
             if (minBeforeRect.contains(x, y)){
-                return MOUSE_HANDLE_BEFORE_MIN;
+                matchedRects[0][0] = MOUSE_HANDLE_BEFORE_MIN;
+                matchedRects[1][0] = beforeMin;
+                results ++;
             }
 
             Rectangle minRect = new Rectangle(
-                    rect.x + rect.width / 3,
+                    rect.x,// + rect.width / 3,
                     minY - 3,
-                    rect.width/3,
+                    rect.width,//3,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (minRect.contains(x, y)) {
-                return MOUSE_HANDLE_MIN;
+                matchedRects[0][1] =  MOUSE_HANDLE_MIN;
+                matchedRects[1][1] = slider.getLowValue();
+                results ++;
             }
 
             Rectangle maxRect = new Rectangle(rect.x,
                     maxY - 1,
-                    rect.width/3,
+                    rect.width,//3,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (maxRect.contains(x, y)) {
-                return MOUSE_HANDLE_MAX;
+                matchedRects[0][2] = MOUSE_HANDLE_MAX;
+                matchedRects[1][2] = slider.getHighValue();
+                results++;
             }
-
-            return MOUSE_HANDLE_NONE;
         } else {
             int minBeforeX = xPositionForValue(beforeMin);
             int minX = xPositionForValue(slider.getLowValue());
@@ -140,24 +147,29 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
             Rectangle minBeforeRect = new Rectangle(
                     minBeforeX -5,
-                    rect.y+rect.height*2/3,
+                    rect.y,//+rect.height*2/3,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    rect.height/3);
+                    rect.height//3
+            );
 
             if (minBeforeRect.contains(x, y)){
-                return MOUSE_HANDLE_BEFORE_MIN;
+                matchedRects[0][0] = MOUSE_HANDLE_BEFORE_MIN;
+                matchedRects[1][0] = beforeMin;
+                results ++;
             }
 
 
             Rectangle minRect = new Rectangle(
                     minX - 3,
-                    rect.y+rect.height/3,//rect.y + rect.height / 2,
+                    rect.y,//+rect.height/3,//rect.y + rect.height / 2,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    rect.height/3
+                    rect.height//3
             );
 
             if (minRect.contains(x, y)) {
-                return MOUSE_HANDLE_MIN;
+                matchedRects[0][1] =  MOUSE_HANDLE_MIN;
+                matchedRects[1][1] = slider.getLowValue();
+                results ++;
             }
 
 
@@ -165,13 +177,45 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     maxX - 1,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    rect.height/3);
+                    rect.height//3
+            );
             if (maxRect.contains(x, y)) {
-                return MOUSE_HANDLE_MAX;
+                matchedRects[0][2] = MOUSE_HANDLE_MAX;
+                matchedRects[1][2] = slider.getHighValue();
+                results++;
             }
-
-            return MOUSE_HANDLE_NONE;
         }
+
+        switch (results) {
+            case 0:
+                return MOUSE_HANDLE_NONE;
+            case 1:
+            case 2:
+                if (matchedRects[0][0] != -1 && matchedRects[0][1] != -1 &&
+                        matchedRects[1][0] == 0 && matchedRects[1][1] == 0) {//beforeMin and Min are in one position
+                    return matchedRects[0][1];//MOUSE_HANDLE_MIN
+                }
+                for (int matchedRect : matchedRects[0]) {
+                    if (matchedRect != -1) {
+                        return matchedRect;
+                    }
+                }
+            case 3:
+                int sum = 0;
+                for (int matchedRect : matchedRects[1]) {
+                    sum += matchedRect;
+                }
+                if (sum == 0){
+                    return  matchedRects[0][2];//MOUSE_HANDLE_MAX
+                }
+                for (int matchedRect : matchedRects[0]) {
+                    if (matchedRect != -1) {
+                        return matchedRect;
+                    }
+                }
+        }
+
+        return MOUSE_HANDLE_NONE;
     }
 
     private void offset(int delta) {
