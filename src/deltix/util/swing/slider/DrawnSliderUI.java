@@ -1,7 +1,6 @@
 package deltix.util.swing.slider;
 
 import com.jidesoft.plaf.basic.BasicRangeSliderUI;
-import com.jidesoft.swing.RangeSlider;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -15,15 +14,11 @@ import java.awt.event.MouseEvent;
  */
 public class DrawnSliderUI extends BasicRangeSliderUI{
 
-    private RangeSlider slider;
-
-    private int beforeMin = 0;
-
-    private boolean overrideThumb = false;
+    private DrawnSlider slider;
 
     protected static final int MOUSE_HANDLE_BEFORE_MIN = 5;
 
-    public DrawnSliderUI(RangeSlider slider) {
+    public DrawnSliderUI(DrawnSlider slider) {
         super(slider);
         this.slider = slider;
     }
@@ -31,7 +26,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
     @Override
     public void paintThumb(Graphics g) {
-        if (overrideThumb) {
+        if (slider.getOptions().isOverrideThumb()) {
 
         } else {
             //super.paintThumb(g);
@@ -40,52 +35,103 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
     @Override
     public void paintTrack(Graphics g) {
-        if (slider != null) {
-            int value = slider.getValue();
+        if (slider!= null) {
+            int beforeMin = slider.getThirdValue();
             int low = slider.getLowValue();
             int high = slider.getHighValue();
             int min = slider.getMinimum();
             int max = slider.getMaximum();
 
             int borderWidth = (int) SliderOptions.STROKE_WIDTH;
+            int y= SliderOptions.Y_START_COORDINATE;
             int x1 = borderWidth, x2 = borderWidth, x3;
 
             Rectangle bounds = slider.getBounds();
 
+            Font defFont = g.getFont();
+            Font customFont = new Font(defFont.getFontName(), Font.BOLD, defFont.getSize());
+            g.setFont(customFont);
+
             if (beforeMin > 0 && low != 0) {
-                g.setColor(SliderOptions.CACHE_AREA_COLOR);
-                g.fillRect(borderWidth,
-                        borderWidth,
-                        x1 = xPositionForValue(beforeMin) - borderWidth,
-                        bounds.height - 2 * borderWidth);
+                drawArea(
+                        g,
+                        customFont,
+                        new Rectangle(
+                                borderWidth,
+                                y,
+                                x1 = xPositionForValue(beforeMin) - borderWidth,
+                                bounds.height - 2 * borderWidth),
+                        0
+                );
             }
 
             if (min != low) {
-                g.setColor(SliderOptions.PREALLOCATE_AREA_COLOR);
-                g.fillRect(x1,
-                        borderWidth,
-                        x2 = xPositionForValue(value) - borderWidth,
-                        bounds.height - 2 * borderWidth);
+                drawArea(
+                        g,
+                        customFont,
+                        new Rectangle(
+                                x1,
+                                y,
+                                x2 = xPositionForValue(low) - borderWidth,
+                                bounds.height - 2 * borderWidth),
+                        1
+                );
             }
 
-            if (value != max) {
-                g.setColor(SliderOptions.MAX_MEMORY_COLOR);
-                g.fillRect(x2,
-                        borderWidth,
-                        x3 = xPositionForValue(high) - borderWidth,
-                        bounds.height - 2 * borderWidth);
+            if (low != max) {
+                drawArea(
+                        g,
+                        customFont,
+                        new Rectangle(
+                                x2,
+                                y,
+                                x3 = xPositionForValue(high) - borderWidth,
+                                bounds.height - 2 * borderWidth),
+                        2
+                );
             } else {
                 x3 = xPositionForValue(max);
             }
 
             if (high < max) {
-                g.setColor(SliderOptions.TOTAL_PHYSICAL_MEMORY_COLOR);
-                g.fillRect(x3,
-                        borderWidth,
-                        xPositionForValue(max),
-                        bounds.height - 2 * borderWidth);
+                drawArea(
+                        g,
+                        customFont,
+                        new Rectangle(
+                                x3,
+                                y,
+                                xPositionForValue(max),
+                                bounds.height - 2 * borderWidth),
+                        3
+                );
             }
         }
+    }
+
+    private void drawArea(Graphics g, Font font, Rectangle rect, int areaIndex){
+        g.setColor(slider.getOptions().getColor(areaIndex));
+        int x1;
+        g.fillRect((int) rect.getX(),
+                (int) rect.getY(),
+                x1 = (int) rect.getWidth(),
+                (int) rect.getHeight()
+        );
+
+        String drawnString;
+        int drawnStringWidth = g.getFontMetrics(font).stringWidth(
+                drawnString = slider.getOptions().getLabel(
+                        areaIndex,
+                        (int) (x1  - rect.getX() - SliderOptions.DRAWN_THUMB_SIZE_PX),
+                        g.getFontMetrics(font)
+                )
+        );
+        g.setColor(slider.getOptions().getTextColor(areaIndex));
+        g.drawString(
+                drawnString,
+                (int) (rect.getX() +
+                        SliderOptions.DRAWN_THUMB_SIZE_PX +
+                        (x1 - rect.getX() - SliderOptions.DRAWN_THUMB_SIZE_PX  - drawnStringWidth) / 2),
+                slider.getBounds().height * 2 / 3);
     }
 
     @Override
@@ -97,20 +143,24 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
     protected int getMouseHandle(int x, int y) {
         Rectangle rect = trackRect;
 
+        int beforeMin = slider.getThirdValue();
+        int low = slider.getLowValue();
+        int high = slider.getHighValue();
+
         int results = 0;
-        int[][] matchedRects = new int[][]{{-1, -1, -1}, {0, 0, 0}};
+        int[][] matchedRects = new int[][]{{-1, -1, -1}, {-1, -1, -1}};
 
         if (slider.getOrientation() == JSlider.VERTICAL) {
             int minBeforeY = yPositionForValue(beforeMin);
-            int minY = yPositionForValue(slider.getLowValue());
-            int maxY = yPositionForValue(slider.getHighValue());
+            int minY = yPositionForValue(low);
+            int maxY = yPositionForValue(high);
 
 
 
             Rectangle minBeforeRect = new Rectangle(
-                    rect.x, //+ rect.width *2/3,
+                    rect.x,
                     minBeforeY -5,
-                    rect.width,//3,
+                    rect.width,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
 
             if (minBeforeRect.contains(x, y)){
@@ -120,36 +170,36 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
             }
 
             Rectangle minRect = new Rectangle(
-                    rect.x,// + rect.width / 3,
+                    rect.x,
                     minY - 3,
-                    rect.width,//3,
+                    rect.width,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (minRect.contains(x, y)) {
                 matchedRects[0][1] =  MOUSE_HANDLE_MIN;
-                matchedRects[1][1] = slider.getLowValue();
+                matchedRects[1][1] = low;
                 results ++;
             }
 
             Rectangle maxRect = new Rectangle(rect.x,
                     maxY - 1,
-                    rect.width,//3,
+                    rect.width,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (maxRect.contains(x, y)) {
                 matchedRects[0][2] = MOUSE_HANDLE_MAX;
-                matchedRects[1][2] = slider.getHighValue();
+                matchedRects[1][2] = high;
                 results++;
             }
         } else {
             int minBeforeX = xPositionForValue(beforeMin);
-            int minX = xPositionForValue(slider.getLowValue());
-            int maxX = xPositionForValue(slider.getHighValue());
+            int minX = xPositionForValue(low);
+            int maxX = xPositionForValue(high);
 
 
             Rectangle minBeforeRect = new Rectangle(
                     minBeforeX -5,
-                    rect.y,//+rect.height*2/3,
+                    rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    rect.height//3
+                    rect.height
             );
 
             if (minBeforeRect.contains(x, y)){
@@ -161,14 +211,14 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
             Rectangle minRect = new Rectangle(
                     minX - 3,
-                    rect.y,//+rect.height/3,//rect.y + rect.height / 2,
+                    rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    rect.height//3
+                    rect.height
             );
 
             if (minRect.contains(x, y)) {
                 matchedRects[0][1] =  MOUSE_HANDLE_MIN;
-                matchedRects[1][1] = slider.getLowValue();
+                matchedRects[1][1] = low;
                 results ++;
             }
 
@@ -177,11 +227,11 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     maxX - 1,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    rect.height//3
+                    rect.height
             );
             if (maxRect.contains(x, y)) {
                 matchedRects[0][2] = MOUSE_HANDLE_MAX;
-                matchedRects[1][2] = slider.getHighValue();
+                matchedRects[1][2] = high;
                 results++;
             }
         }
@@ -191,9 +241,10 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 return MOUSE_HANDLE_NONE;
             case 1:
             case 2:
-                if (matchedRects[0][0] != -1 && matchedRects[0][1] != -1 &&
-                        matchedRects[1][0] == 0 && matchedRects[1][1] == 0) {//beforeMin and Min are in one position
-                    return matchedRects[0][1];//MOUSE_HANDLE_MIN
+                if (matchedRects[1][0] == 0 && matchedRects[1][1] == 0){//beforeMin and Min are in one start position
+                    return MOUSE_HANDLE_MIN;
+                }else if (matchedRects[1][1] == 0 && matchedRects[1][2] == 0){//Min  and Max are in one start position
+                    return MOUSE_HANDLE_MAX;
                 }
                 for (int matchedRect : matchedRects[0]) {
                     if (matchedRect != -1) {
@@ -206,7 +257,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     sum += matchedRect;
                 }
                 if (sum == 0){
-                    return  matchedRects[0][2];//MOUSE_HANDLE_MAX
+                    return MOUSE_HANDLE_MAX;
                 }
                 for (int matchedRect : matchedRects[0]) {
                     if (matchedRect != -1) {
@@ -222,24 +273,8 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
         slider.getModel().setValue(slider.getLowValue() + delta);
     }
 
-    public void setBeforeMin(int beforeMin) {
-        this.beforeMin = beforeMin;
-    }
-
-    public int getBeforeMin() {
-        return beforeMin;
-    }
-
-    public void setOverrideThumb(boolean overrideThumb) {
-        this.overrideThumb = overrideThumb;
-    }
-
     public int getXLocation(int value) {
         return xPositionForValue(value);
-    }
-
-    public int getYLocation(int value) {
-        return yPositionForValue(value);
     }
 
     protected class RangeTrackListener extends TrackListener {
@@ -302,34 +337,34 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 }
             }
 
-            RangeSlider rangeSlider = slider;
-            DrawnSliderUI sliderUI = (DrawnSliderUI) slider.getUI();
+            int beforeMin = slider.getThirdValue();
+
             switch (handle) {
                 case MOUSE_HANDLE_BEFORE_MIN:
-                    sliderUI.setBeforeMin(Math.min(newValue, rangeSlider.getLowValue()));
+                    slider.setThirdValue(Math.min(newValue, slider.getLowValue()));
                     ChangeEvent ce = new ChangeEvent(slider);
                     for(ChangeListener cl : slider.getChangeListeners()){
                         cl.stateChanged(ce);
                     }
                     break;
                 case MOUSE_HANDLE_MIN:
-                    rangeSlider.setLowValue(beforeMin == 0 ?
-                            Math.min(newValue, rangeSlider.getHighValue()) :
-                            Math.max(Math.min(newValue, rangeSlider.getHighValue()), beforeMin));
+                    slider.setLowValue(beforeMin == 0 ?
+                            Math.min(newValue, slider.getHighValue()) :
+                            Math.max(Math.min(newValue, slider.getHighValue()), beforeMin));
                     break;
                 case MOUSE_HANDLE_MAX:
-                    rangeSlider.setHighValue(Math.max(rangeSlider.getLowValue(), newValue));
+                    slider.setHighValue(Math.max(slider.getLowValue(), newValue));
                     break;
                 case MOUSE_HANDLE_MIDDLE:
                     int delta = (slider.getOrientation() == JSlider.VERTICAL) ?
-                            valueForYPosition(newLocation - handleOffset) - rangeSlider.getLowValue() :
-                            valueForXPosition(newLocation - handleOffset) - rangeSlider.getLowValue();
-                    if ((delta < 0) && ((rangeSlider.getLowValue() + delta) < rangeSlider.getMinimum())) {
-                        delta = rangeSlider.getMinimum() - rangeSlider.getLowValue();
+                            valueForYPosition(newLocation - handleOffset) - slider.getLowValue() :
+                            valueForXPosition(newLocation - handleOffset) - slider.getLowValue();
+                    if ((delta < 0) && ((slider.getLowValue() + delta) < slider.getMinimum())) {
+                        delta = slider.getMinimum() - slider.getLowValue();
                     }
 
-                    if ((delta > 0) && ((rangeSlider.getHighValue() + delta) > rangeSlider.getMaximum())) {
-                        delta = rangeSlider.getMaximum() - rangeSlider.getHighValue();
+                    if ((delta > 0) && ((slider.getHighValue() + delta) > slider.getMaximum())) {
+                        delta = slider.getMaximum() - slider.getHighValue();
                     }
 
                     if (delta != 0) {

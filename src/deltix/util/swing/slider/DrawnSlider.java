@@ -2,6 +2,7 @@ package deltix.util.swing.slider;
 
 import com.jidesoft.swing.RangeSlider;
 
+import javax.swing.*;
 
 /**
  * User: TurskiyS
@@ -17,6 +18,7 @@ public class DrawnSlider extends RangeSlider {
     }
 
     public DrawnSlider(SliderOptions options) {
+        super(SwingUtilities.HORIZONTAL);
         this.options = options;
     }
 
