@@ -32,6 +32,7 @@ public class MemorySliderTest extends JFrame {
         GBC layout = new GBC().setFill(GBC.HORIZONTAL).
                 setWeight(1, 0).setAnchor(GBC.WEST);
 
+        //colored slider
         SliderOptions options = new SliderOptions(
                 new int[]{
                         0,
@@ -46,9 +47,14 @@ public class MemorySliderTest extends JFrame {
                         "Unavailable"}
         );
 
-        DrawnSlider slider1 = SliderControlBuilder.createSlider(options);
-        main.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 0));
+        options.setTickColors(Arrays.copyOf(options.getColors(),options.getColors().length));
+        options.setTickColor(2, Color.BLACK);
 
+        DrawnSlider slider1 = SliderControlBuilder.createSlider(options);
+        main.add(new JLabel("Colored:"), layout.setPosition(0, 0));
+        main.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 1));
+
+        //black and white slider
         options = new SliderOptions(
                 new int[]{
                         0,
@@ -75,7 +81,17 @@ public class MemorySliderTest extends JFrame {
         textColors[3] = Color.BLACK;
         options.setTextColors(textColors);
         DrawnSlider slider2 = SliderControlBuilder.createSlider(options);
-        main.add(SliderControlBuilder.createMemoryRangePanel(slider2), layout.setPosition(0, 1));
+        main.add(new JLabel("Black-and-White:"), layout.setPosition(0, 2));
+        main.add(SliderControlBuilder.createMemoryRangePanel(slider2), layout.setPosition(0, 3));
+
+
+        //read only slider
+        options = options.copy();
+        options.setMinMaxUnderSlider(true);
+        DrawnSlider slider3 = SliderControlBuilder.createSlider(options);
+        slider3.setEnabled(false);
+        main.add(new JLabel("Read Only:"), layout.setPosition(0, 4));
+        main.add(SliderControlBuilder.createMemoryRangePanel(slider3), layout.setPosition(0, 5));
 
         add(main);
 

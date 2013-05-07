@@ -9,7 +9,7 @@ import java.util.Arrays;
  * User: TurskiyS
  * Date: 4/26/13
  */
-public class SliderOptions {
+public class SliderOptions{
 
     public  static final Color       FIRST_AREA_COLOR    = new Color(237, 28, 36  );
     public  static final Color       SECOND_AREA_COLOR   = new Color( 34, 177, 76 );
@@ -19,6 +19,7 @@ public class SliderOptions {
     private              String[]    labels              = null;
     private              Color[]     colors              = null;
     private              Color[]     textColors          = null;
+    private              Color[]     tickColors          = null;
 
     private              int[]       ticks               = null;
 
@@ -28,6 +29,10 @@ public class SliderOptions {
     public  static       int         DRAWN_THUMB_SIZE_PX = 6;
 
     private              boolean     overrideThumb       = false;
+
+    private              boolean     readOnly            = false;
+
+    private              boolean     minMaxUnderSlider   = false;
 
 
     public SliderOptions(int[] ticks) {
@@ -141,6 +146,10 @@ public class SliderOptions {
         }
     }
 
+    public Color[] getColors() {
+        return colors;
+    }
+
     public void setTextColors(Color[] values) {
         if (values != null) {
             textColors = values;
@@ -152,6 +161,25 @@ public class SliderOptions {
             return textColors[areaIndex];
         }
         return Color.BLACK;
+    }
+
+    public void setTickColors(Color[] values) {
+        if (values != null) {
+            tickColors = values;
+        }
+    }
+
+    public Color getTickColor(int areaIndex) {
+        if (tickColors != null && areaIndex < tickColors.length) {
+            return tickColors[areaIndex];
+        }
+        return getColor(areaIndex);
+    }
+
+    public void setTickColor(int areaIndex, Color value) {
+        if (tickColors != null && areaIndex < tickColors.length) {
+            tickColors[areaIndex] = value;
+        }
     }
 
 
@@ -172,4 +200,32 @@ public class SliderOptions {
         return 0;
     }
 
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public boolean isMinMaxUnderSlider() {
+        return minMaxUnderSlider;
+    }
+
+    public void setMinMaxUnderSlider(boolean minMaxUnderSlider) {
+        this.minMaxUnderSlider = minMaxUnderSlider;
+    }
+
+    protected SliderOptions copy(){
+        SliderOptions options = new SliderOptions(ticks,
+                                                  labels,
+                                                  colors );
+        options.setTickColors(tickColors);
+        options.setTextColors(textColors);
+        options.setOverrideThumb(overrideThumb);
+        options.setMinMaxUnderSlider(minMaxUnderSlider);
+        options.setReadOnly(readOnly);
+
+        return options;
+    }
 }

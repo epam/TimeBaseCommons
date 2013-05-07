@@ -18,7 +18,7 @@ import java.awt.event.FocusEvent;
  */
 public class SliderControlBuilder {
 
-    public static Component createMemoryRangePanel(final DrawnSlider slider) {
+    public static JComponent createMemoryRangePanel(final DrawnSlider slider) {
         final GBC layoutManager = new GBC();
         final JPanel panel = new JPanel(new GridBagLayout()) {
 
@@ -34,6 +34,8 @@ public class SliderControlBuilder {
             }
 
         };
+
+        panel.setBorder(BorderFactory.createTitledBorder(""));
 
         //Slider Change Listener
         slider.addChangeListener(new ChangeListener() {
@@ -57,22 +59,30 @@ public class SliderControlBuilder {
 
 
         //build layout
-        panel.add(new JPanel(), layoutManager.setPosition(0, 0).
-                setWeight(1, 0).
-                setInsets(5));
+        panel.add(new JLabel(""),
+                layoutManager.setPosition(0, 0).
+                        setWeight(0, 0).
+                        setFill(GBC.NONE).
+                        setInsets(5));
+        panel.add(new JPanel(), layoutManager.setPosition(1, 0).
+                setWeight(1, 0));
+
+        panel.add(new JLabel(),
+                layoutManager.setPosition(2, 0).
+                        setWeight(0, 0).
+                        setFill(GBC.NONE).
+                        setIpad(10, 5));
         panel.add(slider,
-                layoutManager.setPosition(0, 1).
+                layoutManager.setPosition(1, 1).
                         setAnchor(GBC.WEST).
                         setSpan(1, 1).
                         setWeight(1, 0).
                         setFill(GBC.HORIZONTAL));
 
-        panel.add(new JLabel("       "),
-                layoutManager.setPosition(1, 1).
-                        setWeight(0, 0).
-                        setFill(GBC.NONE));
-        panel.add(new JPanel(), layoutManager.setPosition(0, 2).
-                setWeight(1, 0));
+        if (slider.getOptions().isMinMaxUnderSlider()) {
+            panel.add(new JPanel(), layoutManager.setPosition(1, 2).
+                    setWeight(1, 0));
+        }
 
         panel.addComponentListener(new ComponentAdapter() {
             @Override
@@ -122,13 +132,18 @@ public class SliderControlBuilder {
 
         ((Graphics2D) g).setStroke(new BasicStroke(SliderOptions.STROKE_WIDTH));
 
+        int numberYPosition1 = (int) (sliderY - 5);
+        int numberYPosition2 = (int) (sliderY - 15);
+
         //paint minimum
         paintTick(g,
                 Color.BLACK,
                 String.valueOf(min),
                 new Point(
                         (int) sliderX,
-                        (int) (sliderY + slider.getBounds().height + 15)
+                        slider.getOptions().isMinMaxUnderSlider() ?
+                        (int) (sliderY + slider.getBounds().height + 15):
+                        numberYPosition2
                 )
         );
         //paint maximum
@@ -137,7 +152,10 @@ public class SliderControlBuilder {
                 String.valueOf(max),
                 new Point(
                         (int) (sliderX + sliderUI.getXLocation(max)),
-                        (int) (sliderY + slider.getBounds().height + 15)
+                        slider.getOptions().isMinMaxUnderSlider() ?
+                                (int) (sliderY + slider.getBounds().height + 15) :
+                                numberYPosition2
+
                 )
         );
 
@@ -151,11 +169,11 @@ public class SliderControlBuilder {
         String drawnString = String.format("%sM", beforeMin);
         int drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
-                slider.getOptions().getColor(0),
+                slider.getOptions().getTickColor(0),
                 drawnString,
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(beforeMin)) - drawnStringWidth / 2,
-                        (int) (sliderY - 10)
+                        (int) (sliderX + sliderUI.getXLocation(beforeMin) - drawnStringWidth),
+                        numberYPosition1
                 )
         );
 
@@ -163,11 +181,11 @@ public class SliderControlBuilder {
         drawnString = String.format("%sM", lowValue);
         drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
-                slider.getOptions().getColor(1),
+                slider.getOptions().getTickColor(1),
                 drawnString,
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(lowValue)) - drawnStringWidth / 2,
-                        (int) (sliderY - 10)
+                        (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth/2),
+                        numberYPosition2
                 )
         );
         //paint second area thumb
@@ -183,11 +201,11 @@ public class SliderControlBuilder {
         drawnString = String.format("%sM", high);
         drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
-                slider.getOptions().getColor(2),
+                slider.getOptions().getTickColor(2),
                 drawnString,
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(high)) - drawnStringWidth / 2,
-                        (int) (sliderY - 10)
+                        (int) (sliderX + sliderUI.getXLocation(high)),
+                        numberYPosition1
                 )
         );
 
