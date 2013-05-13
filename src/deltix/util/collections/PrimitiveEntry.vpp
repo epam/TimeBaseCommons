@@ -1,0 +1,7 @@
+package deltix.util.collections.generated;
+
+import deltix.util.collections.KeyEntry;
+
+public interface ${name}Entry extends KeyEntry<${name}> {
+    public ${type} key${name}();
+}
