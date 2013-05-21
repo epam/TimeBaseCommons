@@ -106,9 +106,9 @@ public class SliderControlBuilder {
 
         slider.setMinimum(options.getTick(0));
         slider.setMaximum(options.getTick(4));
-        slider.setThirdValue(options.getTick(1));
-        slider.setLowValue(options.getTick(2));
-        slider.setHighValue(options.getTick(3));
+        slider.setThirdValue(SliderScale.getValueInScale(options.getTick(1), options.getTick(4)));
+        slider.setLowValue(SliderScale.getValueInScale(options.getTick(2), options.getTick(4)));
+        slider.setHighValue(SliderScale.getValueInScale(options.getTick(3), options.getTick(4)));
 
         slider.setUI(new DrawnSliderUI(slider));
 
@@ -166,7 +166,7 @@ public class SliderControlBuilder {
                 slider.getHeight() + SliderOptions.DRAWN_THUMB_SIZE_PX));
 
         //paint first tick
-        String drawnString = String.format("%sM", beforeMin);
+        String drawnString = String.format("%sM", SliderScale.getVisibleValue(beforeMin, max));
         int drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
                 slider.getOptions().getTickColor(0),
@@ -178,7 +178,7 @@ public class SliderControlBuilder {
         );
 
         //paint second tick
-        drawnString = String.format("%sM", lowValue);
+        drawnString = String.format("%sM", SliderScale.getVisibleValue(lowValue, max));
         drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
                 slider.getOptions().getTickColor(1),
@@ -198,7 +198,7 @@ public class SliderControlBuilder {
                         slider.getHeight() + SliderOptions.DRAWN_THUMB_SIZE_PX));
 
         //paint third tick
-        drawnString = String.format("%sM", high);
+        drawnString = String.format("%sM", SliderScale.getVisibleValue(high, max));
         drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
                 slider.getOptions().getTickColor(2),
