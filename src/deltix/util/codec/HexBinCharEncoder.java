@@ -2,8 +2,6 @@ package deltix.util.codec;
 
 import java.io.*;
 
-import deltix.util.*;
-
 public class HexBinCharEncoder extends BinCharEncoder {
 	public static final char []	UPPER_CASE_VOCABULARY = {
 		'0', '1', '2', '3', '4', '5', '6', '7', 
@@ -122,7 +120,7 @@ public class HexBinCharEncoder extends BinCharEncoder {
      *	Convenience method to encode a single array of bytes.
      *
      *  @param bytes       	Bytes to encode
-     *  @param insertSpace  Whether to insert spaces bertween each byte
+     *  @param insertSpace  Whether to insert spaces between each byte
      *	@param upperCase	Whether to use upper-case letters
      *  @param numPerLine   If > 0, a line separator will be inserted
      *                      after this many bytes.
@@ -130,6 +128,30 @@ public class HexBinCharEncoder extends BinCharEncoder {
      */
     public static String		encode (
     	byte [] 					bytes,
+    	boolean 					insertSpace, 
+    	boolean						upperCase,
+    	int 						numPerLine
+    ) 
+    {
+        return (encode (bytes, 0, bytes.length, insertSpace, upperCase, numPerLine));
+    }
+    
+    /**
+     *	Convenience method to encode a single array of bytes.
+     *
+     *  @param bytes       	Bytes to encode
+     *  @param offset       Start offset
+     *  @param length       Number of bytes to encode
+     *  @param insertSpace  Whether to insert spaces between each byte
+     *	@param upperCase	Whether to use upper-case letters
+     *  @param numPerLine   If > 0, a line separator will be inserted
+     *                      after this many bytes.
+     *	@return				The encoded string.
+     */
+    public static String		encode (
+    	byte [] 					bytes,
+        int                         offset,
+        int                         length,
     	boolean 					insertSpace, 
     	boolean						upperCase,
     	int 						numPerLine
@@ -146,7 +168,7 @@ public class HexBinCharEncoder extends BinCharEncoder {
 					numPerLine
 				);
 				
-    		enc.write (bytes);
+    		enc.write (bytes, offset, length);
 	    	
     		return (swr.toString ());  
     	} catch (IOException iox) {
