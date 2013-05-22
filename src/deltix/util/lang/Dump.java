@@ -88,8 +88,8 @@ public class Dump {
             }
             sbuf.append(" [");
             for (char c : row) {
-                if (c == '\n' || c == '\r' || c == '\t' || c == '\b')
-                    c = ' ';
+                if (c < 32 || c > 126)
+                    c = '.';
                 sbuf.append (c);
             }
             sbuf.append("]\n");
