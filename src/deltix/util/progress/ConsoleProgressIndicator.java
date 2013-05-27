@@ -13,6 +13,7 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
     protected double              totalWork = 0;
     protected double              workDone = 0;
     protected boolean             inlined;
+    protected boolean             showPercentage;
 
     public boolean isInlined() {
         return inlined;
@@ -21,6 +22,14 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
     public void setInlined(boolean inlined) {
         this.inlined = inlined;
     }        
+
+    public boolean isShowPercentage() {
+        return showPercentage;
+    }
+
+    public void setShowPercentage(boolean showPercentage) {
+        this.showPercentage = showPercentage;
+    }
     
     public char                 getBlank () {
         return blank;
@@ -66,37 +75,66 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
         
         final StringBuilder line = new StringBuilder();
         
+        final int numBars = (int) ((workDone / totalWork) * width + 0.5);
+        
         int newNumBars =
             workDone > totalWork ?
                 width :
             totalWork == 0 ? 
-                0 :
-                (int) ((workDone / totalWork) * width + 0.5);
+                0 : numBars;
         
         if (newNumBars != numBarsShown) {
             if (!inlined) {
                 line.append ('\r');
-            }
-            line.append (prefix);
+            }                                    
+            
+            line.append (prefix);                        
             
             int     ii = 0;
             
             while (ii < newNumBars) {
-                line.append (bar);
+                line.append (bar);                
                 ii++;
+                ii += appendPercentsIfRequired(line, ii, width);
             }
             
             while (ii < width) {
                 line.append (blank);
                 ii++;
-            }
+                ii += appendPercentsIfRequired(line, ii, width);
+            }                        
             
-            line.append (suffix);
+            line.append (suffix);                        
             
             numBarsShown = newNumBars;
             
             System.out.print(line);
         }
+    }
+    
+    private int appendPercentsIfRequired(final StringBuilder sb, final int pos, final int width) {
+        if (!showPercentage) {
+            return 0;
+        }
+        
+        final int p = (int) ((workDone / totalWork) * 100 + 0.5);
+        
+        int i = 2; // one digit and %                        
+        if (p >= 10) {
+            i++;
+            if (p >= 100) {
+                i++;
+            }
+        }
+
+        if (pos == width / 2 - i) {
+                        
+            sb.append(p).append("%");
+            
+            return i;
+        }
+        
+        return 0;
     }
     
     public boolean isEmpty() {
