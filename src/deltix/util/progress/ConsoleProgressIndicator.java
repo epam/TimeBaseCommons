@@ -4,15 +4,24 @@ package deltix.util.progress;
  *  Displays a progress bar on the console.
  */
 public class ConsoleProgressIndicator implements ProgressIndicator {
-    private int                 width = 50;
-    private int                 numBarsShown = -1;
-    private String              prefix = "[";
-    private String              suffix = "]";
-    private char                bar = '*';
-    private char                blank = ' ';
-    private double              totalWork = 0;
-    private double              workDone = 0;
+    protected int                 width = 50;
+    protected int                 numBarsShown = -1;
+    protected String              prefix = "[";
+    protected String              suffix = "]";
+    protected char                bar = '*';
+    protected char                blank = ' ';
+    protected double              totalWork = 0;
+    protected double              workDone = 0;
+    protected boolean             inlined;
 
+    public boolean isInlined() {
+        return inlined;
+    }
+
+    public void setInlined(boolean inlined) {
+        this.inlined = inlined;
+    }        
+    
     public char                 getBlank () {
         return blank;
     }
@@ -62,7 +71,9 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
                 (int) ((workDone / totalWork) * width + 0.5);
         
         if (newNumBars != numBarsShown) {
-            System.out.print ('\r');
+            if (!inlined) {
+                System.out.print ('\r');
+            }
             System.out.print (prefix);
             
             int     ii = 0;
@@ -81,6 +92,10 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
             
             numBarsShown = newNumBars;
         }
+    }
+    
+    public boolean isEmpty() {
+        return totalWork == 0;
     }
     
     public void                 incrementWorkDone (double inc) {
