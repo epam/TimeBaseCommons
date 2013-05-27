@@ -63,6 +63,9 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
     }
         
     public void                 show () {
+        
+        final StringBuilder line = new StringBuilder();
+        
         int newNumBars =
             workDone > totalWork ?
                 width :
@@ -72,25 +75,27 @@ public class ConsoleProgressIndicator implements ProgressIndicator {
         
         if (newNumBars != numBarsShown) {
             if (!inlined) {
-                System.out.print ('\r');
+                line.append ('\r');
             }
-            System.out.print (prefix);
+            line.append (prefix);
             
             int     ii = 0;
             
             while (ii < newNumBars) {
-                System.out.print (bar);
+                line.append (bar);
                 ii++;
             }
             
             while (ii < width) {
-                System.out.print (blank);
+                line.append (blank);
                 ii++;
             }
             
-            System.out.print (suffix);
+            line.append (suffix);
             
             numBarsShown = newNumBars;
+            
+            System.out.print(line);
         }
     }
     
