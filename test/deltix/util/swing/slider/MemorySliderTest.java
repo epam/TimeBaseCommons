@@ -39,7 +39,7 @@ public class MemorySliderTest extends JFrame {
                         100,
                         (100+512)/2,
                         512,
-                        memoryInMB
+                        memoryInMB * 16
                 },
                 new String[]{"Cache",
                         "Initial",
@@ -48,18 +48,18 @@ public class MemorySliderTest extends JFrame {
         );
 
         options.setTickColors(Arrays.copyOf(options.getColors(),options.getColors().length));
-        options.setTickColor(2, Color.BLACK);
+        //options.setTickColor(2, Color.BLACK);
 
         DrawnSlider slider1 = SliderControlBuilder.createSlider(options);
-        main.add(new JLabel("Colored:"), layout.setPosition(0, 0));
+        main.add(new JLabel("Colored:"), layout.setPosition(0, 0).setInsets(5));
         main.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 1));
 
         //black and white slider
         options = new SliderOptions(
                 new int[]{
                         0,
-                        (int) (memoryInMB * 0.25),
-                        (int) (memoryInMB * 0.34),
+                        (int) (memoryInMB * 0.05),
+                        (int) (memoryInMB * 0.14),
                         (int) (memoryInMB * 0.7),
                         memoryInMB
                 },
@@ -87,7 +87,8 @@ public class MemorySliderTest extends JFrame {
 
         //read only slider
         options = options.copy();
-        options.setMinMaxUnderSlider(true);
+        //options.setMinMaxUnderSlider(true);
+        options.setReadOnly(true);
         DrawnSlider slider3 = SliderControlBuilder.createSlider(options);
         slider3.setEnabled(false);
         main.add(new JLabel("Read Only:"), layout.setPosition(0, 4));
@@ -108,7 +109,7 @@ public class MemorySliderTest extends JFrame {
     public static void main(String[] args) {
 
         MemorySliderTest frame = new MemorySliderTest();
-        frame.setPreferredSize(new Dimension(600, 300));
+        frame.setPreferredSize(new Dimension(600, 350));
         frame.pack();
         Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(windowSize.width/2 - frame.getWidth()/2, windowSize.height/2 - frame.getHeight()/2);

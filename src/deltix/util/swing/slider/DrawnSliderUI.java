@@ -171,7 +171,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
             Rectangle minRect = new Rectangle(
                     rect.x,
-                    minY - 3,
+                    minY - SliderOptions.THUMB_OVER_BODER_PX,
                     rect.width,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (minRect.contains(x, y)) {
@@ -196,7 +196,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle minBeforeRect = new Rectangle(
-                    minBeforeX -5,
+                    minBeforeX - SliderOptions.DRAWN_THUMB_SIZE_PX /2,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.height
@@ -210,7 +210,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle minRect = new Rectangle(
-                    minX - 3,
+                    minX,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.height
@@ -224,7 +224,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle maxRect = new Rectangle(
-                    maxX - 1,
+                    maxX + SliderOptions.DRAWN_THUMB_SIZE_PX /2,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.height
@@ -341,7 +341,15 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
             switch (handle) {
                 case MOUSE_HANDLE_BEFORE_MIN:
-                    slider.setThirdValue(Math.min(newValue, slider.getLowValue()));
+                    slider.setThirdValue(
+                            Math.min (
+                                Math.min(newValue, slider.getLowValue()),
+                                SliderScale.multiplyValue(
+                                    slider.getHighValue(),
+                                    slider.getMaximum(),
+                                    SliderOptions.PART_OF_HEAP_CACHE )
+                                )
+                    );
                     ChangeEvent ce = new ChangeEvent(slider);
                     for(ChangeListener cl : slider.getChangeListeners()){
                         cl.stateChanged(ce);

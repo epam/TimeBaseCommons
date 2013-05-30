@@ -1,7 +1,5 @@
 package deltix.util.swing.slider;
 
-import com.jidesoft.swing.RangeSlider;
-
 import java.awt.*;
 import java.util.Arrays;
 
@@ -11,28 +9,32 @@ import java.util.Arrays;
  */
 public class SliderOptions{
 
-    public  static final Color       FIRST_AREA_COLOR    = new Color(237, 28, 36  );
-    public  static final Color       SECOND_AREA_COLOR   = new Color( 34, 177, 76 );
-    public  static final Color       THIRD_AREA_COLOR    = new Color(181, 230, 29 );
-    public  static final Color       FOURTH_AREA_COLOR   = new Color(255, 255, 255);
+    public  static final Color    FIRST_AREA_COLOR    = new Color(0xFF9999);
+    public  static final Color    SECOND_AREA_COLOR   = new Color(0x8BF5B7); //ARROW_COLOR
+    public  static final Color    THIRD_AREA_COLOR    = new Color(0x6E93DC); //MARKET_DATA_COLOR
+    public  static final Color    FOURTH_AREA_COLOR   = new Color(0xFFFFFF); //White
 
-    private              String[]    labels              = null;
-    private              Color[]     colors              = null;
-    private              Color[]     textColors          = null;
-    private              Color[]     tickColors          = null;
+    private              String[] labels              = null;
+    private              Color[]  colors              = null;
+    private              Color[]  textColors          = null;
+    private              Color[]  tickColors          = null;
 
-    private              int[]       ticks               = null;
+    private              int[]    ticks               = null;
 
-    public  static       float       STROKE_WIDTH        = 2.0f;
-    public  static       int         Y_START_COORDINATE  = 2;
+    public  static       float    STROKE_WIDTH        = 2.0f;
+    public  static       int      Y_START_COORDINATE  = 2;
 
-    public  static       int         DRAWN_THUMB_SIZE_PX = 6;
+    public  static       int      DRAWN_THUMB_SIZE_PX = 6;
 
-    private              boolean     overrideThumb       = false;
+    public  static       int      THUMB_OVER_BODER_PX = 3;
 
-    private              boolean     readOnly            = false;
+    private              boolean  overrideThumb       = false;
 
-    private              boolean     minMaxUnderSlider   = false;
+    private              boolean  readOnly            = false;
+
+    private              boolean  minMaxUnderSlider   = false;
+
+    public static final float    PART_OF_HEAP_CACHE  = 0.75f;// param limits max cache size by 3/4 of heap size
 
 
     public SliderOptions(int[] ticks) {

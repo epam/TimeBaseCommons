@@ -59,28 +59,22 @@ public class SliderControlBuilder {
 
 
         //build layout
-        panel.add(new JLabel(""),
-                layoutManager.setPosition(0, 0).
-                        setWeight(0, 0).
-                        setFill(GBC.NONE).
-                        setInsets(5));
-        panel.add(new JPanel(), layoutManager.setPosition(1, 0).
+        panel.add(new JPanel(), layoutManager.setPosition(0, 0).
+                setFill(GBC.HORIZONTAL).
+                setInsets(5).
                 setWeight(1, 0));
 
-        panel.add(new JLabel(),
-                layoutManager.setPosition(2, 0).
-                        setWeight(0, 0).
-                        setFill(GBC.NONE).
-                        setIpad(10, 5));
         panel.add(slider,
-                layoutManager.setPosition(1, 1).
+                layoutManager.setPosition(0, 1).
                         setAnchor(GBC.WEST).
                         setSpan(1, 1).
                         setWeight(1, 0).
                         setFill(GBC.HORIZONTAL));
 
         if (slider.getOptions().isMinMaxUnderSlider()) {
-            panel.add(new JPanel(), layoutManager.setPosition(1, 2).
+            panel.add(new JPanel(), layoutManager.setPosition(0, 2).
+                    setFill(GBC.NONE).
+                    setInsets(5).
                     setWeight(1, 0));
         }
 
@@ -119,6 +113,7 @@ public class SliderControlBuilder {
 
     private static void paintMemoryControlLabels(DrawnSlider slider, Graphics g) {
         final DrawnSliderUI sliderUI = ((DrawnSliderUI) slider.getUI());
+        boolean readOnly = slider.getOptions().isReadOnly();
         double sliderX = slider.getLocation().getX();
         double sliderY = slider.getLocation().getY();
         Font defFont = g.getFont();
@@ -132,18 +127,13 @@ public class SliderControlBuilder {
 
         ((Graphics2D) g).setStroke(new BasicStroke(SliderOptions.STROKE_WIDTH));
 
-        int numberYPosition1 = (int) (sliderY - 5);
-        int numberYPosition2 = (int) (sliderY - 15);
-
-        //paint minimum
+       //paint minimum
         paintTick(g,
                 Color.BLACK,
                 String.valueOf(min),
                 new Point(
-                        (int) sliderX,
-                        slider.getOptions().isMinMaxUnderSlider() ?
-                        (int) (sliderY + slider.getBounds().height + 15):
-                        numberYPosition2
+                        getLabelXPosition (slider, min, g, customFont),
+                        getLabelYPosition (slider, min)
                 )
         );
         //paint maximum
@@ -151,69 +141,72 @@ public class SliderControlBuilder {
                 Color.BLACK,
                 String.valueOf(max),
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(max)),
+                        getLabelXPosition (slider, max, g, customFont),
                         slider.getOptions().isMinMaxUnderSlider() ?
                                 (int) (sliderY + slider.getBounds().height + 15) :
-                                numberYPosition2
+                                getLabelYPosition (slider, max)
 
                 )
         );
 
         //if (beforeMin > 0 && beforeMin < value) {
-        paintThumb(g, slider.getOptions().getColor(0), new Rectangle((int) (sliderX + sliderUI.getXLocation(beforeMin) - 5),
-                (int) sliderY - 3,
-                SliderOptions.DRAWN_THUMB_SIZE_PX,
-                slider.getHeight() + SliderOptions.DRAWN_THUMB_SIZE_PX));
+        if (!readOnly){
+            paintThumb(g, slider.getOptions().getColor(0), new Rectangle((int) (sliderX + sliderUI.getXLocation(beforeMin) - 5),
+                    (int) sliderY - SliderOptions.THUMB_OVER_BODER_PX,
+                    SliderOptions.DRAWN_THUMB_SIZE_PX,
+                    slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 2));
+        }
 
         //paint first tick
         String drawnString = String.format("%sM", SliderScale.getVisibleValue(beforeMin, max));
-        int drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
                 slider.getOptions().getTickColor(0),
                 drawnString,
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(beforeMin) - drawnStringWidth),
-                        numberYPosition1
+                        getLabelXPosition (slider, beforeMin, g, customFont),
+                        getLabelYPosition (slider, beforeMin)
                 )
         );
 
         //paint second tick
         drawnString = String.format("%sM", SliderScale.getVisibleValue(lowValue, max));
-        drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
                 slider.getOptions().getTickColor(1),
                 drawnString,
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth/2),
-                        numberYPosition2
+                        getLabelXPosition (slider, lowValue, g, customFont),
+                        getLabelYPosition (slider, lowValue)
                 )
         );
         //paint second area thumb
-        paintThumb(
-                g,
-                slider.getOptions().getColor(1),
-                new Rectangle((int) (sliderX + sliderUI.getXLocation(lowValue) - 3),
-                        (int) sliderY - 3,
-                        SliderOptions.DRAWN_THUMB_SIZE_PX,
-                        slider.getHeight() + SliderOptions.DRAWN_THUMB_SIZE_PX));
+        if (!readOnly) {
+            paintThumb(
+                    g,
+                    slider.getOptions().getColor(1),
+                    new Rectangle((int) (sliderX + sliderUI.getXLocation(lowValue) - 3),
+                            (int) sliderY - 4 * SliderOptions.THUMB_OVER_BODER_PX,
+                            SliderOptions.DRAWN_THUMB_SIZE_PX,
+                            slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 5));
+        }
 
         //paint third tick
         drawnString = String.format("%sM", SliderScale.getVisibleValue(high, max));
-        drawnStringWidth = g.getFontMetrics(defFont).stringWidth(drawnString);
         paintTick(g,
                 slider.getOptions().getTickColor(2),
                 drawnString,
                 new Point(
-                        (int) (sliderX + sliderUI.getXLocation(high)),
-                        numberYPosition1
+                        getLabelXPosition (slider, high, g, customFont),
+                        getLabelYPosition (slider, high)
                 )
         );
 
         //paint third area thumb
-        paintThumb(g, slider.getOptions().getColor(2), new Rectangle((int) (sliderX + sliderUI.getXLocation(high) - 1),
-                (int) (sliderY - 3),
-                SliderOptions.DRAWN_THUMB_SIZE_PX,
-                slider.getHeight() + SliderOptions.DRAWN_THUMB_SIZE_PX));
+        if (!readOnly){
+            paintThumb(g, slider.getOptions().getColor(2), new Rectangle((int) (sliderX + sliderUI.getXLocation(high) - 1),
+                    (int) (sliderY - SliderOptions.THUMB_OVER_BODER_PX),
+                    SliderOptions.DRAWN_THUMB_SIZE_PX,
+                    slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 2));
+        }
     }
 
     private static void paintThumb(Graphics g, Color thumbColor, Rectangle rect) {
@@ -244,6 +237,89 @@ public class SliderControlBuilder {
         g.drawString(str,
                 point.x,
                 point.y);
+    }
+
+    private static int getLabelXPosition(DrawnSlider slider, int value, Graphics g, Font customFont) {
+        final DrawnSliderUI sliderUI = ((DrawnSliderUI) slider.getUI());
+        boolean  readOnly = slider.getOptions().isReadOnly();
+        final int lowValue = slider.getLowValue();
+        final int high = slider.getHighValue();
+        final int max = slider.getMaximum();
+        final int min = slider.getMinimum();
+        final int beforeMin = slider.getThirdValue();
+
+        double sliderX = slider.getLocation().getX();
+
+        String drawnString = "";
+        int drawnStringWidth = 0;
+
+        if (value == max) {
+            drawnString = String.valueOf(SliderScale.getVisibleValue(max, max));
+            drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
+            return (int) (sliderX + sliderUI.getXLocation(max) - (drawnStringWidth * 0.9));
+
+        } else if (value == min) {
+            return (int) sliderX;
+        } else if (value == beforeMin) {
+            String drawnStringMin = String.format("%sM", SliderScale.getVisibleValue(beforeMin, max));
+            int drawnStringMinWidth = g.getFontMetrics(customFont).stringWidth(drawnStringMin);
+            return (int) (Math.max(
+                    sliderX + sliderUI.getXLocation(beforeMin) - drawnStringMinWidth + (readOnly ? drawnStringMinWidth / 2 : 0),
+                    sliderX
+                    )
+            );
+        } else if (value == lowValue) {
+            drawnString = String.format("%sM", SliderScale.getVisibleValue(lowValue, max));
+            drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
+            return (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth / 2);
+        } else if (value == high) {
+            String drawnStringHigh = String.format("%sM", SliderScale.getVisibleValue(high, max));
+            int drawnStringWidthHigh = g.getFontMetrics(customFont).stringWidth(drawnStringHigh);
+            String drawnStringMax = String.format("%sM", SliderScale.getVisibleValue(max, max));
+            int drawnStringWidthMax = g.getFontMetrics(customFont).stringWidth(drawnStringMax);
+            return (int) (
+                    Math.min(
+                            sliderX + sliderUI.getXLocation(high) - (readOnly ? drawnStringWidthHigh / 2 : 0),
+                            sliderX + sliderUI.getXLocation(max) - (drawnStringWidthMax * 0.9)
+                    )
+            );
+        }
+
+        return (int) sliderX;
+    }
+
+    private static int getLabelYPosition(DrawnSlider slider, int value) {
+        boolean  readOnly = slider.getOptions().isReadOnly();
+        final int lowValue = slider.getLowValue();
+        final int high = slider.getHighValue();
+        final int max = slider.getMaximum();
+        final int min = slider.getMinimum();
+        final int beforeMin = slider.getThirdValue();
+
+        double sliderY = slider.getLocation().getY();
+        int numberYPosition1 = (int) (sliderY - 5);
+        int numberYPosition2 = (int) (sliderY - 15);
+
+        if (value == max) {
+            return slider.getOptions().isMinMaxUnderSlider() ?
+                    (int) (sliderY + slider.getBounds().height + 15) :
+                    numberYPosition2;
+
+        } else if (value == min) {
+            return slider.getOptions().isMinMaxUnderSlider() ?
+                    (int) (sliderY + slider.getBounds().height + 15) :
+                    numberYPosition2;
+
+        } else if (value == beforeMin) {
+            return numberYPosition1;
+        } else if (value == high) {
+            return numberYPosition1;
+
+        } else if (value == lowValue) {
+            return numberYPosition2;
+        }
+
+        return (int) sliderY;
     }
 
 }

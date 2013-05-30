@@ -48,4 +48,9 @@ public class SliderScale {
 
     }
 
+    public static int multiplyValue (int value, int sliderMax, float multiplier){
+        int visibleValue = getVisibleValue(value, sliderMax);
+        return getValueInScale((int) (visibleValue * multiplier), sliderMax);
+    }
+
 }
