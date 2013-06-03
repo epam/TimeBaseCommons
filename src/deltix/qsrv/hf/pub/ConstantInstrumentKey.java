@@ -42,10 +42,12 @@ public class ConstantInstrumentKey
         this (copy.getType (), copy.getSymbol ());
     }
 
+    @Override
     public String               getSymbol () {
         return (symbol);
     }
 
+    @Override
     public InstrumentType       getType () {
         return (instrumentType);
     }
@@ -68,6 +70,7 @@ public class ConstantInstrumentKey
         return (InstrumentKey.toString (this));
     }
 
+    @Override
     public int                  compareTo (InstrumentIdentity o) {
         return (InstrumentKey.compare (this, o));
     }

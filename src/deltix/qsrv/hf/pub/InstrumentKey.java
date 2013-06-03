@@ -32,10 +32,12 @@ public class InstrumentKey
         symbol = copy.getSymbol ();
     }
 
+    @Override
     public CharSequence         getSymbol () {
         return (symbol);
     }
 
+    @Override
     public InstrumentType       getType () {
         return (instrumentType);
     }
@@ -95,6 +97,7 @@ public class InstrumentKey
         return (toString (this));
     }
 
+    @Override
     public int                  compareTo (InstrumentIdentity o) {
         return (compare (this, o));
     }
