@@ -36,9 +36,9 @@ public class MemorySliderTest extends JFrame {
         SliderOptions options = new SliderOptions(
                 new int[]{
                         0,
-                        100,
-                        (100+512)/2,
-                        512,
+                        (int) (memoryInMB * 16 * 0.1),
+                        (int) (memoryInMB * 16  * 0.25),
+                        (int) (memoryInMB * 16  * 0.4),
                         memoryInMB * 16
                 },
                 new String[]{"Cache",
@@ -58,9 +58,9 @@ public class MemorySliderTest extends JFrame {
         options = new SliderOptions(
                 new int[]{
                         0,
-                        (int) (memoryInMB * 0.05),
-                        (int) (memoryInMB * 0.14),
-                        (int) (memoryInMB * 0.7),
+                        (int) (memoryInMB * 0.1),
+                        (int) (memoryInMB * 0.25),
+                        (int) (memoryInMB * 0.4),
                         memoryInMB
                 },
                 new String[]{"Cache",

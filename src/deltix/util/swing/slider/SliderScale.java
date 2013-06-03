@@ -4,53 +4,126 @@ package deltix.util.swing.slider;
  * User: TurskiyS
  * Date: 5/21/13
  */
-public class SliderScale {
+public abstract class SliderScale {
 
-    private static final int MIN_TICK = 50;
-    private static final int MIDDLE_OF_SLIDER = 1000;
+    protected int sliderMax;
 
-    public static int getVisibleValue(int value, int sliderMax){
-        int newValue = value;
-
-        if (newValue < sliderMax/2 ){
-            newValue = newValue / ((sliderMax/2 / MIDDLE_OF_SLIDER));
-        }else{
-            int gauge = sliderMax/2 / ((sliderMax - MIDDLE_OF_SLIDER)/MIN_TICK);
-            newValue = MIDDLE_OF_SLIDER + (newValue - sliderMax/2)/gauge * MIN_TICK;
-        }
-
-        int residue = newValue % MIN_TICK;
-        if (residue == 0){
-            return newValue >= sliderMax ? sliderMax : newValue;
-        }else{
-            if (residue < MIN_TICK /2){
-                newValue =   newValue - residue;
-            }
-            else{
-                newValue =   newValue + (MIN_TICK - residue);
-            }
-            return newValue >= sliderMax ? sliderMax : newValue;
-        }
+    protected SliderScale() {
     }
 
-    public static int getValueInScale(int value, int sliderMax) {
-        if (value < MIDDLE_OF_SLIDER) {
-            return value * ((sliderMax / 2 / MIDDLE_OF_SLIDER));
-        } else{
-            if (value == sliderMax){
-                return sliderMax;
+    public abstract int getVisibleValue(int value);
+
+    public abstract int getValueInScale(int value);
+
+    public int multiplyValue(int value, float multiplier) {
+        int visibleValue = getVisibleValue(value);
+        return getValueInScale((int) (visibleValue * multiplier));
+    }
+
+    protected int roundToTick(int value, int tickSize) {
+        int residue = value % tickSize;
+        if (residue != 0) {
+            if (residue < tickSize / 2) {
+                value = value - residue;
+            } else {
+                value = value + (tickSize - residue);
             }
-            int gauge = sliderMax/2 / ((sliderMax - MIDDLE_OF_SLIDER)/MIN_TICK);
-            value = gauge * (value - MIDDLE_OF_SLIDER)/MIN_TICK + sliderMax/2;
+        }
+        return value >= sliderMax ? sliderMax : value;
+    }
+
+    public static SliderScale getInstance(int sliderMax) {
+        return new SliderScale2(sliderMax);
+    }
+
+    public static class SliderScale1 extends SliderScale {
+
+        private static final int MIN_TICK = 50;
+        private static final int MIDDLE_OF_SLIDER = 1000;
+
+        private int gauge;
+
+        public SliderScale1(int sliderMax) {
+            this.sliderMax = sliderMax;
+            gauge = (int) ((double) sliderMax / 2 / ((sliderMax - MIDDLE_OF_SLIDER) / MIN_TICK));
         }
 
-        return value;
+        public int getVisibleValue(int value) {
+            int newValue = value;
+
+            if (newValue < sliderMax / 2) {
+                newValue = (int) (newValue / (double) ((sliderMax / 2 / MIDDLE_OF_SLIDER)));
+            } else {
+                newValue = (int) (MIDDLE_OF_SLIDER + (double) (newValue - sliderMax / 2) / gauge * MIN_TICK);
+            }
+
+            return roundToTick(newValue, MIN_TICK);
+        }
+
+        public int getValueInScale(int value) {
+            int newValue = value;
+
+            if (newValue < MIDDLE_OF_SLIDER) {
+                newValue = (int) (newValue * ((double) (sliderMax / 2 / MIDDLE_OF_SLIDER)));
+            } else {
+                if (newValue == sliderMax) {
+                    return sliderMax;
+                }
+                newValue = (int) (gauge * (double) (newValue - MIDDLE_OF_SLIDER) / MIN_TICK + sliderMax / 2);
+            }
+
+            return newValue;
+
+        }
 
     }
 
-    public static int multiplyValue (int value, int sliderMax, float multiplier){
-        int visibleValue = getVisibleValue(value, sliderMax);
-        return getValueInScale((int) (visibleValue * multiplier), sliderMax);
+    public static class SliderScale2 extends SliderScale {
+
+        private static final int MIN_TICK = 32;
+        private double valueExponense;
+        private final int functionBorderValue;
+        private int gauge;
+
+        public SliderScale2(int sliderMax) {
+            this.sliderMax = sliderMax;
+            functionBorderValue = (int)((double)3 / 4 * sliderMax);
+            valueExponense = Math.log((double) sliderMax / 2) / Math.log(functionBorderValue);
+            gauge = (int) ((double) sliderMax / 2 / ((sliderMax - functionBorderValue) / MIN_TICK));
+        }
+
+
+        public int getVisibleValue(int value) {
+            int newValue = value;
+
+
+            if (value < functionBorderValue) {
+                newValue = (int) Math.pow(newValue, valueExponense);
+            } else {
+                //newValue = (int) (sliderMax / 2 + (newValue - sliderMax * (double)(3/4)) / gauge * MIN_TICK);
+            }
+
+            return roundToTick (newValue, MIN_TICK);
+        }
+
+        public int getValueInScale(int value) {
+            int newValue = value;
+
+            if (value < sliderMax / 2) {
+                newValue = (int) Math.pow(newValue, 1 / valueExponense);
+            } else {
+                if (newValue == sliderMax) {
+                    return sliderMax;
+                }
+               // newValue = (int) (gauge * (double) (newValue - sliderMax / 2) / MIN_TICK + sliderMax * (double)(3/4));
+
+            }
+
+            return newValue;
+
+        }
     }
 
 }
+
+

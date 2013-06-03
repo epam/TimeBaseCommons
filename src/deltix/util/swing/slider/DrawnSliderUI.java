@@ -14,9 +14,13 @@ import java.awt.event.MouseEvent;
  */
 public class DrawnSliderUI extends BasicRangeSliderUI{
 
-    private DrawnSlider slider;
+    private                DrawnSlider slider;
 
-    protected static final int MOUSE_HANDLE_BEFORE_MIN = 5;
+    protected static final int         MOUSE_HANDLE_BEFORE_MIN   = 5;
+
+    protected static final int         MOUSE_HANDLE_BEFORMIN_MIN = 6;
+
+    protected static final int         MOUSE_HANDLE_MIN_MAX      = 7;
 
     public DrawnSliderUI(DrawnSlider slider) {
         super(slider);
@@ -196,7 +200,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle minBeforeRect = new Rectangle(
-                    minBeforeX - SliderOptions.DRAWN_THUMB_SIZE_PX /2,
+                    minBeforeX - SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.height
@@ -210,7 +214,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle minRect = new Rectangle(
-                    minX,
+                    minX - SliderOptions.DRAWN_THUMB_SIZE_PX / 2,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.height
@@ -224,7 +228,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
 
             Rectangle maxRect = new Rectangle(
-                    maxX + SliderOptions.DRAWN_THUMB_SIZE_PX /2,
+                    maxX,
                     rect.y,
                     SliderOptions.DRAWN_THUMB_SIZE_PX,
                     rect.height
@@ -240,11 +244,17 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
             case 0:
                 return MOUSE_HANDLE_NONE;
             case 1:
+                for (int matchedRect : matchedRects[0]) {
+                    if (matchedRect != -1) {
+                        return matchedRect;
+                    }
+                }
+                break;
             case 2:
-                if (matchedRects[1][0] == 0 && matchedRects[1][1] == 0){//beforeMin and Min are in one start position
-                    return MOUSE_HANDLE_MIN;
-                }else if (matchedRects[1][1] == 0 && matchedRects[1][2] == 0){//Min  and Max are in one start position
-                    return MOUSE_HANDLE_MAX;
+                if (matchedRects[1][0] != -1 && matchedRects[1][1] != -1){//beforeMin and Min are in one start position
+                    return MOUSE_HANDLE_BEFORMIN_MIN;
+                }else if (matchedRects[1][1] != -1 && matchedRects[1][2] != -1){//Min  and Max are in one start position
+                    return MOUSE_HANDLE_MIN_MAX;
                 }
                 for (int matchedRect : matchedRects[0]) {
                     if (matchedRect != -1) {
@@ -327,26 +337,45 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 newValue = slider.getModel().getMaximum();
             }
 
+            boolean rightDragDirection = newLocation - mouseStartLocation > 0;
+            boolean leftDragDirection = newLocation - mouseStartLocation < 0;
+
             if (handle == (MOUSE_HANDLE_MIN | MOUSE_HANDLE_MAX)) {
-                if ((newLocation - mouseStartLocation) > 2) {
+                if (rightDragDirection) {
                     handle = MOUSE_HANDLE_MAX;
-                } else if ((newLocation - mouseStartLocation) < -2) {
+                } else if (leftDragDirection) {
                     handle = MOUSE_HANDLE_MIN;
                 } else {
                     return;
                 }
             }
 
+            switch (handle){
+                case MOUSE_HANDLE_BEFORMIN_MIN:
+                    if (rightDragDirection) {
+                        handle = MOUSE_HANDLE_MIN;
+                    } else if (leftDragDirection) {
+                        handle = MOUSE_HANDLE_BEFORE_MIN;
+                    }
+                    break;
+                case MOUSE_HANDLE_MIN_MAX:
+                    if (rightDragDirection) {
+                        handle = MOUSE_HANDLE_MAX;
+                    } else if (leftDragDirection) {
+                        handle = MOUSE_HANDLE_MIN;
+                    }
+            }
+
             int beforeMin = slider.getThirdValue();
+            SliderScale scale = SliderScale.getInstance(slider.getMaximum());
 
             switch (handle) {
                 case MOUSE_HANDLE_BEFORE_MIN:
                     slider.setThirdValue(
                             Math.min (
                                 Math.min(newValue, slider.getLowValue()),
-                                SliderScale.multiplyValue(
+                                    scale.multiplyValue(
                                     slider.getHighValue(),
-                                    slider.getMaximum(),
                                     SliderOptions.PART_OF_HEAP_CACHE )
                                 )
                     );
@@ -364,9 +393,8 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     slider.setHighValue(
                             Math.max (
                                     Math.max(slider.getLowValue(), newValue),
-                                    SliderScale.multiplyValue(
+                                    scale.multiplyValue(
                                             beforeMin,
-                                            slider.getMaximum(),
                                             1/SliderOptions.PART_OF_HEAP_CACHE )
                             )
 
@@ -421,8 +449,17 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     setMouseRollover(MOUSE_HANDLE_BEFORE_MIN);
                     setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
                     break;
+
+                case MOUSE_HANDLE_BEFORMIN_MIN:
+                    setMouseRollover(MOUSE_HANDLE_BEFORMIN_MIN);
+                    setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
+                    break;
                 case MOUSE_HANDLE_MIN:
                     setMouseRollover(MOUSE_HANDLE_MIN);
+                    setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
+                    break;
+                case MOUSE_HANDLE_MIN_MAX:
+                    setMouseRollover(MOUSE_HANDLE_MIN_MAX);
                     setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
                     break;
                 case MOUSE_HANDLE_MAX:
