@@ -313,7 +313,7 @@ public class SliderControlBuilder {
         } else if (value == beforeMin) {
             return numberYPosition1;
         } else if (value == high) {
-            return numberYPosition1;
+            return high != lowValue ? numberYPosition1 : numberYPosition2;
 
         } else if (value == lowValue) {
             return numberYPosition2;

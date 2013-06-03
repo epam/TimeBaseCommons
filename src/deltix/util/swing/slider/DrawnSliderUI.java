@@ -171,7 +171,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
 
             Rectangle minRect = new Rectangle(
                     rect.x,
-                    minY - SliderOptions.THUMB_OVER_BODER_PX,
+                    minY - 3,
                     rect.width,
                     SliderOptions.DRAWN_THUMB_SIZE_PX);
             if (minRect.contains(x, y)) {
@@ -361,7 +361,16 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                             Math.max(Math.min(newValue, slider.getHighValue()), beforeMin));
                     break;
                 case MOUSE_HANDLE_MAX:
-                    slider.setHighValue(Math.max(slider.getLowValue(), newValue));
+                    slider.setHighValue(
+                            Math.max (
+                                    Math.max(slider.getLowValue(), newValue),
+                                    SliderScale.multiplyValue(
+                                            beforeMin,
+                                            slider.getMaximum(),
+                                            1/SliderOptions.PART_OF_HEAP_CACHE )
+                            )
+
+                    );
                     break;
                 case MOUSE_HANDLE_MIDDLE:
                     int delta = (slider.getOrientation() == JSlider.VERTICAL) ?
