@@ -36,10 +36,10 @@ public class MemorySliderTest extends JFrame {
         SliderOptions options = new SliderOptions(
                 new int[]{
                         0,
-                        (int) (memoryInMB * 16 * 0.1),
-                        (int) (memoryInMB * 16  * 0.25),
-                        (int) (memoryInMB * 16  * 0.4),
-                        memoryInMB * 16
+                        (int) (memoryInMB * 8 * 0.05),
+                        (int) (memoryInMB * 8  * 0.1),
+                        (int) (memoryInMB * 8  * 0.15),
+                        memoryInMB * 8
                 },
                 new String[]{"Cache",
                         "Initial",
@@ -58,10 +58,10 @@ public class MemorySliderTest extends JFrame {
         options = new SliderOptions(
                 new int[]{
                         0,
-                        (int) (memoryInMB * 0.1),
-                        (int) (memoryInMB * 0.25),
-                        (int) (memoryInMB * 0.4),
-                        memoryInMB
+                        (int) (memoryInMB * 8 * 0.05),
+                        (int) (memoryInMB * 8 * 0.1),
+                        (int) (memoryInMB * 8 * 0.15),
+                        memoryInMB*8
                 },
                 new String[]{"Cache",
                         "Initial",
@@ -109,7 +109,7 @@ public class MemorySliderTest extends JFrame {
     public static void main(String[] args) {
 
         MemorySliderTest frame = new MemorySliderTest();
-        frame.setPreferredSize(new Dimension(600, 350));
+        frame.setPreferredSize(new Dimension(400, 350));
         frame.pack();
         Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(windowSize.width/2 - frame.getWidth()/2, windowSize.height/2 - frame.getHeight()/2);

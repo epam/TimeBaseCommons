@@ -269,14 +269,16 @@ public class SliderControlBuilder {
             String drawnStringMin = String.format("%sM", scale.getVisibleValue(beforeMin));
             int drawnStringMinWidth = g.getFontMetrics(customFont).stringWidth(drawnStringMin);
             return (int) (Math.max(
-                    sliderX + sliderUI.getXLocation(beforeMin) - drawnStringMinWidth + (readOnly ? drawnStringMinWidth / 2 : 0),
+                    sliderX + sliderUI.getXLocation(beforeMin) -
+                            drawnStringMinWidth +
+                            (readOnly || beforeMin == lowValue ? drawnStringMinWidth / 2 : 0),
                     sliderX
-                    )
+            )
             );
         } else if (value == lowValue) {
             drawnString = String.format("%sM", scale.getVisibleValue(lowValue));
             drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
-            return (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth / 2);
+            return (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth / 4);
         } else if (value == high) {
             String drawnStringHigh = String.format("%sM", scale.getVisibleValue(high));
             int drawnStringWidthHigh = g.getFontMetrics(customFont).stringWidth(drawnStringHigh);
@@ -284,7 +286,7 @@ public class SliderControlBuilder {
             int drawnStringWidthMax = g.getFontMetrics(customFont).stringWidth(drawnStringMax);
             return (int) (
                     Math.min(
-                            sliderX + sliderUI.getXLocation(high) - (readOnly ? drawnStringWidthHigh / 2 : 0),
+                            sliderX + sliderUI.getXLocation(high),// - (readOnly ? drawnStringWidthHigh / 2 : 0),
                             sliderX + sliderUI.getXLocation(max) - (drawnStringWidthMax * 0.9)
                     )
             );
@@ -305,24 +307,24 @@ public class SliderControlBuilder {
         int numberYPosition1 = (int) (sliderY - 5);
         int numberYPosition2 = (int) (sliderY - 15);
 
-        if (value == max) {
-            return slider.getOptions().isMinMaxUnderSlider() ?
-                    (int) (sliderY + slider.getBounds().height + 15) :
-                    numberYPosition2;
-
+        if (value == beforeMin) {
+            return beforeMin != lowValue ? numberYPosition1 : numberYPosition2;
         } else if (value == min) {
             return slider.getOptions().isMinMaxUnderSlider() ?
                     (int) (sliderY + slider.getBounds().height + 15) :
                     numberYPosition2;
 
-        } else if (value == beforeMin) {
-            return numberYPosition1;
         } else if (value == high) {
             return high != lowValue ? numberYPosition1 : numberYPosition2;
 
         } else if (value == lowValue) {
             return numberYPosition2;
+        } else if (value == max) {
+            return slider.getOptions().isMinMaxUnderSlider() ?
+                    (int) (sliderY + slider.getBounds().height + 15) :
+                    numberYPosition2;
         }
+
 
         return (int) sliderY;
     }

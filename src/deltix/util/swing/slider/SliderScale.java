@@ -83,13 +83,11 @@ public abstract class SliderScale {
         private static final int MIN_TICK = 32;
         private double valueExponense;
         private final int functionBorderValue;
-        private int gauge;
 
         public SliderScale2(int sliderMax) {
             this.sliderMax = sliderMax;
             functionBorderValue = (int)((double)3 / 4 * sliderMax);
             valueExponense = Math.log((double) sliderMax / 2) / Math.log(functionBorderValue);
-            gauge = (int) ((double) sliderMax / 2 / ((sliderMax - functionBorderValue) / MIN_TICK));
         }
 
 
@@ -100,7 +98,7 @@ public abstract class SliderScale {
             if (value < functionBorderValue) {
                 newValue = (int) Math.pow(newValue, valueExponense);
             } else {
-                //newValue = (int) (sliderMax / 2 + (newValue - sliderMax * (double)(3/4)) / gauge * MIN_TICK);
+                newValue = 2 * newValue - sliderMax;
             }
 
             return roundToTick (newValue, MIN_TICK);
@@ -115,7 +113,7 @@ public abstract class SliderScale {
                 if (newValue == sliderMax) {
                     return sliderMax;
                 }
-               // newValue = (int) (gauge * (double) (newValue - sliderMax / 2) / MIN_TICK + sliderMax * (double)(3/4));
+                newValue = (value + sliderMax)/2;
 
             }
 
