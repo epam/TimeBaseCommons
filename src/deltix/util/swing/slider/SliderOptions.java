@@ -14,6 +14,13 @@ public class SliderOptions{
     public  static final Color    THIRD_AREA_COLOR    = new Color(0x6E93DC); //MARKET_DATA_COLOR
     public  static final Color    FOURTH_AREA_COLOR   = new Color(0xFFFFFF); //White
 
+    private static final Color[]  VIEW_MODE_COLORS    = new Color[]{
+            new Color( 96, 96, 96  ),
+            new Color(128, 128, 128),
+            new Color(192, 192, 192),
+            SliderOptions.FOURTH_AREA_COLOR,
+                                            };
+
     private              String[] labels              = null;
     private              Color[]  colors              = null;
     private              Color[]  textColors          = null;
@@ -34,7 +41,7 @@ public class SliderOptions{
 
     private              boolean  minMaxUnderSlider   = false;
 
-    public static final float    PART_OF_HEAP_CACHE  = 0.75f;// param limits max cache size by 3/4 of heap size
+    public  static final float    PART_OF_HEAP_CACHE  = 0.75f; // param limits max cache size by 3/4 of heap size
 
 
     public SliderOptions(int[] ticks) {
