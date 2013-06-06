@@ -369,15 +369,22 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
             int beforeMin = slider.getThirdValue();
             SliderScale scale = SliderScale.getInstance(slider.getMaximum());
 
+            processMouseHandlerWithSliding(newValue, newLocation);
+
+        }
+
+        private void processMouseHandlerWithStopping(int newValue, int newLocation){
+            int beforeMin = slider.getThirdValue();
+            SliderScale scale = SliderScale.getInstance(slider.getMaximum());
             switch (handle) {
                 case MOUSE_HANDLE_BEFORE_MIN:
                     slider.setThirdValue(
                             Math.min (
-                                Math.min(newValue, slider.getLowValue()),
+                                    Math.min(newValue, slider.getLowValue()),
                                     scale.multiplyValue(
-                                    slider.getHighValue(),
-                                    SliderOptions.PART_OF_HEAP_CACHE )
-                                )
+                                            slider.getHighValue(),
+                                            SliderOptions.PART_OF_HEAP_CACHE )
+                            )
                     );
                     ChangeEvent ce = new ChangeEvent(slider);
                     for(ChangeListener cl : slider.getChangeListeners()){
@@ -399,6 +406,66 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                             )
 
                     );
+                    break;
+                case MOUSE_HANDLE_MIDDLE:
+                    int delta = (slider.getOrientation() == JSlider.VERTICAL) ?
+                            valueForYPosition(newLocation - handleOffset) - slider.getLowValue() :
+                            valueForXPosition(newLocation - handleOffset) - slider.getLowValue();
+                    if ((delta < 0) && ((slider.getLowValue() + delta) < slider.getMinimum())) {
+                        delta = slider.getMinimum() - slider.getLowValue();
+                    }
+
+                    if ((delta > 0) && ((slider.getHighValue() + delta) > slider.getMaximum())) {
+                        delta = slider.getMaximum() - slider.getHighValue();
+                    }
+
+                    if (delta != 0) {
+                        offset(delta);
+                    }
+                    break;
+            }
+        }
+
+
+        private void processMouseHandlerWithSliding(int newValue, int newLocation){
+            int beforeMin = slider.getThirdValue();
+            SliderScale scale = SliderScale.getInstance(slider.getMaximum());
+            switch (handle) {
+                case MOUSE_HANDLE_BEFORE_MIN:
+                    int borderValue = Math.min(newValue,
+                            scale.multiplyValue(
+                                    slider.getHighValue(),
+                                    SliderOptions.PART_OF_HEAP_CACHE)
+                    );
+                    slider.setThirdValue(borderValue);
+                    if (borderValue > slider.getLowValue()){
+                        slider.setLowValue(borderValue);
+                    }
+                    ChangeEvent ce = new ChangeEvent(slider);
+                    for(ChangeListener cl : slider.getChangeListeners()){
+                        cl.stateChanged(ce);
+                    }
+                    break;
+                case MOUSE_HANDLE_MIN:
+                    slider.setLowValue(newValue);
+                    if (newValue < beforeMin){
+                        slider.setThirdValue(newValue);
+                    }
+                    if (newValue > slider.getHighValue()){
+                        slider.setHighValue(newValue);
+                    }
+                    break;
+                case MOUSE_HANDLE_MAX:
+                    borderValue = Math.max(newValue,
+                            scale.multiplyValue(
+                                    beforeMin,
+                                    1 / SliderOptions.PART_OF_HEAP_CACHE)
+                    );
+                    slider.setHighValue(borderValue);
+
+                    if (borderValue < slider.getLowValue()){
+                        slider.setLowValue(borderValue);
+                    }
                     break;
                 case MOUSE_HANDLE_MIDDLE:
                     int delta = (slider.getOrientation() == JSlider.VERTICAL) ?

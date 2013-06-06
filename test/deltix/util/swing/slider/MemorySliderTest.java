@@ -43,8 +43,8 @@ public class MemorySliderTest extends JFrame {
                 },
                 new String[]{"Cache",
                         "Initial",
-                        "Addl. Reserved",
-                        "Unavailable"}
+                        "Max",
+                        "Physical"}
         );
 
         options.setTickColors(Arrays.copyOf(options.getColors(),options.getColors().length));
@@ -65,8 +65,8 @@ public class MemorySliderTest extends JFrame {
                 },
                 new String[]{"Cache",
                         "Initial",
-                        "Addl. Reserved",
-                        "Unavailable"},
+                        "Max",
+                        "Physical"},
                 new Color[]{
                         new Color(96, 96, 96),
                         new Color(128, 128, 128),
