@@ -18,6 +18,8 @@ import java.awt.event.FocusEvent;
  */
 public class SliderControlBuilder {
 
+    private static final String MEMORY_TEXT_FORMAT = "%sM";
+
     public static JComponent createMemoryRangePanel(final DrawnSlider slider) {
         final GBC layoutManager = new GBC();
         final JPanel panel = new JPanel(new GridBagLayout()) {
@@ -27,7 +29,7 @@ public class SliderControlBuilder {
                 super.paint(g);
 
                 try {
-                    paintMemoryControlLabels(slider, g);
+                    paintSliderLabelsAndThumbs(slider, g);
                 } catch (Throwable t) {
                     super.paint(g);
                 }
@@ -113,7 +115,7 @@ public class SliderControlBuilder {
         return slider;
     }
 
-    private static void paintMemoryControlLabels(DrawnSlider slider, Graphics g) {
+    private static void paintSliderLabelsAndThumbs(DrawnSlider slider, Graphics g) {
         final DrawnSliderUI sliderUI = ((DrawnSliderUI) slider.getUI());
         boolean readOnly = slider.getOptions().isReadOnly();
         double sliderX = slider.getLocation().getX();
@@ -141,7 +143,7 @@ public class SliderControlBuilder {
         //paint maximum
         paintTick(g,
                 Color.BLACK,
-                String.valueOf(max),
+                String.format(MEMORY_TEXT_FORMAT, max),
                 new Point(
                         getLabelXPosition (slider, max, g, customFont),
                         slider.getOptions().isMinMaxUnderSlider() ?
@@ -162,7 +164,7 @@ public class SliderControlBuilder {
         SliderScale scale = SliderScale.getInstance(max);
 
         //paint first tick
-        String drawnString = String.format("%sM", scale.getVisibleValue(beforeMin));
+        String drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(beforeMin));
         paintTick(g,
                 slider.getOptions().getTickColor(0),
                 drawnString,
@@ -173,7 +175,7 @@ public class SliderControlBuilder {
         );
 
         //paint second tick
-        drawnString = String.format("%sM", scale.getVisibleValue(lowValue));
+        drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
         paintTick(g,
                 slider.getOptions().getTickColor(1),
                 drawnString,
@@ -194,7 +196,7 @@ public class SliderControlBuilder {
         }
 
         //paint third tick
-        drawnString = String.format("%sM", scale.getVisibleValue(high));
+        drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
         paintTick(g,
                 slider.getOptions().getTickColor(2),
                 drawnString,
@@ -266,7 +268,7 @@ public class SliderControlBuilder {
         } else if (value == min) {
             return (int) sliderX;
         } else if (value == beforeMin) {
-            String drawnStringMin = String.format("%sM", scale.getVisibleValue(beforeMin));
+            String drawnStringMin = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(beforeMin));
             int drawnStringMinWidth = g.getFontMetrics(customFont).stringWidth(drawnStringMin);
             return (int) (Math.max(
                     sliderX + sliderUI.getXLocation(beforeMin) -
@@ -276,13 +278,13 @@ public class SliderControlBuilder {
             )
             );
         } else if (value == lowValue) {
-            drawnString = String.format("%sM", scale.getVisibleValue(lowValue));
+            drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
             drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
             return (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth / 4);
         } else if (value == high) {
-            String drawnStringHigh = String.format("%sM", scale.getVisibleValue(high));
+            String drawnStringHigh = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
             int drawnStringWidthHigh = g.getFontMetrics(customFont).stringWidth(drawnStringHigh);
-            String drawnStringMax = String.format("%sM", scale.getVisibleValue(max));
+            String drawnStringMax = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(max));
             int drawnStringWidthMax = g.getFontMetrics(customFont).stringWidth(drawnStringMax);
             return (int) (
                     Math.min(
