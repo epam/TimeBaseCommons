@@ -351,9 +351,10 @@ public class QuickExecutor {
 
         //LOGGER.log(Level.WARNING, "QuickExecutor usages: " + usages, new Exception());
 
-        assert usages >=0;
         if (usages < 0)
-            LOGGER.log(Level.SEVERE, "QuickExecutor usages violated.", new Exception());
+            LOGGER.log(Level.SEVERE, "QuickExecutor usages violated: " + usages, new Exception());
+
+        assert usages >=0;
 
         if (usages <= 0)
             globalInstance.shutdown(true);
