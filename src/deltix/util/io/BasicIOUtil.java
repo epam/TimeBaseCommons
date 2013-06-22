@@ -522,13 +522,14 @@ public abstract class BasicIOUtil {
     public static String []     readLinesFromTextFile (File f)
         throws IOException, InterruptedException
     {
-        FileReader      fr = null;
-
-        try {
-            fr = new FileReader (f);
-            return (readLinesFromReader (fr));
-        } finally {
-            Util.close (fr);
+        return (readLinesFromTextFile (f, false));
+    }
+    
+    public static String []     readLinesFromTextFile (File f, boolean trim)
+        throws IOException, InterruptedException
+    {
+        try (FileReader fr = new FileReader (f)) {            
+            return (readLinesFromReader (fr, trim));
         }
     }
 
