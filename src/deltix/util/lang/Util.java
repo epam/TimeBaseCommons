@@ -1499,4 +1499,16 @@ public class Util {
     public static <K,V> HashMap<K,V> newHashMap(int size) {
         return new HashMap<K, V>(1 + (int) (size/0.75));
     }
+    
+    public static String            getPackage (String className) {
+        int                     dot = className.lastIndexOf ('.');
+        
+        return (dot < 0 ? "" : className.substring (0, dot));
+    }
+    
+    public static String            getSimpleName (String className) {
+        int                     dot = className.lastIndexOf ('.');
+        
+        return (dot < 0 ? className : className.substring (dot + 1));
+    }
 }
