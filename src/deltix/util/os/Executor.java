@@ -63,14 +63,40 @@ public class Executor {
      * @see     Runtime#exec(String[], String[], java.io.File)
      * @see     ProcessBuilder
      */
-
     public static void exec(File file, String title) throws IOException {
         if (Util.IS_WINDOWS_OS){
-            ProcessBuilder  builder = new ProcessBuilder("cmd.exe", "/C", "start", StringUtils.quote(title), StringUtils.quote(file.getPath()));
-        	builder.start();
+            exec (null, title, StringUtils.quote (file.getPath ()));
         }
         else{
             LinuxOS.startScriptInTerminal("csh", title, file);
+        }
+    }
+
+    public static void      exec (
+        File                    dir,
+        String                  title, 
+        String ...              cmd
+    )
+        throws IOException 
+    {
+        if (title == null)
+            title = cmd [0];
+        
+        if (Util.IS_WINDOWS_OS){
+            ProcessBuilder  builder = 
+                new ProcessBuilder ("cmd.exe", "/C", "start", StringUtils.quote (title));
+            
+            for (String s : cmd)
+                builder.command ().add (s);
+            
+            if (dir != null)
+                builder.directory (dir);
+            
+        	builder.start ();
+        }
+        else{
+            //LinuxOS.startScriptInTerminal("csh", title, file);
+            throw new UnsupportedOperationException ();
         }
     }
 
