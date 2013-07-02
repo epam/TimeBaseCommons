@@ -91,6 +91,8 @@ public abstract class StandardAction extends AbstractAction {
             //MissingResourceException for missing keys
             String      imageResourcePath = rb.getString (nameKey + ".img");
             icon = SwingUtil.loadIcon (imageResourcePath);
+        } catch (UncheckedIOException iox) {
+                    // Ignore
         } catch (MissingResourceException x) {
             boolean     ok = false;
 
