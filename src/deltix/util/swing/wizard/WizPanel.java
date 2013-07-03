@@ -204,7 +204,11 @@ public class WizPanel extends JPanel {
     public JPanel   getStatusArea () {
         return (statusArea);
     }
-        
+
+    public PageList getPageList () {
+        return pageList;
+    }
+            
     public void     setPageList (PageList pl) {
         pageList = pl;
         pageList.setWizard (this);        

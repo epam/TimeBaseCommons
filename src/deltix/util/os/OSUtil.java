@@ -7,6 +7,10 @@ import java.io.*;
  *
  */
 public class OSUtil {
+    public static File  getUserHome () {
+        return (new File (System.getProperty ("user.home")));
+    }
+    
     public static int   getProcessId () {
         if (Util.IS_WINDOWS_OS)
             return (WindowsOS.getCurrentProcessId ());
