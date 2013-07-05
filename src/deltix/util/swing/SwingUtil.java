@@ -628,4 +628,36 @@ public abstract class SwingUtil {
         wind.setLocation (x,
                           y);
     }
+    
+    public static Icon          getIcon (Object obj) {
+        if (obj == null)
+            return (null);
+
+        return (getIcon (obj.getClass ()));
+    }
+    
+    public static Icon          getIcon (Class <?> cls) {
+        Image   img = getImage (cls);
+        
+        return (img == null ? null : new ImageIcon (img));
+    }
+    
+    private static final String [] EXT = { "png", "gif", "jpg" };
+    
+    public static Image         getImage (Class <?> cls) {
+        ClassLoader     cl = cls.getClassLoader ();
+        String          path = cls.getName ().replace ('.', '/');
+        
+        for (String e : EXT) {                    
+            String          imgPath = path + '.' + e;
+            InputStream     is = cl.getResourceAsStream (imgPath);
+        
+            if (is != null)     
+                return (loadImageAndCloseStream (is, imgPath));
+        }
+        
+        return (null);
+    }
+    
+    
 }
