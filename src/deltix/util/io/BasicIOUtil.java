@@ -450,6 +450,14 @@ public abstract class BasicIOUtil {
         }
     }
 
+    public static String		readTextFromClassPathNoX (String relPath) {
+        try {
+            return (readTextFromClassPath (relPath));
+        } catch (InterruptedException | IOException x) {
+            throw new UncheckedIOException (x);
+        }
+    }
+    
     public static String		readTextFromClassPath (String relPath)
         throws IOException, InterruptedException
     {
