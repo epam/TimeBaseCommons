@@ -1896,5 +1896,9 @@ public abstract class BasicIOUtil {
         
         expandChildPath (new File (dirs [0]), dirs, 1, files, assertRootExists, comparator);
         return (files);
+    }    
+    
+    public static String            fname (String path) {
+        return (path.substring (path.lastIndexOf ('/') + 1));        
     }        
 }
