@@ -1,5 +1,6 @@
 package deltix.util.lang;
 
+import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Util;
 import deltix.util.io.IOUtil;
 import java.io.*;
@@ -97,8 +98,14 @@ public abstract class AbstractClassLoader extends ClassLoader {
         try {
             b = findResourceAsByteArray (classNameToResourcePath (name));
         } catch (Exception iox) {
-            Util.LOGGER.log (Level.WARNING, "Failed to read " + name, iox);
-            return (null);
+            // #14720 rethrow  UncheckedInterruptedException, when got InterruptedException
+            if (iox instanceof InterruptedException) {
+                Util.LOGGER.warning("Failed to read " + name);
+                throw new UncheckedInterruptedException(iox);
+            } else {
+                Util.LOGGER.log(Level.WARNING, "Failed to read " + name, iox);
+                return (null);
+            }
         }
         
         if (b == null)
