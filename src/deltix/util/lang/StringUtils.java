@@ -282,6 +282,13 @@ public class StringUtils {
         return (sb.toString ());
     }
     
+    public static String        escapeCStringLiteral (CharSequence str) {
+        StringBuilder   sb = new StringBuilder ('\"');
+        escapeJavaString (str, sb);
+        sb.append ('\"');
+        return (sb.toString ());
+    }
+    
     public static void          escapeCString (CharSequence str, StringBuilder out) {
         int sz = str.length();
         for (int i = 0; i < sz; i++) {
@@ -956,6 +963,30 @@ public class StringUtils {
 
         return true;
     }   
+
+    public static String toSafeFileName (String s) {
+        final StringBuilder     sb = new StringBuilder ();
+        final int               fnameLength = s.length ();
+
+        for (int ii = 0; ii < fnameLength; ii++) {
+            char    c = s.charAt (ii);
+
+            if (c == '_')
+                sb.append ("__");
+            else if (!Character.isLetterOrDigit (c) &&
+                     c != '-' &&
+                     c != '.') 
+            {
+                sb.append ("_");
+                sb.append ((int) c);
+                sb.append ("_");
+            }
+            else
+                sb.append (c);
+        }
+
+        return (sb.toString ());
+    }
 }
 
 
