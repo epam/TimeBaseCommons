@@ -197,7 +197,7 @@ public class SafeHandler extends Handler {
         private String getRecordKey(LogRecord record) {
             // if exception details exists - use first stack trace line as key
             Throwable thrown = record.getThrown();
-            if (thrown != null)
+            if (thrown != null && thrown.getStackTrace() != null && thrown.getStackTrace().length > 0)
                 return thrown.getStackTrace()[0].toString();
             // if record contains only message - use first KEY_LENGTH chars as key
             String message = record.getMessage().trim();
