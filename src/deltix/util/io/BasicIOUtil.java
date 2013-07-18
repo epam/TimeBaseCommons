@@ -1892,7 +1892,7 @@ public abstract class BasicIOUtil {
         throws FileNotFoundException 
     {
         String []           dirs = path.replace ('\\', '/').split ("/");
-        ArrayList <File>    files = new ArrayList <File> ();
+        ArrayList <File>    files = new ArrayList <> ();
         
         expandChildPath (new File (dirs [0]), dirs, 1, files, assertRootExists, comparator);
         return (files);
@@ -1900,5 +1900,11 @@ public abstract class BasicIOUtil {
     
     public static String            fname (String path) {
         return (path.substring (path.lastIndexOf ('/') + 1));        
-    }        
+    } 
+    
+    public static String            fhead (String path) {
+        int     n = path.lastIndexOf ('.');
+        
+        return (n < 0 ? path : path.substring (0, n));
+    }
 }
