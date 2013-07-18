@@ -140,6 +140,7 @@ public class Icons {
     public static final Icon SUSPEND             = SwingUtil.loadIcon("deltix/qsrv/ui/util/suspend.png"            );
     public static final Icon SYSTEM              = null;
     public static final Icon TABLE               = SwingUtil.loadIcon("deltix/qsrv/ui/util/table.png"              );
+    public static final Icon TABLE_ADD           = SwingUtil.loadIcon("deltix/qsrv/ui/util/new_table.gif"          );
     public static final Icon TABLE_GO            = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_go.png"           );
     public static final Icon TABLE_LIGHTNING     = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_lightning.png"    );
     public static final Icon TABLE_LINK          = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_link.png"         );
