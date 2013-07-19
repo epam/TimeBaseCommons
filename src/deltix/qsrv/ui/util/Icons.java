@@ -28,6 +28,7 @@ public class Icons {
     public static final Icon CLEAR_BIN           = SwingUtil.loadIcon("deltix/qsrv/ui/util/clear.gif"              );
     public static final Icon CLOCK               = SwingUtil.loadIcon("deltix/qsrv/ui/util/clock.png"              );
     public static final Icon CLOSE               = SwingUtil.loadIcon("deltix/qsrv/ui/util/close.png"              );
+    public static final Icon CLOSE_DIALOG        = SwingUtil.loadIcon("deltix/qsrv/ui/util/close_dialog.png"       );
     public static final Icon CLOSE_WINDOW        = SwingUtil.loadIcon("deltix/qsrv/ui/util/close_window.png"       );
     public static final Icon COLLAPSE_ALL        = SwingUtil.loadIcon("deltix/qsrv/ui/util/collapseall.png"        );
     public static final Icon COLUMN              = SwingUtil.loadIcon("deltix/qsrv/ui/util/column.png"             );
