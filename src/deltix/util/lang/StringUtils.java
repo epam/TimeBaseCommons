@@ -20,23 +20,36 @@ public class StringUtils {
     public static final int[]  precisions              = new int[]{6, 9};
     public static       String precisionTemplate       = "(\\d{%s}\\z)|(\\d{3},\\d{3}\\z)|(\\d{3},\\d{3},\\d{3}\\z)";
 
-    public static String[] keywords = {
-            "assert",
-            "abstract", "boolean", "break", "byte",
-            "case", "catch", "char", "class",
-            "const", "continue", "default", "do",
-            "double", "else", "extends", "false",
-            "final", "finally", "float", "for",
-            "goto", "if", "implements", "import",
-            "instanceof", "int", "interface",
-            "long", "native", "new", "null", "package",
-            "private", "protected", "public",
-            "return", "short", "static", "super",
-            "switch", "synchronized", "this",
-            "throw", "throws", "transient", "true",
-            "try", "void", "volatile", "while"
+    public static String []     JAVA_KEYWORDS = {
+        "assert", "abstract", "boolean", "break", "byte",
+        "case", "catch", "char", "class",
+        "const", "continue", "default", "do",
+        "double", "else", "extends", "false",
+        "final", "finally", "float", "for",
+        "goto", "if", "implements", "import",
+        "instanceof", "int", "interface",
+        "long", "native", "new", "null", "package",
+        "private", "protected", "public",
+        "return", "short", "static", "super",
+        "switch", "synchronized", "this",
+        "throw", "throws", "transient", "true",
+        "try", "void", "volatile", "while"
     };
 
+    public static String []     CS_KEYWORDS = {
+        "abstract", "as", "base", "bool", "break", "byte", "case",
+        "catch", "char", "checked", "class", "const", "continue", "decimal",
+        "default", "delegate", "do", "double", "else", "enum", "event",
+        "explicit", "extern", "false", "finally", "fixed", "float", "for",
+        "foreach", "goto", "if", "implicit", "in", "int", "interface",
+        "internal", "is", "lock", "long", "namespace", "new", "null",
+        "object", "operator", "out", "override", "params", "private", "protected",
+        "public", "readonly", "ref", "return", "sbyte", "sealed", "short",
+        "sizeof", "stackalloc", "static", "string", "struct", "switch", "this",
+        "throw", "true", "try", "typeof", "uint", "ulong", "unchecked",
+        "unsafe", "ushort", "using", "virtual", "void", "volatile", "while"
+    };
+        
     public static void      setStringBuilder (StringBuilder sb, CharSequence value) {
         sb.setLength (0);
         sb.append (value);
@@ -330,32 +343,118 @@ public class StringUtils {
         return (out.toString ());
     }
 
-    public static boolean isValidJavaIdentifier(String s) {
+    public static boolean isValidJavaIdOrKeyword (CharSequence s) {
         // an empty or null string cannot be a valid identifier
-        if (s == null || s.length() == 0) {
-            return false;
-        }
+        if (s == null) 
+            return false;        
 
-        char[] c = s.toCharArray();
-        if (!Character.isJavaIdentifierStart(c[0])) {
-            return false;
-        }
+        int             n = s.length ();
+        
+        if (n == 0) 
+            return false;        
 
-        for (int i = 1; i < c.length; i++) {
-            if (!Character.isJavaIdentifierPart(c[i])) {
+        if (!Character.isJavaIdentifierStart (s.charAt (0))) 
+            return false;        
+
+        for (int i = 1; i < n; i++) 
+            if (!Character.isJavaIdentifierPart (s.charAt (i))) 
+                return false;        
+
+        return true;
+    }
+        
+    /**
+     * A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nl 
+     */
+    public static boolean   isCSIdentifierStart (char c) {
+        if (c == '_')
+            return (true);
+        
+        switch (Character.getType (c)) {
+            case Character.LETTER_NUMBER:
+            case Character.UPPERCASE_LETTER:
+            case Character.LOWERCASE_LETTER:
+            case Character.TITLECASE_LETTER:
+            case Character.MODIFIER_LETTER:
+            case Character.OTHER_LETTER:
+                return (true);
+        }
+        
+        return (false);
+    }
+    
+    /**
+     *identifier-part-character:<br/>
+     *  letter-character - A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nl <br/>
+     *  decimal-digit-character - A Unicode character of the class Nd <br/>
+     *  connecting-character - A Unicode character of the class Pc <br/>
+     *  combining-character - A Unicode character of classes Mn or Mc <br/>
+     *  formatting-character - A Unicode character of the class Cf    
+     */
+    public static boolean   isCSIdentifierPart (char c) {
+        switch (Character.getType (c)) {
+            case Character.LETTER_NUMBER:
+            case Character.UPPERCASE_LETTER:
+            case Character.LOWERCASE_LETTER:
+            case Character.TITLECASE_LETTER:
+            case Character.MODIFIER_LETTER:
+            case Character.OTHER_LETTER:
+            case Character.DECIMAL_DIGIT_NUMBER:
+            case Character.CONNECTOR_PUNCTUATION:
+            case Character.NON_SPACING_MARK:
+            case Character.COMBINING_SPACING_MARK:
+            case Character.FORMAT:
+                return (true);
+        }
+        
+        return (false);
+    }
+    
+    public static boolean isValidCSIdOrKeyword (CharSequence s) {
+        // an empty or null string cannot be a valid identifier
+        if (s == null) 
+            return false;        
+
+        int             n = s.length ();
+        
+        if (n == 0) 
+            return false;        
+
+        char            c = s.charAt (0);
+        int             pos;
+        
+        if (c == '@') {
+            if (n < 2) 
                 return false;
-            }
+            
+            pos = 2;
+            c = s.charAt (1);
         }
+        else
+            pos = 1;
+        
+        if (!isCSIdentifierStart (c)) 
+            return false;        
+
+        for (; pos < n; pos++) 
+            if (!isCSIdentifierPart (s.charAt (pos))) 
+                return false;        
 
         return true;
     }
 
-    public static boolean isReservedWord(String value){
-        for (String keyword: keywords){
-            if (keyword.equals(value)){
-                return true;
-            }
-        }
+    public static boolean       isJavaReservedWord (CharSequence value){
+        for (String keyword: JAVA_KEYWORDS)
+            if (Util.equals (keyword, value))
+                return true;                    
+
+        return false;
+    }
+
+    public static boolean       isCSReservedWord (CharSequence value){
+        for (String keyword: CS_KEYWORDS)
+            if (Util.equals (keyword, value))
+                return true;                    
 
         return false;
     }
