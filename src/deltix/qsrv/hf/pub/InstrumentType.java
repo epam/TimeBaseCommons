@@ -9,12 +9,14 @@ public enum InstrumentType {
     EQUITY('S', "Stock"),
     OPTION('O', "Option"),
     FUTURE('F', "Futures"),
+    SPREAD('Z', "Spread"),
     BOND('B', "Bond"),
     FX('X', "Currency"),
     INDEX('I', "Index"),
     ETF('E', "ETF"),
     CUSTOM('C', "Custom"),
     SIMPLE_OPTION('P', "SimpleOption"),
+    
     EXCHANGE('G', "Exchange"),
     TRADING_SESSION('T', "TradingSession"),
     STREAM('M', "Stream"),
@@ -32,18 +34,10 @@ public enum InstrumentType {
     public char toChar () { return code; }
          
     public static InstrumentType fromChar (char code) {
-    	if (code == EQUITY.code) return EQUITY;
-    	if (code == OPTION.code) return OPTION;
-    	if (code == SIMPLE_OPTION.code) return SIMPLE_OPTION;
-    	if (code == FUTURE.code) return FUTURE;
-    	if (code == BOND.code)   return BOND;
-    	if (code == FX.code)     return FX;
-    	if (code == INDEX.code)  return INDEX;
-        if (code == ETF.code)    return ETF;
-        if (code == CUSTOM.code) return CUSTOM;
-        if (code == STREAM.code) return STREAM;
-        if (code == SYSTEM.code) return SYSTEM;
-    	
+        for (InstrumentType itv : values ())
+            if (code == itv.code)
+                return (itv);
+            	
         throw new IllegalArgumentException ("Unknown InstrumentType code: " + code);
     }
 
