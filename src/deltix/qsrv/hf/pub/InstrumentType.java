@@ -58,7 +58,7 @@ public enum InstrumentType {
     /** @return true if instrument of this type can accumulate positions and appear in trade orders */
     public boolean isTradable() {
         int ordinal = ordinal();
-        return (ordinal <= SIMPLE_OPTION.ordinal() || ordinal == SPREAD.ordinal());
+        return (ordinal <= SIMPLE_OPTION.ordinal() || this == SPREAD);
     }
     
 }
