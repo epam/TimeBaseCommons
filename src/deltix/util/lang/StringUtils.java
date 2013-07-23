@@ -411,7 +411,7 @@ public class StringUtils {
     }
     
     public static boolean isValidCSIdOrKeyword (CharSequence s) {
-        // an empty or null string cannot be a valid identifier
+        // an empty or null string cannot be a valid identifier        
         if (s == null) 
             return false;        
 
@@ -419,24 +419,11 @@ public class StringUtils {
         
         if (n == 0) 
             return false;        
-
-        char            c = s.charAt (0);
-        int             pos;
-        
-        if (c == '@') {
-            if (n < 2) 
-                return false;
-            
-            pos = 2;
-            c = s.charAt (1);
-        }
-        else
-            pos = 1;
-        
-        if (!isCSIdentifierStart (c)) 
+                        
+        if (!isCSIdentifierStart (s.charAt (0))) 
             return false;        
 
-        for (; pos < n; pos++) 
+        for (int pos = 1; pos < n; pos++) 
             if (!isCSIdentifierPart (s.charAt (pos))) 
                 return false;        
 

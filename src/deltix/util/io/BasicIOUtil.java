@@ -1899,7 +1899,13 @@ public abstract class BasicIOUtil {
     }    
     
     public static String            fname (String path) {
-        return (path.substring (path.lastIndexOf ('/') + 1));        
+        int a = path.lastIndexOf ('/');
+        int b = path.lastIndexOf ('\\');
+        
+        if (a < 0 && b < 0)
+            return (path);
+        
+        return (path.substring (Math.max (a, b) + 1));        
     } 
     
     public static String            fhead (String path) {
