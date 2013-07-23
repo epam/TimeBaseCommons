@@ -9,7 +9,6 @@ public enum InstrumentType {
     EQUITY('S', "Stock"),
     OPTION('O', "Option"),
     FUTURE('F', "Futures"),
-    SPREAD('Z', "Spread"),
     BOND('B', "Bond"),
     FX('X', "Currency"),
     INDEX('I', "Index"),
@@ -21,6 +20,8 @@ public enum InstrumentType {
     TRADING_SESSION('T', "TradingSession"),
     STREAM('M', "Stream"),
     DATA_CONNECTOR('Q', "DataConnector"),
+    SPREAD('Z', "Spread"),
+
     SYSTEM('X', "System");
 
     //NB: If you plan to extend this enum, please support isTradable() method below!
