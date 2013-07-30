@@ -14,13 +14,11 @@ import java.awt.event.MouseEvent;
  */
 public class DrawnSliderUI extends BasicRangeSliderUI{
 
-    private                DrawnSlider slider;
+    protected static final int MOUSE_HANDLE_BEFORE_MIN   = 5;
+    protected static final int MOUSE_HANDLE_BEFORMIN_MIN = 6;
+    protected static final int MOUSE_HANDLE_MIN_MAX      = 7;
 
-    protected static final int         MOUSE_HANDLE_BEFORE_MIN   = 5;
-
-    protected static final int         MOUSE_HANDLE_BEFORMIN_MIN = 6;
-
-    protected static final int         MOUSE_HANDLE_MIN_MAX      = 7;
+    private DrawnSlider slider;
 
     public DrawnSliderUI(DrawnSlider slider) {
         super(slider);
@@ -56,7 +54,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
             Font customFont = new Font(defFont.getFontName(), Font.BOLD, defFont.getSize());
             g.setFont(customFont);
 
-            if (beforeMin > 0 && low != 0) {
+            if (beforeMin > 0 && low != 0 && slider.getOptions().isVisibile(0)) {
                 drawArea(
                         g,
                         customFont,
@@ -76,7 +74,8 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                         new Rectangle(
                                 x1,
                                 y,
-                                x2 = xPositionForValue(low) - borderWidth,
+                                x2 = xPositionForValue(low) - borderWidth +
+                                        (beforeMin == 0 && high == max ? SliderOptions.DRAWN_THUMB_SIZE_PX : 0),
                                 bounds.height - 2 * borderWidth),
                         1
                 );
@@ -89,7 +88,8 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                         new Rectangle(
                                 x2,
                                 y,
-                                x3 = xPositionForValue(high) - borderWidth,
+                                x3 = xPositionForValue(high) - borderWidth +
+                                        (low == 0 && high == max ? SliderOptions.DRAWN_THUMB_SIZE_PX : 0),
                                 bounds.height - 2 * borderWidth),
                         2
                 );
@@ -97,7 +97,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 x3 = xPositionForValue(max);
             }
 
-            if (high < max) {
+            if (high < max && slider.getOptions().isVisibile(2)) {
                 drawArea(
                         g,
                         customFont,
@@ -305,7 +305,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 return;
             }
 
-            handle = getMouseHandle(e.getX(), e.getY());
+            handle = changeHandleAccordingToVisibility (getMouseHandle(e.getX(), e.getY()));
 
             handleOffset = (slider.getOrientation() == JSlider.VERTICAL) ?
                     e.getY() - yPositionForValue(slider.getLowValue()) :
@@ -365,9 +365,6 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                         handle = MOUSE_HANDLE_MIN;
                     }
             }
-
-            int beforeMin = slider.getThirdValue();
-            SliderScale scale = SliderScale.getInstance(slider.getMaximum());
 
             processMouseHandlerWithSliding(newValue, newLocation);
 
@@ -511,12 +508,13 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 return;
             }
 
-            switch (getMouseHandle(e.getX(), e.getY())) {
+            int currentHandle = changeHandleAccordingToVisibility(getMouseHandle(e.getX(), e.getY()));
+
+            switch (currentHandle) {
                 case MOUSE_HANDLE_BEFORE_MIN:
                     setMouseRollover(MOUSE_HANDLE_BEFORE_MIN);
                     setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
                     break;
-
                 case MOUSE_HANDLE_BEFORMIN_MIN:
                     setMouseRollover(MOUSE_HANDLE_BEFORMIN_MIN);
                     setCursor((slider.getOrientation() == JSlider.VERTICAL) ? Cursor.N_RESIZE_CURSOR : Cursor.W_RESIZE_CURSOR);
@@ -568,6 +566,39 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
         @Override
         public void mouseExited(MouseEvent e) {
             setCursor(Cursor.DEFAULT_CURSOR);
+        }
+
+        private int changeHandleAccordingToVisibility(int value) {
+            switch (value) {
+                case MOUSE_HANDLE_BEFORE_MIN:
+                    if (!slider.getOptions().isVisibile(0)) {
+                        return MOUSE_HANDLE_NONE;
+                    }
+                    break;
+                case MOUSE_HANDLE_BEFORMIN_MIN:
+                    if (!slider.getOptions().isVisibile(0) &&
+                            !slider.getOptions().isVisibile(1)) {
+                        return MOUSE_HANDLE_NONE;
+                    }
+                    break;
+                case MOUSE_HANDLE_MIN:
+                    if (!slider.getOptions().isVisibile(1)) {
+                        return MOUSE_HANDLE_NONE;
+                    }
+                    break;
+                case MOUSE_HANDLE_MIN_MAX:
+                    if (!slider.getOptions().isVisibile(1) &&
+                            !slider.getOptions().isVisibile(2)) {
+                        return MOUSE_HANDLE_NONE;
+                    }
+                    break;
+                case MOUSE_HANDLE_MAX:
+                    if (!slider.getOptions().isVisibile(2)) {
+                        return MOUSE_HANDLE_NONE;
+                    }
+            }
+
+            return value;
         }
     }
 

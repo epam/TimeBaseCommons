@@ -9,39 +9,40 @@ import java.util.Arrays;
  */
 public class SliderOptions{
 
-    public  static final Color    FIRST_AREA_COLOR    = new Color(0xFF9999);
-    public  static final Color    SECOND_AREA_COLOR   = new Color(0x8BF5B7); //ARROW_COLOR
-    public  static final Color    THIRD_AREA_COLOR    = new Color(0x6E93DC); //MARKET_DATA_COLOR
-    public  static final Color    FOURTH_AREA_COLOR   = new Color(0xFFFFFF); //White
+    public  static final Color   FIRST_AREA_COLOR  = new Color(0xFF9999);
+    public  static final Color   SECOND_AREA_COLOR = new Color(0x8BF5B7); //ARROW_COLOR
+    public  static final Color   THIRD_AREA_COLOR  = new Color(0x6E93DC); //MARKET_DATA_COLOR
+    public  static final Color   FOURTH_AREA_COLOR = new Color(0xFFFFFF); //White
 
-    private static final Color[]  VIEW_MODE_COLORS    = new Color[]{
+    private static final Color[] VIEW_MODE_COLORS  = new Color[]{
             new Color( 96, 96, 96  ),
             new Color(128, 128, 128),
             new Color(192, 192, 192),
             SliderOptions.FOURTH_AREA_COLOR,
                                             };
 
-    private              String[] labels              = null;
-    private              Color[]  colors              = null;
-    private              Color[]  textColors          = null;
-    private              Color[]  tickColors          = null;
+    private              String[]  labels              = null;
+    private              Color[]   colors              = null;
+    private              Color[]   textColors          = null;
+    private              Color[]   tickColors          = null;
+    private              int       visibilities        = 0x111;
 
-    private              int[]    ticks               = null;
+    private              int[]     ticks               = null;
 
-    public  static       float    STROKE_WIDTH        = 2.0f;
-    public  static       int      Y_START_COORDINATE  = 2;
+    public  static       float     STROKE_WIDTH        = 2.0f;
+    public  static       int       Y_START_COORDINATE  = 2;
 
-    public  static       int      DRAWN_THUMB_SIZE_PX = 6;
+    public  static       int       DRAWN_THUMB_SIZE_PX = 6;
 
-    public  static       int      THUMB_OVER_BODER_PX = 3;
+    public  static       int       THUMB_OVER_BODER_PX = 3;
 
-    private              boolean  overrideThumb       = false;
+    private              boolean   overrideThumb       = false;
 
-    private              boolean  readOnly            = false;
+    private              boolean   readOnly            = false;
 
-    private              boolean  minMaxUnderSlider   = false;
+    private              boolean   minMaxUnderSlider   = false;
 
-    public  static final float    PART_OF_HEAP_CACHE  = 0.75f; // param limits max cache size by 3/4 of heap size
+    public  static final float     PART_OF_HEAP_CACHE  = 0.75f;               // param limits max cache size by 3/4 of heap size
 
 
     public SliderOptions(int[] ticks) {
@@ -63,6 +64,8 @@ public class SliderOptions{
         textColors = new Color[4];
         Arrays.fill(textColors, Color.BLACK);
 
+        visibilities = 0x111;
+
     }
 
     public SliderOptions(int[] ticks, String[] labels) {
@@ -76,6 +79,8 @@ public class SliderOptions{
         };
         textColors = new Color[4];
         Arrays.fill(textColors, Color.BLACK);
+
+        visibilities = 0x111;
     }
 
     public SliderOptions(int[] ticks, String[] labels, Color[] colors) {
@@ -84,6 +89,8 @@ public class SliderOptions{
         this.colors = colors;
         textColors = new Color[4];
         Arrays.fill(textColors, Color.BLACK);
+
+        visibilities = 0x111;
     }
 
     public boolean isOverrideThumb() {
@@ -120,13 +127,17 @@ public class SliderOptions{
             return result;
         }
 
-        return null;
+        return "";
     }
 
     private void setLabel(int areaIndex, String value) {
         if (labels != null && areaIndex < labels.length) {
             labels[areaIndex] = value;
         }
+    }
+
+    public String[] getLabels() {
+        return labels;
     }
 
     public void setLabels(String[] values) {
@@ -159,6 +170,10 @@ public class SliderOptions{
         return colors;
     }
 
+    public Color[] getTextColors() {
+        return textColors;
+    }
+
     public void setTextColors(Color[] values) {
         if (values != null) {
             textColors = values;
@@ -170,6 +185,10 @@ public class SliderOptions{
             return textColors[areaIndex];
         }
         return Color.BLACK;
+    }
+
+    public Color[] getTickColors() {
+        return tickColors;
     }
 
     public void setTickColors(Color[] values) {
@@ -209,6 +228,28 @@ public class SliderOptions{
         return 0;
     }
 
+
+    public int getVisibilities() {
+        return visibilities;
+    }
+
+    public void setVisibilities(int visibilities) {
+        this.visibilities = visibilities;
+    }
+
+    public boolean isVisibile (int index) {
+        switch (index){
+            case 0:
+                return (visibilities & 0x100) == 0x100;
+            case 1:
+                return (visibilities & 0x010) == 0x010;
+            case 2:
+                return (visibilities & 0x001) == 0x001;
+            default:
+                return true;
+        }
+    }
+
     public boolean isReadOnly() {
         return readOnly;
     }
@@ -231,6 +272,7 @@ public class SliderOptions{
                                                   colors );
         options.setTickColors(tickColors);
         options.setTextColors(textColors);
+        options.setVisibilities(visibilities);
         options.setOverrideThumb(overrideThumb);
         options.setMinMaxUnderSlider(minMaxUnderSlider);
         options.setReadOnly(readOnly);

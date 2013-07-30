@@ -11,6 +11,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * User: TurskiyS
@@ -97,7 +99,23 @@ public class SliderControlBuilder {
         return createMemoryRangePanel(slider);
     }
 
-    public static DrawnSlider createSlider(final SliderOptions options) {
+    public static DrawnSlider createSlider(final SliderOptions options) throws RuntimeException {
+        if (options.getTicks() != null){
+           switch (options.getTicks().length){
+               case 3:
+                    return createSliderOneThumb(options);
+               case 4:
+                    return createSliderTwoThumbs(options);
+               case 5:
+                    return createSliderThreeThumbs(options);
+               default:
+                   throw new RuntimeException("Initialization error: bad slider options");
+           }
+        }
+        throw new RuntimeException("Initialization error: bad slider options");
+    }
+
+    public static DrawnSlider createSliderThreeThumbs(final SliderOptions options) {
         final DrawnSlider slider = new DrawnSlider(options);
 
         slider.setMinimum(options.getTick(0));
@@ -107,6 +125,115 @@ public class SliderControlBuilder {
         slider.setThirdValue(scale.getValueInScale(options.getTick(1)));
         slider.setLowValue(scale.getValueInScale(options.getTick(2)));
         slider.setHighValue(scale.getValueInScale(options.getTick(3)));
+
+        slider.setUI(new DrawnSliderUI(slider));
+
+        slider.setBorder(new StrokeBorder(new BasicStroke(SliderOptions.STROKE_WIDTH)));
+
+        return slider;
+    }
+
+    public static DrawnSlider createSliderTwoThumbs(final SliderOptions options) {
+        options.setVisibilities(0x011);
+
+        ArrayList<Color> colorList = getColorListTwoThumbs(options.getColors());
+        options.setColors(colorList.toArray(new Color[colorList.size()]));
+
+        colorList = getColorListTwoThumbs(options.getTickColors());
+        options.setTickColors(colorList.toArray(new Color[colorList.size()]));
+
+        colorList = getColorListTwoThumbs(options.getTextColors());
+        options.setTextColors(colorList.toArray(new Color[colorList.size()]));
+
+        ArrayList<String> labelList = new ArrayList<>();
+        labelList.add(null);
+
+        if (options.getLabels() != null){
+            labelList.addAll(Arrays.asList(options.getLabels()));
+        }else{
+            labelList.addAll(Arrays.asList((String)null, (String)null, (String)null));
+        }
+        options.setLabels(labelList.toArray(new String[labelList.size()]));
+
+
+        final DrawnSlider slider = new DrawnSlider(options);
+
+        slider.setMinimum(options.getTick(0));
+        slider.setMaximum(options.getTick(3));
+
+        SliderScale scale = SliderScale.getInstance(options.getTick(3));
+        slider.setThirdValue(scale.getValueInScale(options.getTick(0)));
+        slider.setLowValue(scale.getValueInScale(options.getTick(1)));
+        slider.setHighValue(scale.getValueInScale(options.getTick(2)));
+
+        slider.setUI(new DrawnSliderUI(slider));
+
+        slider.setBorder(new StrokeBorder(new BasicStroke(SliderOptions.STROKE_WIDTH)));
+
+        return slider;
+    }
+
+    private static ArrayList<Color> getColorListOneThumb(Color[] colors){
+        ArrayList<Color> colorList = new ArrayList<>();
+        colorList.add(null);
+        if (colors != null){
+            colorList.addAll(Arrays.asList(colors));
+            colorList.add(null);
+        }else{
+            colorList.addAll(Arrays.asList(
+                    SliderOptions.SECOND_AREA_COLOR,
+                    SliderOptions.THIRD_AREA_COLOR,
+                    null));
+        }
+        return colorList;
+    }
+
+    private static ArrayList<Color> getColorListTwoThumbs(Color[] colors){
+        ArrayList<Color> colorList = new ArrayList<>();
+        colorList.add(null);
+        if (colors != null){
+            colorList.addAll(Arrays.asList(colors));
+        }else{
+            colorList.addAll(Arrays.asList(
+                    SliderOptions.SECOND_AREA_COLOR,
+                    SliderOptions.THIRD_AREA_COLOR,
+                    SliderOptions.FOURTH_AREA_COLOR));
+        }
+        return colorList;
+    }
+
+    public static DrawnSlider createSliderOneThumb(final SliderOptions options) {
+        options.setVisibilities(0x010);
+
+        ArrayList<Color> colorList = getColorListOneThumb(options.getColors());
+        options.setColors(colorList.toArray(new Color[colorList.size()]));
+
+        colorList = getColorListOneThumb(options.getTickColors());
+        options.setTickColors(colorList.toArray(new Color[colorList.size()]));
+
+        colorList = getColorListOneThumb(options.getTextColors());
+        options.setTextColors(colorList.toArray(new Color[colorList.size()]));
+
+        ArrayList<String> labelList = new ArrayList<>();
+        labelList.add(null);
+
+        if (options.getLabels() != null){
+            labelList.addAll(Arrays.asList(options.getLabels()));
+            labelList.add(null);
+        }else{
+            labelList.addAll(Arrays.asList((String)null, (String)null, (String)null));
+        }
+        options.setLabels(labelList.toArray(new String[labelList.size()]));
+
+        final DrawnSlider slider = new DrawnSlider(options);
+
+        slider.setMinimum(options.getTick(0));
+        slider.setMaximum(options.getTick(2));
+
+        SliderScale scale = SliderScale.getInstance(options.getTick(2));
+        slider.setThirdValue(scale.getValueInScale(options.getTick(0)));
+        slider.setLowValue(scale.getValueInScale(options.getTick(1)));
+        slider.setHighValue(scale.getValueInScale(options.getTick(2)));
 
         slider.setUI(new DrawnSliderUI(slider));
 
@@ -153,65 +280,73 @@ public class SliderControlBuilder {
                 )
         );
 
+        String drawnString;
+        SliderScale  scale = SliderScale.getInstance(max);
+
         //if (beforeMin > 0 && beforeMin < value) {
-        if (!readOnly){
-            paintThumb(g, slider.getOptions().getColor(0), new Rectangle((int) (sliderX + sliderUI.getXLocation(beforeMin) - 5),
-                    (int) sliderY - SliderOptions.THUMB_OVER_BODER_PX,
-                    SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 2));
+        if (slider.getOptions().isVisibile(0)) {
+            if (!readOnly) {
+                paintThumb(g, slider.getOptions().getColor(0), new Rectangle((int) (sliderX + sliderUI.getXLocation(beforeMin) - 5),
+                        (int) sliderY - SliderOptions.THUMB_OVER_BODER_PX,
+                        SliderOptions.DRAWN_THUMB_SIZE_PX,
+                        slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 2));
+            }
+
+            //paint first tick
+            drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(beforeMin));
+            paintTick(g,
+                    slider.getOptions().getTickColor(0),
+                    drawnString,
+                    new Point(
+                            getLabelXPosition(slider, beforeMin, g, customFont),
+                            getLabelYPosition(slider, beforeMin)
+                    )
+            );
         }
 
-        SliderScale scale = SliderScale.getInstance(max);
-
-        //paint first tick
-        String drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(beforeMin));
-        paintTick(g,
-                slider.getOptions().getTickColor(0),
-                drawnString,
-                new Point(
-                        getLabelXPosition (slider, beforeMin, g, customFont),
-                        getLabelYPosition (slider, beforeMin)
-                )
-        );
-
         //paint second tick
-        drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
-        paintTick(g,
-                slider.getOptions().getTickColor(1),
-                drawnString,
-                new Point(
-                        getLabelXPosition (slider, lowValue, g, customFont),
-                        getLabelYPosition (slider, lowValue)
-                )
-        );
-        //paint second area thumb
-        if (!readOnly) {
-            paintThumb(
-                    g,
-                    slider.getOptions().getColor(1),
-                    new Rectangle((int) (sliderX + sliderUI.getXLocation(lowValue) - 3),
-                            (int) sliderY - 4 * SliderOptions.THUMB_OVER_BODER_PX,
-                            SliderOptions.DRAWN_THUMB_SIZE_PX,
-                            slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 5));
+        if (slider.getOptions().isVisibile(1)) {
+
+            drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
+            paintTick(g,
+                    slider.getOptions().getTickColor(1),
+                    drawnString,
+                    new Point(
+                            getLabelXPosition(slider, lowValue, g, customFont),
+                            getLabelYPosition(slider, lowValue)
+                    )
+            );
+            //paint second area thumb
+            if (!readOnly) {
+                paintThumb(
+                        g,
+                        slider.getOptions().getColor(1),
+                        new Rectangle((int) (sliderX + sliderUI.getXLocation(lowValue) - 3),
+                                (int) sliderY - 4 * SliderOptions.THUMB_OVER_BODER_PX,
+                                SliderOptions.DRAWN_THUMB_SIZE_PX,
+                                slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 5));
+            }
         }
 
         //paint third tick
-        drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
-        paintTick(g,
-                slider.getOptions().getTickColor(2),
-                drawnString,
-                new Point(
-                        getLabelXPosition (slider, high, g, customFont),
-                        getLabelYPosition (slider, high)
-                )
-        );
+        if (slider.getOptions().isVisibile(2)) {
+            drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
+            paintTick(g,
+                    slider.getOptions().getTickColor(2),
+                    drawnString,
+                    new Point(
+                            getLabelXPosition(slider, high, g, customFont),
+                            getLabelYPosition(slider, high)
+                    )
+            );
 
-        //paint third area thumb
-        if (!readOnly){
-            paintThumb(g, slider.getOptions().getColor(2), new Rectangle((int) (sliderX + sliderUI.getXLocation(high) - 1),
-                    (int) (sliderY - SliderOptions.THUMB_OVER_BODER_PX),
-                    SliderOptions.DRAWN_THUMB_SIZE_PX,
-                    slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 2));
+            //paint third area thumb
+            if (!readOnly) {
+                paintThumb(g, slider.getOptions().getColor(2), new Rectangle((int) (sliderX + sliderUI.getXLocation(high) - 1),
+                        (int) (sliderY - SliderOptions.THUMB_OVER_BODER_PX),
+                        SliderOptions.DRAWN_THUMB_SIZE_PX,
+                        slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 2));
+            }
         }
     }
 
@@ -280,7 +415,10 @@ public class SliderControlBuilder {
         } else if (value == lowValue) {
             drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
             drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
-            return (int) (sliderX + sliderUI.getXLocation(lowValue) - drawnStringWidth / 4);
+            return (int) (sliderX +
+                    sliderUI.getXLocation(lowValue) -
+                    ((slider.getOptions().getVisibilities() ^ 0x011) == 0 ?  drawnStringWidth : drawnStringWidth / 4)
+            );
         } else if (value == high) {
             String drawnStringHigh = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
             int drawnStringWidthHigh = g.getFontMetrics(customFont).stringWidth(drawnStringHigh);

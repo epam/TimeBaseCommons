@@ -19,7 +19,7 @@ public class MemorySliderTest extends JFrame {
 
     public MemorySliderTest() {
         super("Memory Slider UI Test");
-        JPanel main = new JPanel(new GridBagLayout());
+        JPanel container = new JPanel(new GridBagLayout());
 
         int memoryInMB;
         try {
@@ -33,6 +33,45 @@ public class MemorySliderTest extends JFrame {
                 setWeight(1, 0).setAnchor(GBC.WEST);
 
         //colored slider
+        drawColoredSliderWithThreeThumbs (memoryInMB, container, layout);
+
+        //black and white slider
+        drawBWSliderWithThreeThumbs (memoryInMB, container, layout);
+
+        //read only slider
+        drawROSliderWithThreeThumbs (memoryInMB, container, layout);
+
+        //slider with one thumb
+        drawColoredSliderWithOneThumb(memoryInMB, container, layout);
+
+        //slider with one thumb
+        drawColoredSliderWithTwoThumbs(memoryInMB, container, layout);
+
+        add(container);
+
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent event) {
+                dispose();
+                System.exit(0);
+            }
+        });
+
+    }
+
+    public static void main(String[] args) {
+
+        MemorySliderTest frame = new MemorySliderTest();
+        frame.setPreferredSize(new Dimension(400, 550));
+        frame.pack();
+        Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(windowSize.width/2 - frame.getWidth()/2, windowSize.height/2 - frame.getHeight()/2);
+
+        frame.setVisible(true);
+
+    }
+
+    private void drawColoredSliderWithThreeThumbs(int memoryInMB, JPanel container,  GBC layout){
         SliderOptions options = new SliderOptions(
                 new int[]{
                         0,
@@ -51,11 +90,12 @@ public class MemorySliderTest extends JFrame {
         //options.setTickColor(2, Color.BLACK);
 
         DrawnSlider slider1 = SliderControlBuilder.createSlider(options);
-        main.add(new JLabel("Colored:"), layout.setPosition(0, 0).setInsets(5));
-        main.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 1));
+        container.add(new JLabel("Colored 3 thumbs:"), layout.setPosition(0, 0).setInsets(5));
+        container.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 1));
+    }
 
-        //black and white slider
-        options = new SliderOptions(
+    private void drawBWSliderWithThreeThumbs(int memoryInMB, JPanel container,  GBC layout){
+        SliderOptions options = new SliderOptions(
                 new int[]{
                         0,
                         (int) (memoryInMB * 8 * 0.05),
@@ -81,40 +121,89 @@ public class MemorySliderTest extends JFrame {
         textColors[3] = Color.BLACK;
         options.setTextColors(textColors);
         DrawnSlider slider2 = SliderControlBuilder.createSlider(options);
-        main.add(new JLabel("Black-and-White:"), layout.setPosition(0, 2));
-        main.add(SliderControlBuilder.createMemoryRangePanel(slider2), layout.setPosition(0, 3));
+        container.add(new JLabel("Black-and-White:"), layout.setPosition(0, 2));
+        container.add(SliderControlBuilder.createMemoryRangePanel(slider2), layout.setPosition(0, 3));
+    }
 
+    private void drawROSliderWithThreeThumbs(int memoryInMB, JPanel container,  GBC layout){
+        SliderOptions options = new SliderOptions(
+                new int[]{
+                        0,
+                        (int) (memoryInMB * 8 * 0.05),
+                        (int) (memoryInMB * 8 * 0.1),
+                        (int) (memoryInMB * 8 * 0.15),
+                        memoryInMB*8
+                },
+                new String[]{"Cache",
+                        "Initial",
+                        "Max",
+                        "Physical"},
+                new Color[]{
+                        new Color(96, 96, 96),
+                        new Color(128, 128, 128),
+                        new Color(192, 192, 192),
+                        SliderOptions.FOURTH_AREA_COLOR,
+                }
+        );
 
-        //read only slider
-        options = options.copy();
         //options.setMinMaxUnderSlider(true);
         options.setReadOnly(true);
         DrawnSlider slider3 = SliderControlBuilder.createSlider(options);
         slider3.setEnabled(false);
-        main.add(new JLabel("Read Only:"), layout.setPosition(0, 4));
-        main.add(SliderControlBuilder.createMemoryRangePanel(slider3), layout.setPosition(0, 5));
+        container.add(new JLabel("Read Only:"), layout.setPosition(0, 4));
+        container.add(SliderControlBuilder.createMemoryRangePanel(slider3), layout.setPosition(0, 5));
+    }
 
-        add(main);
+    private void drawColoredSliderWithOneThumb(int memoryInMB, JPanel container,  GBC layout){
+        SliderOptions options = new SliderOptions(
+                new int[]{
+                        0,
+                        (int) (memoryInMB * 8 * 0.1),
+                        memoryInMB * 8
+                },
+                new String[]{"Max",
+                        "Physical"}
+        );
 
 
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent event) {
-                dispose();
-                System.exit(0);
-            }
+        options.setColors(new Color[]{
+                new Color(0x6E93DC),
+                new Color(0x8BF5B7)
+                //new Color(0xFFFFFF)
         });
+
+        options.setTickColors(Arrays.copyOf(options.getColors(),options.getColors().length));
+
+        DrawnSlider slider1 = SliderControlBuilder.createSlider(options);
+        container.add(new JLabel("Colored one thumb:"), layout.setPosition(0, 6));
+        container.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 7));
 
     }
 
-    public static void main(String[] args) {
+    private void drawColoredSliderWithTwoThumbs(int memoryInMB, JPanel container, GBC layout){
+        SliderOptions options = new SliderOptions(
+                new int[]{
+                        0,
+                        (int) (memoryInMB * 8  * 0.1),
+                        (int) (memoryInMB * 8 * 0.15),
+                        memoryInMB * 8
+                },
+                new String[]{"Initial",
+                             "Max",
+                             "Physical"}
+        );
 
-        MemorySliderTest frame = new MemorySliderTest();
-        frame.setPreferredSize(new Dimension(400, 350));
-        frame.pack();
-        Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setLocation(windowSize.width/2 - frame.getWidth()/2, windowSize.height/2 - frame.getHeight()/2);
+        options.setColors(new Color[]{
+                new Color(0x8BF5B7),
+                new Color(0x6E93DC),
+                new Color(0xFFFFFF)
+        });
+        options.setTickColors(Arrays.copyOf(options.getColors(),options.getColors().length));
 
-        frame.setVisible(true);
+
+        DrawnSlider slider1 = SliderControlBuilder.createSlider(options);
+        container.add(new JLabel("Colored 2 thumbs:"), layout.setPosition(0, 8));
+        container.add(SliderControlBuilder.createMemoryRangePanel(slider1), layout.setPosition(0, 9));
 
     }
 
