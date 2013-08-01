@@ -50,14 +50,14 @@ public class DrawnSlider extends RangeSlider {
 
         int visibilities = options.getVisibilities();
 
-        if ((visibilities ^ 0x111) == 0) {
+        if ((visibilities ^ 0x111) == 0) {//three are visible
             return values;
-        } else if ((visibilities ^ 0x011) == 0) {
+        } else if ((visibilities ^ 0x011) == 0) {//two
             return new Long[]{
                     values[1],
                     values[2]
             };
-        } else if ((visibilities ^ 0x010) == 0) {
+        } else if ((visibilities ^ 0x010) == 0) {//one
             return values[1];
         }
 
@@ -74,10 +74,10 @@ public class DrawnSlider extends RangeSlider {
                     setThirdValue(scale.getValueInScale((int) (lv[0] / MB)));
                     setLowValue(scale.getValueInScale((int) (lv[1] / MB)));
                     setHighValue(scale.getValueInScale((int) (lv[2] / MB)));
-                } else {
+                } else if (lv.length == 2) {
                     setThirdValue(scale.getValueInScale(0));
-                    setLowValue(scale.getValueInScale((int) (lv[1] / MB)));
-                    setHighValue(scale.getValueInScale((int) (lv[2] / MB)));
+                    setLowValue(scale.getValueInScale((int) (lv[0] / MB)));
+                    setHighValue(scale.getValueInScale((int) (lv[1] / MB)));
                 }
             }else if(value instanceof Long){
                 setThirdValue(0);

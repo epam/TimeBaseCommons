@@ -318,13 +318,14 @@ public class SliderControlBuilder {
             );
             //paint second area thumb
             if (!readOnly) {
+                boolean threeThumbs = (slider.getOptions().getVisibilities() ^ 0x111) == 0;
                 paintThumb(
                         g,
                         slider.getOptions().getColor(1),
                         new Rectangle((int) (sliderX + sliderUI.getXLocation(lowValue) - 3),
-                                (int) sliderY - 4 * SliderOptions.THUMB_OVER_BODER_PX,
+                                (int) sliderY - SliderOptions.THUMB_OVER_BODER_PX * (threeThumbs ? 4 : 1),
                                 SliderOptions.DRAWN_THUMB_SIZE_PX,
-                                slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * 5));
+                                slider.getHeight() + SliderOptions.THUMB_OVER_BODER_PX * (threeThumbs ? 5 : 2)));
             }
         }
 
@@ -391,44 +392,48 @@ public class SliderControlBuilder {
 
         double sliderX = slider.getLocation().getX();
 
-        String drawnString = "";
-        int drawnStringWidth = 0;
         SliderScale scale = SliderScale.getInstance(max);
 
-        if (value == max) {
-            drawnString = String.valueOf(scale.getVisibleValue(max));
-            drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
-            return (int) (sliderX + sliderUI.getXLocation(max) - (drawnStringWidth * 0.9));
+        String drawnStringMax = String.valueOf(scale.getVisibleValue(max));
+        int drawnStringMaxWidth = g.getFontMetrics(customFont).stringWidth(drawnStringMax);
+        int maxLabelPosition = (int) (sliderX + sliderUI.getXLocation(max) - (drawnStringMaxWidth * 0.9));
 
+        String drawnStringBeforeMin = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(beforeMin));
+        int drawnStringBeforeMinWidth = g.getFontMetrics(customFont).stringWidth(drawnStringBeforeMin);
+
+        String drawnStringLow = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
+        int drawnStringLowWidth = g.getFontMetrics(customFont).stringWidth(drawnStringLow);
+
+        String drawnStringHigh = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
+        int drawnStringWidthHigh = g.getFontMetrics(customFont).stringWidth(drawnStringHigh);
+
+        if (value == max) {
+            return maxLabelPosition;
         } else if (value == min) {
             return (int) sliderX;
         } else if (value == beforeMin) {
-            String drawnStringMin = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(beforeMin));
-            int drawnStringMinWidth = g.getFontMetrics(customFont).stringWidth(drawnStringMin);
             return (int) (Math.max(
                     sliderX + sliderUI.getXLocation(beforeMin) -
-                            drawnStringMinWidth +
-                            (readOnly || beforeMin == lowValue ? drawnStringMinWidth / 2 : 0),
+                            drawnStringBeforeMinWidth +
+                            (readOnly || beforeMin == lowValue ? drawnStringBeforeMinWidth / 2 : 0),
                     sliderX
             )
             );
         } else if (value == lowValue) {
-            drawnString = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(lowValue));
-            drawnStringWidth = g.getFontMetrics(customFont).stringWidth(drawnString);
-            return (int) (sliderX +
-                    sliderUI.getXLocation(lowValue) -
-                    ((slider.getOptions().getVisibilities() ^ 0x011) == 0 ?  drawnStringWidth : drawnStringWidth / 4)
+            return (int) (Math.max(
+                            Math.min(sliderX + sliderUI.getXLocation(lowValue) -
+                                ((slider.getOptions().getVisibilities() ^ 0x011) == 0 ?  drawnStringLowWidth : drawnStringLowWidth / 4),
+                                (slider.getOptions().getVisibilities() ^ 0x010) == 0 ? maxLabelPosition: maxLabelPosition - drawnStringLowWidth ),
+                            sliderX)
             );
         } else if (value == high) {
-            String drawnStringHigh = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(high));
-            int drawnStringWidthHigh = g.getFontMetrics(customFont).stringWidth(drawnStringHigh);
-            String drawnStringMax = String.format(MEMORY_TEXT_FORMAT, scale.getVisibleValue(max));
-            int drawnStringWidthMax = g.getFontMetrics(customFont).stringWidth(drawnStringMax);
             return (int) (
-                    Math.min(
-                            sliderX + sliderUI.getXLocation(high),// - (readOnly ? drawnStringWidthHigh / 2 : 0),
-                            sliderX + sliderUI.getXLocation(max) - (drawnStringWidthMax * 0.9)
-                    )
+                    Math.max(
+                            Math.min(
+                                    sliderX + sliderUI.getXLocation(high),// - (readOnly ? drawnStringWidthHigh / 2 : 0),
+                                    maxLabelPosition
+                            ),
+                            sliderX + Math.max(drawnStringLowWidth, drawnStringBeforeMinWidth))
             );
         }
 
@@ -436,7 +441,6 @@ public class SliderControlBuilder {
     }
 
     private static int getLabelYPosition(DrawnSlider slider, int value) {
-        boolean  readOnly = slider.getOptions().isReadOnly();
         final int lowValue = slider.getLowValue();
         final int high = slider.getHighValue();
         final int max = slider.getMaximum();
@@ -447,18 +451,18 @@ public class SliderControlBuilder {
         int numberYPosition1 = (int) (sliderY - 5);
         int numberYPosition2 = (int) (sliderY - 15);
 
-        if (value == beforeMin) {
-            return beforeMin != lowValue ? numberYPosition1 : numberYPosition2;
+        if (value == beforeMin && slider.getOptions().isVisibile(0)) {
+            return beforeMin == lowValue && (slider.getOptions().getVisibilities() ^ 0x111) == 0  ? numberYPosition2 : numberYPosition1;
         } else if (value == min) {
             return slider.getOptions().isMinMaxUnderSlider() ?
                     (int) (sliderY + slider.getBounds().height + 15) :
-                    numberYPosition2;
+                    value == lowValue ? numberYPosition1 :  numberYPosition2;
 
-        } else if (value == high) {
-            return high != lowValue ? numberYPosition1 : numberYPosition2;
+        } else if (value == high && slider.getOptions().isVisibile(2)) {
+            return high == lowValue && (slider.getOptions().getVisibilities() ^ 0x111) == 0  ? numberYPosition2 : numberYPosition1;
 
         } else if (value == lowValue) {
-            return numberYPosition2;
+            return (slider.getOptions().getVisibilities() ^ 0x111) == 0 ?  numberYPosition2 : numberYPosition1;
         } else if (value == max) {
             return slider.getOptions().isMinMaxUnderSlider() ?
                     (int) (sliderY + slider.getBounds().height + 15) :

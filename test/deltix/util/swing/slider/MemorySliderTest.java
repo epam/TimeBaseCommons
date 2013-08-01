@@ -6,6 +6,8 @@ import deltix.util.swing.GBC;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -47,6 +49,17 @@ public class MemorySliderTest extends JFrame {
         //slider with one thumb
         drawColoredSliderWithTwoThumbs(memoryInMB, container, layout);
 
+
+        JButton restart = new JButton("Restart");
+        restart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MemorySliderTest.this.dispose();
+                createFrame();
+            }
+        });
+        container.add(restart, layout.setPosition(0, 10));
+
         add(container);
 
 
@@ -60,7 +73,10 @@ public class MemorySliderTest extends JFrame {
     }
 
     public static void main(String[] args) {
+        createFrame ();
+    }
 
+    private static void createFrame(){
         MemorySliderTest frame = new MemorySliderTest();
         frame.setPreferredSize(new Dimension(400, 550));
         frame.pack();
@@ -68,7 +84,6 @@ public class MemorySliderTest extends JFrame {
         frame.setLocation(windowSize.width/2 - frame.getWidth()/2, windowSize.height/2 - frame.getHeight()/2);
 
         frame.setVisible(true);
-
     }
 
     private void drawColoredSliderWithThreeThumbs(int memoryInMB, JPanel container,  GBC layout){

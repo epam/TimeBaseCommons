@@ -305,7 +305,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                 return;
             }
 
-            handle = changeHandleAccordingToVisibility (getMouseHandle(e.getX(), e.getY()));
+            handle = changeHandleAccordingToVisibility(getMouseHandle(e.getX(), e.getY()));
 
             handleOffset = (slider.getOrientation() == JSlider.VERTICAL) ?
                     e.getY() - yPositionForValue(slider.getLowValue()) :
@@ -576,8 +576,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     }
                     break;
                 case MOUSE_HANDLE_BEFORMIN_MIN:
-                    if (!slider.getOptions().isVisibile(0) &&
-                            !slider.getOptions().isVisibile(1)) {
+                    if ((slider.getOptions().getVisibilities() & 0x110) == 0x000) {
                         return MOUSE_HANDLE_NONE;
                     }
                     break;
@@ -587,8 +586,7 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
                     }
                     break;
                 case MOUSE_HANDLE_MIN_MAX:
-                    if (!slider.getOptions().isVisibile(1) &&
-                            !slider.getOptions().isVisibile(2)) {
+                    if ((slider.getOptions().getVisibilities() & 0x011) == 0x000) {
                         return MOUSE_HANDLE_NONE;
                     }
                     break;
