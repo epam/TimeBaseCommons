@@ -6,7 +6,10 @@ package deltix.util.collections;
 public class SmallArrays {
 
     public static<T> int indexOf(T obj, T[] elements) {
-        final int length = elements.length;
+        return indexOf(obj, elements, elements.length);
+    }
+
+    public static<T> int indexOf(T obj, T[] elements, int length) {
 
         switch (length) {
             default:
