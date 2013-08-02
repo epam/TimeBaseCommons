@@ -1,12 +1,9 @@
 package deltix.data.level2fix;
 
-import deltix.util.lang.Util;
 import deltix.util.text.CharSequenceParser;
 
 import java.util.TimeZone;
 import java.util.Calendar;
-
-import quickfix.field.CheckSum;
 
 /**
  * @author Andy
@@ -15,10 +12,13 @@ public abstract class TinyFIX {
 
     private class CharArray implements CharSequence {
 
-        private static final int MAX_FIELD_LENGTH = 128;
-        private final char [] buf = new char [MAX_FIELD_LENGTH];
+        private final char [] buf;
 
         private int len = 0;
+
+        private CharArray(int maxFieldLength) {
+            buf = new char[maxFieldLength];
+        }
 
         @Override
         public int length() {
@@ -42,9 +42,17 @@ public abstract class TinyFIX {
 
     }
 
+    private static final int MAX_FIELD_LENGTH = 128;
     private static final char SEPA = 1;
-    private final CharArray fieldValue = new CharArray();
+
+    private final CharArray fieldValue;
+
     public TinyFIX () {
+        this(MAX_FIELD_LENGTH);
+    }
+
+    public TinyFIX (int maxFieldLength) {
+        fieldValue = new CharArray(maxFieldLength);
     }
 
     /** @return false to terminate parsing of current message */
