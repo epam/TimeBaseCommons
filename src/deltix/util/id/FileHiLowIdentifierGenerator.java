@@ -13,7 +13,6 @@ import java.nio.channels.FileLock;
  * @see SharedFileHiLowIdentifierGenerator
  */
 public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifierGenerator implements Closeable {
-    private static final String FILE_MODE = System.getProperty("UHF.idGeneratorFileMode", "rwd");
     private final RandomAccessFile raf;
     private final FileChannel channel;
     private final FileLock lock;
@@ -22,16 +21,16 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     public FileHiLowIdentifierGenerator (String key, int blockSize, boolean writeLastUsedOnClose)
         throws IOException
     {
-    	this (key, blockSize, 1, writeLastUsedOnClose);
+    	this (key, blockSize, 1, writeLastUsedOnClose, "rwd");
 	}
 
-    public FileHiLowIdentifierGenerator (String key, int blockSize, long startId, boolean writeLastUsedOnClose)
+    public FileHiLowIdentifierGenerator (String key, int blockSize, long startId, boolean writeLastUsedOnClose, String fileMode)
         throws IOException
     {
         super(key, blockSize, startId);
 
         storeLastUsedOnClose = writeLastUsedOnClose;
-        raf = new RandomAccessFile(file, FILE_MODE);
+        raf = new RandomAccessFile(file, fileMode);
         channel = raf.getChannel();
 
         lock = channel.tryLock();
