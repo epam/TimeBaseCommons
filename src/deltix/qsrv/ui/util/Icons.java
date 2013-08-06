@@ -5,6 +5,8 @@ import javax.swing.*;
 
 import deltix.util.swing.*;
 
+import java.util.HashMap;
+
 /**
  *
  */
@@ -20,6 +22,7 @@ public class Icons {
     public static final Icon BALL_RED            = SwingUtil.loadIcon("deltix/qsrv/ui/util/ball_red.png"           );
     public static final Icon BALL_YELLOW         = SwingUtil.loadIcon("deltix/qsrv/ui/util/ball_yellow.png"        );
     public static final Icon BAR_CHART           = SwingUtil.loadIcon("deltix/qsrv/ui/util/bar_chart.png"          );
+    public static final Icon BETA                = SwingUtil.loadIcon("deltix/qsrv/ui/util/beta.png"               );
     public static final Icon BINARY              = SwingUtil.loadIcon("deltix/qsrv/ui/util/binary.png"             );
     public static final Icon BOND                = SwingUtil.loadIcon("deltix/qsrv/ui/util/bond.png"               );
     public static final Icon BOOLEAN             = SwingUtil.loadIcon("deltix/qsrv/ui/util/boolean.gif"            );
@@ -133,8 +136,17 @@ public class Icons {
     public static final Icon SECURITY_PERMISSION = SwingUtil.loadIcon("deltix/qsrv/ui/util/security_permission.gif");
     public static final Icon SEND_MESSAGE        = SwingUtil.loadIcon("deltix/qsrv/ui/util/send_message.png"       );
     public static final Icon SERVER              = SwingUtil.loadIcon("deltix/qsrv/ui/util/server.png"             );
+    public static final Icon SF_ARROW_DOWN       = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_down.png"      );
+    public static final Icon SF_ARROW_DOWN_FOCUS = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_down_focus.png");
+    public static final Icon SF_ARROW_UP         = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_up.png"        );
+    public static final Icon SF_ARROW_UP_FOCUS   = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_up_focus.png"  );
+    public static final Icon SF_DELETE           = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_delete.png"          );
+    public static final Icon SF_DELETE_FOCUS     = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_delete_focus.png"    );
+    public static final Icon SF_NEW_ITEM         = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_new_item.png"        );
+    public static final Icon SF_NEW_ITEM_FOCUS   = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_new_item_focus.png"  );
     public static final Icon SHORTCUT            = SwingUtil.loadIcon("deltix/qsrv/ui/util/shortcut.gif"           );
     public static final Icon SIMPLE_OPTION       = SwingUtil.loadIcon("deltix/qsrv/ui/util/option.png"             );
+    public static final Icon SPREAD              = SwingUtil.loadIcon("deltix/qsrv/ui/util/spread.png"             );
     public static final Icon STATIC              = SwingUtil.loadIcon("deltix/qsrv/ui/util/static.png"             );
     public static final Icon STATIC_CONST        = SwingUtil.loadIcon("deltix/qsrv/ui/util/static_co.gif"          );
     public static final Icon STREAM              = null;
@@ -154,6 +166,7 @@ public class Icons {
     public static final Icon TRADER              = SwingUtil.loadIcon("deltix/qsrv/ui/util/trader.png"             );
     public static final Icon TRADING_SESSION     = SwingUtil.loadIcon("deltix/qsrv/ui/util/calendar.png"           );
     public static final Icon TRASH               = SwingUtil.loadIcon("deltix/qsrv/ui/util/trash.gif"              );
+    public static final Icon TWO_DOWARROW        = SwingUtil.loadIcon("deltix/qsrv/ui/util/2dowarrow.png"          );
     public static final Icon TYPE                = SwingUtil.loadIcon("deltix/qsrv/ui/util/type.png"               );
     public static final Icon UNLOCK              = SwingUtil.loadIcon("deltix/qsrv/ui/util/unlock.png"             );
     public static final Icon USER                = SwingUtil.loadIcon("deltix/qsrv/ui/util/user.png"               );
@@ -165,39 +178,30 @@ public class Icons {
     public static final Icon ZOOM_IN             = SwingUtil.loadIcon("deltix/qsrv/ui/util/zoom_in.png"            );
     public static final Icon ZOOM_OUT            = SwingUtil.loadIcon("deltix/qsrv/ui/util/zoom_out.png"           );
 
-    public static final Icon SF_ARROW_UP         = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_up.png"        );
-    public static final Icon SF_ARROW_UP_FOCUS   = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_up_focus.png"  );
-    public static final Icon SF_ARROW_DOWN       = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_down.png"      );
-    public static final Icon SF_ARROW_DOWN_FOCUS = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_arrow_down_focus.png");
-    public static final Icon SF_DELETE           = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_delete.png"          );
-    public static final Icon SF_DELETE_FOCUS     = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_delete_focus.png"    );
-    public static final Icon SF_NEW_ITEM         = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_new_item.png"        );
-    public static final Icon SF_NEW_ITEM_FOCUS   = SwingUtil.loadIcon("deltix/qsrv/ui/util/sf_new_item_focus.png"  );
 
-
-    public static final Icon[] INSTRUMENT_TYPE_ICONS =
-            {
-                    EQUITY,
-                    OPTION,
-                    FUTURE,
-                    BOND,
-                    CURRENCY,
-                    INDEX,
-                    ETF,
-                    CUSTOM,
-                    SIMPLE_OPTION,
-                    EXCHANGE,
-                    TRADING_SESSION,
-                    STREAM,
-                    DATA_CONNECTOR,
-                    SYSTEM
-                                    };
-
-    public static final Icon   TWO_DOWARROW          = SwingUtil.loadIcon("deltix/qsrv/ui/util/2dowarrow.png"          );
-    public static final Icon   BETA                  = SwingUtil.loadIcon("deltix/qsrv/ui/util/beta.png"               );
+    public static final HashMap<InstrumentType, Icon> INSTRUMENT_TYPE_ICONS = new HashMap<>();
+    static
+    {
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.BOND, BOND                      );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.CUSTOM, CUSTOM                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.DATA_CONNECTOR, DATA_CONNECTOR  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EQUITY, EQUITY                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EQUITY, EQUITY                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.ETF, ETF                        );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE, EXCHANGE              );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.FUTURE, FUTURE                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.FX, CURRENCY                    );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.INDEX, INDEX                    );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.OPTION, OPTION                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.SIMPLE_OPTION, SIMPLE_OPTION    );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.SPREAD, SPREAD                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.STREAM, STREAM                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.SYSTEM, SYSTEM                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.TRADING_SESSION, TRADING_SESSION);
+    }
 
     public static Icon forInstrumentType(InstrumentType t) {
-        return (INSTRUMENT_TYPE_ICONS[t.ordinal ()]);
+        return (INSTRUMENT_TYPE_ICONS.get(t));
     }
 
 }
