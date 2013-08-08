@@ -20,7 +20,7 @@ public enum InstrumentType {
     TRADING_SESSION('T', "TradingSession"),
     STREAM('M', "Stream"),
     DATA_CONNECTOR('Q', "DataConnector"),
-    EXCHANGE_SYNTHETIC('Z', "Exchange-Traded Synthetic"),
+    EXCHANGE_TRADED_SYNTHETIC('Z', "Exchange-Traded Synthetic"),
 
     SYSTEM('X', "System");
 
@@ -58,7 +58,7 @@ public enum InstrumentType {
     /** @return true if instrument of this type can accumulate positions and appear in trade orders */
     public boolean isTradable() {
         int ordinal = ordinal();
-        return (ordinal <= SIMPLE_OPTION.ordinal() || this == EXCHANGE_SYNTHETIC);
+        return (ordinal <= SIMPLE_OPTION.ordinal() || this == EXCHANGE_TRADED_SYNTHETIC);
     }
     
 }
