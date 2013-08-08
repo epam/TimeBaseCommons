@@ -69,6 +69,33 @@ public class BinarySearch2 {
         return -(low + 1);  // key not found
     }
 
+    public static <A> int            binarySearch (
+        A []                                arr,
+        int                                 offset,
+        int                                 length,
+        A                                   key,
+        Comparator <? super A>              c
+    )
+    {
+        int         low = offset;
+        int         high = offset + length - 1;
+
+        while (low <= high) {
+            int     mid = (low + high) >>> 1;
+            A       midVal = arr [mid];
+            int     cmp = c.compare (midVal, key);
+
+            if (cmp < 0)
+                low = mid + 1;
+            else if (cmp > 0)
+                high = mid - 1;
+            else
+                return mid; // key found
+        }
+
+        return -(low + 1);  // key not found
+    }
+
     @SuppressWarnings ("unchecked")
     public static <A> int               binarySearch (
         ListModel                           model,
