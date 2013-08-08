@@ -41,7 +41,7 @@ public class Icons {
     public static final Icon COPY                = SwingUtil.loadIcon("deltix/qsrv/ui/util/copy.png"               );
     public static final Icon CURRENCY            = SwingUtil.loadIcon("deltix/qsrv/ui/util/currency.png"           );
     public static final Icon CUSTOM              = SwingUtil.loadIcon("deltix/qsrv/ui/util/custom.png"             );
-    public static final Icon DATA_CONNECTOR      = null;
+    public static final Icon DATA_CONNECTOR      = SwingUtil.loadIcon("deltix/qsrv/ui/util/data_connector.png"     );
     public static final Icon DATASOURCE          = SwingUtil.loadIcon("deltix/qsrv/ui/util/datasource.png"         );
     public static final Icon DATE                = SwingUtil.loadIcon("deltix/qsrv/ui/util/date.gif"               );
     public static final Icon DB                  = SwingUtil.loadIcon("deltix/qsrv/ui/util/db.gif"                 );
@@ -149,9 +149,9 @@ public class Icons {
     public static final Icon SPREAD              = SwingUtil.loadIcon("deltix/qsrv/ui/util/spread.png"             );
     public static final Icon STATIC              = SwingUtil.loadIcon("deltix/qsrv/ui/util/static.png"             );
     public static final Icon STATIC_CONST        = SwingUtil.loadIcon("deltix/qsrv/ui/util/static_co.gif"          );
-    public static final Icon STREAM              = null;
+    public static final Icon STREAM              = SwingUtil.loadIcon("deltix/qsrv/ui/util/stream_instrument.png"  );
     public static final Icon SUSPEND             = SwingUtil.loadIcon("deltix/qsrv/ui/util/suspend.png"            );
-    public static final Icon SYSTEM              = null;
+    public static final Icon SYSTEM              = SwingUtil.loadIcon("deltix/qsrv/ui/util/system.png"             );
     public static final Icon TABLE               = SwingUtil.loadIcon("deltix/qsrv/ui/util/table.png"              );
     public static final Icon TABLE_ADD           = SwingUtil.loadIcon("deltix/qsrv/ui/util/new_table.gif"          );
     public static final Icon TABLE_GO            = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_go.png"           );
@@ -194,7 +194,7 @@ public class Icons {
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.INDEX, INDEX                    );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.OPTION, OPTION                  );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.SIMPLE_OPTION, SIMPLE_OPTION    );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE_SYNTHETIC, SPREAD                  );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE_SYNTHETIC, SPREAD      );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.STREAM, STREAM                  );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.SYSTEM, SYSTEM                  );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.TRADING_SESSION, TRADING_SESSION);
