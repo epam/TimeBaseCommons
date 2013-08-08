@@ -194,7 +194,7 @@ public class Icons {
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.INDEX, INDEX                    );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.OPTION, OPTION                  );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.SIMPLE_OPTION, SIMPLE_OPTION    );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE_SYNTHETIC, SPREAD      );
+        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE_TRADED_SYNTHETIC, SPREAD);
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.STREAM, STREAM                  );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.SYSTEM, SYSTEM                  );
         INSTRUMENT_TYPE_ICONS.put(InstrumentType.TRADING_SESSION, TRADING_SESSION);
