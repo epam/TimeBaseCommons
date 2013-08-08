@@ -124,4 +124,31 @@ public class BinarySearch2 {
 
         return -(low + 1);  // key not found
     }
+    
+    public static int                   binarySearch (
+        int []                              arr,
+        int                                 offset,
+        int                                 length,
+        int                                 key
+    )
+    {
+        int         low = offset;
+        int         high = offset + length - 1;
+
+        while (low <= high) {
+            int     mid = (low + high) >>> 1;
+            int     midVal = arr [mid];
+            
+            if (midVal < key)
+                low = mid + 1;
+            else if (midVal > key)
+                high = mid - 1;
+            else
+                return mid; // key found
+        }
+
+        return -(low + 1);  // key not found
+    }
+
+    
 }
