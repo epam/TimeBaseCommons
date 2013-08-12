@@ -10,11 +10,19 @@ public class OSUtil {
     public static File  getUserHome () {
         return (new File (System.getProperty ("user.home")));
     }
+
+    public static boolean isX64() {
+        if (Util.IS_WINDOWS_OS) {
+            return !WindowsOS.IS_X86;
+        } else {
+            return LinuxOS.isX64();
+        }
+    }
     
     public static int   getProcessId () {
         if (Util.IS_WINDOWS_OS)
             return (WindowsOS.getCurrentProcessId ());
-        
+
         return (LinuxOS.getCurrentProcessId ());
     }
     

@@ -219,8 +219,10 @@ public class LinuxOS {
     }
             
     public static void main(String[] args) throws IOException {
-        Runtime.getRuntime().exec(new String[]{"gnome-terminal", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
-        Runtime.getRuntime().exec(new String[]{"xterm", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
+        //Runtime.getRuntime().exec(new String[]{"gnome-terminal", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
+        //Runtime.getRuntime().exec(new String[]{"xterm", "-e", "csh -f '/home/PaharelauK/deltix/MAIN/bin/uhfshell' -connect http://localhost:8888"});
+
+        System.out.println("System.getProperty(\"os.arch\") = " + System.getProperty("os.arch"));
     }
     
 }

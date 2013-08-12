@@ -7,11 +7,6 @@ import java.security.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
-import java.rmi.RemoteException;
-
-import deltix.util.os.LinuxOS;
-import deltix.util.os.WindowsOS;
-import org.xml.sax.SAXException;
 
 import java.lang.reflect.*;
 
@@ -26,14 +21,6 @@ public class Util {
     public static final String   NATIVE_LINE_BREAK  = System.getProperty("line.separator");
     public static final String[] EMPTY_STRING_ARRAY = {};
     public static final boolean  QUIET              = Boolean.getBoolean("quiet");
-
-    public static boolean isX64() {
-        if (Util.IS_WINDOWS_OS) {
-            return !WindowsOS.IS_X86;
-        } else {
-            return LinuxOS.isX64();
-        }
-    }
 
     public static void collectLocalFiles(String path, Collection<String> files) {
         File file = new File(path);
