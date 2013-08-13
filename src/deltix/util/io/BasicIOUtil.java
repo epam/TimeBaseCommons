@@ -4,8 +4,6 @@ import deltix.util.lang.SortedProperties;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.*;
 
 import deltix.util.lang.Util;
@@ -18,7 +16,6 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.CopyOption;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -730,6 +727,25 @@ public abstract class BasicIOUtil {
         return (ret);
     }
 
+    public static void      readFully (
+        InputStream             is, 
+        byte []                 bytes, 
+        int                     offset, 
+        int                     length
+    ) 
+        throws IOException
+    {
+        while (length > 0) {
+            int     count = is.read (bytes, offset, length);
+            
+            if (count < 0)
+                throw new EOFException ();
+            
+            offset += count;
+            length -= count;
+        }
+    }
+    
     public static void		readBytes (
         File                    file,
         byte []                 bytes,
@@ -738,15 +754,9 @@ public abstract class BasicIOUtil {
     )
         throws IOException
     {
-        FileInputStream         fis = null;
-
-        try {
-        	fis = new FileInputStream (file);
-            new DataInputStream (fis).readFully (bytes, offset, length);
-        } finally {
-        	if (fis != null)
-        		Util.close (fis);
-        }
+        try (FileInputStream fis = new FileInputStream (file)) {
+            readFully (fis, bytes, offset, length);
+        } 
     }
 
     public static byte []   readBytes (InputStream is)
