@@ -88,6 +88,14 @@ public final class MemoryDataInput {
         mStart = mPos = 0;
     }
     
+    public void       setLimit (int newSize) {
+        assert newSize <= mBuffer.length :
+            "Insufficient buffer length " + mBuffer.length +
+            "; newSize: " + newSize;
+
+        mLimit = newSize;
+    }
+    
     public byte []    getBytes () {
         return (mBuffer);
     }
