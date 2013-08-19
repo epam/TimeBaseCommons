@@ -166,6 +166,16 @@ public final class MemoryDataInput {
             mPos = mLimit;
     }
 
+    public void       seekOffset (int n) {
+        assert n <= mLimit :
+            "Cannot seek to " + n + " bytes; limit: " + mLimit;
+
+        assert n >= mStart : 
+            "Cannot set position to " + n + " before start=" + mStart;
+       
+        mPos = n;
+    }
+
     public void       seek (int n) {
         assert n <= getLength () :
             "Cannot seek to " + n + " bytes; length: " + getLength ();
