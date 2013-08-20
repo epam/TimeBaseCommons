@@ -144,9 +144,23 @@ public abstract class TinyFIX {
         return CharSequenceParser.parseDouble(fieldValue);
     }
 
-
-    private final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    private final Calendar dateCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+    {
+        dateCalendar.set(Calendar.MINUTE, 0);
+        dateCalendar.set(Calendar.SECOND, 0);
+        dateCalendar.set(Calendar.MILLISECOND, 0);
+    }
+    private final Calendar timestampCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
     private long lastTimestampImage;
+
+    public long getDateValue () {
+        // 2010 01 15
+        dateCalendar.set(Calendar.YEAR, extractNumber(0, 4));
+        dateCalendar.set(Calendar.MONTH, extractNumber(4, 2) - 1);
+        dateCalendar.set(Calendar.DAY_OF_MONTH, extractNumber(6, 2));
+        
+        return dateCalendar.getTimeInMillis();
+    }
 
     public long getDateTimeValue () {
         long datetimeImage = getLongValue();
@@ -154,22 +168,22 @@ public abstract class TinyFIX {
         long delta = datetimeImage - lastTimestampImage;
 
         if (Math.abs(delta) < 1000) {
-            calendar.add (Calendar.MILLISECOND, (int) delta);
+            timestampCalendar.add (Calendar.MILLISECOND, (int) delta);
         } else {
              // 2010 01 15 20 59 44 292
-            calendar.set (Calendar.YEAR,  extractNumber(0, 4));
-            calendar.set (Calendar.MONTH, extractNumber(4, 2) - 1);
-            calendar.set (Calendar.DAY_OF_MONTH, extractNumber(6, 2));
-            calendar.set (Calendar.HOUR_OF_DAY, extractNumber(8, 2));
-            calendar.set (Calendar.MINUTE, extractNumber(10, 2));
-            calendar.set (Calendar.SECOND, extractNumber(12, 2));
-            calendar.set (Calendar.MILLISECOND, extractNumber(14, 3));
+            timestampCalendar.set (Calendar.YEAR,  extractNumber(0, 4));
+            timestampCalendar.set (Calendar.MONTH, extractNumber(4, 2) - 1);
+            timestampCalendar.set (Calendar.DAY_OF_MONTH, extractNumber(6, 2));
+            timestampCalendar.set (Calendar.HOUR_OF_DAY, extractNumber(8, 2));
+            timestampCalendar.set (Calendar.MINUTE, extractNumber(10, 2));
+            timestampCalendar.set (Calendar.SECOND, extractNumber(12, 2));
+            timestampCalendar.set (Calendar.MILLISECOND, extractNumber(14, 3));
         }
 
         lastTimestampImage = datetimeImage;
-        return calendar.getTimeInMillis();
+        return timestampCalendar.getTimeInMillis();
     }
-
+    
     private int extractNumber (int offset, int length) {
         int result = 0;
         for (int i=0; i < length; i++)
