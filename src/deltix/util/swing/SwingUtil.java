@@ -74,6 +74,14 @@ public abstract class SwingUtil {
         return (new ImageIcon (loadImage (relPath)));
     }
 
+    public static ImageIcon loadIcon(String relPath, String alternatePath) {
+        try {
+            return loadIcon(relPath);
+        } catch (UncheckedIOException e) {
+            return loadIcon(alternatePath);
+        }
+    }
+
     public static ImageIcon	    loadIconOrNull (String relPath) {
         Image       img = loadImageOrNull (relPath);
         

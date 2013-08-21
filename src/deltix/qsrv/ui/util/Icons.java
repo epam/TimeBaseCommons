@@ -123,6 +123,7 @@ public class Icons {
     public static final Icon QUERY               = SwingUtil.loadIcon("deltix/qsrv/ui/util/query.png"              );
     public static final Icon REFRESH             = SwingUtil.loadIcon("deltix/qsrv/ui/util/refresh.png"            );
     public static final Icon RESET               = SwingUtil.loadIcon("deltix/qsrv/ui/util/reset.png"              );
+    public static final Icon RESTORE             = SwingUtil.loadIcon("deltix/qsrv/ui/util/restore.png"            );
     public static final Icon RESULTSET_FIRST     = SwingUtil.loadIcon("deltix/qsrv/ui/util/resultset_first.png"    );
     public static final Icon RESULTSET_LAST      = SwingUtil.loadIcon("deltix/qsrv/ui/util/resultset_last.png"     );
     public static final Icon RESULTSET_NEXT      = SwingUtil.loadIcon("deltix/qsrv/ui/util/resultset_next.png"     );

@@ -22,6 +22,9 @@ import deltix.util.lang.Util;
  *
  */
 public abstract class StandardAction extends AbstractAction {
+
+    public static final String IMAGE_FOLDER = "images";
+
     /**
      *  Creates a standard action as follows:
      *
@@ -47,12 +50,12 @@ public abstract class StandardAction extends AbstractAction {
         setUpAction (this, forClass, nameKey);
     }
 
-    public static final String []   IMAGE_EXTENSIONS = { ".gif", ".jpg", ".png" };
+    public static final String []   IMAGE_EXTENSIONS = { "gif", "jpg", "png" };
 
     private final String    key;
 
     public static void      setUpAction (Action action, Class <?> forClass, String nameKey) {
-        String          className = forClass.getName ();
+        String          className = forClass.getName();
         int             dot = className.lastIndexOf ('.');
 
         if (dot < 0)
@@ -97,10 +100,11 @@ public abstract class StandardAction extends AbstractAction {
             boolean     ok = false;
 
             for (String ext : IMAGE_EXTENSIONS) {
-                String      imageResourcePath = resPath + "/" + nameKey + ext;
+                String imageResourcePath          = String.format("%s/%s.%s", resPath, nameKey, ext                 );
+                String imageAlternateResourcePath = String.format("%s/%s/%s.%s", resPath, IMAGE_FOLDER, nameKey, ext);
 
                 try {
-                    icon = SwingUtil.loadIcon (imageResourcePath);
+                    icon = SwingUtil.loadIcon (imageResourcePath, imageAlternateResourcePath);
                     break;
                 } catch (UncheckedIOException iox) {
                     // Ignore
@@ -120,7 +124,7 @@ public abstract class StandardAction extends AbstractAction {
 
         // mnemonic
         try {
-            action.putValue (MNEMONIC_KEY,  new Integer(rb.getString (nameKey + ".mnemonic").charAt(0)));
+            action.putValue (MNEMONIC_KEY, (int) rb.getString(nameKey + ".mnemonic").charAt(0));
         } catch (MissingResourceException mrx) {
             //  Ignore the missing mnemonic
         }
