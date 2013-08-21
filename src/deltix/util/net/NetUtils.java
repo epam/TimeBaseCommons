@@ -2,6 +2,8 @@ package deltix.util.net;
 
 import deltix.util.io.ByteArrayOutputStreamEx;
 import deltix.util.lang.Util;
+
+import javax.xml.bind.DatatypeConverter;
 import java.net.*;
 import java.io.*;
 
@@ -165,6 +167,11 @@ public class NetUtils {
         } finally {
             Util.close (is);
         }
+    }
+
+    public void authorize (URLConnection connection, String user, String pass){
+        connection.setRequestProperty("Authorization", "Basic " +
+                DatatypeConverter.printBase64Binary((user + ":" + pass).getBytes()));
     }
     
     public static void      main (String [] args) throws Exception {
