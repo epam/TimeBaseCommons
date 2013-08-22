@@ -13,10 +13,7 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -666,6 +663,17 @@ public abstract class SwingUtil {
         
         return (null);
     }
-    
-    
+
+    public static int getRadioGroupIndex(ButtonGroup buttonGroup, AbstractButton button) {
+        Enumeration<AbstractButton> buttons = buttonGroup.getElements();
+        int index = 0;
+        while (buttons.hasMoreElements()) {
+            AbstractButton currentButton = buttons.nextElement();
+            if (currentButton == button) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
 }
