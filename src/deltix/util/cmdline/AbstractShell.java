@@ -293,7 +293,11 @@ public abstract class AbstractShell extends DefaultApplication {
         System.exit (errorCode);
     }
 
-    public void        runScript (String fileId, Reader in, boolean showPrompt, boolean echo)
+    protected String    getPrompt () {
+        return ("==> ");
+    }
+    
+    public void         runScript (String fileId, Reader in, boolean showPrompt, boolean echo)
         throws IOException, InterruptedException
     {
         LineNumberReader    rd;
@@ -305,7 +309,7 @@ public abstract class AbstractShell extends DefaultApplication {
         
         for (;;) {
             if (showPrompt) {
-                System.err.print ("==> ");
+                System.err.print (getPrompt ());
                 System.err.flush ();
             }
 
