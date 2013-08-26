@@ -1067,6 +1067,13 @@ public class Util {
         return sb.toString();
     }
 
+    public static void printStackTraces () {
+        Map <Thread, ThreadInfo> threads = Util.getAllStackTraces ();
+            
+        for (Map.Entry <Thread, ThreadInfo> e : threads.entrySet ())
+            System.out.println (Util.getThreadStackTrace (e.getKey (), e.getValue ()));
+    }
+    
     public static RuntimeException asRuntimeException(Throwable exception) {
         if (exception instanceof RuntimeException)
             return (RuntimeException) exception;
