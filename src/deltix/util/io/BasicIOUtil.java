@@ -746,6 +746,22 @@ public abstract class BasicIOUtil {
         }
     }
     
+    public static void      skipFully (
+        InputStream             is, 
+        long                    length
+    ) 
+        throws IOException
+    {
+        while (length > 0) {
+            long        count = is.skip (length);
+            
+            if (count < 0)
+                throw new EOFException ();
+            
+            length -= count;
+        }
+    }
+    
     public static void		readBytes (
         File                    file,
         byte []                 bytes,
