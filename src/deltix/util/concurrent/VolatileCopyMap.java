@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.uhf.oms.position;
+package deltix.util.concurrent;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Thread-safe version of Map. Optimized for scenarios when number of reads vastly outnumbers number of writes. Reads are lock-free.
+ * Thread-safe version of Map. Suitable for scenarios when number of reads vastly outnumbers number of writes. Reads are lock-free.
  * Writes can synchronize on instance of this class to implement atomic operations. For example to escalate frequent locks.
  */
-final class VolatileCopyMap<K,V> {
+public final class VolatileCopyMap<K,V> {
     private final Map<K,V> writableMap = new HashMap<K,V>();
     private volatile Map<K,V> readOnlySnapshot = Collections.emptyMap();
     
