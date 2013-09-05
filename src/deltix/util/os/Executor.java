@@ -95,8 +95,12 @@ public class Executor {
         	builder.start ();
         }
         else{
-            //LinuxOS.startScriptInTerminal("csh", title, file);
-            throw new UnsupportedOperationException ();
+            String[] params = new String[cmd.length - 1];
+            System.arraycopy(cmd, 1, params, 0, params.length);
+            ProcessBuilder builder = new ProcessBuilder(LinuxOS.paramsForStartScriptInTerminal("sh", title, new File(dir, cmd[0]), params));
+            if (dir != null) builder.directory(dir);
+            
+            builder.start ();            
         }
     }
 
