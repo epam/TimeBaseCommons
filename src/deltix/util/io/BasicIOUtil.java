@@ -173,6 +173,25 @@ public abstract class BasicIOUtil {
         return file.delete();
     }
 
+    public static boolean clearDir(File file) {
+        if (file == null)
+            return false;
+
+        if (!file.exists())
+            return true;
+
+        if (file.isDirectory()) {
+            File items[] = file.listFiles();
+            if(items != null) {
+                for(File item : items)
+                    if( ! deleteFileOrDir(item))
+                        return false;
+            }
+        }
+
+        return true;
+    }
+
     public static void      createNew (File f) throws IOException {
         if (!f.createNewFile ())
             throw new IOException ("Failed to create " + f);
