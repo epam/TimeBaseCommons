@@ -22,16 +22,33 @@ public final class Periodicity {
         return type;
     }
 
-    public Periodicity      mkRegular(Interval interval) {
+    public static Periodicity      mkRegular(Interval interval) {
         return new Periodicity(Type.REGULAR, interval);
     }
 
-    public Periodicity      mkIrregular() {
+    public static Periodicity      mkIrregular() {
         return new Periodicity(Type.IRREGULAR);
     }
 
-    public Periodicity      mkStatic() {
+    public static Periodicity      mkStatic() {
         return new Periodicity(Type.STATIC);
+    }
+
+    public static Periodicity   parse(String value) {
+        if (value.contains(String.valueOf(Type.STATIC)))
+            return mkStatic();
+        else if (value.contains(String.valueOf(Type.IRREGULAR)))
+            return mkIrregular();
+
+        return mkRegular(Interval.valueOf(value));
+    }
+
+    @Override
+    public String toString() {
+        if (interval == null)
+            return String.valueOf(type);
+
+        return interval.toString();
     }
 
     public enum Type {
