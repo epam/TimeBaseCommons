@@ -43,7 +43,8 @@ public abstract class TinyFIX {
     }
 
     private static final int MAX_FIELD_LENGTH = 128;
-    private static final char SEPA = 1;
+    private static final char DEFAULT_FIELD_SEPARATOR = 1;
+    private final char fieldSeparator;
 
     private final CharArray fieldValue;
 
@@ -52,7 +53,12 @@ public abstract class TinyFIX {
     }
 
     public TinyFIX (int maxFieldLength) {
-        fieldValue = new CharArray(maxFieldLength);
+        this(DEFAULT_FIELD_SEPARATOR, maxFieldLength);
+    }
+
+    public TinyFIX (char fieldSeparator, int maxFieldLength) {
+        this.fieldSeparator = fieldSeparator;
+        this.fieldValue = new CharArray(maxFieldLength);
     }
 
     /** @return false to terminate parsing of current message */
@@ -78,7 +84,7 @@ public abstract class TinyFIX {
                         "Illegal character in FIX field [" + (i+1) + "]: '" + ch + "'. Line number: " + lineNumber + ".");
                 }
             } else {
-                if (ch == SEPA) {
+                if (ch == fieldSeparator) {
                     if ( ! onField(fieldId, lineNumber))
                         return;
                     fieldId = 0;
