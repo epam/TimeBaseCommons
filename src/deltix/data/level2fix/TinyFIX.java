@@ -190,6 +190,17 @@ public abstract class TinyFIX {
         return timestampCalendar.getTimeInMillis();
     }
     
+    public long getDateTimeValue(int year, int month, int day) {
+        timestampCalendar.set (Calendar.YEAR,  year);
+        timestampCalendar.set (Calendar.MONTH, month - 1);
+        timestampCalendar.set (Calendar.DAY_OF_MONTH, day);
+        timestampCalendar.set (Calendar.HOUR_OF_DAY, extractNumber(8, 2));
+        timestampCalendar.set (Calendar.MINUTE, extractNumber(10, 2));
+        timestampCalendar.set (Calendar.SECOND, extractNumber(12, 2));
+        timestampCalendar.set (Calendar.MILLISECOND, extractNumber(14, 3));
+        return timestampCalendar.getTimeInMillis();
+    }    
+    
     private int extractNumber (int offset, int length) {
         int result = 0;
         for (int i=0; i < length; i++)
