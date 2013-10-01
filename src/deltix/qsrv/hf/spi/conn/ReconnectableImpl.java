@@ -157,6 +157,10 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     {
         this.initialReconnectInterval = initialReconnectInterval;
     }
+    
+    public synchronized int                 getNumReconnectAttempts () {
+        return numReconnectAttempts;
+    }
 
     public Level                            getLogLevel () {
         return logLevel;
