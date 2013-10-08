@@ -1073,6 +1073,21 @@ public class StringUtils {
 
         return (sb.toString ());
     }
+
+
+    public static String formatSizeToKMGFormat (final long x) {
+        if ((x & ((1L << 30) - 1)) == 0)
+            return ((x >> 30) + "G");
+
+        if ((x & ((1L << 20) - 1)) == 0)
+            return ((x >> 20) + "M");
+
+        if ((x & ((1L << 10) - 1)) == 0)
+            return ((x >> 10) + "K");
+
+        return (String.valueOf (x));
+    }
+
 }
 
 
