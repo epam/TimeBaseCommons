@@ -1,6 +1,5 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.panels.view;
+package deltix.util.swing.dialog;
 
-import static deltix.qsrv.hf.tickdb.ui.administrator.res.CommonResourceBundle.RB;
 import deltix.util.swing.SwingUtil;
 
 import javax.swing.*;
@@ -8,23 +7,23 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 /**
  * User: turskiys
  * Date: 7/2/12
  */
 public abstract class AbstractDialog extends JDialog {
+    static final ResourceBundle RB              = ResourceBundle.getBundle("deltix/util/swing/ui");
+    public static final String         CANCEL_BTN_TEXT = RB.getString("form.abstract.dialog.btn.cancel");
 
-    public    static final String    CANCEL_BTN_TEXT  = RB.getString("form.abstract.dialog.btn.cancel");
+    protected static int       MIN_WIDTH        = 300;
+    protected static int       MIN_HEIGHT       = 200;
+    protected static int       PREFFERED_WIDTH  = 450;
+    protected static int       PREFFERED_HEIGHT = 300;
 
-    protected static       int       MIN_WIDTH        = 300;
-    protected static       int       MIN_HEIGHT       = 200;
-    protected static       int       PREFFERED_WIDTH  = 450;
-    protected static       int       PREFFERED_HEIGHT = 300;
-
-    protected              Component ui;
+    protected        Component ui;
 
     protected java.util.List<ChangeListener> listenerList = new ArrayList<ChangeListener>();
 
@@ -38,7 +37,7 @@ public abstract class AbstractDialog extends JDialog {
     };
 
     public AbstractDialog(final Window owner, String name, String title){
-      this(owner, name, title, RB.getString("form.abstract.dialog.btn.ok"));
+        this(owner, name, title, RB.getString("form.abstract.dialog.btn.ok"));
     }
 
     public AbstractDialog(final Window owner, String name, String title, String actionButtonTitle){
