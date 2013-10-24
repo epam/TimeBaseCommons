@@ -1,4 +1,4 @@
-package deltix.tools.timer;
+package deltix.util.net.timer;
 
 import deltix.util.io.*;
 import deltix.util.lang.*;
