@@ -72,6 +72,11 @@ public class DataExchangeUtils {
 		writeByte (bytes, offset + 1, s);
     }
 
+    public static void   	writeShortInvertBytes (byte [] bytes, int offset, short s) {
+        writeByte (bytes, offset, s);
+        writeByte (bytes, offset + 1, s >>> 8);
+    }
+
     public static void   	writeShort15 (byte [] bytes, int offset, short s) {
         writeUnsignedShort (bytes, offset, s & 0x7FFF);
     }
@@ -146,6 +151,10 @@ public class DataExchangeUtils {
 
     public static void   	writeFloat (byte [] bytes, int offset, float f) {
 		writeInt (bytes, offset, Float.floatToIntBits (f));
+    }
+
+    public static void   	writeFloatInvertBytes (byte [] bytes, int offset, float f) {
+        writeIntInvertBytes (bytes, offset, Float.floatToIntBits (f));
     }
 
     public static long  	readLong (byte [] bytes, int offset) {
@@ -273,6 +282,17 @@ public class DataExchangeUtils {
 		b (bytes, offset + 7, l);
     }
 
+    public static void   	writeLongInvertBytes (byte [] bytes, int offset, long l) {
+        b (bytes, offset, l);
+        b (bytes, offset + 1, l >>> 8);
+        b (bytes, offset + 2, l >>> 16);
+        b (bytes, offset + 3, l >>> 24);
+        b (bytes, offset + 4, l >>> 32);
+        b (bytes, offset + 5, l >>> 40);
+        b (bytes, offset + 6, l >>> 48);
+        b (bytes, offset + 7, l >> 56);
+    }
+
     public static void  	writeLong63 (byte [] bytes, int offset, long l) {
         writeLong (bytes, offset, l & 0x7FFFFFFFFFFFFFFFL);
     }
@@ -314,4 +334,7 @@ public class DataExchangeUtils {
         writeLong (bytes, offset, Double.doubleToLongBits (d));
     }
 
+    public static void   	writeDoubleInvertBytes (byte [] bytes, int offset, double d) {
+        writeLongInvertBytes (bytes, offset, Double.doubleToLongBits (d));
+    }
 }

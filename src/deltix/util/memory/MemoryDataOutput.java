@@ -202,9 +202,21 @@ public final class MemoryDataOutput {
         mPos += 4;
     }
 
+    public void           writeIntInverted (int v) {
+        makeRoom (4);
+        DataExchangeUtils.writeIntInvertBytes (mBuffer, mPos, v);
+        mPos += 4;
+    }
+
     public void           writeShort (short v) {
         makeRoom (2);
         DataExchangeUtils.writeShort (mBuffer, mPos, v);
+        mPos += 2;
+    }
+
+    public void           writeShortInverted (short v) {
+        makeRoom (2);
+        DataExchangeUtils.writeShortInvertBytes (mBuffer, mPos, v);
         mPos += 2;
     }
 
@@ -227,6 +239,12 @@ public final class MemoryDataOutput {
     public void           writeLong (long v) {
         makeRoom (8);
         DataExchangeUtils.writeLong (mBuffer, mPos, v);
+        mPos += 8;
+    }
+
+    public void           writeLongInverted (long v) {
+        makeRoom (8);
+        DataExchangeUtils.writeLongInvertBytes (mBuffer, mPos, v);
         mPos += 8;
     }
 
@@ -289,13 +307,25 @@ public final class MemoryDataOutput {
         DataExchangeUtils.writeDouble (mBuffer, mPos, v);
         mPos += 8;
     }
-    
+
+    public void           writeDoubleInverted (double v) {
+        makeRoom (8);
+        DataExchangeUtils.writeDoubleInvertBytes (mBuffer, mPos, v);
+        mPos += 8;
+    }
+
     public void           writeFloat (float v) {
         makeRoom (4);
         DataExchangeUtils.writeFloat (mBuffer, mPos, v);
         mPos += 4;
     }
-    
+
+    public void           writeFloatInverted (float v) {
+        makeRoom (4);
+        DataExchangeUtils.writeFloatInvertBytes (mBuffer, mPos, v);
+        mPos += 4;
+    }
+
     public static final int         MAX_SCALE_EXP = 15;
     
     private static final long []    SCALES = new long [MAX_SCALE_EXP];
