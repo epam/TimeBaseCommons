@@ -7,11 +7,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPProxy {
-    static class Echo extends Thread {
+    static class Proxy extends Thread {
         private InputStream mIn;
         private OutputStream        mOut;
 
-        public Echo (InputStream is, OutputStream os)
+        public Proxy(InputStream is, OutputStream os)
             throws IOException
         {
             mIn = is;
@@ -57,7 +57,7 @@ public class TCPProxy {
 
             Socket          delegate = new Socket (proxyHost, proxyPort);
 
-            new Echo (s.getInputStream (), delegate.getOutputStream ()).start ();
+            new Proxy(s.getInputStream (), delegate.getOutputStream ()).start();
         }
     }
 
