@@ -719,6 +719,21 @@ public abstract class BasicIOUtil {
         }
     }
 
+    public static void		writeLines (File f, String[] lines)
+            throws IOException
+    {
+        PrintWriter fw = new PrintWriter (f);
+
+        try {
+            for (String s : lines)
+                fw.println (s);
+
+            fw.close ();
+        } finally {
+            Util.close (fw);
+        }
+    }
+
     public static void		writeBytes (
         File                    file,
         byte []                 bytes,
