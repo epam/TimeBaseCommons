@@ -56,7 +56,7 @@ public class TCPProxy {
             Socket s = ss.accept ();
 
             Socket          delegate = new Socket (proxyHost, proxyPort);
-
+             System.out.println ("Accepted " + delegate);
             new Proxy(s.getInputStream (), delegate.getOutputStream ()).start();
         }
     }
