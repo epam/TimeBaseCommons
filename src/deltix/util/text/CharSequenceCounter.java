@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class CharSequenceCounter implements CharSequence {
     final char [] counter = new char [12];
 
-    CharSequenceCounter () {
+    public CharSequenceCounter () {
         Arrays.fill(counter, '0');
     }
 
