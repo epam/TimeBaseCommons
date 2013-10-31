@@ -196,6 +196,12 @@ public final class MemoryDataOutput {
         mPos += 2;
     }
 
+    public void           writeCharInverted (char v) {
+        makeRoom (2);
+        DataExchangeUtils.writeCharInvertBytes (mBuffer, mPos, v);
+        mPos += 2;
+    }
+
     public void           writeInt (int v) {
         makeRoom (4);
         DataExchangeUtils.writeInt (mBuffer, mPos, v);

@@ -98,6 +98,11 @@ public class DataExchangeUtils {
 		writeByte (bytes, offset + 1, s);
     }
 
+    public static void   	writeCharInvertBytes (byte [] bytes, int offset, char s) {
+        writeByte (bytes, offset, s);
+        writeByte (bytes, offset + 1, s >>> 8);
+    }
+
     public static int   	readInt (byte [] bytes, int offset) {
         return (
                 ((int) bytes [offset]) << 24 |
