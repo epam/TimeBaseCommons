@@ -44,7 +44,7 @@ public class LinuxOS {
             if (exitVal != 0)
                 throw new IOException ("isX64 function failed with error code " + exitVal);
 
-            return out.indexOf ("64") != -1;
+            return out.contains("64");
         } catch (IOException e) {
             throw new UncheckedIOException (e);
 
@@ -73,16 +73,14 @@ public class LinuxOS {
     public static void open(File dir) throws IOException {
         assert dir != null;
 
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN))
-            Desktop.getDesktop().open(dir);
-        else
-            throw new RuntimeException("Open functionality is not supported");
+        DesktopApi.open(dir);
+
     }
 
 
     public static String[] paramsForStartScriptInTerminal(String shell, String title, File script, String... parameters) {
 
-        List<String> cmdarray = new ArrayList<String>();
+        List<String> cmdarray = new ArrayList<>();
         if (new File("/usr/bin/xterm").exists()) {
             cmdarray.add("/usr/bin/xterm");
             cmdarray.add("-T");
