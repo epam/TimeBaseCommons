@@ -21,16 +21,30 @@ import java.util.logging.Level;
 
 public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     private static final int                        TEMP_FILE_LIFE_TIME = 10 * 60 * 1000;
+    private static final String                     WATCH_FS_PROPERTY = FileBasedRepository.class.getName() + ".watchFs";
         
     protected final File                            root;
+    protected final boolean                         watchFs;
     
     private final Map<Path, FileItem>               items = new HashMap<>();    
     private final FileSystemWatcher.EventHandler    fsEventHandler;
-    
+
     protected FileBasedRepository(final File root) {
+        this(root, true);
+    }
+    
+    protected FileBasedRepository(final File root, final boolean watchFs) {
         super(FileSystemWatcher.getInstance().getLock());
         
         this.root = root;
+        
+        final String watchFsProperty = System.getProperty(WATCH_FS_PROPERTY);        
+        if (watchFsProperty != null && watchFsProperty.equalsIgnoreCase("false")) {
+            this.watchFs = false;
+            logger.log(Level.INFO, "File system monitoring has beed disabled for '{0}' by the system property '{1}'.", new Object[]{getClass().getSimpleName(), WATCH_FS_PROPERTY});
+        } else {        
+            this.watchFs = watchFs;
+        }
 
         fsEventHandler = new FileSystemWatcher.EventHandler() {
             @Override
@@ -157,10 +171,12 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                             }
                         }                        
                         
-                        try {
-                            FileSystemWatcher.getInstance().subscribe(fsEventHandler, file, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
-                        } catch (IOException e) {
-                            logger.log(Level.WARNING, "An error while subscription to " + file, e);
+                        if (watchFs) {
+                            try {
+                                FileSystemWatcher.getInstance().subscribe(fsEventHandler, file, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
+                            } catch (IOException e) {
+                                logger.log(Level.WARNING, "An error while subscription to " + file, e);
+                            }
                         }
                     }
                     break;
@@ -251,10 +267,12 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     protected void start() {                 
         super.start();
         
-        try {
-            FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (watchFs) {
+            try {
+                FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -262,7 +280,9 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     protected void stop() throws IOException {
         super.stop();
 
-        FileSystemWatcher.getInstance().unsubscribe(fsEventHandler);
+        if (watchFs) {
+            FileSystemWatcher.getInstance().unsubscribe(fsEventHandler);
+        }
     }
     
     protected boolean isSubscribableFolder(File folder) {
