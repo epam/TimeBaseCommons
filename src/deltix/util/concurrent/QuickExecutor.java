@@ -1,5 +1,6 @@
 package deltix.util.concurrent;
 
+import deltix.util.collections.QuickList;
 import deltix.util.collections.SimpleSet;
 
 import java.util.*;
@@ -45,16 +46,22 @@ public class QuickExecutor {
             if (shutdownInProgress)
                 return;
 
-            LOGGER.fine ("Running sweeper having idle workers: " + getIdleWorkersSize());
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.fine ("Running sweeper having idle workers: " + getIdleWorkersSize());
 
             long time = TimeKeeper.currentTime;
             int length = getIdleWorkersSize();
 
             for (int i = 0; i < length; i++) {
-                Worker w;
+                Worker w = null;
 
                 synchronized (freePool) {
-                    w = freePool.peekFirst();
+                    WorkerEntry first = freePool.getFirst();
+
+                    if (first != null) {
+                        w = first.worker;
+                        first.unlink();
+                    }
                 }
 
                 if (w == null)
@@ -173,14 +180,25 @@ public class QuickExecutor {
         }
     }
 
+    private class WorkerEntry extends QuickList.Entry<WorkerEntry> {
+        private final Worker worker;
+
+        WorkerEntry(Worker worker) {
+            this.worker = worker;
+        }
+    }
+
     private class Worker extends Thread {
         volatile QuickTask      task;
         volatile boolean        stop = false;
         volatile long           timestamp = Long.MIN_VALUE; // time of getting into free pool
 
+        final WorkerEntry       entry;
+
         Worker (QuickTask task, int idx) {
             super ("Worker #" + idx + " for " + QuickExecutor.this);
 
+            this.entry = new WorkerEntry(this);
             this.task = task;
         }
 
@@ -229,7 +247,7 @@ public class QuickExecutor {
                 }
             } finally {
                 synchronized (freePool) {
-                    freePool.remove (this);
+                    this.entry.unlink();
                 }
 
                 synchronized (workers) {
@@ -255,7 +273,7 @@ public class QuickExecutor {
     private final String                    name;
 
     @GuardedBy ("freePool")
-    private final LinkedList <Worker>       freePool = new LinkedList<Worker>();
+    private final QuickList<WorkerEntry>    freePool = new QuickList<WorkerEntry>();
     
     @GuardedBy ("workers")
     private final SimpleSet <Worker>        workers = new SimpleSet<Worker>();
@@ -307,7 +325,7 @@ public class QuickExecutor {
     private void                                freeWorker(Worker w) {
         synchronized (freePool) {
             w.timestamp = TimeKeeper.currentTime;
-            freePool.add(w);
+            freePool.linkLast(w.entry);
         }
     }
 
@@ -320,11 +338,16 @@ public class QuickExecutor {
 
     private Worker                              pollWorker(boolean last) {
         synchronized (freePool) {
-            Worker w = last ? freePool.pollLast() : freePool.pollFirst();
-            if (w != null)
-                w.timestamp = Long.MIN_VALUE;
-            return w;
+            WorkerEntry w = last ? freePool.getLast() : freePool.getFirst();
+
+            if (w != null) {
+                w.worker.timestamp = Long.MIN_VALUE;
+                w.unlink();
+                return w.worker;
+            }
         }
+
+        return null;
     }
     
     public int                                  getWorkersSize() {

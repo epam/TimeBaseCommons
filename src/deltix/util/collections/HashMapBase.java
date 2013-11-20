@@ -59,6 +59,7 @@ public abstract class HashMapBase
      * Allocates the internal table.
      */
     protected final void alloc(int tabSize) {
+
         tabSize = nextPrime(tabSize);
 
         allocValues(tabSize);
@@ -164,6 +165,10 @@ public abstract class HashMapBase
         return (mStatus[pos] == EMPTY);
     }
 
+    protected final boolean isCellDeleted(int pos) {
+        return (mStatus[pos] == DELETED);
+    }
+
     protected abstract void allocValues(int size);
 
     protected abstract void allocKeys(int size);
@@ -199,12 +204,16 @@ public abstract class HashMapBase
         mUsedCells = mCount;
     }
 
-    protected final void onPut(int pos, boolean wasNotFound) {
+    protected final void onPut(int pos) {
+
+        byte status = mStatus[pos];
         mStatus [pos] = FILLED;
         
-        if (wasNotFound) {
+        if (status != FILLED) {
             mCount++;
-            mUsedCells++;
+
+            if (status != DELETED)
+                mUsedCells++;
             
             if (mUsedCells >= topThreshold) {
                 if (mUsedCells >= mCount * 2)   // Just collect garbage
@@ -236,7 +245,7 @@ public abstract class HashMapBase
                 n = MIN_TABLE_SIZE;
             
             rehash (n);
-        }        
+        }
     }
 
     public void ensureCapacity(int capacity) {

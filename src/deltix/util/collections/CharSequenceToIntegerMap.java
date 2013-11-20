@@ -19,8 +19,8 @@ public class CharSequenceToIntegerMap extends ObjectToIntegerHashMap <CharSequen
 
     //  The following two overrides make all other methods work:
     @Override
-    protected void          putKey (CharSequence key, int pos, boolean wasNotFound) {
-        super.putKey (key.toString (), pos, wasNotFound);
+    protected void          putKey (CharSequence key, int pos) {
+        super.putKey (key.toString (), pos);
     }
 
     @Override
