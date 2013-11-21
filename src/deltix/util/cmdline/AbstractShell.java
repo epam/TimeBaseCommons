@@ -141,7 +141,7 @@ public abstract class AbstractShell extends DefaultApplication {
         
         try {
             if (m != null)
-                m.invoke (this, value);
+                m.invoke (this, arg);
             else if (!doSet (option, value)) 
                 System.err.println ("set " + option + ": unrecognized option. (Type ? for usage)");            
         } catch (Throwable x) {
