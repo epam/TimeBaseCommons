@@ -4,6 +4,7 @@ import deltix.util.collections.QuickList;
 import deltix.util.collections.SimpleSet;
 
 import java.util.*;
+import java.util.Formatter;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.*;
 
@@ -19,7 +20,7 @@ public class QuickExecutor {
     public static final boolean         DEBUG_TASKS = false;
     public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
 
-    public static int                   DELAY = 1000 * 60 * 5;
+    public static int                   DELAY = 1000 * 60 * 5; // 5 min
 
     public enum TaskState {
         IDLE,
@@ -196,7 +197,7 @@ public class QuickExecutor {
         final WorkerEntry       entry;
 
         Worker (QuickTask task, int idx) {
-            super ("Worker #" + idx + " for " + QuickExecutor.this);
+            super (String.format("Worker #%d for %s", idx, QuickExecutor.this));
 
             this.entry = new WorkerEntry(this);
             this.task = task;
@@ -287,7 +288,9 @@ public class QuickExecutor {
 
     private QuickExecutor (String name) {
         this.name = name;
-        GlobalTimer.INSTANCE.schedule(new SweeperTask(), DELAY, DELAY);
+
+        long delay = Long.getLong("QuickExecutor.Sweeper.delay", DELAY);
+        GlobalTimer.INSTANCE.schedule(new SweeperTask(), delay, delay);
     }
 
     @Override
