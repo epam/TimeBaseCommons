@@ -68,6 +68,7 @@ public class Icons {
     public static final Icon EXPRESSION_OBJ      = SwingUtil.loadIcon("deltix/qsrv/ui/util/expression_obj.png"     );
     public static final Icon FEED                = SwingUtil.loadIcon("deltix/qsrv/ui/util/feed.png"               );
     public static final Icon FIELD               = SwingUtil.loadIcon("deltix/qsrv/ui/util/field.png"              );
+    public static final Icon FILE                = SwingUtil.loadIcon("deltix/qsrv/ui/util/file.png"               );
     public static final Icon FILTER              = SwingUtil.loadIcon("deltix/qsrv/ui/util/filter.png"             );
     public static final Icon FILTER_ADD          = SwingUtil.loadIcon("deltix/qsrv/ui/util/filter_add.png"         );
     public static final Icon FILTER_DELETE       = SwingUtil.loadIcon("deltix/qsrv/ui/util/filter_delete.png"      );
