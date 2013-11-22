@@ -9,7 +9,9 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.logging.*;
 
 import deltix.util.time.GlobalTimer;
+import deltix.util.time.Interval;
 import deltix.util.time.TimeKeeper;
+import deltix.util.time.TimeUnit;
 import net.jcip.annotations.GuardedBy;
 
 /**
@@ -290,6 +292,10 @@ public class QuickExecutor {
         this.name = name;
 
         long delay = Long.getLong("QuickExecutor.Sweeper.delay", DELAY);
+
+        if (delay != DELAY)
+            LOGGER.log (Level.INFO, this.name + ": override threads sweeping delay to " + Interval.create(delay, TimeUnit.MILLISECOND).toHumanString());
+
         GlobalTimer.INSTANCE.schedule(new SweeperTask(), delay, delay);
     }
 
