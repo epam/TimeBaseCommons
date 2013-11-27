@@ -4,7 +4,6 @@ import deltix.util.collections.QuickList;
 import deltix.util.collections.SimpleSet;
 
 import java.util.*;
-import java.util.Formatter;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.*;
 
