@@ -249,7 +249,7 @@ public class QuickExecutor {
                 }
             } finally {
                 synchronized (freePool) {
-                    this.entry.unlink();
+                    this.entry.safeUnlink();
                 }
 
                 synchronized (workers) {
