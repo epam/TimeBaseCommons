@@ -62,18 +62,16 @@ public class QuickExecutor {
 
                     if (first != null) {
                         w = first.worker;
-                        first.unlink();
+
+                        if (time - w.timestamp > DELAY)
+                            first.unlink();
                     }
                 }
 
-                if (w == null)
+                if (w != null)
+                    terminateWorker(w);
+                else
                     break;
-
-                if (time - w.timestamp > DELAY) {
-                    w = pollWorker(false);
-                    if (w != null)
-                        terminateWorker(w);
-                }
             }
 
         }
@@ -275,10 +273,10 @@ public class QuickExecutor {
     private final String                    name;
 
     @GuardedBy ("freePool")
-    private final QuickList<WorkerEntry>    freePool = new QuickList<WorkerEntry>();
+    private final QuickList<WorkerEntry>    freePool = new QuickList<>();
     
     @GuardedBy ("workers")
-    private final SimpleSet <Worker>        workers = new SimpleSet<Worker>();
+    private final SimpleSet <Worker>        workers = new SimpleSet<>();
     
     @GuardedBy ("workers")
     private int                             workerId = 1;
