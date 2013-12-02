@@ -197,6 +197,7 @@ public abstract class HashMapBase
         for (int ii = 0; ii < tabSize; ii++) {
             if (saveStatus[ii] == FILLED) {
                 int pos = rehashOne(saveKeys, saveValues, ii);
+
                 mStatus[pos] = FILLED;
             }
         }
@@ -246,6 +247,10 @@ public abstract class HashMapBase
             
             rehash (n);
         }
+
+        // prevent redundant allocations on putting new elements
+        if (mCount == 0)
+            clear();
     }
 
     public void ensureCapacity(int capacity) {
