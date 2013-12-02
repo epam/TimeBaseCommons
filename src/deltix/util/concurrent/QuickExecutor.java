@@ -61,10 +61,10 @@ public class QuickExecutor {
                     WorkerEntry first = freePool.getFirst();
 
                     if (first != null) {
-                        w = first.worker;
-
-                        if (time - w.timestamp > DELAY)
+                        if (time - first.worker.timestamp > DELAY) {
+                            w = first.worker;
                             first.unlink();
+                        }
                     }
                 }
 
