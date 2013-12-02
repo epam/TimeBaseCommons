@@ -46,6 +46,10 @@ public class TimeStamp implements TimeStampedMessage {
     }
 
     public boolean              isUndefined() {
+        return isUndefined(timestamp);
+    }
+
+    public static boolean isUndefined(long timestamp) {
         return timestamp == TIMESTAMP_UNKNOWN;
     }
 
