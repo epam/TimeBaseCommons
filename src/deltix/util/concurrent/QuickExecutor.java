@@ -59,7 +59,6 @@ public class QuickExecutor {
 
                 synchronized (freePool) {
                     WorkerEntry first = freePool.getFirst();
-
                     if (first != null && first.isIdle(time)) {
                         w = first.worker;
                         first.unlink();
@@ -248,6 +247,12 @@ public class QuickExecutor {
                     }
                 }
             } finally {
+
+                synchronized (freePool) {
+                    if (task == null)
+                        entry.unlink();
+                }
+
                 synchronized (workers) {
                     workers.remove (this);
                 }
