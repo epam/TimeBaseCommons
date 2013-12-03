@@ -60,11 +60,9 @@ public class QuickExecutor {
                 synchronized (freePool) {
                     WorkerEntry first = freePool.getFirst();
 
-                    if (first != null) {
-                        if (time - first.worker.timestamp > DELAY) {
-                            w = first.worker;
-                            first.unlink();
-                        }
+                    if (first != null && first.isIdle(time)) {
+                        w = first.worker;
+                        first.unlink();
                     }
                 }
 
@@ -186,6 +184,10 @@ public class QuickExecutor {
         WorkerEntry(Worker worker) {
             this.worker = worker;
         }
+
+        boolean         isIdle(long time) {
+            return time - worker.timestamp > DELAY;
+        }
     }
 
     private class Worker extends Thread {
@@ -246,10 +248,6 @@ public class QuickExecutor {
                     }
                 }
             } finally {
-                synchronized (freePool) {
-                    this.entry.safeUnlink();
-                }
-
                 synchronized (workers) {
                     workers.remove (this);
                 }
