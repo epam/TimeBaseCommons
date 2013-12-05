@@ -48,7 +48,14 @@ public class SliderControlBuilder {
             }
         });
 
-        //Slider focus lost listener
+        slider.setPaintListener(new DrawnSlider.PaintListener() {
+            @Override
+            public void draw() {
+                panel.repaint();
+            }
+        });
+
+/*        //Slider focus lost listener
         slider.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -59,7 +66,7 @@ public class SliderControlBuilder {
             public void focusGained(FocusEvent e) {
                 panel.repaint();
             }
-        });
+        });*/
 
 
         //build layout

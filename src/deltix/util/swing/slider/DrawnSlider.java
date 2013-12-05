@@ -3,6 +3,7 @@ package deltix.util.swing.slider;
 import com.jidesoft.swing.RangeSlider;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * User: TurskiyS
@@ -10,7 +11,13 @@ import javax.swing.*;
  */
 public class DrawnSlider extends RangeSlider {
 
-    private static int           MB         = 1024 * 1024;
+    public interface PaintListener {
+        public void         draw ();
+    }
+
+    private        PaintListener paintListener;
+
+    private static int           MB            = 1024 * 1024;
 
     private        SliderOptions options;
     private        int           thirdValue;
@@ -86,5 +93,20 @@ public class DrawnSlider extends RangeSlider {
 
             }
         }
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        paintListener.draw();
+    }
+
+    public void setPaintListener(PaintListener paintListener) {
+        this.paintListener = paintListener;
     }
 }
