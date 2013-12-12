@@ -39,7 +39,7 @@ public class JavaCompilerHelper {
     }
 
     private void        init (ClassLoader loader, ClassDirectory classDir) {
-        cl = new SpecialClassLoader(loader);
+        cl = (classDir instanceof SpecialClassLoader) ? (SpecialClassLoader) classDir : new SpecialClassLoader(loader);
         
         fileManager = 
             new SpecialJavaFileManager (
@@ -211,13 +211,13 @@ public class JavaCompilerHelper {
         }
     }
 
-    private static class SpecialClassLoader 
+    public static class SpecialClassLoader
         extends ClassLoader 
         implements ClassDirectory
     {
         private Map<String, MemoryByteCode> m = new HashMap<String, MemoryByteCode>();
 
-        private SpecialClassLoader(ClassLoader parent) {
+        public SpecialClassLoader(ClassLoader parent) {
             super(parent);
         }
 
