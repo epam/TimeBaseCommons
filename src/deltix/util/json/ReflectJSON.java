@@ -1,6 +1,7 @@
 package deltix.util.json;
 
 import deltix.util.lang.*;
+import java.io.*;
 import java.lang.reflect.*;
 import org.fife.rsta.ac.java.rjc.lang.*;
 
@@ -8,8 +9,35 @@ import org.fife.rsta.ac.java.rjc.lang.*;
  *
  */
 public class ReflectJSON {
-    public static void      format (Object obj, StringBuilder sb) 
-        throws Exception 
+    public static void      format (Object obj, PrintStream ps) {
+        StringBuilder           sb = new StringBuilder ();
+        
+        format (obj, sb);
+        
+        ps.print (sb);
+    }
+    
+    public static void      format (Object obj, Writer wr) throws IOException {
+        StringBuilder           text = new StringBuilder ();
+        
+        format (obj, text);
+        
+        int             len = text.length ();
+        
+        for (int ii = 0; ii < len; ii++)
+            wr.write (text.charAt (ii));
+    }
+    
+    public static void      format (Object obj, StringBuilder sb) {
+        try {
+            formatX (obj, sb);
+        } catch (IllegalAccessException x) {
+            throw new RuntimeException (x);
+        }
+    }
+    
+    public static void      formatX (Object obj, StringBuilder sb) 
+        throws IllegalAccessException 
     {
         if (obj == null) {
             sb.append ("null");
@@ -38,7 +66,23 @@ public class ReflectJSON {
                 if (ii > 0) 
                     sb.append (',');
                 
-                format (Array.get (obj, ii), sb);
+                formatX (Array.get (obj, ii), sb);
+            }
+            
+            sb.append (" ]");
+        }
+        else if (obj instanceof Iterable) {
+            sb.append ("[ ");
+            
+            boolean     first = true;
+            
+            for (Object elem : (Iterable) obj) {
+                if (first)
+                    first = false;
+                else
+                    sb.append (',');
+                
+                formatX (elem, sb);
             }
             
             sb.append (" ]");
@@ -60,7 +104,7 @@ public class ReflectJSON {
                 sb.append ('"');
                 StringUtils.escapeJavaString (f.getName (), sb);
                 sb.append ("\":");
-                format (f.get (obj), sb);                
+                formatX (f.get (obj), sb);                
             }
 
             sb.append (" }");
