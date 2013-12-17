@@ -1399,6 +1399,14 @@ public class Util {
     }
 
     /**
+     *  Creates a string that is a copy of the specified char sequence
+     *  without calling CharSequence.toString (). Supports null argument.
+     */
+    public static String               toNullableString (CharSequence cs) {
+        return (cs == null) ? null : toString(cs);
+    }
+
+    /**
      *  Replicates the String.hashCode () logic for arbitrary CharSequence instances.
      *  Returns 0 for null.
      */
