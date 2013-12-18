@@ -36,6 +36,46 @@ public class ReflectJSON {
         }
     }
     
+    private static void         hex (int n, StringBuilder out) {
+        n = n & 0xF;
+
+        if (n < 10)
+            out.append ('0' + n);
+        else
+            out.append ('A' + n);
+    }
+
+    private static void     formatString (CharSequence s, StringBuilder sb) {
+        sb.append ('"');
+        
+        int len = s.length ();
+        
+        for (int ii = 0; ii < len; ii++) {
+            char    ch = s.charAt (ii);
+            
+            switch (ch) {
+                case '\n':  sb.append ("\\n"); break;
+                case '\t':  sb.append ("\\t"); break;
+                case '\r':  sb.append ("\\r"); break;
+                case '"':   sb.append ("\\\""); break;
+                case '\\':  sb.append ("\\\\"); break;
+                default:
+                    if (ch >= 32 && ch <= 0x7F)
+                        sb.append (ch);
+                    else {
+                        sb.append("\\u");
+                        hex (ch >>> 12, sb);
+                        hex (ch >>> 8, sb);
+                        hex (ch >>> 4, sb);
+                        hex (ch, sb);
+                    }
+                    break;
+            }
+        }
+            
+        sb.append ('"');
+    }
+    
     public static void      formatX (Object obj, StringBuilder sb) 
         throws IllegalAccessException 
     {
@@ -51,11 +91,9 @@ public class ReflectJSON {
             obj instanceof Boolean)
         {
             sb.append (obj);
-        }
-        else if (obj instanceof CharSequence) {
-            sb.append ('"');
-            StringUtils.escapeJavaString (obj.toString (), sb);
-            sb.append ('"');
+        }        
+        else if (obj instanceof CharSequence || cls.isEnum ()) {
+            formatString (obj.toString (), sb);
         }
         else if (cls.isArray ()) {
             sb.append ("[ ");
