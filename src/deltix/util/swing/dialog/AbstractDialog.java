@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
  * User: turskiys
  * Date: 7/2/12
  */
-public abstract class AbstractDialog extends JDialog {
+public abstract class AbstractDialog extends JDialog implements ICloseDialog {
     static final ResourceBundle RB              = ResourceBundle.getBundle("deltix/util/swing/ui");
     public static final String         CANCEL_BTN_TEXT = RB.getString("form.abstract.dialog.btn.cancel");
 
@@ -102,7 +102,12 @@ public abstract class AbstractDialog extends JDialog {
             notifyListeners();
             dispose();
         }
-    };
+    }
+
+    @Override
+    public void close() {
+        dispose();
+    }
 
     public abstract boolean process();
 
