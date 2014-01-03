@@ -1,19 +1,22 @@
 package deltix.util.jgoodies;
 
-import com.jgoodies.binding.value.*;
-import com.jgoodies.common.base.*;
-import com.jgoodies.validation.util.*;
-import deltix.util.swing.*;
+import com.jgoodies.binding.value.ValueModel;
+import com.jgoodies.common.base.Strings;
+import deltix.util.swing.FileField;
+import deltix.util.swing.ParsingException;
+import deltix.util.swing.SwingUtil;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.*;
-import java.awt.event.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import java.util.prefs.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class FileEditor extends CompositeEditor {
 
@@ -112,13 +115,11 @@ public class FileEditor extends CompositeEditor {
             f = f.getParentFile ();
         }
 
-        if (!f.exists ()) {
+        if (f != null && !f.exists ()) {
             final int status = JOptionPane.showOptionDialog (_ui,
-                                                             MessageFormat.format (RB.getString ("confirmDirCreation"),
-                                                                                   new Object[]
-                                                                                {
-                                                                                    f.getAbsolutePath ()
-                                                                                }),
+                                                             MessageFormat.format (
+                                                                     RB.getString ("confirmDirCreation"),
+                                                                     f.getAbsolutePath ()),
                                                              RB.getString ("confirmation"),
                                                              JOptionPane.YES_NO_OPTION,
                                                              JOptionPane.QUESTION_MESSAGE,
