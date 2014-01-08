@@ -1802,34 +1802,42 @@ public abstract class BasicIOUtil {
         }
     }
 
-    /** Replaces System properties defined in given file as "${property name}" into "{property value}" */
-    public static String replaceSystemProperties (File xmlFile) throws IOException, InterruptedException {
-        String xml = BasicIOUtil.readTextFile(xmlFile);
-        return replaceSystemProperties(xmlFile, xml);
-    }
-
-    /** Replaces System properties defined in given string "${property name}" into "{property value}" */
-    public static String replaceSystemProperties(File xmlFile, String xml) throws IOException {
+    public static String replaceProperties(Properties properties, File xmlFile, String xml) throws IOException {
         Pattern p = Pattern.compile("\\$\\{([^\\}]*)\\}");
         Matcher m = p.matcher(xml);
 
-        StringBuffer result = new StringBuffer (xml.length()+128);
+        StringBuffer result = new StringBuffer (xml.length() + 128);
 
         while (m.find()) {
-             String propertyName = m.group(1);
-             String propertyValue = System.getProperty(propertyName);
-             if (propertyValue != null) {
-                 // escape / and $ as they have special meaning for Matcher.appendReplacement()
-                 propertyValue = propertyValue.replace ("\\", "\\\\");
-                 propertyValue = propertyValue.replace ("$", "\\$");
-                 m.appendReplacement(result, propertyValue);
-             } else {
-                 throw new IOException ("Cannot find system property \"" + propertyName + "\" defined in " + xmlFile.getAbsolutePath());
-             }
+            String propertyName = m.group(1);
+            String propertyValue = properties.getProperty(propertyName);
+            if (propertyValue != null) {
+                // escape / and $ as they have special meaning for Matcher.appendReplacement()
+                propertyValue = propertyValue.replace ("\\", "\\\\");
+                propertyValue = propertyValue.replace ("$", "\\$");
+                m.appendReplacement(result, propertyValue);
+            } else {
+                throw new IOException ("Cannot find system property \"" + propertyName + "\" defined in " + xmlFile.getAbsolutePath());
+            }
         }
         m.appendTail(result);
 
         return result.toString();
+    }
+
+    public static String replaceProperties(Properties properties, File xmlFile) throws IOException, InterruptedException {
+        String xml = BasicIOUtil.readTextFile(xmlFile);
+        return replaceProperties(properties, xmlFile, xml);
+    }
+
+    /** Replaces System properties defined in given file as "${property name}" into "{property value}" */
+    public static String replaceSystemProperties (File xmlFile) throws IOException, InterruptedException {
+        return replaceProperties(System.getProperties(), xmlFile);
+    }
+
+    /** Replaces System properties defined in given string "${property name}" into "{property value}" */
+    public static String replaceSystemProperties(File xmlFile, String xml) throws IOException {
+        return replaceProperties(System.getProperties(), xmlFile, xml);
     }
 
     public static LineNumberReader toLineNumberReader (Reader r) {
