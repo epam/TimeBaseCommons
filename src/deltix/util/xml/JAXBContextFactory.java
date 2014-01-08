@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  *  Convenience class for creating JAXBContext instances while supplying the
- *  corerct class loader, to work around IKVM's default class loading.
+ *  correct class loader, to work around IKVM's default class loading.
  */
 public abstract class JAXBContextFactory {
     private static final ClassLoader     CL = JAXBContextFactory.class.getClassLoader ();
