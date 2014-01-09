@@ -23,6 +23,8 @@ public class SimpleMessageFormat {
 
     public static String safeFormat (String format, Object[] args) {
         try {
+            if (args == null || args.length == 0)
+                return format;
             return format(format, args);
         } catch (InvalidFormatException e) {
             return e.getMessage();
