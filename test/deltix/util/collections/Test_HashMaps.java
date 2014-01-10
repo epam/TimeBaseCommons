@@ -26,7 +26,12 @@ public class Test_HashMaps {
         @Override
         public int      hashCode () {
             return (7);
-        }                
+        }     
+        
+        @Override
+        public String   toString () {
+            return ("HLONG(" + value + ")");
+        }
     }
     
     private static final int           ALL_NUM_KEYS = 4 << 20;
@@ -90,10 +95,9 @@ public class Test_HashMaps {
             boolean     b = unfortunateMap.put (key, ii);
             
             assertTrue (b);
+            assertEquals (ii + 1, unfortunateMap.size ());
         }
-        
-        assertEquals (NUM, unfortunateMap.size ());
-
+                
         for (int ii = 0; ii < NUM; ii++) {
             long        value = unfortunateMap.get (keys [ii], -1);
             
@@ -111,44 +115,33 @@ public class Test_HashMaps {
     }
     
     @Test
-    public void         testAgainstJavaMapNoShrink () 
-        throws IntegerHashMapBase.KeyNotFoundException 
-    {
+    public void         testAgainstJavaMapNoShrink () {
         testAgainstJavaMap (Double.NaN);
     }
         
     @Test
-    public void         testAgainstJavaMapWithShrink () 
-        throws IntegerHashMapBase.KeyNotFoundException 
-    {
+    public void         testAgainstJavaMapWithShrink () {
         testAgainstJavaMap (0.25);
     }
         
     @Test
-    public void         slidingWindowTest1 () 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    public void         slidingWindowTest1 () {
         slidingWindowTest (1);
     }
     
     @Test
-    public void         slidingWindowTest10K () 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    public void         slidingWindowTest10K () {
         slidingWindowTest (10000);
     }
     
     @Test
-    public void         slidingWindowTest100 () 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    public void         slidingWindowTest100 () {
         slidingWindowTest (100);
     }
     
-    @Test
-    public void         testShrink () 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    // shrink disabled for now
+    //@Test
+    public void         testShrink () {
         LongToLongHashMap   map = addAllRemoveAllTest (0.25);        
         int                 cap = map.getCapacity ();
         
@@ -160,9 +153,7 @@ public class Test_HashMaps {
     }   
     
     @Test
-    public void         testNoShrink () 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    public void         testNoShrink () {
         LongToLongHashMap   map = addAllRemoveAllTest (Double.NaN);
         
         assertTrue (
@@ -171,9 +162,7 @@ public class Test_HashMaps {
         );
     } 
     
-    public void         slidingWindowTest (int bufSize) 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    public void         slidingWindowTest (int bufSize) {
         //
         // this test maintains at most bufSize keys in the hasmap.
         //  make sure the capacity does not grow infinitely.
@@ -186,7 +175,7 @@ public class Test_HashMaps {
             long            old = ii - bufSize;
             
             if (old >= 0) {
-                long    v = map.remove (old);
+                long        v = map.remove (old, Integer.MAX_VALUE);
             
                 assertEquals (-old, v);
             }
@@ -202,13 +191,11 @@ public class Test_HashMaps {
         
         assertTrue (
             "Map capacity = " + cap + " for bufSize = " + bufSize, 
-            cap <= Math.max (HashMapBase.MIN_CAPACITY, bufSize * 4)
+            cap <= Math.max (VLinkHashMapBase.MIN_CAPACITY, bufSize * 4)
         );                   
     }
     
-    public LongToLongHashMap addAllRemoveAllTest (double shrinkFactor) 
-        throws LongHashMapBase.KeyNotFoundException 
-    {
+    public LongToLongHashMap addAllRemoveAllTest (double shrinkFactor) {
         
         Random              rnd = new Random (2009);
         LongToLongHashMap   map = new LongToLongHashMap ();
@@ -235,7 +222,7 @@ public class Test_HashMaps {
         
         for (int ii = ALL_NUM_KEYS - 1; ii >= 0; ii--) {
             long    key = check [ii];
-            long    v = map.remove (key);
+            long    v = map.remove (key, -key - 1 /* unexpected value */);
             
             assertEquals (-key, v);
         }
@@ -243,10 +230,7 @@ public class Test_HashMaps {
         return (map);
     }     
     
-    public void         testAgainstJavaMap (double shrinkFactor) 
-        throws IntegerHashMapBase.KeyNotFoundException 
-     
-    {        
+    public void         testAgainstJavaMap (double shrinkFactor) {        
         Random                  rnd = new Random (2009);
         IntegerToIntegerHashMap map = new IntegerToIntegerHashMap ();
         
@@ -274,7 +258,12 @@ public class Test_HashMaps {
                 assertEquals (check.size (), n);
                 
                 for (Map.Entry <Integer, Integer> e : check.entrySet ()) {
-                    assertEquals ((Object) e.getValue (), (Object) map.get (e.getKey ()));
+                    int     expectedValue = e.getValue ();
+                    
+                    assertEquals (
+                        expectedValue, 
+                        map.get (e.getKey (), expectedValue - 1 /* unexpected */)
+                    );
                 }
                 
                 // Remove 5/6 of all elements
@@ -289,10 +278,11 @@ public class Test_HashMaps {
                 }
                         
                 for (int key : keys)
-                    assertEquals (check.remove (key), (Object) map.remove (key));
-                                   
-                if (!Double.isNaN (shrinkFactor)) 
-                    assertTrue (map.getCapacity () < check.size () / shrinkFactor);        
+                    assertEquals (check.remove (key), (Object) map.remove (key, Integer.MIN_VALUE));
+
+// shrink disabled for now
+//                if (!Double.isNaN (shrinkFactor)) 
+//                    assertTrue (map.getCapacity () < check.size () / shrinkFactor);        
             }
         }                        
     }       

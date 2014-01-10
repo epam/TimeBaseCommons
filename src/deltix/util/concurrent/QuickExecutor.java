@@ -1,7 +1,7 @@
 package deltix.util.concurrent;
 
 import deltix.util.collections.QuickList;
-import deltix.util.collections.SimpleSet;
+import deltix.util.collections.generated.ObjectHashSet;
 
 import java.util.*;
 import java.util.concurrent.locks.LockSupport;
@@ -279,7 +279,7 @@ public class QuickExecutor {
     private final QuickList<WorkerEntry>    freePool = new QuickList<>();
     
     @GuardedBy ("workers")
-    private final SimpleSet <Worker>        workers = new SimpleSet<>();
+    private final ObjectHashSet <Worker>        workers = new ObjectHashSet<>();
     
     @GuardedBy ("workers")
     private int                             workerId = 1;

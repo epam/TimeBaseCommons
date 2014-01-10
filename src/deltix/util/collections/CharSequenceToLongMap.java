@@ -1,20 +1,20 @@
 package deltix.util.collections;
 
-import deltix.util.collections.generated.ObjectToIntegerHashMap;
+import deltix.util.collections.generated.ObjectToLongHashMap;
 import deltix.util.collections.hash.*;
 import deltix.util.lang.*;
 
 /**
  *  
  */
-public class CharSequenceToIntegerMap extends ObjectToIntegerHashMap <CharSequence> {
+public class CharSequenceToLongMap extends ObjectToLongHashMap <CharSequence> {
     private final CharSubSequence     mBuffer = new CharSubSequence ();
     
-    public CharSequenceToIntegerMap (int initialCapacity) {
+    public CharSequenceToLongMap (int initialCapacity) {
         super (initialCapacity, StringHashCodeComputer.INSTANCE);
     }
     
-    public CharSequenceToIntegerMap () {
+    public CharSequenceToLongMap () {
         super (StringHashCodeComputer.INSTANCE);
     }
 
@@ -37,12 +37,12 @@ public class CharSequenceToIntegerMap extends ObjectToIntegerHashMap <CharSequen
         return (Util.equals (a, b));
     }
     
-    public final int        get (CharSequence key, int start, int end, int notFoundValue) {
+    public final long       get (CharSequence key, int start, int end, long notFoundValue) {
         mBuffer.set (key, start, end);
         return (super.get (mBuffer, notFoundValue));
     }
 
-    public boolean          put (CharSequence key, int start, int end, int value) {
+    public boolean          put (CharSequence key, int start, int end, long value) {
         mBuffer.set (key, start, end);
         return (super.put (mBuffer, value));
     }
@@ -52,7 +52,7 @@ public class CharSequenceToIntegerMap extends ObjectToIntegerHashMap <CharSequen
         return (super.containsKey (mBuffer));
     }
 
-    public int              remove (CharSequence key, int start, int end, int notFoundValue) {
+    public long              remove (CharSequence key, int start, int end, long notFoundValue) {
         mBuffer.set (key, start, end);
         return super.remove (mBuffer, notFoundValue);
     }

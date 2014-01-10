@@ -1,23 +1,23 @@
 package deltix.util.collections;
 
-import deltix.util.collections.generated.ObjectToIntegerHashMap;
+import deltix.util.collections.generated.*;
 import deltix.util.collections.hash.*;
 import deltix.util.lang.*;
 
 /**
  *  
  */
-public class CharSequenceToIntegerMap extends ObjectToIntegerHashMap <CharSequence> {
+public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <CharSequence, T> {
     private final CharSubSequence     mBuffer = new CharSubSequence ();
     
-    public CharSequenceToIntegerMap (int initialCapacity) {
+    public CharSequenceToObjectMapQuick (int initialCapacity) {
         super (initialCapacity, StringHashCodeComputer.INSTANCE);
     }
     
-    public CharSequenceToIntegerMap () {
+    public CharSequenceToObjectMapQuick () {
         super (StringHashCodeComputer.INSTANCE);
     }
-
+    
     //  The following 3 overrides make all other methods work:
     @Override
     protected void          putKey (int pos, CharSequence key) {
@@ -37,22 +37,22 @@ public class CharSequenceToIntegerMap extends ObjectToIntegerHashMap <CharSequen
         return (Util.equals (a, b));
     }
     
-    public final int        get (CharSequence key, int start, int end, int notFoundValue) {
-        mBuffer.set (key, start, end);
+    public final T              get (CharSequence key, int start, int end, T notFoundValue) {
+        mBuffer.set (key, start, end);        
         return (super.get (mBuffer, notFoundValue));
     }
-
-    public boolean          put (CharSequence key, int start, int end, int value) {
-        mBuffer.set (key, start, end);
-        return (super.put (mBuffer, value));
-    }
     
-    public boolean          containsKey (CharSequence key, int start, int end) {
-        mBuffer.set (key, start, end);
-        return (super.containsKey (mBuffer));
+    public T                    putAndGet (CharSequence key, int start, int end, T value, T notFoundValue) {
+        mBuffer.set (key, start, end);  
+        return super.putAndGet (mBuffer, value, notFoundValue);
     }
 
-    public int              remove (CharSequence key, int start, int end, int notFoundValue) {
+    public boolean              containsKey (CharSequence key, int start, int end) {
+        mBuffer.set (key, start, end);
+        return super.containsKey (mBuffer);
+    }
+
+    public T                    remove (CharSequence key, int start, int end, T notFoundValue) {
         mBuffer.set (key, start, end);
         return super.remove (mBuffer, notFoundValue);
     }

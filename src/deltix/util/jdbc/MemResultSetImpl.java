@@ -1,6 +1,5 @@
 package deltix.util.jdbc;
 
-import deltix.util.collections.generated.ObjectHashMapBase.KeyNotFoundException;
 import deltix.util.collections.generated.ObjectToIntegerHashMap;
 import java.io.*;
 import java.net.URL;
@@ -12,8 +11,8 @@ import java.util.Calendar;
  */
 public class MemResultSetImpl extends ResultSetImpl {
     private final ResultSetMetaData md;
-    private ObjectToIntegerHashMap <String>  labelTo1_BasedIndex =
-        new ObjectToIntegerHashMap <String> ();
+    private final ObjectToIntegerHashMap <String>  labelTo1_BasedIndex =
+        new ObjectToIntegerHashMap <> ();
     private final Object [][]       rows;
     private int                     idx = -1;
     private boolean                 wasNull = false;
@@ -314,16 +313,17 @@ public class MemResultSetImpl extends ResultSetImpl {
     //                  META DATA
     //########################################################################
     @Override
-    public ResultSetMetaData getMetaData () throws SQLException {
+    public ResultSetMetaData getMetaData () {
         return (md);
     }
 
     @Override
     public int              findColumn (String columnLabel) throws SQLException {
-        try {
-            return labelTo1_BasedIndex.get (columnLabel);
-        } catch (KeyNotFoundException ex) {
+        int col = labelTo1_BasedIndex.get (columnLabel, 1);
+        
+        if (col < 1)
             throw new SQLException ("Column not found: " + columnLabel);
-        }
+        
+        return (col);
     }        
 }

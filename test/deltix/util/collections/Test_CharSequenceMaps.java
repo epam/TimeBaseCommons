@@ -2,7 +2,6 @@ package deltix.util.collections;
 
 /*  ##UTILS## */
 
-import deltix.util.collections.generated.ObjectHashMapBase.KeyNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -44,20 +43,38 @@ public class Test_CharSequenceMaps {
         Object                      b = new Object ();
         Object                      c = new Object ();
 
-        CharSequenceToObjectMap <Object>    map = new CharSequenceToObjectMap <Object> ();
+        CharSequenceToObjectMap <Object>    map = new CharSequenceToObjectMap <> ();
 
         assertEquals (null, map.put (wrap ("MOON"), a));
         assertEquals (null, map.put (wrap ("SUN"), b));
         assertEquals (a, map.put (wrap ("MOON"), c));
-        assertEquals (map.size (), 2);
+        assertEquals (2, map.size ());
         assertEquals (c, map.get (wrap ("MOON")));
         assertEquals (b, map.get (wrap ("SUN")));
         assertEquals (c, map.remove (wrap ("MOON")));
-        assertEquals (map.size (), 1);
+        assertEquals (1, map.size ());
     }
     
     @Test
-    public void         bigIntegerMap () throws KeyNotFoundException {
+    public void         testObjectMapQuick () {
+        Object                      a = new Object ();
+        Object                      b = new Object ();
+        Object                      c = new Object ();
+
+        CharSequenceToObjectMapQuick <Object>    map = new CharSequenceToObjectMapQuick <> ();
+
+        assertEquals (null, map.putAndGet (wrap ("MOON"), a, null));
+        assertEquals (null, map.putAndGet (wrap ("SUN"), b, null));
+        assertEquals (a, map.putAndGet (wrap ("MOON"), c, null));
+        assertEquals (2, map.size ());
+        assertEquals (c, map.get (wrap ("MOON"), null));
+        assertEquals (b, map.get (wrap ("SUN"), null));
+        assertEquals (c, map.remove (wrap ("MOON"), null));
+        assertEquals (1, map.size ());
+    }
+    
+    @Test
+    public void         bigIntegerMap () {
         int                         n = 8000;
         Map <String, Integer>       check = new HashMap <String, Integer> (n);
         CharSequenceToIntegerMap    map = new CharSequenceToIntegerMap (); // Make it grow
@@ -81,9 +98,11 @@ public class Test_CharSequenceMaps {
         assertFalse (map.containsKey (""));
         
         for (Map.Entry <String, Integer> e : check.entrySet ()) {
+            int expectedValue = e.getValue ();
+            
             assertTrue (map.containsKey (e.getKey ()));
-            assertEquals (e.getValue ().intValue (), map.get (e.getKey ()));
-            assertEquals (e.getValue ().intValue (), map.remove (e.getKey ()));
+            assertEquals (expectedValue, map.get (e.getKey (), expectedValue - 1));
+            assertEquals (expectedValue, map.remove (e.getKey (), expectedValue - 1));
         }
         
         assertEquals (map.size (), 0);

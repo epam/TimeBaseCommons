@@ -25,6 +25,10 @@ public abstract class HashCodeComputer {
     }
 
     public int              modHashCode (int key, int mod) {
+        return (computeModHashCode (key, mod));
+    }
+    
+    public static int       computeModHashCode (int key, int mod) {
         if (key == Integer.MIN_VALUE)
             return (1);
         
