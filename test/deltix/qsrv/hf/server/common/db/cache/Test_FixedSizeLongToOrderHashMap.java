@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 /*  ##UHF.FRAMEWORK## */
 public class Test_FixedSizeLongToOrderHashMap {
     private static final int INITIAL_CAPACITY = 16;
-    private FixedSizeLongToOrderHashMap<Long> map = new FixedSizeLongToOrderHashMap<> (INITIAL_CAPACITY);
+    private FixedSizeLongToObjectMap<Long> map = new FixedSizeLongToObjectMap<>(INITIAL_CAPACITY, null);
 
 
     @Test
@@ -26,14 +26,14 @@ public class Test_FixedSizeLongToOrderHashMap {
         map.clear();
         testEmpty();
 
-        map.put(1, 1L);
+        map.putIfEmpty(1, 1L);
         map.clear();
         testEmpty();
     }
 
     @Test
     public void testSingleElement() {
-        map.put(1, 1L);
+        map.putIfEmpty(1, 1L);
         assertEquals(new Long(1), map.get(1));
 
         Iterator<Long> iter = map.iterator();
@@ -44,11 +44,9 @@ public class Test_FixedSizeLongToOrderHashMap {
 
     @Test
     public void testPutIfEmpty() {
-        map.putIfEmpty(1, 1L);
-        assertEquals(new Long(1), map.get(1));
-        map.put(1, 11L);
+        map.putIfEmpty(1, 11L);
         assertEquals(new Long(11), map.get(1));
-        Long result = map.putIfEmpty(1, 111L); // this time it shouldn't affect map
+        Long result = map.putIfEmpty(1, 111L); // shouldn't affect map
         assertEquals(new Long(11), result);
         assertEquals(new Long(11), map.get(1));
 
@@ -71,14 +69,14 @@ public class Test_FixedSizeLongToOrderHashMap {
         assertEquals(new Long(3), map.get(3));
         assertEquals(new Long(4), map.get(4));
         assertContent("1, 2, 3, 4");
-
-        override(2, 22L);
-        override(4, 44L);
-        assertContent("1, 3, 22, 44");
-        assertEquals(new Long(1), map.get(1));
-        assertEquals(new Long(22), map.get(2));
-        assertEquals(new Long(3), map.get(3));
-        assertEquals(new Long(44), map.get(4));
+// no longer expose override method (Map.put)
+//        override(2, 22L);
+//        override(4, 44L);
+//        assertContent("1, 3, 22, 44");
+//        assertEquals(new Long(1), map.get(1));
+//        assertEquals(new Long(22), map.get(2));
+//        assertEquals(new Long(3), map.get(3));
+//        assertEquals(new Long(44), map.get(4));
 
     }
 
@@ -105,14 +103,14 @@ public class Test_FixedSizeLongToOrderHashMap {
 
 
     private void insert(long key, Long value) {
-        boolean newItem = map.put(key, value);
-        assertTrue(newItem);
+        Long newItem = map.putIfEmpty(key, value);
+        assertSame(newItem, value);
     }
 
 
     private void override(long key, Long value) {
-        boolean newItem = map.put(key, value);
-        assertFalse(newItem);
+        Long newItem = map.putIfEmpty(key, value);
+        assertNotSame(newItem, value);
     }
 
 
