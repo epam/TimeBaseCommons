@@ -10,8 +10,8 @@ import static org.junit.Assert.*;
 
 /*  ##UHF.FRAMEWORK## */
 public class Test_FixedSizeLongToOrderHashMap {
-    private static final int INITIAL_CAPACITY = 16;
-    private FixedSizeLongToObjectMap<Long> map = new FixedSizeLongToObjectMap<>(INITIAL_CAPACITY, null);
+    private static final int MAX_SIZE = 16;
+    private FixedSizeLongToObjectMap<Long> map = new FixedSizeLongToObjectMap<>(MAX_SIZE, null);
 
 
     @Test
@@ -80,14 +80,46 @@ public class Test_FixedSizeLongToOrderHashMap {
 
     }
 
-
+// Hashing algorith m:
+//
+//    public int              modHashCode (long key, int mod) {
+//        return (computeModHashCode ((int) (key ^ (key >>> 32)), mod));
+//    }
+//
+//    public static int       computeModHashCode (int key, int mod) {
+//        if (key == Integer.MIN_VALUE)
+//            return (1);
+//
+//        if (key < 0)
+//            key = -key;
+//
+//        return (key % mod);
+//    }
 
     @Test
     public void testOverloadedContent() {
-        for (int i=0; i < 3*INITIAL_CAPACITY/2; i++)
+        for (int i=0; i < 3* MAX_SIZE /2; i++)
             insert(i, (long)i);
 
         assertContent("8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23");
+    }
+
+    @Test
+    public void testKeysWithIdenticalHash() {
+
+        int key = MAX_SIZE + 1;
+        for (int i=0; i < 3* MAX_SIZE /2; i++, key += MAX_SIZE)
+            insert(key, (long)key);
+
+
+        //assertContent("145, 161, 177, 193, 209, 225, 241, 257, 273, 289, 305, 321, 337, 353, 369, 385");
+
+        int expectedKey = 145;
+        Iterator<Long> iterator = map.iterator();
+        while(iterator.hasNext()) {
+            assertEquals(expectedKey, iterator.next().longValue());
+            expectedKey += MAX_SIZE;
+        }
     }
 
 

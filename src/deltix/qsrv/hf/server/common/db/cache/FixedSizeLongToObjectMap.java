@@ -1,14 +1,9 @@
 package deltix.qsrv.hf.server.common.db.cache;
 
-
 import deltix.util.collections.generated.LongHashMapBase;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-
-
-
 
 /**
  * Special version of LongToObjectMap that keeps maximum capacity and doesn't support explicit removal.
@@ -62,36 +57,37 @@ class FixedSizeLongToObjectMap<V> {
             return (V)(pos == NULL ? null : values [pos]);
         }
 
-        /**
-         *  Put new element into the map
-         *
-         *  @param key       The key
-         *  @param value     The value
-         *  @return  true if the element is new, false if the key was found.
-         */
-        public boolean              put (long key, V value) {
-            int         hidx = hashIndex(key);
-            int         idx = find (hidx, key);
-
-            if (idx != NULL) {
-                values [idx] = value;
-                insertionPoints.add(idx);
-                return (false);
-            }
-
-            if (freeHead == NULL) {
-                idx = insertionPoints.tail();
-                assert idx != CircularBufferOfInt.EMPTY;
-                free (idx);
-            }
-
-            idx = allocEntry (hidx);
-
-            values [idx] = value;
-            keys [idx] = key;
-            insertionPoints.add(idx);
-            return (true);
-        }
+//        /**
+//         *  Put new element into the map
+//         *
+//         *  @param key       The key
+//         *  @param value     The value
+//         *  @return  true if the element is new, false if the key was found.
+//         */
+//        public boolean              put (long key, V value) {
+//            int         hidx = hashIndex(key);
+//            int         idx = find (hidx, key);
+//
+//            if (idx != NULL) {
+//                values [idx] = value;
+//                insertionPoints.add(idx);
+//                return (false);
+//            }
+//
+//            if (freeHead == NULL) { // no more free capacity => evict the oldest entry
+//                idx = insertionPoints.tail();
+//                assert idx != CircularBufferOfInt.EMPTY;
+//                free (idx);
+//            }
+//
+//            int newidx = allocEntry (hidx);
+//            assert newidx == idx;
+//
+//            values [idx] = value;
+//            keys [idx] = key;
+//            insertionPoints.add(idx);
+//            return (true);
+//        }
 
 
         /**
@@ -111,7 +107,7 @@ class FixedSizeLongToObjectMap<V> {
             }
 
             if (freeHead == NULL) {
-                idx = insertionPoints.tail();
+                idx = insertionPoints.tail();  // no more free capacity => evict the oldest entry
                 assert idx != CircularBufferOfInt.EMPTY;
                 free (idx);
             }
