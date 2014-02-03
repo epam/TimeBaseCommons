@@ -35,9 +35,12 @@ public enum InstrumentType {
     public char toChar () { return code; }
          
     public static InstrumentType fromChar (char code) {
-        for (InstrumentType itv : values ())
-            if (code == itv.code)
-                return (itv);
+        for (int i = 0; i < values().length; i++) {
+            final InstrumentType itv = values()[i];
+            if (code == itv.code) {
+                return itv;
+            }
+        }
             	
         throw new IllegalArgumentException ("Unknown InstrumentType code: " + code);
     }
