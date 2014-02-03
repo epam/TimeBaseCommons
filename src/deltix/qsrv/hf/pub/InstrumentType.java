@@ -26,6 +26,8 @@ public enum InstrumentType {
 
     //NB: If you plan to extend this enum, please support isTradable() method below!
 
+    private final static InstrumentType[] 
+                                   values = values();
     private final char             code;
     private final String           qoType;
     
@@ -35,8 +37,8 @@ public enum InstrumentType {
     public char toChar () { return code; }
          
     public static InstrumentType fromChar (char code) {
-        for (int i = 0; i < values().length; i++) {
-            final InstrumentType itv = values()[i];
+        for (int i = 0; i < values.length; i++) {
+            final InstrumentType itv = values[i];
             if (code == itv.code) {
                 return itv;
             }
