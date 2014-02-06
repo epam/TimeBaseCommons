@@ -272,8 +272,6 @@ public class QuickExecutor {
 
         return (globalInstance);
     }
-    
-    private final String                    name;
 
     @GuardedBy ("freePool")
     private final QuickList<WorkerEntry>    freePool = new QuickList<>();
@@ -286,22 +284,26 @@ public class QuickExecutor {
 
     private volatile boolean                shutdownInProgress = false;
 
+    private final String                    fullName;
+    private final String                    name;
+
     //private int                             depth; // free pool depth
 
     private QuickExecutor (String name) {
         this.name = name;
+        this.fullName = "QuickExecutor \"" + name + "\"";
 
         long delay = Long.getLong("QuickExecutor.Sweeper.delay", DELAY);
 
         if (delay != DELAY)
-            LOGGER.log (Level.INFO, this.name + ": override threads sweeping delay to " + Interval.create(delay, TimeUnit.MILLISECOND).toHumanString());
+            LOGGER.log (Level.INFO, name + ": override threads sweeping delay to " + Interval.create(delay, TimeUnit.MILLISECOND).toHumanString());
 
         GlobalTimer.INSTANCE.schedule(new SweeperTask(), delay, delay);
     }
 
     @Override
     public String           toString () {
-        return ("QuickExecutor \"" + name + "\"");
+        return fullName;
     }
 
     Worker                  feedToWorker (QuickTask task) {
