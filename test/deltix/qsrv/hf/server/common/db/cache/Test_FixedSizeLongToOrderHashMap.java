@@ -1,5 +1,7 @@
 package deltix.qsrv.hf.server.common.db.cache;
 
+import deltix.util.collections.hash.HashCodeComputer;
+import deltix.util.collections.hash.SimpleHashCodeComputer;
 import org.apache.commons.collections.SortedBag;
 import org.apache.commons.collections.bag.TreeBag;
 import org.junit.Test;
@@ -7,12 +9,13 @@ import org.junit.Test;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /*  ##UHF.FRAMEWORK## */
 public class Test_FixedSizeLongToOrderHashMap {
     private static final int MAX_SIZE = 16;
-    private FixedSizeLongToObjectMap<Long> map = new FixedSizeLongToObjectMap<>(MAX_SIZE, null);
 
+    private FixedSizeLongToObjectMap<Long> map = new FixedSizeLongToObjectMap<>(MAX_SIZE, null);
 
     @Test
     public void testEmpty() {
@@ -106,20 +109,28 @@ public class Test_FixedSizeLongToOrderHashMap {
 
     @Test
     public void testKeysWithIdenticalHash() {
+        HashCodeComputer hash = SimpleHashCodeComputer.INSTANCE;
 
         int key = MAX_SIZE + 1;
-        for (int i=0; i < 3* MAX_SIZE /2; i++, key += MAX_SIZE)
+        for (int i=0; i < MAX_SIZE; i++, key += MAX_SIZE) {
+            assertEquals(1, hash.modHashCode(key, MAX_SIZE)); // key % mod = key % MAX_SIZE = 1
             insert(key, (long)key);
-
-
-        //assertContent("145, 161, 177, 193, 209, 225, 241, 257, 273, 289, 305, 321, 337, 353, 369, 385");
-
-        int expectedKey = 145;
-        Iterator<Long> iterator = map.iterator();
-        while(iterator.hasNext()) {
-            assertEquals(expectedKey, iterator.next().longValue());
-            expectedKey += MAX_SIZE;
         }
+
+        assertContent("17, 33, 49, 65, 81, 97, 113, 129, 145, 161, 177, 193, 209, 225, 241, 257");
+
+        insert(key, (long)key);
+        assertContent("33, 49, 65, 81, 97, 113, 129, 145, 161, 177, 193, 209, 225, 241, 257, 273");
+        key+= MAX_SIZE;
+
+        insert(key, (long)key);
+        assertContent("49, 65, 81, 97, 113, 129, 145, 161, 177, 193, 209, 225, 241, 257, 273, 289");
+        key+= MAX_SIZE;
+
+        insert(key, (long)key);
+        assertContent("65, 81, 97, 113, 129, 145, 161, 177, 193, 209, 225, 241, 257, 273, 289, 305");
+        key+= MAX_SIZE;
+
     }
 
 
