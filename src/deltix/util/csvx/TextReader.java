@@ -159,6 +159,17 @@ public abstract class TextReader implements Disposable {
 		return (mStockCharSequence);
 	}
 
+	public void getCell (int idx, CharSubSequence out) {
+		if (idx >= mInclStartIndexes.size ( ))
+			out.set (null, 0, 0);
+        else
+            out.set (
+                mBuffer, 
+                mInclStartIndexes.getIntegerNoRangeCheck ( idx ),
+                mExclEndIndexes.getIntegerNoRangeCheck ( idx )
+            );
+	}
+
 	public String getString ( int idx,
 	                          boolean trim ) {
 		try{
@@ -188,7 +199,11 @@ public abstract class TextReader implements Disposable {
 	}
 
     public double getDoubleOrNaN ( int idx ) {
-         CharSequence cell = getCell ( idx,  true );
+        return (getDoubleOrNaN (idx, true));
+    }
+    
+    public double getDoubleOrNaN ( int idx, boolean trim ) {
+         CharSequence cell = getCell ( idx,  trim );
          if (cell.length() == 0)
              return Double.NaN;
          return (CharSequenceParser.parseDouble ( cell ));
@@ -209,9 +224,23 @@ public abstract class TextReader implements Disposable {
 		                                                true ) ));
 	}
 
+	public int getIntOrDefault ( int idx, boolean trim, int defval ) {
+        CharSequence cell = getCell ( idx,  trim );
+         if (cell.length() == 0)
+             return defval;
+         return (CharSequenceParser.parseInt ( cell ));         
+	}
+
 	public long getLong ( int idx ) {
 		return (CharSequenceParser.parseLong ( getCell ( idx,
 		                                                 true ) ));
+	}
+
+	public long getLongOrDefault ( int idx, boolean trim, long defval ) {
+        CharSequence cell = getCell ( idx,  trim );
+         if (cell.length() == 0)
+             return defval;
+         return (CharSequenceParser.parseLong ( cell ));         
 	}
 
 	public void setIndexFromHeaders ( ColumnDescriptor... cds ) {
