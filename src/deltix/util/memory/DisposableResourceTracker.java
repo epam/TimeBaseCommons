@@ -96,6 +96,7 @@ public class DisposableResourceTracker implements Disposable {
         }
         
         mCreationStackTrace = null;
+        mResource = null;
     }
     
     @Override
