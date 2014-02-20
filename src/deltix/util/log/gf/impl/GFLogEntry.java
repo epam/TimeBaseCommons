@@ -1,6 +1,7 @@
 package deltix.util.log.gf.impl;
 
 import deltix.util.log.gf.LogEntry;
+import deltix.util.log.gf.Loggable;
 
 final class GFLogEntry implements LogEntry {
 
@@ -55,6 +56,12 @@ final class GFLogEntry implements LogEntry {
     @Override
     public LogEntry append(double i, int precision) {
         entry.append(i, precision);
+        return this;
+    }
+
+    @Override
+    public LogEntry append(Loggable value) {
+        value.appendTo(this);
         return this;
     }
 

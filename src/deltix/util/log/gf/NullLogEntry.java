@@ -60,6 +60,11 @@ public class NullLogEntry implements LogEntry {
     }
 
     @Override
+    public LogEntry append(Loggable value) {
+        return this;
+    }
+
+    @Override
     public void commit() {
         // skip
     }
