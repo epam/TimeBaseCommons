@@ -1,10 +1,9 @@
 package deltix.qsrv.ui.util;
 
 import deltix.qsrv.hf.pub.InstrumentType;
+import deltix.util.swing.SwingUtil;
+
 import javax.swing.*;
-
-import deltix.util.swing.*;
-
 import java.util.HashMap;
 
 /**
@@ -12,6 +11,7 @@ import java.util.HashMap;
  */
 public class Icons {
     public static final Icon ABSTRACT_CLASS      = SwingUtil.loadIcon("deltix/qsrv/ui/util/abstractClass.png"      );
+    public static final Icon ADVANCED_DATA_GRID  = SwingUtil.loadIcon("deltix/qsrv/ui/util/advanced_data_grid.png" );
     public static final Icon APPLICATION_SERVER  = SwingUtil.loadIcon("deltix/qsrv/ui/util/application_server.png" );
     public static final Icon APPLY               = SwingUtil.loadIcon("deltix/qsrv/ui/util/apply.png"              );
     public static final Icon ARROW_DOWN          = SwingUtil.loadIcon("deltix/qsrv/ui/util/input.png"              );
@@ -156,6 +156,7 @@ public class Icons {
     public static final Icon SYSTEM              = SwingUtil.loadIcon("deltix/qsrv/ui/util/system.png"             );
     public static final Icon TABLE               = SwingUtil.loadIcon("deltix/qsrv/ui/util/table.png"              );
     public static final Icon TABLE_ADD           = SwingUtil.loadIcon("deltix/qsrv/ui/util/new_table.gif"          );
+    public static final Icon TABLE_EDIT          = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_edit.png"         );
     public static final Icon TABLE_GO            = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_go.png"           );
     public static final Icon TABLE_LIGHTNING     = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_lightning.png"    );
     public static final Icon TABLE_LINK          = SwingUtil.loadIcon("deltix/qsrv/ui/util/table_link.png"         );
