@@ -2,6 +2,7 @@ package deltix.util.log.gf.impl;
 
 
 import org.gflogger.Appender;
+import org.gflogger.LogEntryItem;
 import org.gflogger.LoggerService;
 import org.gflogger.appender.AbstractAppenderFactory;
 import org.gflogger.appender.AppenderFactory;
@@ -21,10 +22,12 @@ public class SafeAppenderFactory extends AbstractAppenderFactory {
     public Appender createAppender(Class<? extends LoggerService> loggerServiceClass) {
         if (factories != null && factories.length > 0) {
             Appender[] appenders = new Appender[factories.length];
+
             for (int i = 0; i < appenders.length; i++)
                 appenders[i] = factories[i].createAppender(loggerServiceClass);
 
-            return new SafeAppender(appenders, getMaxEntriesPerSecond());
+            @SuppressWarnings("unchecked") Appender<LogEntryItem>[] apps = appenders;
+            return new SafeAppender(apps, getMaxEntriesPerSecond());
         } else {
             return new NullAppender(multibyte);
         }
