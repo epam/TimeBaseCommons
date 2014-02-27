@@ -463,16 +463,22 @@ public abstract class DefaultApplication {
             // continue trying different formats
         }
 
-        DateFormat  format = createDateFormat ();
+        return parseDateTime(arg);
+    }
+
+    protected long parseDateTime(String value) {
+        DateFormat format = createDateFormat ();
 
         try {
-            return (format.parse (arg).getTime ());
+            return (format.parse (value).getTime ());
         } catch (ParseException px) {
             throw new IllegalArgumentException (
-    			"Bad " + key + " date: " + arg + " (format: \"" + getDateFormatSpec() + "\")"
-    		);
+                "Bad date format: " + value + " (Expected format: \"" + getDateFormatSpec() + "\")"
+            );
         }
     }
+
+
 
     protected String            getDefaultDateFormat () {
         return ("yyyy-MM-dd");
