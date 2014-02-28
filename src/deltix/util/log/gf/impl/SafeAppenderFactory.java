@@ -10,7 +10,7 @@ import org.gflogger.appender.AppenderFactory;
 public class SafeAppenderFactory extends AbstractAppenderFactory {
 
     private static final String MAX_ENTRIES_PER_SECOND_PROPERTY_KEY = "gflogger.safeAppender.maxEntriesPerSecond";
-    private static final int DEFAULT_MAX_ENTRIES_PER_SECOND = 1000;
+    private static final int DEFAULT_MAX_ENTRIES_PER_SECOND = 500;
 
     private AppenderFactory[] factories;
 
