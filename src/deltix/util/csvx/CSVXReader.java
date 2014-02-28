@@ -52,7 +52,7 @@ public class CSVXReader extends TextReader {
     )
     {
         mInputStream = new ByteCountingInputStream (is);
-        mReader = new InputStreamReader (mInputStream);
+        mReader = new BufferedReader (new InputStreamReader (mInputStream));
         mCloseReader = closeReader;
         mDiagPrefix = diagPrefix;
         mDelimiter = delimiter;

@@ -147,7 +147,7 @@ public abstract class TextReader implements Disposable {
 
 	public CharSequence getCell ( int idx,
 	                              boolean trim ) {
-		if (idx >= mInclStartIndexes.size ( ))
+		if (idx < 0 || idx >= mInclStartIndexes.size ( ))
 			return (EmptyCharSequence.INSTANCE);
 
 		mStockCharSequence.start = mInclStartIndexes.getIntegerNoRangeCheck ( idx );
@@ -160,7 +160,7 @@ public abstract class TextReader implements Disposable {
 	}
 
 	public void getCell (int idx, CharSubSequence out) {
-		if (idx >= mInclStartIndexes.size ( ))
+		if (idx < 0 || idx >= mInclStartIndexes.size ( ))
 			out.set (null, 0, 0);
         else
             out.set (
@@ -202,12 +202,14 @@ public abstract class TextReader implements Disposable {
         return (getDoubleOrNaN (idx, true));
     }
     
-    public double getDoubleOrNaN ( int idx, boolean trim ) {
-         CharSequence cell = getCell ( idx,  trim );
-         if (cell.length() == 0)
-             return Double.NaN;
-         return (CharSequenceParser.parseDouble ( cell ));
-     }
+    public double getDoubleOrNaN ( int idx, boolean trim ) {        
+        CharSequence cell = getCell ( idx,  trim );
+        
+        if (cell.length() == 0)
+            return Double.NaN;
+        
+        return (CharSequenceParser.parseDouble ( cell ));
+    }
 
 	public double getDoubleEx ( int idx ) {
 		return (Double.parseDouble ( getString ( idx,
@@ -226,9 +228,11 @@ public abstract class TextReader implements Disposable {
 
 	public int getIntOrDefault ( int idx, boolean trim, int defval ) {
         CharSequence cell = getCell ( idx,  trim );
-         if (cell.length() == 0)
-             return defval;
-         return (CharSequenceParser.parseInt ( cell ));         
+        
+        if (cell.length() == 0)
+            return defval;
+        
+        return (CharSequenceParser.parseInt ( cell ));         
 	}
 
 	public long getLong ( int idx ) {
@@ -238,9 +242,11 @@ public abstract class TextReader implements Disposable {
 
 	public long getLongOrDefault ( int idx, boolean trim, long defval ) {
         CharSequence cell = getCell ( idx,  trim );
-         if (cell.length() == 0)
-             return defval;
-         return (CharSequenceParser.parseLong ( cell ));         
+        
+        if (cell.length() == 0)
+            return defval;
+        
+        return (CharSequenceParser.parseLong ( cell ));         
 	}
 
 	public void setIndexFromHeaders ( ColumnDescriptor... cds ) {

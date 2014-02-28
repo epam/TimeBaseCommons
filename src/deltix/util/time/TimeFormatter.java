@@ -721,4 +721,63 @@ public final class TimeFormatter {
         if (hasMillis)
             sb.append (String.format (".%03d", ms));
     }
+    
+    public static int      d (CharSequence s, int idx) {
+        int         n = s.charAt (idx) - '0';
+        
+        if (n < 0 || n > 9)
+            throw new NumberFormatException (s.toString ());
+        
+        return (n);
+    }
+    
+    public static int      parseHHMMSSFFF (CharSequence s) {
+        if (s.length () != 9)
+            throw new NumberFormatException (s.toString ());
+        
+        return (
+            d (s, 8) +
+            d (s, 7) * 10 +
+            d (s, 6) * 100 +
+            d (s, 5) * 1000 +
+            d (s, 4) * 10000 +
+            d (s, 3) * 60000 +
+            d (s, 2) * 600000 +
+            d (s, 1) * 3600000 +
+            d (s, 0) * 36000000
+        );
+    }
+    
+    public static int      parse0HMMSSFFF (CharSequence s) {
+        if (s.length () == 8)
+            return (
+                d (s, 7) +
+                d (s, 6) * 10 +
+                d (s, 5) * 100 +
+                d (s, 4) * 1000 +
+                d (s, 3) * 10000 +
+                d (s, 2) * 60000 +
+                d (s, 1) * 600000 +
+                d (s, 0) * 3600000
+            );
+        
+        return (parseHHMMSSFFF (s));            
+    }
+    
+    public static int      parseHHMMSS (CharSequence s) {
+        switch (s.length ()) {
+            case 0:     return (-1);
+            case 6:     break;
+            default:    throw new NumberFormatException (s.toString ());
+        }
+        
+        return (
+            d (s, 5)  +
+            d (s, 4) * 10 +
+            d (s, 3) * 60 +
+            d (s, 2) * 600 +
+            d (s, 1) * 3600 +
+            d (s, 0) * 36000
+        );
+    }
 }
