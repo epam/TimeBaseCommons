@@ -1,13 +1,14 @@
 package deltix.util.jide;
 
-import java.util.*;
+import com.jidesoft.grid.HierarchicalTable;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.util.Vector;
 
-import com.jidesoft.grid.*;
-
-public class SortableTableEx extends SortableTable {
+public class SortableTableEx extends HierarchicalTable {
 
     public SortableTableEx () {
         super ();
