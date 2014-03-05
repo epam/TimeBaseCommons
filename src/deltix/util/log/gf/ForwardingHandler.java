@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import deltix.qsrv.comm.cat.TomcatCmd;
 import deltix.util.lang.Util;
 import deltix.util.text.SimpleMessageFormat;
 
@@ -29,8 +28,8 @@ public class ForwardingHandler extends Handler {
                     put(java.util.logging.Level.SEVERE, Level.ERROR);
                     put(java.util.logging.Level.OFF, Level.FATAL);
 
-                    // deltix level
-                    put(TomcatCmd.LEVEL_STARTUP, Level.INFO);
+                    // deltix level (TomcatCmd.LEVEL_STARTUP) - NB: do not reference TomcatCmd
+                    put(new java.util.logging.Level("STARTUP", java.util.logging.Level.SEVERE.intValue() - 10) { }, Level.INFO);
                 }
             }
     );
