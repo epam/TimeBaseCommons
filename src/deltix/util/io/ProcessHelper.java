@@ -105,18 +105,30 @@ public class ProcessHelper {
     	InputStream		proc_stdout = proc.getInputStream ();
     	OutputStream	proc_stdin = proc.getOutputStream ();
     	
-    	if (stdout == null)
-    		new InputStreamSink (proc_stdout).start ();
-    	else
-    		new StreamPump (proc_stdout, stdout, true, closeStdout).start ();
+        final Thread stdoutThread = stdout == null ? 
+    		new InputStreamSink (proc_stdout) :    	
+    		new StreamPump (proc_stdout, stdout, true, closeStdout);
     	
-    	if (stderr == null)
-    		new InputStreamSink (proc_stderr).start ();
-    	else
-    		new StreamPump (proc_stderr, stderr, true, closeStderr).start ();
+    	final Thread stderrThread = stderr == null ?
+    		new InputStreamSink (proc_stderr):
+    		new StreamPump (proc_stderr, stderr, true, closeStderr);
     	
-    	if (stdin != null)
-    		new StreamPump (stdin, proc_stdin, closeStdin, true).start ();
+        final Thread stdinThread = stdin != null ?
+    		new StreamPump (stdin, proc_stdin, closeStdin, true) :
+            null;
+        
+        try {
+            stdoutThread.start();
+            stderrThread.start();
+            if (stdinThread != null) {
+                stdinThread.start();
+                stdinThread.join();
+            }
+            stdoutThread.join();
+            stderrThread.join();             
+        } catch (InterruptedException ex) {
+            throw new IOException(ex);
+        }          
     }
 
 	/**
