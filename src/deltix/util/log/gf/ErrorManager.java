@@ -22,7 +22,8 @@ public abstract class ErrorManager {
             reported = true;
         }
 
-        StringBuilder exceptionText = new StringBuilder(ErrorManager.class.getName());
+        StringBuilder exceptionText = new StringBuilder(1024);
+        exceptionText.append(ErrorManager.class.getName());
         if (exception.getMessage() != null)
             exceptionText.append(": ").append(exception.getMessage());
 

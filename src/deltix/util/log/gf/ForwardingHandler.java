@@ -14,7 +14,7 @@ import deltix.util.text.SimpleMessageFormat;
 public class ForwardingHandler extends Handler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ForwardingHandler.class.getName());
-    private static final Map<java.util.logging.Level, Level> jLevelToLevel = Collections.unmodifiableMap(
+    private static final Map<java.util.logging.Level, Level> JLEVEL_TO_LEVEL = Collections.unmodifiableMap(
             new HashMap<java.util.logging.Level, Level>() {
                 {
                     put(java.util.logging.Level.ALL, Level.TRACE);
@@ -50,10 +50,20 @@ public class ForwardingHandler extends Handler {
         entry.commit();
     }
 
-    private Level getLevel(java.util.logging.Level jLevel) {
+    @Override
+    public void flush() {
+        // skip
+    }
+
+    @Override
+    public void close() {
+        // skip
+    }
+
+    private static Level getLevel(java.util.logging.Level jLevel) {
         assert jLevel != null;
 
-        Level level = jLevelToLevel.get(jLevel);
+        Level level = JLEVEL_TO_LEVEL.get(jLevel);
         if (level == null) {
             if (jLevel.intValue() < java.util.logging.Level.FINE.intValue())
                 level = Level.TRACE;
@@ -82,13 +92,4 @@ public class ForwardingHandler extends Handler {
         return buffer.toString();
     }
 
-    @Override
-    public void flush() {
-        // skip
-    }
-
-    @Override
-    public void close() {
-        // skip
-    }
 }
