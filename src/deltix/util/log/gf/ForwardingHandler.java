@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import deltix.util.lang.Util;
 import deltix.util.text.SimpleMessageFormat;
 
 /**
@@ -36,10 +35,7 @@ public class ForwardingHandler extends Handler {
 
     @Override
     public void publish(LogRecord record) {
-        java.util.logging.Level jLevel = record.getLevel();
-        Level level = jLevelToLevel.get(jLevel);
-        if (level == null)
-            throw new IllegalArgumentException("Log level is not supported: " + jLevel);
+        Level level = getLevel(record.getLevel());
 
         if (!LOGGER.isLoggable(level))
             throw new IllegalStateException("GF Logging is not properly configured. All levels must be loggable.");
@@ -48,15 +44,32 @@ public class ForwardingHandler extends Handler {
         LogEntry entry = LOGGER.level(level).append(msg);
 
         Throwable throwable = record.getThrown();
-        if (throwable != null) {
-            entry.append(Util.NATIVE_LINE_BREAK);
+        if (throwable != null)
             entry.append(throwable);
-        }
 
         entry.commit();
     }
 
-    private String getMsg(LogRecord record) {
+    private Level getLevel(java.util.logging.Level jLevel) {
+        assert jLevel != null;
+
+        Level level = jLevelToLevel.get(jLevel);
+        if (level == null) {
+            if (jLevel.intValue() < java.util.logging.Level.FINE.intValue())
+                level = Level.TRACE;
+            else if (jLevel.intValue() < java.util.logging.Level.INFO.intValue())
+                level = Level.DEBUG;
+            else if (jLevel.intValue() < java.util.logging.Level.WARNING.intValue())
+                level = Level.INFO;
+            else if (jLevel.intValue() < java.util.logging.Level.SEVERE.intValue())
+                level = Level.WARN;
+            else level = Level.ERROR;
+        }
+
+        return level;
+    }
+
+    private static String getMsg(LogRecord record) {
         StringBuilder buffer = new StringBuilder(512);
 
         String msg = record.getMessage();
