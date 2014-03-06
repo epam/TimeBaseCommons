@@ -1,12 +1,12 @@
 package deltix.util.log.gf;
 
 
+import deltix.util.lang.Util;
+
 public abstract class ErrorManager {
 
     private ErrorManager() {
     }
-
-    private static final String TEXT = ErrorManager.class.getName();
 
     private static boolean reported = false;
 
@@ -18,15 +18,20 @@ public abstract class ErrorManager {
         synchronized (ErrorManager.class) {
             if (reported)
                 return;
+
             reported = true;
         }
 
-        String text = TEXT;
-        String msg = exception.getMessage();
-        if (msg != null)
-            text = text + ": " + msg;
+        StringBuilder exceptionText = new StringBuilder(ErrorManager.class.getName());
+        if (exception.getMessage() != null)
+            exceptionText.append(": ").append(exception.getMessage());
 
-        System.err.println(text);
-        exception.printStackTrace();
+        exceptionText.append(Util.NATIVE_LINE_BREAK);
+
+        for (StackTraceElement element : exception.getStackTrace())
+            exceptionText.append('\t').append(element.toString()).append(Util.NATIVE_LINE_BREAK);
+
+        System.err.println(exceptionText.toString());
     }
+
 }
