@@ -102,7 +102,7 @@ public abstract class AbstractShell extends DefaultApplication {
     public void        doExec (String args) 
         throws InterruptedException, IOException 
     {
-        for (File f : IOUtil.expandPath (expandPath (args), new ComparableComparator <File> (), true)) {
+        for (File f : IOUtil.expandPath (expandPath (args))) {
             FileReader  rd = new FileReader (f);
 
             try {

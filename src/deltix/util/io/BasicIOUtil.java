@@ -1,5 +1,6 @@
 package deltix.util.io;
 
+import deltix.util.lang.*;
 import deltix.util.lang.SortedProperties;
 import java.io.*;
 import java.net.*;
@@ -1950,6 +1951,21 @@ public abstract class BasicIOUtil {
             if (assertExists && !cur.exists ())
                 throw new FileNotFoundException (cur.getPath ());            
         }        
+    }
+    
+    public static ArrayList <File>  expandPath (String path) 
+        throws FileNotFoundException 
+    {
+        return (expandPath (path, true));
+    }
+    
+    public static ArrayList <File>  expandPath (
+        String                          path, 
+        boolean                         assertRootExists
+    ) 
+        throws FileNotFoundException 
+    {
+        return (expandPath (path, new ComparableComparator<File> (), assertRootExists));
     }
     
     public static ArrayList <File>  expandPath (
