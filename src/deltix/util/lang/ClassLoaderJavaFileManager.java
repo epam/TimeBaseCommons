@@ -29,10 +29,17 @@ public class ClassLoaderJavaFileManager extends ForwardingJavaFileManager<JavaFi
     {
         // first of all try listClasses
         Collection <Class <?>> clist = listClasses.listClassesForPackage (packageName);
-        
-        if (clist == null || clist.isEmpty ())
-            return super.list(location, packageName, kinds, recurse);
-        
+
+        if (clist == null || clist.isEmpty()) {
+            // try one-level recursion here
+            final ClassLoader parent = ((ClassLoader) listClasses).getParent();
+            if (parent != null && parent instanceof ClassDirectory)
+                clist = ((ClassDirectory) parent).listClassesForPackage(packageName);
+
+            if (clist == null || clist.isEmpty())
+                return super.list(location, packageName, kinds, recurse);
+        }
+
         ArrayList <JavaFileObject>    ret = new ArrayList <JavaFileObject> ();
         
         for (Class <?> cls : clist)        
