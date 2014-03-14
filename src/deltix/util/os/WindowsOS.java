@@ -8,6 +8,7 @@ import com.sun.jna.*;
 import com.sun.jna.platform.win32.*;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 
@@ -331,7 +332,18 @@ public final class WindowsOS {
         return (Runtime.getRuntime ().exec ("taskkill /T /F /PID " + pid).waitFor ());
     }
     
+    public static String cppRuntimeVersion(int runtimeNumber, boolean isx64) 
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException 
+    {
+        String value = WindowsRegistry.readString (WindowsRegistry.HKEY_LOCAL_MACHINE,
+                                               "SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\" + runtimeNumber + ".0\\VC\\Runtimes\\" + (isx64 ? "x64" : "x86"),
+                                               "Version");
+        return value;
+    }
+    
     public static void main (String[] args) throws Exception {
+        System.out.println ("C++ Runtime v11 (x64): " + cppRuntimeVersion(11, true));
+        System.out.println ("C++ Runtime v11 (x86): " + cppRuntimeVersion(11, false));
         System.out.println (getDotNetHome ());
         System.out.println (getHardDiskSerial ());
         System.out.println (getMBSerialNumber ());
