@@ -6,17 +6,14 @@ import org.apache.commons.lang.time.FastDateFormat;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class TicksFormat {
 
-
     private final StringBuffer              sb = new StringBuffer();
-    private final Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    private final Calendar                  calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
     private static final FastDateFormat     TICKS = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.", TimeZone.getTimeZone("GMT"));
     private static final FastDateFormat     MS = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS", TimeZone.getTimeZone("GMT"));
