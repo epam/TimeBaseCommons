@@ -14,7 +14,7 @@ public class Test_ThrottlingExecutor {
     private final Random                    random = new Random (2009);
     private long                            usedTime;
     
-    class TestTask implements Task {
+    class TestTask extends ThrottlingExecutor.Task {
         public boolean         run () {
             long                t1 = System.currentTimeMillis ();
             int                 t = random.nextInt (30) + 15;
@@ -40,7 +40,6 @@ public class Test_ThrottlingExecutor {
     }
 
     @Test(timeout = 90000)
-    @Ignore // FIXME: TEST
     public void             go () throws InterruptedException {
 
         boolean cruiseControlMode = Boolean.getBoolean("deltix.test.mode");
@@ -59,7 +58,7 @@ public class Test_ThrottlingExecutor {
 
         long            startTime = System.currentTimeMillis ();
 
-        exe.getQueue ().offer (new TestTask ());
+        exe.addTask(new TestTask());
 
         Thread.sleep (10000);
 

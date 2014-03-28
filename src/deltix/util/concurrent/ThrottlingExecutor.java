@@ -1,5 +1,6 @@
 package deltix.util.concurrent;
 
+import deltix.util.collections.QuickList;
 import deltix.util.lang.ExceptionHandler;
 import deltix.util.lang.Util;
 import deltix.util.time.TimeKeeper;
@@ -12,14 +13,16 @@ import java.util.logging.Level;
  *  Executes Runnables while maintaining a pre-set level of CPU usage.
  */
 public class ThrottlingExecutor extends Thread {
-    public interface Task {
-        public boolean              run ()
-            throws InterruptedException;
+
+    public static abstract class Task extends QuickList.Entry {
+
+        public abstract boolean              run ()
+                throws InterruptedException;
     }
 
     public static final long                MEASURABLE_INTERVAL = 20;
     
-    private final BlockingQueue <Task>      queue;
+    private final QuickList<Task>           queue = new QuickList<Task>();
     private volatile double                 k;
     private volatile long                   maxSleepInterval = Long.MAX_VALUE;
     private ExceptionHandler                handler = null;
@@ -29,18 +32,7 @@ public class ThrottlingExecutor extends Thread {
         double                              usageRate
     )
     {
-        this (name, new LinkedBlockingDeque <Task> (), usageRate);
-    }
-
-    public ThrottlingExecutor (
-        String                              name,
-        BlockingQueue <Task>                queue,
-        double                              usageRate
-    )
-    {
         super (name);
-        
-        this.queue = queue;
         setUsageRate (usageRate);
     }
 
@@ -59,18 +51,17 @@ public class ThrottlingExecutor extends Thread {
         this.handler = hanlder;
     }
 
-    public BlockingQueue <Task>         getQueue () {
-        return queue;
-    }
-
     public void                         addTask (Task task) {
-        if (!queue.offer (task))
-            throw new RuntimeException ("offer (" + task + ") returned false");
+        synchronized (queue) {
+            queue.linkLast(task);
+            queue.notify();
+        }
+            //throw new RuntimeException ("offer (" + task + ") returned false");
     }
 
-    public boolean                      removeTask (Task task) {
-        return (queue.remove (task));
-    }
+//    public boolean                      removeTask (Task task) {
+//        return (queue.remove (task));
+//    }
 
     public long                         getMaxSleepInterval () {
         return maxSleepInterval;
@@ -80,21 +71,42 @@ public class ThrottlingExecutor extends Thread {
         this.maxSleepInterval = maxSleepInterval;
     }
 
+    private Task                        poll() throws InterruptedException {
+
+        synchronized (queue) {
+            Task task = queue.getFirst ();
+
+            if (task == null)
+                queue.wait();
+
+            return queue.getFirst();
+        }
+    }
+
+    private void                        remove(Task task) {
+        synchronized (queue) {
+            task.unlink();
+            queue.notify();
+        }
+    }
+
     private long                        performMeasurableWork ()
         throws InterruptedException
     {
-        Task            task = queue.take ();
+        Task            task = poll();
 
         long            t0 = TimeKeeper.currentTime;
         long            limit = t0 + MEASURABLE_INTERVAL;
         long            t1;
 
         for (;;) {
+
             try {
                 boolean     requeue = task.run ();
 
-                if (requeue)
-                    queue.offer (task);
+                if (!requeue)
+                    remove(task);
+
             } catch (UncheckedInterruptedException x) {
                 throw x;
             } catch (Throwable x) {
@@ -107,11 +119,6 @@ public class ThrottlingExecutor extends Thread {
             t1 = TimeKeeper.currentTime;
 
             if (t1 >= limit)
-                break;
-
-            task = queue.poll ();
-
-            if (task == null)
                 break;
         }
 
@@ -135,14 +142,20 @@ public class ThrottlingExecutor extends Thread {
                     System.out.printf ("%tT.%<tL: worked for %d; will sleep for %d; qsize: %d\n",
                         System.currentTimeMillis (), duration, s, queue.size ()
                     );
- */
+*/
                     Thread.sleep (s);
                 }
+
+                if (isInterrupted())
+                    break;
             }
-        } catch (InterruptedException x) {
+        } catch (InterruptedException | UncheckedInterruptedException x) {
             Util.LOGGER.fine (this + " was interrupted.");
-        } catch (UncheckedInterruptedException x) {
-            Util.LOGGER.fine (this + " was interrupted.");
+        }
+
+        synchronized (queue) {
+            queue.clear();
+            queue.notify();
         }
 
         Util.LOGGER.fine (this + " is terminating.");
