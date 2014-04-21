@@ -37,9 +37,6 @@ public class ForwardingHandler extends Handler {
     public void publish(LogRecord record) {
         Level level = getLevel(record.getLevel());
 
-        if (!LOGGER.isLoggable(level))
-            throw new IllegalStateException("GF Logging is not properly configured. All levels must be loggable.");
-
         String msg = getMsg(record);
         LogEntry entry = LOGGER.level(level).append(msg);
 
