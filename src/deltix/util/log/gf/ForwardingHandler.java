@@ -37,14 +37,16 @@ public class ForwardingHandler extends Handler {
     public void publish(LogRecord record) {
         Level level = getLevel(record.getLevel());
 
-        String msg = getMsg(record);
-        LogEntry entry = LOGGER.level(level).append(msg);
+        if (LOGGER.isLoggable(level)) {
+            String msg = getMsg(record);
+            LogEntry entry = LOGGER.level(level).append(msg);
 
-        Throwable throwable = record.getThrown();
-        if (throwable != null)
-            entry.append(throwable);
+            Throwable exception = record.getThrown();
+            if (exception != null)
+                entry.append(exception);
 
-        entry.commit();
+            entry.commit();
+        }
     }
 
     @Override
