@@ -46,7 +46,7 @@ public class LinuxOS {
 
             return out.contains("64");
         } catch (IOException e) {
-            throw new UncheckedIOException (e);
+            throw new deltix.util.io.UncheckedIOException (e);
 
         } catch (InterruptedException e) {
             throw new UncheckedInterruptedException (e);

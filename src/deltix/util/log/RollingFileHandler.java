@@ -100,7 +100,7 @@ public class RollingFileHandler extends FileHandler {
             handler.setFilter(getFilter());
             return handler;
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new deltix.util.io.UncheckedIOException(e);
         }
     }
 

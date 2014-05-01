@@ -18,7 +18,7 @@ public class PortAvailabilityChecker {
         } catch (java.net.BindException x) {
             return (false);
         } catch (IOException iox) {
-            throw new UncheckedIOException (iox);
+            throw new deltix.util.io.UncheckedIOException (iox);
         }
     }
 

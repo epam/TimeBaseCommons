@@ -20,7 +20,7 @@ public abstract class CachedLocalIP {
                 }
                 localIP = s.toString();
             } catch (UnknownHostException x) {
-                throw new UncheckedIOException(x);
+                throw new deltix.util.io.UncheckedIOException(x);
             }
         }
         return localIP;

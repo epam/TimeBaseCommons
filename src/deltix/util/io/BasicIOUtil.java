@@ -76,7 +76,7 @@ public abstract class BasicIOUtil {
             else
                 return (new URL ("file://" + path));
         } catch (IOException iox) {
-            throw new UncheckedIOException (iox);
+            throw new deltix.util.io.UncheckedIOException (iox);
         }
     }
 
@@ -130,7 +130,7 @@ public abstract class BasicIOUtil {
 
     public static void      deleteUnchecked (File f) {
         if (! deleteFileOrDir(f))
-            throw new UncheckedIOException ("Failed to delete " + f);
+            throw new deltix.util.io.UncheckedIOException ("Failed to delete " + f);
     }
 
     /**
@@ -471,7 +471,7 @@ public abstract class BasicIOUtil {
         try {
             return (readTextFromClassPath (relPath));
         } catch (InterruptedException | IOException x) {
-            throw new UncheckedIOException (x);
+            throw new deltix.util.io.UncheckedIOException (x);
         }
     }
     
