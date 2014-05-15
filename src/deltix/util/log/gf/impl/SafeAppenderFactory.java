@@ -2,16 +2,17 @@ package deltix.util.log.gf.impl;
 
 import org.gflogger.LoggerService;
 
+import deltix.util.lang.Util;
+
 public class SafeAppenderFactory extends CompoundAppenderFactory {
 
-    static final String MAX_ENTRIES_PER_SECOND_PROPERTY_KEY = "gflogger.safeAppender.maxEntriesPerSecond";
-    static final int DEFAULT_MAX_ENTRIES_PER_SECOND = 300;
+    private static final String MAX_ENTRIES_PER_SECOND_PROPERTY_KEY = "gflogger.safeAppender.maxEntriesPerSecond";
+    private static final int DEFAULT_MAX_ENTRIES_PER_SECOND = Util.getIntSystemProperty(MAX_ENTRIES_PER_SECOND_PROPERTY_KEY, 300, 1, Integer.MAX_VALUE);
 
-    int maxEntriesPerSecond = getDefaultMaxEntriesPerSecond();
+    private int maxEntriesPerSecond = DEFAULT_MAX_ENTRIES_PER_SECOND;
 
     @Override
     public SafeAppender createAppender(Class<? extends LoggerService> loggerServiceClass) {
-
         SafeAppender appender = new SafeAppender(createAppenders(loggerServiceClass), maxEntriesPerSecond);
 
         appender.setLogLevel(logLevel);
@@ -29,13 +30,6 @@ public class SafeAppenderFactory extends CompoundAppenderFactory {
     @SuppressWarnings("unused")
     public void setMaxEntriesPerSecond(int maxEntriesPerSecond) {
         this.maxEntriesPerSecond = maxEntriesPerSecond;
-    }
-
-    static int getDefaultMaxEntriesPerSecond() {
-        String maxEntriesPerSecondStr = System.getProperty(MAX_ENTRIES_PER_SECOND_PROPERTY_KEY);
-        return maxEntriesPerSecondStr == null ?
-                DEFAULT_MAX_ENTRIES_PER_SECOND :
-                Integer.parseInt(maxEntriesPerSecondStr);
     }
 
 }
