@@ -10,10 +10,7 @@ public class ConsoleAppenderFactory extends AbstractAppenderFactory {
     public Appender createAppender(Class<? extends LoggerService> loggerServiceClass) {
         preinit(loggerServiceClass);
 
-        if (multibyte)
-            throw new IllegalArgumentException("Console Appender cannot be multibyte");
-
-        ConsoleAppender appender = new ConsoleAppender(bufferSize, multibyte);
+        ConsoleAppender appender = new ConsoleAppender(bufferSize);
 
         appender.setLogLevel(logLevel);
         appender.setLayout(layout);
@@ -24,6 +21,12 @@ public class ConsoleAppenderFactory extends AbstractAppenderFactory {
         appender.setIndex(index);
 
         return appender;
+    }
+
+    @Override
+    public void setMultibyte(boolean multibyte) {
+        if(multibyte)
+            throw new UnsupportedOperationException("Console appender does not support multibyte mode");
     }
 
 }
