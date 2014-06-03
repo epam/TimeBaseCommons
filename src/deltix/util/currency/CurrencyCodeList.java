@@ -147,12 +147,12 @@ public class CurrencyCodeList {
 
     public static class CurrencyInfo implements Comparable<CurrencyInfo> {
         public final String symbolicCode;
-        public final Short  numericCode;
+        public final short  numericCode;
         public final String description;
         public final String location;
 
         private CurrencyInfo (final String code,
-                              final Short numeric,
+                              final short numeric,
                               final String currency,
                               final String location) {
             super ();
