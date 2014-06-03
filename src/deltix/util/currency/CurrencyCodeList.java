@@ -1,11 +1,11 @@
 package deltix.util.currency;
 
 import java.io.*;
-import java.util.*;
 import java.util.logging.*;
 
 import javax.xml.parsers.*;
 
+import deltix.util.collections.CharSequenceToObjectMapQuick;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
@@ -18,8 +18,8 @@ import deltix.util.text.*;
 public class CurrencyCodeList {
     private static final int                             amount        =   1000;
     private static final CurrencyInfo[]                  numericIndex  = new CurrencyInfo[amount];
-    private static final Map<CharSequence, CurrencyInfo> symbolicIndex = new HashMap<CharSequence, CurrencyInfo>(amount);
-    private static       int                             TEXT_MARKER   = 0x8000;
+    private static final CharSequenceToObjectMapQuick<CurrencyInfo> symbolicIndex = new CharSequenceToObjectMapQuick<>(amount);
+    private static final int                             TEXT_MARKER   = 0x8000;
 
     static {
         read ("deltix/util/currency/CurrencyCodes.xml");
@@ -52,8 +52,7 @@ public class CurrencyCodeList {
                                                                 getText (element,
                                                                          "Country"));
                     numericIndex[info.numericCode] = info;
-                    symbolicIndex.put (info.symbolicCode,
-                                       info);
+                    symbolicIndex.put (info.symbolicCode, info);
                 }
 
             }
@@ -85,7 +84,10 @@ public class CurrencyCodeList {
     }
 
     public static CurrencyInfo[] getCodes () {
-        return (symbolicIndex.values ().toArray (new CurrencyInfo[symbolicIndex.size ()]));
+        CurrencyInfo [] result = new CurrencyInfo [symbolicIndex.size()];
+        if (symbolicIndex.size() > 0)
+            symbolicIndex.valuesToArray(result);
+        return result;
     }
 
     public static String numericToSymbolic (final int code) {
@@ -94,10 +96,8 @@ public class CurrencyCodeList {
         return (info == null ? null : info.symbolicCode);
     }
 
-    public static int symbolicToNumeric (final String code,
-                                         final int notFoundValue) {
+    public static int symbolicToNumeric (String code, final int notFoundValue) {
         final CurrencyInfo info = getInfoBySymbolic (code);
-
         return (info == null ? notFoundValue : info.numericCode);
     }
 
@@ -105,11 +105,15 @@ public class CurrencyCodeList {
         return (code >= 0  && code < amount ?  numericIndex[code] : null);
     }
 
-    public static CurrencyInfo getInfoBySymbolic (final CharSequence code) {
-        return (symbolicIndex.get (code));
+    public static CurrencyInfo getInfoBySymbolic (CharSequence code) {
+        return getInfoBySymbolic(code, 0, code.length());
     }
 
-    public static CurrencyInfo getInfoBySymbolic (final String code) {
+    public static CurrencyInfo getInfoBySymbolic (CharSequence code, int offset, int length) {
+        return symbolicIndex.get (code, offset, length, null);
+    }
+
+    public static CurrencyInfo getInfoBySymbolic (String code) {
         return getInfoBySymbolic((CharSequence) code);
     }
 
