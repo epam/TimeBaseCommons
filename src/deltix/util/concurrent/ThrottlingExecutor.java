@@ -12,10 +12,52 @@ import java.util.logging.Level;
  */
 public class ThrottlingExecutor extends Thread {
 
+    public enum TaskState {
+        IDLE,
+
+        /**
+         *  Running
+         */
+        RUNNING,
+
+        /**
+         *  Scheduled while running; will be re-run when finished.
+         */
+        REARMED
+    }
+
     public static abstract class Task extends QuickList.Entry {
 
-        public abstract boolean              run ()
+        // guarded by this
+        private TaskState state = TaskState.IDLE;
+
+        public abstract boolean     run ()
                 throws InterruptedException;
+
+        public synchronized void        submit(ThrottlingExecutor exe) {
+            if (state == TaskState.IDLE) {
+                state = TaskState.RUNNING;
+                exe.addTask(this);
+            } else {
+                state = TaskState.REARMED;
+            }
+        }
+
+        /*
+            Returns true if task is finished
+         */
+        public synchronized boolean   complete(boolean arm) {
+            if (state == TaskState.REARMED) {
+                state = TaskState.RUNNING;  // go again
+                return false;
+            } else if (arm) {
+                state = TaskState.REARMED; // arm task
+                return false;
+            } else {
+                state = TaskState.IDLE;
+                return true;
+            }
+        }
     }
 
     public static final long                MEASURABLE_INTERVAL = 20;
@@ -49,7 +91,7 @@ public class ThrottlingExecutor extends Thread {
         this.handler = hanlder;
     }
 
-    public void                         addTask (Task task) {
+    void                         addTask (Task task) {
         synchronized (queue) {
             queue.linkLast(task);
             queue.notify();
@@ -81,7 +123,7 @@ public class ThrottlingExecutor extends Thread {
         }
     }
 
-    private void                        remove(Task task) {
+    void                        removeTask(Task task) {
         synchronized (queue) {
             task.unlink();
             queue.notify();
@@ -100,10 +142,10 @@ public class ThrottlingExecutor extends Thread {
         for (;;) {
 
             try {
-                boolean     requeue = task.run ();
+                boolean arm = task.run();
 
-                if (!requeue)
-                    remove(task);
+                if (task.complete(arm))
+                    removeTask(task);
 
             } catch (UncheckedInterruptedException x) {
                 throw x;
