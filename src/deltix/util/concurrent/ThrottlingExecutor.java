@@ -5,6 +5,7 @@ import deltix.util.lang.ExceptionHandler;
 import deltix.util.lang.Util;
 import deltix.util.time.TimeKeeper;
 
+import java.util.ArrayDeque;
 import java.util.logging.Level;
 
 /**
@@ -34,11 +35,11 @@ public class ThrottlingExecutor extends Thread {
         public abstract boolean     run ()
                 throws InterruptedException;
 
-        public synchronized void        submit(ThrottlingExecutor exe) {
+        public synchronized void        submit (ThrottlingExecutor exe) {
             if (state == TaskState.IDLE) {
                 state = TaskState.RUNNING;
                 exe.addTask(this);
-            } else {
+            } else if (state == TaskState.RUNNING) {
                 state = TaskState.REARMED;
             }
         }
@@ -46,12 +47,14 @@ public class ThrottlingExecutor extends Thread {
         /*
             Returns true if task is finished
          */
-        public synchronized boolean   complete(boolean arm) {
+        synchronized boolean   complete (ThrottlingExecutor exe, boolean arm) {
             if (state == TaskState.REARMED) {
                 state = TaskState.RUNNING;  // go again
+                exe.addTask(this);
                 return false;
             } else if (arm) {
-                state = TaskState.REARMED; // arm task
+                state = TaskState.RUNNING; // arm task
+                exe.addTask(this);
                 return false;
             } else {
                 state = TaskState.IDLE;
@@ -62,7 +65,7 @@ public class ThrottlingExecutor extends Thread {
 
     public static final long                MEASURABLE_INTERVAL = 20;
 
-    private final QuickList<Task>           queue = new QuickList<Task>();
+    private final ArrayDeque<Task> queue = new ArrayDeque<>();
     private volatile double                 k;
     private volatile long                   maxSleepInterval = Long.MAX_VALUE;
     private ExceptionHandler                handler = null;
@@ -91,17 +94,12 @@ public class ThrottlingExecutor extends Thread {
         this.handler = hanlder;
     }
 
-    void                         addTask (Task task) {
+    protected void                      addTask (Task task) {
         synchronized (queue) {
-            queue.linkLast(task);
+            queue.addLast(task);
             queue.notify();
         }
-        //throw new RuntimeException ("offer (" + task + ") returned false");
     }
-
-//    public boolean                      removeTask (Task task) {
-//        return (queue.remove (task));
-//    }
 
     public long                         getMaxSleepInterval () {
         return maxSleepInterval;
@@ -114,18 +112,16 @@ public class ThrottlingExecutor extends Thread {
     private Task                        poll() throws InterruptedException {
 
         synchronized (queue) {
-            Task task = queue.getFirst ();
-
-            if (task == null)
+            while (queue.isEmpty())
                 queue.wait();
 
-            return queue.getFirst();
+            return queue.poll();
         }
     }
 
-    void                        removeTask(Task task) {
+    void                                removeTask(Task task) {
         synchronized (queue) {
-            task.unlink();
+            queue.remove(task);
             queue.notify();
         }
     }
@@ -133,25 +129,23 @@ public class ThrottlingExecutor extends Thread {
     private long                        performMeasurableWork ()
             throws InterruptedException
     {
-        Task            task = poll();
-
         long            t0 = TimeKeeper.currentTime;
         long            limit = t0 + MEASURABLE_INTERVAL;
         long            t1;
 
         for (;;) {
 
-            try {
-                boolean arm = task.run();
+            Task            next = poll();
 
-                if (task.complete(arm))
-                    removeTask(task);
+            try {
+                boolean arm = next.run();
+                next.complete(this, arm);
 
             } catch (UncheckedInterruptedException x) {
                 throw x;
             } catch (Throwable x) {
                 if (handler == null)
-                    Util.LOGGER.log (Level.SEVERE, "Exception in " + task, x);
+                    Util.LOGGER.log (Level.SEVERE, "Exception in " + next, x);
                 else
                     handler.handle (x);
             }
