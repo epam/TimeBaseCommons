@@ -59,7 +59,7 @@ public class Test_ThrottlingExecutor {
 
         long            startTime = System.currentTimeMillis ();
 
-        exe.addTask(new TestTask());
+        new TestTask().submit(exe);
 
         Thread.sleep (10000);
 
