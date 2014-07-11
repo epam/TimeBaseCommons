@@ -65,7 +65,7 @@ public class ThrottlingExecutor extends Thread {
 
     public static final long                MEASURABLE_INTERVAL = 20;
 
-    private final ArrayDeque<Task> queue = new ArrayDeque<>();
+    private final ArrayDeque<Task>          queue = new ArrayDeque<>();
     private volatile double                 k;
     private volatile long                   maxSleepInterval = Long.MAX_VALUE;
     private ExceptionHandler                handler = null;
@@ -98,6 +98,12 @@ public class ThrottlingExecutor extends Thread {
         synchronized (queue) {
             queue.addLast(task);
             queue.notify();
+        }
+    }
+
+    public boolean                         contains(Task task) {
+        synchronized (queue) {
+            return queue.contains(task);
         }
     }
 
