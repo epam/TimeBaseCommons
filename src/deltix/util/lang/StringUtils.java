@@ -878,7 +878,7 @@ public class StringUtils {
                     append(frameSymbol).append(lineSeparator);
         }
         builder.append(frameSymbol).append(emptyLine).append(frameSymbol).append(lineSeparator).
-                append(topAndBottom).append(lineSeparator);
+                append(topAndBottom);
 
         return builder.toString();
     }
