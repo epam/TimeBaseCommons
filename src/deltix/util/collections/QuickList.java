@@ -20,7 +20,7 @@ public class QuickList <T extends QuickList.Entry> implements java.io.Serializab
 		public BadEntryException (Entry e) {
 			super (
 				"Next and previous pointers of entry " +
-				e + " are in an incosistent state."
+				e + " are in an inconsistent state."
 			);
 		}
 	}
