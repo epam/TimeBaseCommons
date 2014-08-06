@@ -8,17 +8,17 @@ public abstract class ArraysComparator<A, B> {
 
     public abstract int compare(A e1, B e2);
 
-    public int          compare(Collection<A> c1, Collection<B> c2) {
-        if (c1 == null)
-            return c2 == null ? 0 : -1;
-        else if (c2 == null)
+    public int          compare(Collection<A> a, Collection<B> b) {
+        if (a == null)
+            return b == null ? 0 : -1;
+        else if (b == null)
             return 1;
 
-        if (c1.size() != c2.size())
-            return c1.size() - c2.size() > 0 ? 1 : -1;
+        if (a.size() != b.size())
+            return a.size() - b.size() > 0 ? 1 : -1;
 
-        Iterator<A> i1 = c1.iterator();
-        Iterator<B> i2 = c2.iterator();
+        Iterator<A> i1 = a.iterator();
+        Iterator<B> i2 = b.iterator();
 
         while (i1.hasNext() && i2.hasNext()) {
             int result = compare(i1.next(), i2.next());
@@ -29,17 +29,17 @@ public abstract class ArraysComparator<A, B> {
         return 0;
     }
 
-    public int          compare(A[] a1, B[] a2) {
-        if (a1 == null)
-            return a2 == null ? 0 : -1;
-        else if (a2 == null)
+    public int          compare(A[] a, B[] b) {
+        if (a == null)
+            return b == null ? 0 : -1;
+        else if (b == null)
             return 1;
 
-        if (a1.length != a2.length)
-            return a1.length - a2.length > 0 ? 1 : -1;
+        if (a.length != b.length)
+            return a.length - b.length > 0 ? 1 : -1;
 
-        for (int i = 0; i < a1.length; i++) {
-            int result = compare(a1[i], a2[i]);
+        for (int i = 0; i < a.length; i++) {
+            int result = compare(a[i], b[i]);
             if (result != 0)
                 return result;
         }
