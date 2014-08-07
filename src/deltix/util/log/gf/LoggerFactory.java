@@ -3,11 +3,10 @@ package deltix.util.log.gf;
 import java.util.HashMap;
 import java.util.Map;
 
-import deltix.util.log.gf.impl.GFLoggerFactory;
-
 public abstract class LoggerFactory {
 
-    private static final LoggerFactory INSTANCE = new GFLoggerFactory();
+    private static LoggerFactory instance;
+    private static volatile boolean configured;
 
     private final Map<String, Logger> loggers = new HashMap<>();
 
@@ -32,6 +31,22 @@ public abstract class LoggerFactory {
     protected abstract Logger createLogger(String name);
 
     public static Logger getLogger(String name) {
-        return INSTANCE.getLog(name);
+        if (instance == null && !configured) // do not read every time volatile variable
+            throw new IllegalStateException("Logger factory is not configured");
+
+        return instance.getLog(name);
     }
+
+    static void init(LoggerFactory factory) {
+        assert factory != null;
+
+        synchronized (LoggerFactory.class) {
+            if (configured)
+                throw new IllegalStateException("Logger factory is already configured");
+
+            instance = factory;
+            configured = true;
+        }
+    }
+
 }

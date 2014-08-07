@@ -8,13 +8,14 @@ import deltix.util.log.gf.LogEntry;
 
 final class GFLogger extends AbstractLogger {
 
-    private final GFLog logger;
-    private final ThreadLocal<GFLogEntry> threadLocalEntry = new ThreadLocal<GFLogEntry>() {
+    private static final ThreadLocal<GFLogEntry> THREAD_LOCAL_ENTRY = new ThreadLocal<GFLogEntry>() {
         @Override
         protected GFLogEntry initialValue() {
             return new GFLogEntry();
         }
     };
+
+    private final GFLog logger;
 
     GFLogger(GFLog logger) {
         this.logger = logger;
@@ -22,7 +23,7 @@ final class GFLogger extends AbstractLogger {
 
     @Override
     protected LogEntry log(Level level) {
-        GFLogEntry entry = threadLocalEntry.get();
+        GFLogEntry entry = THREAD_LOCAL_ENTRY.get();
         org.gflogger.GFLogEntry gfEntry;
 
         switch (level) {

@@ -11,4 +11,5 @@ public final class GFLoggerFactory extends LoggerFactory {
     protected Logger createLogger(String name) {
         return new GFLogger(GFLogFactory.getLog(name));
     }
+
 }

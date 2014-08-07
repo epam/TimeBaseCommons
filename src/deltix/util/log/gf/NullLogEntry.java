@@ -3,12 +3,10 @@ package deltix.util.log.gf;
 
 public class NullLogEntry implements LogEntry {
 
-    public static NullLogEntry getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
+    private static final NullLogEntry INSTANCE = new NullLogEntry();
 
-    private static class InstanceHolder {
-        private static final NullLogEntry INSTANCE = new NullLogEntry();
+    public static NullLogEntry getInstance() {
+        return INSTANCE;
     }
 
     private NullLogEntry() {
