@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import deltix.util.lang.Util;
+import deltix.util.log.gf.AppendableEntry;
 import deltix.util.log.gf.LogEntry;
 import deltix.util.log.gf.Loggable;
 import deltix.util.text.DecimalFormatter;
@@ -85,6 +86,14 @@ final class JULLogEntry implements LogEntry {
     public LogEntry append(Loggable value) {
         if (checkNotCommitted())
             value.appendTo(this);
+
+        return this;
+    }
+
+    @Override
+    public AppendableEntry append(Enum value) {
+        if (checkNotCommitted())
+            messageBuilder.append(value.name());
 
         return this;
     }

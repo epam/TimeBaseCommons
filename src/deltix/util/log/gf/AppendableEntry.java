@@ -22,4 +22,8 @@ public interface AppendableEntry extends Appendable {
     AppendableEntry append(double i, int precision);
 
     AppendableEntry append(Loggable value);
+
+    AppendableEntry append(Enum value);
+
+
 }
