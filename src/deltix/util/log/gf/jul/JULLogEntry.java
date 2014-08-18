@@ -67,17 +67,17 @@ final class JULLogEntry implements LogEntry {
     }
 
     @Override
-    public LogEntry append(double i) {
+    public LogEntry append(double d) {
         if (checkNotCommitted())
-            messageBuilder.append(i);
+            messageBuilder.append(d);
 
         return this;
     }
 
     @Override
-    public LogEntry append(double i, int precision) {
+    public LogEntry append(double d, int precision) {
         if (checkNotCommitted())
-            messageBuilder.append(DecimalFormatter.format(i, precision));
+            messageBuilder.append(formatDouble(d, precision));
 
         return this;
     }
@@ -154,4 +154,11 @@ final class JULLogEntry implements LogEntry {
         return messageBuilder.toString();
     }
 
+    private static String formatDouble(double d, int precision) {
+        if (Double.isNaN(d))
+            return "NaN";
+        else if (Double.isInfinite(d))
+            return "Infinity";
+        return DecimalFormatter.format(d, precision);
+    }
 }

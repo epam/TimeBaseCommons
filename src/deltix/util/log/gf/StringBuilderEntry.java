@@ -54,14 +54,14 @@ public class StringBuilderEntry implements AppendableEntry {
     }
 
     @Override
-    public AppendableEntry append(double i) {
-        builder.append(i);
+    public AppendableEntry append(double d) {
+        builder.append(d);
         return this;
     }
 
     @Override
-    public AppendableEntry append(double i, int precision) {
-        builder.append(DecimalFormatter.format(i, precision));
+    public AppendableEntry append(double d, int precision) {
+        builder.append(formatDouble(d, precision));
         return this;
     }
 
@@ -80,5 +80,13 @@ public class StringBuilderEntry implements AppendableEntry {
     @Override
     public String toString() {
         return builder.toString();
+    }
+
+    private static String formatDouble(double d, int precision) {
+        if (Double.isNaN(d))
+            return "NaN";
+        if (Double.isInfinite(d))
+            return "Infinity";
+        return DecimalFormatter.format(d, precision);
     }
 }
