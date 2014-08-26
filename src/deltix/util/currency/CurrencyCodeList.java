@@ -109,8 +109,8 @@ public class CurrencyCodeList {
         return getInfoBySymbolic(code, 0, code.length());
     }
 
-    public static CurrencyInfo getInfoBySymbolic (CharSequence code, int offset, int length) {
-        return symbolicIndex.get (code, offset, length, null);
+    public static CurrencyInfo getInfoBySymbolic (CharSequence code, int start, int end) {
+        return symbolicIndex.get (code, start, end, null);
     }
 
     public static CurrencyInfo getInfoBySymbolic (String code) {
