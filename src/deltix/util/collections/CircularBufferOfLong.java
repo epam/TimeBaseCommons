@@ -12,14 +12,15 @@ public class CircularBufferOfLong {
     protected int tail = -1; // only meaningful if NOT empty => contains index of oldest value in this buffer
 
     protected boolean isEmpty = true;
-    protected boolean isFull = false;
+    protected boolean isFull;
     protected final int capacity;
 
 
     public CircularBufferOfLong(int capacity) {
-        assert capacity > 0;
+        assert capacity >= 0;
         this.capacity = capacity;
         this.values = new long[capacity];
+        isFull = (capacity == 0);
     }
 
     public void add(long value) {
