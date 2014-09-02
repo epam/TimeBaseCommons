@@ -84,10 +84,12 @@ public class CurrencyCodeList {
     }
 
     public static CurrencyInfo[] getCodes () {
-        CurrencyInfo [] result = new CurrencyInfo [symbolicIndex.size()];
-        if (symbolicIndex.size() > 0)
-            symbolicIndex.valuesToArray(result);
-        return result;
+        synchronized (symbolicIndex) {
+            CurrencyInfo[] result = new CurrencyInfo[symbolicIndex.size()];
+            if (symbolicIndex.size() > 0)
+                symbolicIndex.valuesToArray(result);
+            return result;
+        }
     }
 
     public static String numericToSymbolic (final int code) {
@@ -110,7 +112,9 @@ public class CurrencyCodeList {
     }
 
     public static CurrencyInfo getInfoBySymbolic (CharSequence code, int start, int end) {
-        return symbolicIndex.get (code, start, end, null);
+        synchronized (symbolicIndex) {
+            return symbolicIndex.get(code, start, end, null);
+        }
     }
 
     public static CurrencyInfo getInfoBySymbolic (String code) {
