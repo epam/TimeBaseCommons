@@ -1,6 +1,21 @@
 package deltix.util.time;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+@XmlJavaTypeAdapter (Periodicity.StringPeriodicityAdapter.class)
 public final class Periodicity {
+
+    public static class StringPeriodicityAdapter extends XmlAdapter<String, Periodicity> {
+        public Periodicity unmarshal(String v) throws Exception {
+            return Periodicity.parse(v);
+        }
+
+        public String marshal(Periodicity v) throws Exception {
+            return v.toString();
+        }
+    }
+
     private final Interval        interval;
     private final Type            type;
 
@@ -35,12 +50,18 @@ public final class Periodicity {
     }
 
     public static Periodicity   parse(String value) {
+        if (value == null || value.contains(String.valueOf(Type.IRREGULAR)))
+            return mkIrregular();
         if (value.contains(String.valueOf(Type.STATIC)))
             return mkStatic();
-        else if (value.contains(String.valueOf(Type.IRREGULAR)))
-            return mkIrregular();
 
         return mkRegular(Interval.valueOf(value));
+    }
+
+    public static Periodicity   parse(Interval value) {
+        if (value == null)
+            return mkIrregular();
+        return parse(value.toString());
     }
 
     @Override
