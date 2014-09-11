@@ -68,7 +68,7 @@ final class GFLogEntry implements LogEntry {
 
     @Override
     public AppendableEntry append(Enum value) {
-        entry.append(value.name());
+        entry.append(value != null ? value.name() : null);
         return this;
     }
 

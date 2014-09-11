@@ -73,7 +73,7 @@ public class StringBuilderEntry implements AppendableEntry {
 
     @Override
     public AppendableEntry append(Enum value) {
-        builder.append(value.name());
+        builder.append(value != null ? value.name() : null);
         return this;
     }
 

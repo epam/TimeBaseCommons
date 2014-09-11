@@ -93,7 +93,7 @@ final class JULLogEntry implements LogEntry {
     @Override
     public AppendableEntry append(Enum value) {
         if (checkNotCommitted())
-            messageBuilder.append(value.name());
+            messageBuilder.append(value != null ? value.name() : null);
 
         return this;
     }
