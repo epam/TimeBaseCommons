@@ -137,7 +137,12 @@ public class DecimalFormatter {
 
     // Super Rarely used to represent prices
     private static String formatLargeNumber(double number) {
-        //System.err.println(number);
+        if (Double.isNaN(number))
+            return "NaN";
+
+        if (Double.isInfinite(number))
+            return (number > 0) ? "Infinity" : "-Infinity";
+
         return new BigDecimal(number).toPlainString();
     }
 
