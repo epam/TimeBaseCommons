@@ -76,8 +76,7 @@ public abstract class CharSequenceParser {
             negative = ch == '-';
             pos++;
             
-            if (pos == endExcl)
-                throw new NumberFormatException (sc.subSequence (startIncl, endExcl).toString ());
+            checkNotAtEnd (pos, endExcl, sc, startIncl);
             
             ch = sc.charAt (pos);
         }
@@ -135,8 +134,7 @@ public abstract class CharSequenceParser {
             negative = ch == '-';
             pos++;
             
-            if (pos == endExcl)
-                throw new NumberFormatException (sc.subSequence (startIncl, endExcl).toString ());
+            checkNotAtEnd (pos, endExcl, sc, startIncl);
             
             ch = sc.charAt (pos);
         }
@@ -198,8 +196,7 @@ public abstract class CharSequenceParser {
             
             pos++;
             
-            if (pos == endExcl)
-                throw new NumberFormatException (sc.subSequence (startIncl, endExcl).toString ());
+            checkNotAtEnd (pos, endExcl, sc, startIncl);
             
             ch = sc.charAt (pos);
         }
@@ -208,6 +205,33 @@ public abstract class CharSequenceParser {
             if (ch != ',') {
                 if (!dotSeen && ch == '.')
                     dotSeen = true;
+                else if (ch == 'e' || ch == 'E') {
+                    pos++;
+                    
+                    checkNotAtEnd (pos, endExcl, sc, startIncl);
+                    
+                    ch = sc.charAt (pos);
+                    
+                    boolean     negativeExp = false;
+                        
+                    if (ch == '-') {
+                        pos++;
+                                                
+                        negativeExp = true;
+                    }
+                    else if (ch == '+')
+                        pos++;
+                    
+                    checkNotAtEnd (pos, endExcl, sc, startIncl);
+                        
+                    int     exp = parseInt (sc, pos, endExcl);
+                    
+                    for (int ii = 0; ii < exp; ii++)
+                        if (negativeExp)
+                            denominator *= 10;
+                        else
+                            denominator /= 10;
+                }
                 else {
                     final int       digit = ch - '0';
 
@@ -271,6 +295,16 @@ public abstract class CharSequenceParser {
         return (result);
     }
 
+    private static void checkNotAtEnd (int pos, final int endExcl, final CharSequence sc, final int startIncl)
+        throws NumberFormatException 
+    {
+        if (pos == endExcl)
+            throw new NumberFormatException (
+                "Unexpected end of text at position " + pos + ": " + 
+                sc.subSequence (startIncl, endExcl).toString ()
+            );        
+    }
+
     public static float     parseFloat (CharSequence sc) {
         return (parseFloat (sc, 0, sc.length ()));
     }
@@ -296,8 +330,7 @@ public abstract class CharSequenceParser {
             
             pos++;
             
-            if (pos == endExcl)
-                throw new NumberFormatException (sc.subSequence (startIncl, endExcl).toString ());
+            checkNotAtEnd (pos, endExcl, sc, startIncl);
             
             ch = sc.charAt (pos);
         }
@@ -314,7 +347,9 @@ public abstract class CharSequenceParser {
                             return (Float.NaN);
 
                         throw new NumberFormatException (
-                            "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
+                            "Illegal digit at position " + (pos + 1) + " in: " + 
+                            sc.subSequence (startIncl, endExcl).toString ()
+                        );
                     }
 
                     if (overflow) {
@@ -371,7 +406,6 @@ public abstract class CharSequenceParser {
     }
 
     public static void main (String [] args) {
-        System.out.println (Long.MAX_VALUE);
-        System.out.println (parseLong (args [0]));
+        System.out.println (parseDouble (args [0]));
     }
 }

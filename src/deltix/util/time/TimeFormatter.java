@@ -735,16 +735,20 @@ public final class TimeFormatter {
         if (s.length () != 9)
             throw new NumberFormatException (s.toString ());
         
+        return (parseHHMMSSFFF (s, 0));        
+    }
+    
+    public static int      parseHHMMSSFFF (CharSequence s, int offset) {
         return (
-            d (s, 8) +
-            d (s, 7) * 10 +
-            d (s, 6) * 100 +
-            d (s, 5) * 1000 +
-            d (s, 4) * 10000 +
-            d (s, 3) * 60000 +
-            d (s, 2) * 600000 +
-            d (s, 1) * 3600000 +
-            d (s, 0) * 36000000
+            d (s, offset + 8) +
+            d (s, offset + 7) * 10 +
+            d (s, offset + 6) * 100 +
+            d (s, offset + 5) * 1000 +
+            d (s, offset + 4) * 10000 +
+            d (s, offset + 3) * 60000 +
+            d (s, offset + 2) * 600000 +
+            d (s, offset + 1) * 3600000 +
+            d (s, offset + 0) * 36000000
         );
     }
     
