@@ -202,11 +202,15 @@ public abstract class TextReader implements Disposable {
         return (getDoubleOrNaN (idx, true));
     }
     
-    public double getDoubleOrNaN ( int idx, boolean trim ) {        
+    public double getDoubleOrNaN ( int idx, boolean trim ) {  
+        return (getDoubleOrDefault (idx, trim, Double.NaN));
+    }
+    
+    public double getDoubleOrDefault ( int idx, boolean trim, double defval ) {        
         CharSequence cell = getCell ( idx,  trim );
         
         if (cell.length() == 0)
-            return Double.NaN;
+            return defval;
         
         return (CharSequenceParser.parseDouble ( cell ));
     }
