@@ -41,7 +41,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
         final String watchFsProperty = System.getProperty(WATCH_FS_PROPERTY);        
         if (watchFsProperty != null && watchFsProperty.equalsIgnoreCase("false")) {
             this.watchFs = false;
-            logger.log(Level.INFO, "File system monitoring has beed disabled for '{0}' by the system property '{1}'.", new Object[]{getClass().getSimpleName(), WATCH_FS_PROPERTY});
+            logger.log(Level.INFO, "File system monitoring has beed disabled for {0} by the system property {1}.", new Object[]{getClass().getSimpleName(), WATCH_FS_PROPERTY});
         } else {        
             this.watchFs = watchFs;
         }
