@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.comm.client;
+package deltix.qsrv.hf.tickdb.comm;
 
 /**
  *

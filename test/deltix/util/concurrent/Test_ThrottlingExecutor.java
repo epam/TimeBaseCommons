@@ -1,7 +1,6 @@
 package deltix.util.concurrent;
 
 
-import deltix.util.concurrent.ThrottlingExecutor.Task;
 import java.util.Random;
 import org.junit.*;
 import static org.junit.Assert.*;
