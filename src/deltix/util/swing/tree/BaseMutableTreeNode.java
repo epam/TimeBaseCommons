@@ -163,35 +163,6 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         return (new TreePath (path));
     }
 
-    public TreePath getParentTreePath () {
-        TreeNode node = this.getParent();
-        if (node == null)
-            return null;
-
-        int depth = 1;
-        for (; ;) {
-            final TreeNode next = node.getParent ();
-            if (next == null)
-                break;
-
-            depth++;
-            node = next;
-        }
-
-        final Object[] path = new Object[depth];
-        node = this.getParent();
-
-        for (; ;) {
-            depth--;
-            path[depth] = node;
-            if (depth == 0)
-                break;
-
-            node = node.getParent ();
-        }
-        return (new TreePath (path));
-    }
-
     protected TreeModel getActualModel () {
         TreeModel model = tree.getModel ();
 
