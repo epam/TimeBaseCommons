@@ -1,5 +1,6 @@
 package deltix.util.text;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.DecimalFormat;
@@ -184,7 +185,8 @@ public class Test_DecimalFormatter {
     }
 
     @Test
-    public void testInfinity () {
+    @Ignore
+    public void testInfinityOld () {
         try {
             new DecimalFormatter(3).format(Double.POSITIVE_INFINITY);
             fail("Failed to detect INFINITY");
@@ -193,6 +195,12 @@ public class Test_DecimalFormatter {
             new DecimalFormatter(3).format(Double.NEGATIVE_INFINITY);
             fail("Failed to detect INFINITY");
         } catch (IllegalArgumentException expected) {}
+    }
+
+    @Test
+    public void testInfinity () {
+        assertFormat(Double.POSITIVE_INFINITY, "Infinity", DecimalFormatter.MAX_PRECISION);
+        assertFormat(Double.NEGATIVE_INFINITY, "Infinity", DecimalFormatter.MAX_PRECISION);
     }
 
 
