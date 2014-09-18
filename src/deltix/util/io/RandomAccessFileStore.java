@@ -40,7 +40,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
             try {
                 setMinimumSizeNOW ();
             } catch (IOException iox) {
-                throw new UncheckedIOException (iox);
+                throw new deltix.util.io.UncheckedIOException (iox);
             }            
         }
     }
@@ -54,7 +54,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
             
             setMinimumSizeNOW ();
         } catch (IOException iox) {
-            throw new UncheckedIOException (iox);
+            throw new deltix.util.io.UncheckedIOException (iox);
         }
     }
     
@@ -108,7 +108,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
                 releaseLock();
                 raf.close ();
             } catch (IOException iox) {
-                throw new UncheckedIOException (iox);
+                throw new deltix.util.io.UncheckedIOException (iox);
             }
             
             raf = null;
@@ -122,7 +122,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
                 lock = null;
             }
             catch (IOException iox) {
-                throw new UncheckedIOException(iox);
+                throw new deltix.util.io.UncheckedIOException(iox);
             }
         }
     }

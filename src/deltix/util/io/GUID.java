@@ -52,7 +52,7 @@ public class GUID {
         try {
             addr = InetAddress.getLocalHost ();
         } catch (UnknownHostException x) {
-            throw new UncheckedIOException (x);
+            throw new deltix.util.io.UncheckedIOException (x);
         }
 
         byte []             addressBytes = addr.getAddress ();

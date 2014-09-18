@@ -32,7 +32,7 @@ public class GUIDSeed {
         } catch (InterruptedException x) {
             throw new UncheckedInterruptedException(x);
         } catch (IOException x) {
-            throw new UncheckedIOException (x);
+            throw new deltix.util.io.UncheckedIOException (x);
         } finally {
             IOUtil.close (socket);
         }
