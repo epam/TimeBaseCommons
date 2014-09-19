@@ -18,7 +18,7 @@ public class TicksFormat {
     private static final FastDateFormat     TICKS = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.", TimeZone.getTimeZone("GMT"));
     private static final FastDateFormat     MS = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS", TimeZone.getTimeZone("GMT"));
     private static final DecimalFormat      DF = new DecimalFormat("000000000");
-    
+
     public synchronized String         format(long milliseconds, int nanosComponent) {
         sb.setLength(0);
         calendar.setTimeInMillis(milliseconds);

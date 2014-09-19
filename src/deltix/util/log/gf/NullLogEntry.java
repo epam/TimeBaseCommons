@@ -3,12 +3,10 @@ package deltix.util.log.gf;
 
 public class NullLogEntry implements LogEntry {
 
-    public static NullLogEntry getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
+    private static final NullLogEntry INSTANCE = new NullLogEntry();
 
-    private static class InstanceHolder {
-        private static final NullLogEntry INSTANCE = new NullLogEntry();
+    public static NullLogEntry getInstance() {
+        return INSTANCE;
     }
 
     private NullLogEntry() {
@@ -61,6 +59,11 @@ public class NullLogEntry implements LogEntry {
 
     @Override
     public LogEntry append(Loggable value) {
+        return this;
+    }
+
+    @Override
+    public AppendableEntry append(Enum value) {
         return this;
     }
 

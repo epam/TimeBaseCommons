@@ -1,5 +1,6 @@
 package deltix.util.lang;
 
+import com.jcraft.jsch.Logger;
 import deltix.util.io.ByteArrayInputStreamEx;
 import deltix.util.io.ByteArrayOutputStreamEx;
 import javax.tools.*;
@@ -75,8 +76,10 @@ public class JavaCompilerHelper {
                 Util.LOGGER.warning(sb.toString());
         }
 
-        if (ok)
+        if (ok) {
+            //Util.LOGGER.info(code);
             return cl.findClass (className);
+        }
         else
             throw new CompilationExceptionWithDiagnostic (
                 "compilation failed:\n" + (sb != null ? sb : ""), 
@@ -86,6 +89,9 @@ public class JavaCompilerHelper {
     }
 
     public Map<String, Class<?>> compileClasses(Map<String, String> mapClassName2Code) throws ClassNotFoundException {
+//        for (String code : mapClassName2Code.values())
+//            Util.LOGGER.warning(code);
+
         final ArrayList<MemorySource> compilationUnits = new ArrayList<MemorySource>(mapClassName2Code.size());
         for (Map.Entry<String, String> entry : mapClassName2Code.entrySet()) {
             compilationUnits.add(new MemorySource(entry.getKey(), entry.getValue()));

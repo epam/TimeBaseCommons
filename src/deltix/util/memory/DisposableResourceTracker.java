@@ -114,7 +114,7 @@ public class DisposableResourceTracker implements Disposable {
         }
         
         super.finalize ();
-
+        
         Util.close(mResource);
     }
     

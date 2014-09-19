@@ -5,14 +5,14 @@ public abstract class AbstractLogger implements Logger {
 
     @Override
     public LogEntry level(Level level) {
-        LogEntry result;
+        LogEntry result = NullLogEntry.getInstance();
 
-        try {
-            result = log(level);
-        } catch (Exception e) {
-            ErrorManager.error(e);
-            result = NullLogEntry.getInstance();
-        }
+        if (isLoggable(level))
+            try {
+                result = log(level);
+            } catch (Exception e) {
+                ErrorManager.error(e);
+            }
 
         return result;
     }

@@ -18,6 +18,16 @@ public class ListenerSupport<L> {
         }
     }
 
+    /** @return true if listener has been added */
+    public synchronized boolean addIfAbsent(L listener) throws NullPointerException {
+        if (listener == null)
+            throw new NullPointerException("Listener could not be null");
+        if (Util.contains(listeners, listener))
+            return false;
+        listeners = arrayadd(componentType, listeners, listener);
+        return true;
+    }
+
     public synchronized void addListener(L listener) throws NullPointerException {
         if (listener == null)
             throw new NullPointerException("Listener could not be null");

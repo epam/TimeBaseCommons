@@ -1,6 +1,5 @@
 package deltix.util.concurrent;
 
-/*  ##UTILS## */
 
 import java.util.Random;
 import org.junit.*;
@@ -24,7 +23,8 @@ public class Test_ThrottlingExecutor {
                 try {
                     Thread.sleep (t);
                 } catch (InterruptedException x) {
-                    throw new RuntimeException (x);
+                    x.printStackTrace(System.out);
+                    return false;
                 }
 
             long                dt = System.currentTimeMillis () - t1;
