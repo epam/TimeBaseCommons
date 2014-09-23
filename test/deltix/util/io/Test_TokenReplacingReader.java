@@ -1,9 +1,13 @@
 package deltix.util.io;
 
+import junit.framework.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,4 +38,56 @@ public class Test_TokenReplacingReader {
         String result = new String(buffer, 0, bytesRead);
         assertEquals(text, result);
     }
+
+
+
+
+    @Test
+    public void testSimpleReplacement() throws Exception {
+        assertReplacementEquals("value", "${key}", "key=value");
+        assertReplacementEquals("value1,value2", "${key1},${key2}", "key1=value1;key2=value2");
+        assertReplacementEquals("{key1},{key2}", "{key1},{key2}", "key1=value1;key2=value2"); // missing dollar sign
+    }
+
+    @Test
+    public void testStrangeCase1() throws Exception {
+        assertReplacementEquals(
+            "ExecutionServer.dllSearchPath=C:\\projects\\4.4\\QuantServer\\..\\QuantOffice\\Bin",
+            "ExecutionServer.dllSearchPath=${deltix_home}\\..\\QuantOffice\\Bin",
+            "deltix_home=C:\\projects\\4.4\\QuantServer");
+    }
+
+
+
+
+    private static void assertReplacementEquals(String expectedResult, String text, String dictionary) throws IOException, InterruptedException {
+        MapBasedTokenReplacer replacer = new MapBasedTokenReplacer (dictionary);
+        String actualResult = replace(text, replacer);
+        Assert.assertEquals(expectedResult, actualResult);
+    }
+
+    private static String replace (String text, TokenReplacingReader.ITokenResolver resolver) throws IOException, InterruptedException {
+        Reader reader = new TokenReplacingReader(new StringReader(text), resolver);
+        return IOUtil.readFromReader(reader);
+    }
+
+    //${deltix_home}\\..\\QuantOffice\\Bin
+
+    static class MapBasedTokenReplacer implements TokenReplacingReader.ITokenResolver {
+
+        private final Map<String,String> map = new HashMap<>();
+
+        MapBasedTokenReplacer (String dictionary) {
+            for (String nameValuePair : dictionary.split(";")) {
+                String [] nameValue = nameValuePair.split("=");
+                map.put(nameValue[0], nameValue[1]);
+            }
+        }
+
+        @Override
+        public String resolveToken(String token) {
+            return map.get(token);
+        }
+    }
+
 }
