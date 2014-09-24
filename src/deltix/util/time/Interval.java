@@ -3,6 +3,7 @@ package deltix.util.time;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import deltix.util.text.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.util.logging.Logger;
 
 /**
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
  * can be added to, or subtracted from, a date. This class is immutable.
  */
 @XmlJavaTypeAdapter (Interval.StringIntervalAdapter.class)
-public abstract class Interval {
+public abstract class Interval implements Serializable {
     public static class StringIntervalAdapter extends XmlAdapter<String, Interval> {
         public Interval unmarshal(String v) throws Exception {
             return Interval.valueOf(v);
