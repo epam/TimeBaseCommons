@@ -1344,5 +1344,19 @@
       <AlphabeticCode>ZWD</AlphabeticCode>
       <Sign>Z$</Sign>
     </Currency>
+
+    <!--
+     As of October 2014 CNH currency (Chinese yuan in HK, renminbi offshore) doesn't have official ISO code.
+     As temporary solution, we are adding a fake code 777.
+     Please make sure you update orders/executions database if we change this in the future -->
+      <Currency>
+          <NumericCode>777</NumericCode>
+          <Country>CHINA</Country>
+          <Name>Yuan Renminbi</Name>
+          <AlphabeticCode>CNH</AlphabeticCode>
+          <Sign>¥</Sign>
+      </Currency>
+
+
   </Currencies>
 </CurrencyManager>
