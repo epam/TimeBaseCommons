@@ -29,6 +29,11 @@ public final class Periodicity {
         this.type = type;
     }
 
+    public Periodicity(Periodicity p) {
+        this.type = p.type;
+        this.interval = p.interval != null ? Interval.parse(p.interval.toMilliseconds()) : null;
+    }
+
     public Interval         getInterval() {
         return interval;
     }

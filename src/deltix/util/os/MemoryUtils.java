@@ -3,7 +3,9 @@ package deltix.util.os;
 import deltix.util.io.IOUtil;
 import deltix.util.lang.Util;
 
+import javax.management.*;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,9 +32,21 @@ public class MemoryUtils {
         } catch (InterruptedException e) {
             return null;
         }
-
     }
 
+    public static String        getTotalPhysicalMemoryWindows() {
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+
+        Object attribute;
+        try {
+            attribute = mBeanServer.getAttribute(new ObjectName("java.lang","type","OperatingSystem"), "TotalPhysicalMemorySize");
+            return attribute != null ? attribute.toString() : null;
+        } catch (JMException e) {
+            Util.LOGGER.log(Level.WARNING, "Error getting total memory", e);
+        }
+
+        return null;
+    }
 
     public static String getTotalPhysicalMemoryWindows(ProcessBuilder pb) throws IOException, InterruptedException {
         //wmic ComputerSystem get TotalPhysicalMemory
@@ -114,6 +128,12 @@ public class MemoryUtils {
         } catch (Throwable e) {
             Util.LOGGER.log(Level.SEVERE, String.format("Close process excpetion: %s", e.getMessage()));
         }
+    }
+
+    public static void main(String[] args) throws Throwable {
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang","type","OperatingSystem"), "TotalPhysicalMemorySize");
+        System.out.println("Total memory: "+ attribute.toString() +" B");
     }
 
 
