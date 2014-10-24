@@ -38,7 +38,11 @@ public class BitIntegerSet extends BitSet implements MutableIntegerSet {
 
         public boolean          hasMoreElements () {
             return (mCurrentBit >= 0);
-        }        
+        }
+
+        public void             reset() {
+            mCurrentBit = nextSetBit (0);
+        }
     }
     
     public int []                   toIntArray () {

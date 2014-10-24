@@ -20,7 +20,12 @@ public class SingleElementIntegerSet implements ReadOnlyIntegerSet {
 
         public boolean      hasMoreElements () {            
             return (mHasMore);
-        }        
+        }
+
+        @Override
+        public void reset() {
+            mHasMore = true;
+        }
     }
     
     private int         mElement;

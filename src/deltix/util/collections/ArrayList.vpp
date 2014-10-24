@@ -882,6 +882,11 @@ public final class ${name}ArrayList
     	public ${type} next${name_abbr}Element () {
     		return elementData [mIndex++];
     	}
+
+    	@Override
+        public void     reset() {
+            mIndex = 0;
+        }
     }
 
     public ${name}Enumeration ${type}Elements () {
