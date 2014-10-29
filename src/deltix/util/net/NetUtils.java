@@ -36,6 +36,14 @@ public class NetUtils {
             throw new RuntimeException (x);
         }
     }
+
+    public String           decodeUrl (String s) {
+        try {
+            return (URLDecoder.decode(s, "UTF-8"));
+        } catch (UnsupportedEncodingException x) {
+            throw new RuntimeException (x);
+        }
+    }
     
     public String           formatUrl (
         String                  protocol, 
@@ -170,8 +178,10 @@ public class NetUtils {
     }
 
     public void authorize (URLConnection connection, String user, String pass){
+        String ticket = user + ":" + pass;
+
         connection.setRequestProperty("Authorization", "Basic " +
-                DatatypeConverter.printBase64Binary((user + ":" + pass).getBytes()));
+                DatatypeConverter.printBase64Binary(ticket.getBytes()));
     }
     
     public static void      main (String [] args) throws Exception {
