@@ -47,6 +47,10 @@ public abstract class Interval implements Serializable {
         }
     }
 
+    /**
+     * Parse a QQL string.
+     * @param text  The QQL representation of the interval.
+     */
     public static Interval          valueOf (String text) {
         return (valueOf ((CharSequence) text));
     }
@@ -58,20 +62,25 @@ public abstract class Interval implements Serializable {
     public static Interval          valueOf (CharSequence text) {
         if (text == null)
             return (null);
-        
-        int         end = text.length ();
+        return valueOf(text, 0, text.length());
+    }
+
+    public static Interval          valueOf (CharSequence text, int start, int end) {
+        if (text == null)
+            return (null);
+
         if (end == 0)
             return null;
-        
-        if (end < 2)
+
+        if (end - start < 2)
             throw new IllegalArgumentException ("Interval must consist of at least two characters. For example: \"1D\" or \"5Y\", got: " + text.toString ());
-        
-        long        num = CharSequenceParser.parseLong (text, 0, end - 1);
+
+        long        num = CharSequenceParser.parseLong (text, start, end - 1);
         TimeUnit    unit = TimeUnit.fromSuffix (text.charAt (end - 1));
-        
+
         return (create (num, unit));
     }
-    
+
     /**
      * Returns whether this interval is zero.
      */
