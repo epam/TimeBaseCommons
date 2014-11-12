@@ -756,7 +756,7 @@ public class StringUtils {
                 int j = i + 1;
                 int end = j + targetCount - 1;
                 for (int k = 1; j < end && s1.charAt(j) ==
-                         s2.charAt(k); j++, k++);
+                        s2.charAt(k); j++, k++);
 
                 if (j == end) {
                     /* Found whole string. */
@@ -764,6 +764,17 @@ public class StringUtils {
                 }
             }
         }
+        return -1;
+    }
+
+    public static int           indexOf (final CharSequence s, final char c) {
+        final int length = s.length();
+
+        for (int i = 0; i < length; i++) {
+            if (s.charAt(i) == c)
+                return i;
+        }
+
         return -1;
     }
 
@@ -782,12 +793,11 @@ public class StringUtils {
         return (true);
     }
 
-    public static boolean equals ( String one,
-	                                     String two ) {
-		if (one == null) {
-			return two == null || two.equals ( one );
-		}
-		return one == two || one.equals ( two );
+    public static boolean equals (String one, String two) {
+		if (one == null)
+			return two == null;
+
+		return one == two || one.equals(two);
 	}
 
     public static void main (String [] args) {
