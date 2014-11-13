@@ -5,7 +5,9 @@ package deltix.util.collections.hash;
  */
 public class PerfectHashCodeComputer extends HashCodeComputer {
     public static final HashCodeComputer     INSTANCE = new PerfectHashCodeComputer ();
-    
+
+    private static final long serialVersionUID = 1L;
+
     protected PerfectHashCodeComputer () { }
     
     @Override
@@ -18,5 +20,9 @@ public class PerfectHashCodeComputer extends HashCodeComputer {
         }
                 
         return (super.modHashCode (hc, mod));
-    }   
+    }
+
+    private Object readResolve() {
+        return INSTANCE;
+    }
 }

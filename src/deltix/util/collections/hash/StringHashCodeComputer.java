@@ -2,12 +2,11 @@ package deltix.util.collections.hash;
 
 import deltix.util.lang.*;
 
-/**
- *
- */
 public class StringHashCodeComputer extends HashCodeComputer {
     public static final StringHashCodeComputer     INSTANCE = new StringHashCodeComputer ();
-    
+
+    private static final long serialVersionUID = 1L;
+
     private StringHashCodeComputer () {        
     }
     
@@ -16,4 +15,7 @@ public class StringHashCodeComputer extends HashCodeComputer {
         return computeModHashCode (Util.hashCode ((CharSequence) key), mod);
     }
 
+    private Object readResolve() {
+        return INSTANCE;
+    }
 }

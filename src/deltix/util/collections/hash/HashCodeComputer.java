@@ -1,11 +1,9 @@
 package deltix.util.collections.hash;
 
+import java.io.Serializable;
 import java.util.*;
 
-/**
- *
- */
-public abstract class HashCodeComputer {
+public abstract class HashCodeComputer implements Serializable {
     protected HashCodeComputer () { }
     
     public int              modHashCode (Object key, int mod) {

@@ -1,11 +1,10 @@
 package deltix.util.collections.hash;
 
-/**
- *
- */
 public class BXHashCodeComputer extends HashCodeComputer {
     public static final HashCodeComputer     INSTANCE = new BXHashCodeComputer ();
-    
+
+    private static final long serialVersionUID = 1L;
+
     protected BXHashCodeComputer () { }
     
     @Override
@@ -18,5 +17,9 @@ public class BXHashCodeComputer extends HashCodeComputer {
         }
         
         return (super.modHashCode (key, mod));        
-    }   
+    }
+
+    private Object readResolve() {
+        return INSTANCE;
+    }
 }
