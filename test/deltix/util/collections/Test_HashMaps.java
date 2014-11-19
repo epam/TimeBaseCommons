@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
  *
  */
 public class Test_HashMaps {
+
     private static class HorribleLong {
         public final long  value;
 
@@ -285,5 +286,38 @@ public class Test_HashMaps {
 //                    assertTrue (map.getCapacity () < check.size () / shrinkFactor);        
             }
         }                        
-    }       
+    }
+
+    @Test
+    public void testReset() {
+        LongToObjectHashMap<String> map = new LongToObjectHashMap<String>();
+
+        for (long i = 0; i < 10; i++)
+            map.put(i, String.valueOf(i));
+
+        ArrayList<String> dump = new ArrayList<String>();
+
+        ElementsEnumeration<String> e = map.elements();
+
+        while (e.hasMoreElements())
+            dump.add(e.nextElement());
+
+        for (int i = 0; i < map.size(); i++)
+            assertTrue(dump.contains(String.valueOf(i)));
+
+        dump.clear();
+
+        for (long i = 10; i < 20; i++)
+            map.put(i, String.valueOf(i));
+
+        e.reset();
+
+        assertTrue(e.hasMoreElements());
+
+        while (e.hasMoreElements())
+            dump.add(e.nextElement());
+
+        for (int i = 0; i < map.size(); i++)
+            assertTrue(dump.contains(String.valueOf(i)));
+    }
 }
