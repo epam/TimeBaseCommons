@@ -63,7 +63,7 @@ public class NullLogEntry implements LogEntry {
     }
 
     @Override
-    public AppendableEntry append(Enum value) {
+    public LogEntry append(Enum value) {
         return this;
     }
 

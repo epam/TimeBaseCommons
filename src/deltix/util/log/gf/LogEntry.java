@@ -30,6 +30,9 @@ public interface LogEntry extends AppendableEntry {
     @Override
     LogEntry append(Loggable value);
 
+    @Override
+    LogEntry append(Enum value);
+
     LogEntry append(Throwable e);
 
     void commit();
