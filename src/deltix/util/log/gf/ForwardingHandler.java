@@ -1,50 +1,26 @@
 package deltix.util.log.gf;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-
-import deltix.util.text.SimpleMessageFormat;
+import org.gflogger.GFLog;
+import org.gflogger.GFLogEntry;
+import org.gflogger.GFLogFactory;
+import org.gflogger.LogLevel;
+import deltix.util.log.LoggerUtils;
 
 /**
- * Forwards messages from java.util.logging.Logger to deltix.util.log.gf.Logger
+ * Forwards messages from JUL to GFL
  */
 public class ForwardingHandler extends Handler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ForwardingHandler.class.getName());
-    private static final Map<java.util.logging.Level, Level> JLEVEL_TO_LEVEL = Collections.unmodifiableMap(
-            new HashMap<java.util.logging.Level, Level>() {
-                {
-                    put(java.util.logging.Level.ALL, Level.TRACE);
-                    put(java.util.logging.Level.FINEST, Level.TRACE);
-                    put(java.util.logging.Level.FINER, Level.TRACE);
-                    put(java.util.logging.Level.FINE, Level.DEBUG);
-                    put(java.util.logging.Level.CONFIG, Level.DEBUG);
-                    put(java.util.logging.Level.INFO, Level.INFO);
-                    put(java.util.logging.Level.WARNING, Level.WARN);
-                    put(java.util.logging.Level.SEVERE, Level.ERROR);
-                    put(java.util.logging.Level.OFF, Level.FATAL);
-
-                    // deltix level (TomcatCmd.LEVEL_STARTUP) - NB: do not reference TomcatCmd
-                    put(new java.util.logging.Level("STARTUP", java.util.logging.Level.SEVERE.intValue() - 10) { }, Level.INFO);
-                }
-            }
-    );
-
     @Override
     public void publish(LogRecord record) {
-        Level level = getLevel(record.getLevel());
+        GFLog logger = GFLogFactory.getLog(record.getLoggerName());
+        LogLevel level = LoggerUtils.getGFLLevel(record.getLevel());
+        GFLogEntry entry = log(level, logger);
 
-        if (LOGGER.isLoggable(level)) {
-            String msg = getMsg(record);
-            LogEntry entry = LOGGER.level(level).append(msg);
-
-            Throwable exception = record.getThrown();
-            if (exception != null)
-                entry.append(exception);
-
+        if (entry != null) {
+            Formatter.format(record, entry);
             entry.commit();
         }
     }
@@ -59,36 +35,107 @@ public class ForwardingHandler extends Handler {
         // skip
     }
 
-    private static Level getLevel(java.util.logging.Level jLevel) {
-        assert jLevel != null;
-
-        Level level = JLEVEL_TO_LEVEL.get(jLevel);
-        if (level == null) {
-            if (jLevel.intValue() < java.util.logging.Level.FINE.intValue())
-                level = Level.TRACE;
-            else if (jLevel.intValue() < java.util.logging.Level.INFO.intValue())
-                level = Level.DEBUG;
-            else if (jLevel.intValue() < java.util.logging.Level.WARNING.intValue())
-                level = Level.INFO;
-            else if (jLevel.intValue() < java.util.logging.Level.SEVERE.intValue())
-                level = Level.WARN;
-            else level = Level.ERROR;
+    private static GFLogEntry log(LogLevel level, GFLog logger) {
+        switch (level) {
+            case TRACE:
+                return logger.isTraceEnabled() ? logger.trace() : null;
+            case DEBUG:
+                return logger.isDebugEnabled() ? logger.debug() : null;
+            case INFO:
+                return logger.isInfoEnabled() ? logger.info() : null;
+            case WARN:
+                return logger.isWarnEnabled() ? logger.warn() : null;
+            case ERROR:
+                return logger.isErrorEnabled() ? logger.error() : null;
+            case FATAL:
+                return logger.isFatalEnabled() ? logger.fatal() : null;
+            default:
+                throw new IllegalArgumentException(level.toString());
         }
-
-        return level;
     }
 
-    private static String getMsg(LogRecord record) {
-        StringBuilder buffer = new StringBuilder(512);
+    private static final class Formatter {
 
-        String msg = record.getMessage();
-        Object[] params = record.getParameters();
-        if (params != null && params.length > 0)
-            SimpleMessageFormat.format(buffer, msg, params);
-        else
-            buffer.append(msg);
+        private Formatter() {
+            throw new AssertionError("Not for you!");
+        }
 
-        return buffer.toString();
+        public static void format(LogRecord record, GFLogEntry entry) {
+            appendMessage(record, entry);
+            appendExceptionIfAny(record, entry);
+        }
+
+        private static void appendMessage(LogRecord record, GFLogEntry entry) {
+            String message = record.getMessage();
+            Object[] params = record.getParameters();
+            if (message == null)
+                entry.append(message);
+            else
+                appendMessage(message, params, entry);
+        }
+
+        private static void appendExceptionIfAny(LogRecord record, GFLogEntry entry) {
+            Throwable exception = record.getThrown();
+            if (exception != null)
+                entry.append(exception);
+        }
+
+        private static void appendMessage(String message, Object[] params, GFLogEntry entry) {
+            for (int index = 0; index < message.length(); index++) {
+                char character = message.charAt(index);
+                if (character == '\'') {
+                    int endQuoteIndex = message.indexOf('\'', index + 1);
+                    if (endQuoteIndex == -1) {
+                        entry.append('\''); // this is just a single quote
+                    } else {
+                        if (index + 1 == endQuoteIndex)
+                            entry.append('\'');  // '' represents a single quote
+                        else
+                            entry.append(message, index + 1, endQuoteIndex);
+
+                        index = endQuoteIndex;
+                    }
+                } else if (character == '{') {
+                    int closeBraceIndex = message.indexOf('}', index + 1);
+                    if (closeBraceIndex == -1)
+                        throw new InvalidFormatException(message, index, "Missing close curly brace '}'");
+
+                    if (index + 1 == closeBraceIndex)
+                        throw new InvalidFormatException(message, index, "Missing argument number inside braces {}");
+
+                    int paramIndex = getInteger(message, index + 1, closeBraceIndex);
+                    if (paramIndex >= params.length)
+                        throw new InvalidFormatException(message, index, "Formatting string refers to non-existing argument #" + paramIndex + " when only " + params.length + " arguments are passed");
+
+                    entry.append(params[paramIndex]);
+                    index = closeBraceIndex;
+                } else {
+                    entry.append(character);
+                }
+            }
+        }
+
+        private static int getInteger(String format, int start, int end) {
+            int integer = 0;
+            for (; start < end; start++) {
+                char character = format.charAt(start);
+                if (!Character.isDigit(character))
+                    throw new InvalidFormatException(format, start, "Argument index contains non-digit character: '" + character + '\'');
+
+                integer = 10 * integer + (character - '0');
+            }
+
+            return integer;
+        }
+
+        public static final class InvalidFormatException extends IllegalArgumentException {
+
+            public InvalidFormatException(String format, int pos, String error) {
+                super("Format error at position " + pos + ": " + error + ". Format string: \"" + format + '\"');
+            }
+
+        }
+
     }
 
 }
