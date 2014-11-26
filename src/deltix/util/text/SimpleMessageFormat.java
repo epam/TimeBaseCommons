@@ -1,5 +1,10 @@
 package deltix.util.text;
 
+import java.io.IOException;
+
+import deltix.util.io.IOUtil;
+import deltix.util.lang.Util;
+
 /**
  * Faster pragmatic alternative to Java's standard class MessageFormat.
  * <ul>
@@ -37,56 +42,58 @@ public class SimpleMessageFormat {
         return sb.toString();
     }
 
-    public static void format (StringBuilder sb, String format, Object []args) {
+    public static void format (Appendable sb, String format, Object []args) {
+        try {
+            final int len = format.length();
 
-           final int len = format.length();
+            for (int i=0; i < len; i++) {
+                final char ch = format.charAt(i);
+                if (ch == '\'') {
+                    final int quoteEnd = format.indexOf ('\'', i+1);
+                    if (quoteEnd < 0) {
+                        sb.append('\''); // this is just a single quote
+                    } else {
+                        if (i + 1 == quoteEnd)
+                             sb.append ('\'');  // '' represents a single quote
+                        else
+                             sb.append (format, i+1, quoteEnd);
+                        i = quoteEnd;
+                    }
+                } else
+                if (ch == '{') {
+                    int bracesEnd = format.indexOf('}', i+1);
+                    if (bracesEnd < 0)
+                        throw new InvalidFormatException(format, i, "Missing right brace '}'");
 
-           for (int i=0; i < len; i++) {
-               final char ch = format.charAt(i);
-               if (ch == '\'') {
-                   final int quoteEnd = format.indexOf ('\'', i+1);
-                   if (quoteEnd < 0) {
-                       sb.append('\''); // this is just a single quote
-                   } else {
-                       if (i + 1 == quoteEnd)
-                            sb.append ('\'');  // '' represents a single quote
-                       else
-                            sb.append (format, i+1, quoteEnd);
-                       i = quoteEnd;
-                   }
-               } else
-               if (ch == '{') {
-                   int bracesEnd = format.indexOf('}', i+1);
-                   if (bracesEnd < 0)
-                       throw new InvalidFormatException(format, i, "Missing right brace '}'");
+                    if (i + 1 == bracesEnd)
+                        throw new InvalidFormatException(format, i, "Missing argument number inside braces {}");
 
-                   if (i + 1 == bracesEnd)
-                       throw new InvalidFormatException(format, i, "Missing argument number inside braces {}");
+                    final int argIndex = digits(format, i+1, bracesEnd);
+                    if (argIndex > args.length-1)
+                        throw new InvalidFormatException(format, i, "Formatting string refers to non-existing argument #" + argIndex + " when only " + args.length + " arguments are passed");
 
-                   final int argIndex = digits(format, i+1, bracesEnd);
-                   if (argIndex > args.length-1)
-                       throw new InvalidFormatException(format, i, "Formatting string refers to non-existing argument #" + argIndex + " when only " + args.length + " arguments are passed");
+                    sb.append (String.valueOf (args[argIndex]));
+                    i = bracesEnd;
+                } else {
+                    sb.append (ch);
+                }
+            }
+        } catch (IOException e) {
+            throw Util.asRuntimeException(e); // you will never see
+        }
+    }
 
-                   sb.append (String.valueOf (args[argIndex]));
-                   i = bracesEnd;
-               } else {
-                   sb.append (ch);
-               }
-           }
-
-       }
-
-       private static int digits(String format, int start, int end) {
-           int result = 0;
-           while (start < end) {
-               char ch = format.charAt(start);
-               if (ch < '0' || ch > '9')
-                   throw new InvalidFormatException(format, start, "Argument index contains non-digit character: '" + ch +'\'');
-               result = 10*result + (ch - '0');
-               start++;
-           }
-           return result;
-       }
+    private static int digits(String format, int start, int end) {
+        int result = 0;
+        while (start < end) {
+            char ch = format.charAt(start);
+            if (ch < '0' || ch > '9')
+                throw new InvalidFormatException(format, start, "Argument index contains non-digit character: '" + ch + '\'');
+            result = 10 * result + (ch - '0');
+            start++;
+        }
+        return result;
+    }
 
 
     public static final class InvalidFormatException extends IllegalArgumentException {

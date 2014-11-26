@@ -2,11 +2,14 @@ package deltix.util.log.gf;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
+
 import org.gflogger.GFLog;
 import org.gflogger.GFLogEntry;
 import org.gflogger.GFLogFactory;
 import org.gflogger.LogLevel;
 import deltix.util.log.LoggerUtils;
+import deltix.util.text.SimpleMessageFormat;
 
 /**
  * Forwards messages from JUL to GFL
@@ -68,72 +71,16 @@ public class ForwardingHandler extends Handler {
         private static void appendMessage(LogRecord record, GFLogEntry entry) {
             String message = record.getMessage();
             Object[] params = record.getParameters();
-            if (message == null)
+            if (message == null || params == null || params.length == 0)
                 entry.append(message);
             else
-                appendMessage(message, params, entry);
+                SimpleMessageFormat.format(entry, message, params);
         }
 
         private static void appendExceptionIfAny(LogRecord record, GFLogEntry entry) {
             Throwable exception = record.getThrown();
             if (exception != null)
                 entry.append(exception);
-        }
-
-        private static void appendMessage(String message, Object[] params, GFLogEntry entry) {
-            for (int index = 0; index < message.length(); index++) {
-                char character = message.charAt(index);
-                if (character == '\'') {
-                    int endQuoteIndex = message.indexOf('\'', index + 1);
-                    if (endQuoteIndex == -1) {
-                        entry.append('\''); // this is just a single quote
-                    } else {
-                        if (index + 1 == endQuoteIndex)
-                            entry.append('\'');  // '' represents a single quote
-                        else
-                            entry.append(message, index + 1, endQuoteIndex);
-
-                        index = endQuoteIndex;
-                    }
-                } else if (character == '{') {
-                    int closeBraceIndex = message.indexOf('}', index + 1);
-                    if (closeBraceIndex == -1)
-                        throw new InvalidFormatException(message, index, "Missing close curly brace '}'");
-
-                    if (index + 1 == closeBraceIndex)
-                        throw new InvalidFormatException(message, index, "Missing argument number inside braces {}");
-
-                    int paramIndex = getInteger(message, index + 1, closeBraceIndex);
-                    if (paramIndex >= params.length)
-                        throw new InvalidFormatException(message, index, "Formatting string refers to non-existing argument #" + paramIndex + " when only " + params.length + " arguments are passed");
-
-                    entry.append(params[paramIndex]);
-                    index = closeBraceIndex;
-                } else {
-                    entry.append(character);
-                }
-            }
-        }
-
-        private static int getInteger(String format, int start, int end) {
-            int integer = 0;
-            for (; start < end; start++) {
-                char character = format.charAt(start);
-                if (!Character.isDigit(character))
-                    throw new InvalidFormatException(format, start, "Argument index contains non-digit character: '" + character + '\'');
-
-                integer = 10 * integer + (character - '0');
-            }
-
-            return integer;
-        }
-
-        public static final class InvalidFormatException extends IllegalArgumentException {
-
-            public InvalidFormatException(String format, int pos, String error) {
-                super("Format error at position " + pos + ": " + error + ". Format string: \"" + format + '\"');
-            }
-
         }
 
     }
