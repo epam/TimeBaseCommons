@@ -31,7 +31,7 @@ public final class Periodicity {
 
     public Periodicity(Periodicity p) {
         this.type = p.type;
-        this.interval = p.interval != null ? Interval.parse(p.interval.toMilliseconds()) : null;
+        this.interval = p.interval != null ? Interval.create(p.interval.getNumUnits(), p.interval.getUnit()) : null;
     }
 
     public Interval         getInterval() {
@@ -75,6 +75,13 @@ public final class Periodicity {
             return String.valueOf(type);
 
         return interval.toString();
+    }
+
+    public String toHumanString() {
+        if (interval == null)
+            return String.valueOf(type);
+
+        return interval.toHumanString();
     }
 
     public enum Type {
