@@ -1,37 +1,45 @@
 package deltix.util.collections;
 
+import deltix.util.collections.generated.ObjectArrayList;
+
 import java.util.*;
 
 /**
- *  Pool of objects.
+ *  Simple Pool of objects. Is Not Thread-Safe.
  */
-public class ObjectPool <T> {
-    private Map <Class <?>, ArrayList <T>>      pool =
-        new HashMap <Class <?>, ArrayList <T>> ();
-    
-    public T            checkOut (Class <?> cls) {
-        ArrayList <T>       clsPool = pool.get (cls);
-        
-        if (clsPool == null)
-            return (null);
-        
-        int                 size = clsPool.size ();
-        
-        if (size == 0)
-            return (null);
-        
-        return (clsPool.remove (size - 1));
+public class ObjectPool<T> {
+
+    private final ObjectArrayList<T> pool;
+    private int availIdx = 0;
+
+    public ObjectPool() {
+        this(5);
     }
-    
-    public void         checkIn (T object) {
-        Class <?>           cls = object.getClass ();
-        ArrayList <T>       clsPool = pool.get (cls);
-        
-        if (clsPool == null) {
-            clsPool = new ArrayList <T> ();
-            pool.put (cls, clsPool);
-        }
-        
-        clsPool.add (object);
+
+    public ObjectPool(int capacity) {
+        pool = new ObjectArrayList<>(capacity);
+    }
+
+    public final T          borrow() {
+        if (availIdx < pool.size())
+            return pool.get(availIdx++);
+
+        return null;
+    }
+
+    public void             add(T used) {
+
+        if (availIdx < pool.size())
+            pool.insert(availIdx++, 1, used);
+        else
+            pool.add(used);
+    }
+
+    public final void       reset() {
+        availIdx = 0;
+    }
+
+    public final void       clear() {
+        pool.clear();
     }
 }

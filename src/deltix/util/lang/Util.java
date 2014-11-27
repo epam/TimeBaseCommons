@@ -1484,6 +1484,17 @@ public class Util {
         return (mem);
     }
 
+    public static int          availableMemoryPercent () {
+        final Runtime rt = Runtime.getRuntime();
+        final long maxMem = rt.maxMemory();
+        final long freeMem = rt.freeMemory();
+        final long currentMem = rt.totalMemory();
+        final long usedMem = currentMem - freeMem;
+        final long availMem = maxMem - usedMem;
+
+        return (int) (availMem * 100 / maxMem);
+    }
+
     public static boolean       asAdministrator () {
         // attempt to set a preference
         try {
