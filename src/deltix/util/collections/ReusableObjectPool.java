@@ -9,10 +9,9 @@ import deltix.util.lang.Util;
 
 public class ReusableObjectPool<T> implements Closeable {
 
-    private final Object lock = new Object();
-    private final List<T> freeItems = new ArrayList<T>();
-    private final ItemFactory<T> factory;
-    private int lastItem;
+    private final List<T>           freeItems = new ArrayList<>();
+    private final ItemFactory<T>    factory;
+    private int                     lastItem;
 
     public ReusableObjectPool(ItemFactory<T> factory) {
         this(factory, 256);
@@ -28,37 +27,31 @@ public class ReusableObjectPool<T> implements Closeable {
         lastItem = freeItems.size() - 1;
     }
 
-    public T get() {
-        synchronized (lock) {
-            return (lastItem < 0) ? factory.createItem() : freeItems.get(lastItem--);
+    public synchronized T get() {
+        return (lastItem < 0) ? factory.createItem() : freeItems.get(lastItem--);
+    }
+
+    public synchronized void release(T item) {
+        if (++lastItem >= freeItems.size()) {
+            freeItems.add(item);
+        } else {
+            freeItems.set(lastItem, item);
         }
     }
-
-    public void release(T item) {
-        synchronized (lock) {
-            if (++lastItem >= freeItems.size()) {
-                freeItems.add(item);
-            } else {
-                freeItems.set(lastItem, item);
-            }
-        }
-    }
-
-    public interface ItemFactory<T> {
-        T createItem();
-    }
-
 
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         // close items in the pool and make the pool unusable
-        synchronized (lock) {
-            for (int i = lastItem; i >= 0; i--) {
-                final Object item = freeItems.get(i);
-                if (item instanceof Closeable)
-                    Util.close((Closeable) item);
+        for (int i = lastItem; i >= 0; i--) {
+            final Object item = freeItems.get(i);
+            if (item instanceof Closeable) {
+                Util.close((Closeable) item);
             }
-            freeItems.clear();
         }
+        freeItems.clear();
     }
+    
+    public interface ItemFactory<T> {
+        T createItem();
+    }    
 }
