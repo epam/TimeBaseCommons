@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
+/** Establishes connection to given server and start sending sample FIX message (each message will have unique FIX tag 34) */
 class TCPSender extends Thread {
     private static final int MAX_RATE = 5000;
 
