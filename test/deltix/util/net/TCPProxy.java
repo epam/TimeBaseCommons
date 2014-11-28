@@ -63,6 +63,7 @@ public class TCPProxy {
         }
     }
 
+    /** Connects to source host:port and re-transmits received data to proxyHost:proxyPort */
     private static void runClient(String srcHost, int srcPort, String proxyHost, int proxyPort) throws IOException {
         Socket input = new Socket (srcHost, srcPort);
         input.setKeepAlive(true);
@@ -76,24 +77,30 @@ public class TCPProxy {
         new Proxy(input.getInputStream (), output.getOutputStream ()).start();
     }
 
+    /** Launches server on bindPort and re-transmits received data to proxyHost:proxyPort */
     private static void runServer(int bindPort, String proxyHost, int proxyPort) throws IOException {
         ServerSocket ss = new ServerSocket (bindPort);
         System.out.println ("Proxy is listening on port " + ss.getLocalPort ());
         while (true) {
             Socket input = ss.accept ();
+            input.setTcpNoDelay(true);
             System.out.println ("Accepted connection from new source: " + input);
             Socket output = new Socket (proxyHost, proxyPort);
+            output.setTcpNoDelay(true);
             new Proxy(input.getInputStream (), output.getOutputStream ()).start();
         }
     }
 
+    /** Connects to proxyHost:proxyPort and re-transmit received data to clients who connect on bindPort */
     private static void runServerReverse(int bindPort, String proxyHost, int proxyPort) throws IOException {
         ServerSocket ss = new ServerSocket (bindPort);
         System.out.println ("ReverseProxy is listening on port " + ss.getLocalPort ());
         while (true) {
             Socket output = ss.accept ();
+            output.setTcpNoDelay(true);
             System.out.println ("Accepted connection from new destination: " + output);
             Socket input = new Socket (proxyHost, proxyPort);
+            input.setTcpNoDelay(true);
             new Proxy(input.getInputStream (), output.getOutputStream ()).start();
         }
     }
