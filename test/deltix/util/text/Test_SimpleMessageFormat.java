@@ -11,7 +11,7 @@ import java.text.MessageFormat;
  *         Date: Jul 22, 2009 5:19:17 PM
  */
 
-public class TestSimpleMessageFormat {
+public class Test_SimpleMessageFormat {
 
 
     @Test
