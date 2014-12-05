@@ -8,6 +8,12 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Server socket that discards incoming messages and collects avg msg/sec statistic. Used in latency experiments.
+ * Usage: java deltix.util.net.TCPNull port
+ *
+ *
+ */
 public class TCPNull {
 
     private static final int intervalInMillis = 60000;
