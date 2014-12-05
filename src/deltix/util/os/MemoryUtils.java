@@ -17,60 +17,58 @@ import java.util.regex.Pattern;
 public class MemoryUtils {
 
     public static String getTotalPhysicalMemory() {
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.redirectErrorStream(true);
+
         try {
-            if (Util.IS_WINDOWS_OS) {
+            if (Util.IS_WINDOWS_OS)
+                return getTotalPhysicalMemoryWindows();
+            else
+                return getTotalPhysicalMemoryUnix();
 
-                return getTotalPhysicalMemoryWindows(pb);
-
-            } else {
-                return getTotalPhysicalMemoryUnix(pb);
-            }
-        } catch (IOException e) {
-            return null;
-        } catch (InterruptedException e) {
-            return null;
-        }
-    }
-
-    public static String        getTotalPhysicalMemoryWindows() {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-
-        Object attribute;
-        try {
-            attribute = mBeanServer.getAttribute(new ObjectName("java.lang","type","OperatingSystem"), "TotalPhysicalMemorySize");
-            return attribute != null ? attribute.toString() : null;
-        } catch (JMException e) {
+        } catch (IOException | InterruptedException e) {
             Util.LOGGER.log(Level.WARNING, "Error getting total memory", e);
         }
 
         return null;
     }
 
-    public static String getTotalPhysicalMemoryWindows(ProcessBuilder pb) throws IOException, InterruptedException {
-        //wmic ComputerSystem get TotalPhysicalMemory
+    public static String        getTotalPhysicalMemoryWindows() {
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
-        pb.command().add("wmic");
-        pb.command().add("ComputerSystem");
-        pb.command().add("get");
-        pb.command().add("TotalPhysicalMemory");
-
-        String output = exec(pb, false);
-        if (output != null) {
-            Pattern pattern = Pattern.compile("\\d+");
-            Matcher m = pattern.matcher(output);
-            if (m.find()) {
-                return m.group();
-            }
+        try {
+            Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"), "TotalPhysicalMemorySize");
+            return attribute != null ? attribute.toString() : null;
+        } catch (JMException e) {
+            Util.LOGGER.log(Level.WARNING, "Error getting total memory: ", e);
         }
 
         return null;
-
     }
 
-    public static String getTotalPhysicalMemoryUnix(ProcessBuilder pb) throws IOException, InterruptedException {
+//    public static String getTotalPhysicalMemoryWindows(ProcessBuilder pb) throws IOException, InterruptedException {
+//        //wmic ComputerSystem get TotalPhysicalMemory
+//
+//        pb.command().add("wmic");
+//        pb.command().add("ComputerSystem");
+//        pb.command().add("get");
+//        pb.command().add("TotalPhysicalMemory");
+//
+//        String output = exec(pb, false);
+//        if (output != null) {
+//            Pattern pattern = Pattern.compile("\\d+");
+//            Matcher m = pattern.matcher(output);
+//            if (m.find()) {
+//                return m.group();
+//            }
+//        }
+//
+//        return null;
+//    }
+
+    public static String getTotalPhysicalMemoryUnix() throws IOException, InterruptedException {
         //cat /proc/meminfo
+
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.redirectErrorStream(true);
 
         pb.command().add("cat");
         pb.command().add("/proc/meminfo");
@@ -85,7 +83,6 @@ public class MemoryUtils {
         }
 
         return null;
-
     }
 
     private static String exec(ProcessBuilder pb, boolean needWait)
