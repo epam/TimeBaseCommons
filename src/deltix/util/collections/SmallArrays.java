@@ -13,7 +13,7 @@ public class SmallArrays {
 
         switch (length) {
             default:
-                for (int code = length - 1; code > 7; code--)
+                for (int code = length - 1; code >= 7; code--)
                     if (obj.equals(elements [code]))
                         return (code);
 
