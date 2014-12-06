@@ -128,9 +128,8 @@ public class MemoryUtils {
     }
 
     public static void main(String[] args) throws Throwable {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang","type","OperatingSystem"), "TotalPhysicalMemorySize");
-        System.out.println("Total memory: "+ attribute.toString() +" B");
+        String memory = getTotalPhysicalMemoryWindows();
+        System.out.println("Total memory: "+ memory +" B");
     }
 
 
