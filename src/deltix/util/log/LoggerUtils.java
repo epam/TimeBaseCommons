@@ -4,14 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+
 import org.gflogger.LogLevel;
 
 
 public final class LoggerUtils {
-
-    private LoggerUtils() {
-        throw new AssertionError("Not for you!");
-    }
 
     private static final Map<Level, LogLevel> JUL_TO_GFLLEVEL = Collections.unmodifiableMap(
             new HashMap<Level, LogLevel>() {
@@ -33,6 +30,10 @@ public final class LoggerUtils {
             }
     );
 
+    private LoggerUtils() {
+        throw new AssertionError("Not for you!");
+    }
+
     public static LogLevel getGFLLevel(Level julLevel) {
         assert julLevel != null;
 
@@ -51,6 +52,25 @@ public final class LoggerUtils {
         }
 
         return gflLevel;
+    }
+
+    public static Level getJULLevel(LogLevel gflLevel) {
+        switch (gflLevel) {
+            case TRACE:
+                return Level.FINEST;
+            case DEBUG:
+                return Level.FINE;
+            case INFO:
+                return Level.INFO;
+            case WARN:
+                return Level.WARNING;
+            case ERROR:
+                return Level.SEVERE;
+            case FATAL:
+                return Level.OFF;
+            default:
+                throw new IllegalArgumentException("Unsupported gflogger level: " + gflLevel);
+        }
     }
 
 }
