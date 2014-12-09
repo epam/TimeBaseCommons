@@ -9,7 +9,21 @@ public final class Shutdown {
         synchronized (lock) {
             terminated = true;
         }
+
         exit(1001);
+    }
+
+    public static void          asyncTerminate() {
+        synchronized (lock) {
+            terminated = true;
+        }
+
+        new Thread() {
+            @Override
+            public void run() {
+                exit(1001);
+            }
+        }.start();
     }
 
     public static boolean       isTerminated() {
