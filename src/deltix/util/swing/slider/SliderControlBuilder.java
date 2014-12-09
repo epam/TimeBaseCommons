@@ -51,7 +51,7 @@ public class SliderControlBuilder {
         slider.setPaintListener(new DrawnSlider.PaintListener() {
             @Override
             public void draw() {
-                panel.repaint();
+                //panel.repaint();
             }
         });
 

@@ -600,5 +600,39 @@ public class DrawnSliderUI extends BasicRangeSliderUI{
         }
     }
 
+    /*
+    * this method copied from superclass to switch off repainting on mouse moved event
+    */
+    @Override
+    protected void setMouseRollover(int var1) {
+        switch (var1) {
+            case 0:
+                rollover1 = false;
+                rollover2 = false;
+                break;
+            case 1:
+                rollover1 = true;
+                rollover2 = false;
+                break;
+            case 2:
+                rollover2 = true;
+                rollover1 = false;
+            case 3:
+            case 5:
+            case 6:
+            default:
+                break;
+            case 4:
+            case 7:
+                rollover1 = true;
+                rollover2 = true;
+        }
+
+        //this.slider.repaint(this.thumbRect);
+        Point var2 = adjustThumbForHighValue();
+        //this.slider.repaint(this.thumbRect);
+        restoreThumbForLowValue(var2);
+    }
+
 }
 
