@@ -147,7 +147,7 @@ public class ThrottlingExecutor extends Thread {
                 boolean arm = next.run();
                 next.complete(this, arm);
 
-            } catch (UncheckedInterruptedException x) {
+            } catch (UncheckedInterruptedException | InterruptedException x) {
                 throw x;
             } catch (Throwable x) {
                 if (handler == null)
