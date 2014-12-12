@@ -15,7 +15,7 @@ public final class LoggerUtils {
                 {
                     put(Level.ALL, LogLevel.TRACE);
                     put(Level.FINEST, LogLevel.TRACE);
-                    put(Level.FINER, LogLevel.TRACE);
+                    put(Level.FINER, LogLevel.DEBUG);
                     put(Level.FINE, LogLevel.DEBUG);
                     put(Level.CONFIG, LogLevel.DEBUG);
                     put(Level.INFO, LogLevel.INFO);
@@ -39,7 +39,7 @@ public final class LoggerUtils {
 
         LogLevel gflLevel = JUL_TO_GFLLEVEL.get(julLevel);
         if (gflLevel == null) {
-            if (julLevel.intValue() < Level.FINE.intValue())
+            if (julLevel.intValue() < Level.FINER.intValue())
                 gflLevel = LogLevel.TRACE;
             else if (julLevel.intValue() < Level.INFO.intValue())
                 gflLevel = LogLevel.DEBUG;
@@ -59,7 +59,7 @@ public final class LoggerUtils {
             case TRACE:
                 return Level.FINEST;
             case DEBUG:
-                return Level.FINE;
+                return Level.FINER;
             case INFO:
                 return Level.INFO;
             case WARN:
