@@ -3,7 +3,9 @@ package deltix.util.io;
 import deltix.util.codec.HexBinCharEncoder;
 import deltix.util.codec.HexCharBinDecoder;
 import java.io.*;
+import java.util.logging.Level;
 
+import deltix.util.lang.Util;
 import deltix.util.memory.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -240,6 +242,8 @@ public class IOUtil extends BasicIOUtil {
             
             return (new String (cleartext, csname));
         } catch (Exception x) {
+            Util.LOGGER.log(Level.FINE, x.getMessage(), x);
+
             return (NOT_DECRYPTED);
         }                
     }
