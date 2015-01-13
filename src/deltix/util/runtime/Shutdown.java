@@ -10,7 +10,7 @@ public final class Shutdown {
             terminated = true;
         }
 
-        exit(1001);
+        System.exit(1001);
     }
 
     public static void          asyncTerminate() {
@@ -18,12 +18,7 @@ public final class Shutdown {
             terminated = true;
         }
 
-        new Thread() {
-            @Override
-            public void run() {
-                exit(1001);
-            }
-        }.start();
+        asyncExit(1001);
     }
 
     public static boolean       isTerminated() {
@@ -32,7 +27,13 @@ public final class Shutdown {
         }
     }
 
-    public static void          exit(int code) {
-        System.exit(code);
+    public static void          asyncExit(final int code) {
+
+        new Thread() {
+            @Override
+            public void run() {
+                System.exit(code);
+            }
+        }.start();
     }
 }
