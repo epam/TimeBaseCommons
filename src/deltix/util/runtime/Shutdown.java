@@ -4,6 +4,7 @@ public final class Shutdown {
 
     private final static Object lock = new Object();
     private static boolean      terminated;
+    private static int          code = 0;
 
     public static void          terminate() {
         synchronized (lock) {
@@ -21,6 +22,10 @@ public final class Shutdown {
         asyncExit(1001);
     }
 
+    public static int           getCode() {
+        return code;
+    }
+
     public static boolean       isTerminated() {
         synchronized (lock) {
             return terminated;
@@ -28,7 +33,7 @@ public final class Shutdown {
     }
 
     public static void          asyncExit(final int code) {
-
+        Shutdown.code = code;
         new Thread() {
             @Override
             public void run() {
