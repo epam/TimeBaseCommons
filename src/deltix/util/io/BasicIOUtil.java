@@ -118,6 +118,18 @@ public abstract class BasicIOUtil {
     }
 
 
+    public static Object            unmarshal(Unmarshaller u, String resource)
+            throws FileNotFoundException, JAXBException
+    {
+        InputStream in = null;
+        try {
+            in = openResourceAsStream(resource);
+            return u.unmarshal(in);
+        } finally {
+            Util.close(in);
+        }
+    }
+
     public static void      rename (File from, File to) throws IOException {
         if (!from.renameTo (to))
             throw new IOException ("Failed to rename " + from + " -> " + to);
