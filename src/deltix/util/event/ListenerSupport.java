@@ -20,18 +20,23 @@ public class ListenerSupport<L> {
 
     /** @return true if listener has been added */
     public synchronized boolean addIfAbsent(L listener) throws NullPointerException {
+        return addIfAbsent(listener, false);
+    }
+
+    /** @return true if listener has been added */
+    public synchronized boolean addIfAbsent(L listener, boolean insertFirst) throws NullPointerException {
         if (listener == null)
             throw new NullPointerException("Listener could not be null");
         if (Util.contains(listeners, listener))
             return false;
-        listeners = arrayadd(componentType, listeners, listener);
+        listeners = arrayadd(componentType, listeners, listener, insertFirst);
         return true;
     }
 
     public synchronized void addListener(L listener) throws NullPointerException {
         if (listener == null)
             throw new NullPointerException("Listener could not be null");
-        listeners = arrayadd(componentType, listeners, listener);
+        listeners = arrayadd(componentType, listeners, listener, false);
     }
 
     public synchronized void removeListener(L listener) {
@@ -66,15 +71,21 @@ public class ListenerSupport<L> {
         return (T[]) Array.newInstance(componentType, length);
     }
 
-    private static <T> T[] arrayadd(Class<T> compType, T[] arr, T newItem) {
+    private static <T> T[] arrayadd(Class<T> compType, T[] arr, T newItem, boolean insertFirst) {
         T[] newarr;
         if (arr == null || arr.length <= 0) {
             newarr = newArray(compType, 1);
+            newarr[newarr.length - 1] = newItem;
         } else {
             newarr = newArray(compType, arr.length + 1);
-            System.arraycopy(arr, 0, newarr, 0, arr.length);
+            if (insertFirst) {
+                System.arraycopy(arr, 0, newarr, 1, arr.length);
+                newarr[0] = newItem;
+            } else {
+                System.arraycopy(arr, 0, newarr, 0, arr.length);
+                newarr[newarr.length - 1] = newItem;
+            }
         }
-        newarr[newarr.length - 1] = newItem;
         return newarr;
     }
     
