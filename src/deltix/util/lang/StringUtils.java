@@ -1098,6 +1098,16 @@ public class StringUtils {
         return (String.valueOf (x));
     }
 
+    public static String listToString(String s, List<String> users) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<users.size();i++)
+        {
+            if(i>0)
+                sb.append(s);
+            sb.append(users.get(i));
+        }
+        return sb.toString();
+    }
 }
 
 
