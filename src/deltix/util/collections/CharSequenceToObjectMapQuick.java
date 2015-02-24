@@ -1,14 +1,13 @@
 package deltix.util.collections;
 
+import java.io.IOException;
+
 import deltix.util.collections.generated.*;
 import deltix.util.collections.hash.*;
 import deltix.util.lang.*;
 
-/**
- *  
- */
 public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <CharSequence, T> {
-    private final CharSubSequence     mBuffer = new CharSubSequence ();
+    private transient CharSubSequence     mBuffer = new CharSubSequence ();
     
     public CharSequenceToObjectMapQuick (int initialCapacity) {
         super (initialCapacity, StringHashCodeComputer.INSTANCE);
@@ -55,5 +54,10 @@ public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <Cha
     public T                    remove (CharSequence key, int start, int end, T notFoundValue) {
         mBuffer.set (key, start, end);
         return super.remove (mBuffer, notFoundValue);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        mBuffer = new CharSubSequence();
     }
 }
