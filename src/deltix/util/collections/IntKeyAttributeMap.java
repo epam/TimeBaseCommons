@@ -11,6 +11,8 @@ public interface IntKeyAttributeMap<V> {
 
     int size();
 
+    void clear();
+
     void visit(IntKeyVisitor<V> visitor);
 
     //////////////////////////// HELPER CLASSES //////////////////////////

@@ -11,6 +11,8 @@ public interface StringKeyAttributeMap<V> {
 
     int size();
 
+    void clear();
+
     void visit(StringKeyVisitor<V> visitor);
 
     //////////////////////////// HELPER CLASSES //////////////////////////
