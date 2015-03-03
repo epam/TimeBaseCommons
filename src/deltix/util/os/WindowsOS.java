@@ -315,6 +315,37 @@ public final class WindowsOS {
         }
         return result.trim ();
     }
+
+    public static String            getSystemUUID() {
+        String result = "";
+        try {
+            File file = File.createTempFile("getSystemUUID", ".vbs");
+            file.deleteOnExit();
+            FileWriter fw = new java.io.FileWriter(file);
+
+            String vbs =
+                    "Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")\n"
+                            + "Set colItems = objWMIService.ExecQuery _ \n"
+                            + "   (\"Select * from Win32_ComputerSystemProduct\") \n"
+                            + "For Each objItem in colItems \n"
+                            + "    Wscript.Echo objItem.UUID \n"
+                            + "Next \n";
+
+            fw.write(vbs);
+            fw.close();
+            Process p = Runtime.getRuntime().exec("cscript //NoLogo " + StringUtils.quote (file.getAbsolutePath ()));
+            BufferedReader input = new BufferedReader( new InputStreamReader(p.getInputStream()));
+            String line;
+
+            while ((line = input.readLine()) != null) {
+                result += line;
+            }
+            input.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result.trim ();
+    }
  
     public static int           start (String cmd) 
     	throws IOException, InterruptedException
@@ -344,10 +375,12 @@ public final class WindowsOS {
     public static void main (String[] args) throws Exception {
         System.out.println ("C++ Runtime v11 (x64): " + cppRuntimeVersion(11, true));
         System.out.println ("C++ Runtime v11 (x86): " + cppRuntimeVersion(11, false));
-        System.out.println (getDotNetHome ());
-        System.out.println (getHardDiskSerial ());
-        System.out.println (getMBSerialNumber ());
-        System.out.println (getDiskSerialNumber(getSystemDrive()));
-        System.out.println (getSystemSerial ());
+        System.out.println ("getDotNetHome = " + getDotNetHome ());
+        System.out.println ("getHardDiskSerial = " + getHardDiskSerial());
+        System.out.println ("getMBSerialNumber = " + getMBSerialNumber());
+        System.out.println ("getSystemDrive SerialNumber = " + getDiskSerialNumber(getSystemDrive()));
+        System.out.println ("getSystemSerial = " + getSystemSerial ());
+        System.out.println ("getSystemUUID = " + getSystemUUID ());
+
     }
 }
