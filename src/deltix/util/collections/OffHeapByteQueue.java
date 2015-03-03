@@ -19,12 +19,12 @@ public class OffHeapByteQueue {
         private static final boolean    SHOULD_YIELD = !Boolean.getBoolean("not_yield");
 
         public static void              yield() {
-            if(SHOULD_YIELD){
+            if (SHOULD_YIELD){
                 Thread.yield();
             }
         }
         public static void              waitSome() {
-            if(SHOULD_WAIT){
+            if (SHOULD_WAIT){
                 LockSupport.parkNanos(WAIT_NANOS);
             }
         }
@@ -107,8 +107,7 @@ public class OffHeapByteQueue {
     public int                      readByte(byte b[], int off, int len) throws IOException {
         long head = getHeadChecked();
 
-        long tail = UnsafeAccess.UNSAFE.getLongVolatile(null, tailAddr);
-        int available = (int) (tail - head);
+        int available = (int) (getTail() - head);
         int count = available < len ? available : len;
 
         long gap = (head & MASK) + count - QUEUE_SIZE;
