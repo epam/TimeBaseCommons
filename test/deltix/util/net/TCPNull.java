@@ -5,6 +5,7 @@ import deltix.util.time.TimerRunner;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,8 +21,10 @@ public class TCPNull {
     private final ServerSocket ss;
     private volatile int messageCount;
 
-    private TCPNull (int bindPort) throws IOException {
-        ss = new ServerSocket(bindPort);
+    private TCPNull (int bindPort, String iface) throws IOException {
+
+        InetAddress bindAddr = (iface != null) ? InetAddress.getByName(iface) : null;
+        ss = new ServerSocket(bindPort, 50, bindAddr);
         System.out.println("TCP Null is listening on port " + ss.getLocalPort());
     }
 
@@ -64,13 +67,14 @@ public class TCPNull {
         }    }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            System.out.println("Command line args: <bind port>");
+        if (args.length == 0) {
+            System.out.println("Command line args: <bind-port> <optional-bind-interface>");
             return;
         }
 
         int bindPort = Integer.parseInt(args[0]);
-        TCPNull nul = new TCPNull(bindPort);
+        String iface = (args.length > 1) ? args[1] : null;
+        TCPNull nul = new TCPNull(bindPort, iface);
         nul.setupStatsTimer();
         nul.run();
 
