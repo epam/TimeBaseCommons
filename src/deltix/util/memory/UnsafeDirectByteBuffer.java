@@ -12,7 +12,7 @@ import java.nio.ByteOrder;
 
 public class UnsafeDirectByteBuffer {
     private static final long addressOffset;
-    public static final int CACHE_LINE_SIZE = 64;
+    public static final int CACHE_LINE_SIZE = 256;
     public static final int PAGE_SIZE = UnsafeAccess.UNSAFE.pageSize();
     static {
         try {

@@ -1,42 +1,39 @@
 package deltix.util.collections;
 
+import deltix.util.lang.Changeable;
 import deltix.util.memory.UnsafeDirectByteBuffer;
 import deltix.util.memory.UnsafeAccess;
 
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.concurrent.locks.LockSupport;
+import java.nio.ByteBuffer;
 
 /**
  *
  */
 public class OffHeapByteQueue {
 
-    static class SuspenseHelper {
-        private static final long       WAIT_NANOS = Long.getLong("waitNanos",0L) ;
-        private static final boolean    SHOULD_WAIT = (WAIT_NANOS != 0L);
-        private static final boolean    SHOULD_YIELD = !Boolean.getBoolean("not_yield");
+    public class Sequence implements Changeable {
+        public long addr;
+        public long value;
 
-        public static void              yield() {
-            if (SHOULD_YIELD){
-                Thread.yield();
-            }
+        public Sequence(long addr) {
+            this.addr = addr;
+            value = getLong(addr);
         }
-        public static void              waitSome() {
-            if (SHOULD_WAIT){
-                LockSupport.parkNanos(WAIT_NANOS);
+
+        public boolean changed() {
+            if (valueChanged(addr, value)) {
+                value = getLong(addr);
+                return true;
             }
+            return false;
         }
     }
 
-    public final static int         QUEUE_SIZE = 1 << 20;   //1024Kb
+    private final int               capacity;
+    private final int               mask;
 
-    private final static int        CACHE_LINE_SIZE = 256;
-    private final static int        MEMBUF_SIZE = QUEUE_SIZE + 2*CACHE_LINE_SIZE;
-    private final static int        MASK = QUEUE_SIZE - 1;
-
-    private MappedByteBuffer        membuf;
+    private ByteBuffer              buf;
 
     private final long              headAddr;
     private final long              tailAddr;
@@ -44,78 +41,106 @@ public class OffHeapByteQueue {
 
     private long                    headCache;
     private long                    tailCache;
+    private Sequence                headSequence;
+    private Sequence                tailSequence;
 
-    public OffHeapByteQueue(FileChannel channel) throws IOException {
-        membuf = channel.map(FileChannel.MapMode.READ_WRITE, 0, MEMBUF_SIZE);
-        membuf.put(new byte[MEMBUF_SIZE]); //zero fill
-        headAddr = UnsafeDirectByteBuffer.getAddress(membuf);
-        tailAddr = headAddr + CACHE_LINE_SIZE;
-        queueAddr = tailAddr + CACHE_LINE_SIZE;
+    /**
+     * @param buf - ByteBuffer, which capacity must be
+     *              returned by OffHeapByteQueue.getRecommendedBufSize.
+     * @throws IOException
+     */
+    public OffHeapByteQueue(ByteBuffer buf) throws IOException {
+        capacity = buf.capacity() - 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+        if (Integer.bitCount(capacity) != 1)
+            throw new IllegalArgumentException(
+                "ByteBuffer capacity must be power of 2 + 2 * cache line size. " +
+                "Please use getRecommendedBufSize method.");
+        mask = capacity - 1;
+
+        this.buf = buf;
+        headAddr = UnsafeDirectByteBuffer.getAddress(this.buf);
+        tailAddr = headAddr + UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+        queueAddr = tailAddr + UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+
+        headSequence = new Sequence(headAddr);
+        tailSequence = new Sequence(tailAddr);
     }
 
-    public int                      available() {
+    /**
+     * Returns optimal size of buffer, which will be used in OffHeapByteQueue.
+     * The size must be power of 2 + 2*CACHE_LINE_SIZE, so this method
+     * will return correct size for your count of elements.
+     * @param elements - minimal number of element in queue.
+     * @return size of buffer.
+     */
+    public static int               getRecommendedBufSize(int elements) {
+        if (Integer.bitCount(elements) == 1)
+            return elements + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+
+        int k = 1 << 30;
+        while (k != 0) {
+            k >>= 1;
+            if ((k & elements) != 0)
+                return (k << 1) + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+        }
+
+        //default
+        return 1 << 20 + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+    }
+
+    public int                      capacity() {
+        return capacity;
+    }
+
+    public int                      size() {
         return (int) (getTail() - getHead());
     }
 
-    public boolean                  isEmpty() {
-        return getHead() >= getTail();
+    public int                      free() {
+        return capacity() - size();
     }
 
-    public boolean                  isFull() {
-        return getTail() - getHead() >= QUEUE_SIZE;
+    public boolean                  isEmpty() throws IOException {
+        return getHeadChecked() == -1;
     }
 
-    public int                      waitAvailable(int cycles) {
-        long head = getHead();
-        long tail = getTail();
-
-        if (head >= tail) {
-            while (--cycles > 0 && tailChanged(tail))
-                SuspenseHelper.yield();
-            tail = getTail();
-            if (head >= tail)
-                return -1;
-        }
-
-        return (int) (tail - head);
+    public boolean                  isFull() throws IOException {
+        return getTailChecked() == -1;
     }
 
-    public int                      waitNotFull(int cycles) {
-        long head = getHead();
-        long tail = getTail();
-
-        if (tail - head >= QUEUE_SIZE) {
-            while (--cycles > 0 && headChanged(head))
-                SuspenseHelper.yield();
-            tail = getTail();
-            if (tail - head >= QUEUE_SIZE)
-                return -1;
-        }
-
-        return (int) (tail - head);
+    public Changeable               getHeadSequence() {
+        return headSequence;
     }
 
-    public int                      readByte() throws IOException {
+    public Changeable               getTailSequence() {
+        return tailSequence;
+    }
+
+    public int                      poll() throws IOException {
         long head = getHeadChecked();
+        if (head < 0)
+            throw new IOException("Error OffHeapQueue is empty");
 
-        int res = UnsafeAccess.UNSAFE.getByteVolatile(null, queueAddr + ((head++) & MASK));
+        int res = UnsafeAccess.UNSAFE.getByteVolatile(null, queueAddr + ((head++) & mask));
         putHead(head);
 
         return res & 0xFF;
     }
 
-    public int                      readByte(byte b[], int off, int len) throws IOException {
+    public int                      poll(byte b[], int off, int len) throws IOException {
         long head = getHeadChecked();
+        if (head < 0)
+            throw new IOException("Error OffHeapQueue is empty");
 
         int available = (int) (getTail() - head);
         int count = available < len ? available : len;
 
-        long gap = (head & MASK) + count - QUEUE_SIZE;
+        long gap = (head & mask) + count - capacity;
         if (gap > 0) {
-            UnsafeAccess.UNSAFE.copyMemory(null, queueAddr + (head & MASK), b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, count - gap);
+            UnsafeAccess.UNSAFE.copyMemory(null, queueAddr + (head & mask), b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, count - gap);
             UnsafeAccess.UNSAFE.copyMemory(null, queueAddr, b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off + count - gap, gap);
         } else {
-            UnsafeAccess.UNSAFE.copyMemory(null, queueAddr + (head & MASK), b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, count);
+            UnsafeAccess.UNSAFE.copyMemory(null, queueAddr + (head & mask), b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, count);
         }
 
         putHead(head + count);
@@ -123,41 +148,53 @@ public class OffHeapByteQueue {
         return count;
     }
 
-    public void                     writeByte(byte b) throws IOException {
+    public void                     offer(byte b) throws IOException {
         long tail = getTailChecked();
+        if (tail < 0)
+            throw new IOException("Error OffHeapQueue is full");
 
-        UnsafeAccess.UNSAFE.putByte(null, queueAddr + ((tail++) & MASK), b);
+        UnsafeAccess.UNSAFE.putByte(null, queueAddr + ((tail++) & mask), b);
         putTail(tail);
     }
 
-    public void                     writeByte(byte b[], int off, int len) throws IOException {
+    public void                     offer(byte b[], int off, int len) throws IOException {
         long tail = getTailChecked();
+        if (tail < 0)
+            throw new IOException("Error OffHeapQueue is full");
 
-        long gap = (tail & MASK) + len - QUEUE_SIZE;
+        long gap = (tail & mask) + len - capacity;
         if (gap > 0) {
-            UnsafeAccess.UNSAFE.copyMemory(b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, null, queueAddr + (tail & MASK), len - gap);
+            UnsafeAccess.UNSAFE.copyMemory(b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, null, queueAddr + (tail & mask), len - gap);
             UnsafeAccess.UNSAFE.copyMemory(b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off + len - gap, null, queueAddr, gap);
         } else {
-            UnsafeAccess.UNSAFE.copyMemory(b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, null, queueAddr + (tail & MASK), len);
+            UnsafeAccess.UNSAFE.copyMemory(b, UnsafeAccess.UNSAFE.ARRAY_BYTE_BASE_OFFSET + off, null, queueAddr + (tail & mask), len);
         }
 
         putTail(tail + len);
     }
 
     private long                    getHead() {
-        return UnsafeAccess.UNSAFE.getLongVolatile(null, headAddr);
+        return getLong(headAddr);
     }
 
     private long                    getTail() {
-        return UnsafeAccess.UNSAFE.getLongVolatile(null, tailAddr);
+        return getLong(tailAddr);
     }
 
     private void                    putHead(long head) {
-        UnsafeAccess.UNSAFE.putOrderedLong(null, headAddr, head);
+        putLong(headAddr, head);
     }
 
     private void                    putTail(long tail) {
-        UnsafeAccess.UNSAFE.putOrderedLong(null, tailAddr, tail);
+        putLong(tailAddr, tail);
+    }
+
+    private long                    getLong(long addr) {
+        return UnsafeAccess.UNSAFE.getLongVolatile(null, addr);
+    }
+
+    private void                    putLong(long addr, long value) {
+        UnsafeAccess.UNSAFE.putOrderedLong(null, addr, value);
     }
 
     private long                    getHeadChecked() throws IOException {
@@ -165,7 +202,7 @@ public class OffHeapByteQueue {
         if (head >= tailCache) {
             tailCache = getTail();
             if (head >= tailCache)
-                throw new IOException("Error OffHeapQueue is empty");
+                return -1;
         }
 
         return head;
@@ -174,22 +211,18 @@ public class OffHeapByteQueue {
     private long                    getTailChecked() throws IOException {
         long tail = getTail();
 
-        final long wrapPoint = tail - QUEUE_SIZE;
+        final long wrapPoint = tail - capacity;
         if (headCache <= wrapPoint) {
             headCache = getHead();
             if (headCache <= wrapPoint)
-                throw new IOException("Error OffHeapQueue is full");
+                return -1;
         }
 
         return tail;
     }
 
-    private boolean                 tailChanged(long tail) {
-        return UnsafeAccess.UNSAFE.compareAndSwapLong(null, tailAddr, tail, tail);
-    }
-
-    private boolean                 headChanged(long head) {
-        return UnsafeAccess.UNSAFE.compareAndSwapLong(null, headAddr, head, head);
+    private boolean                 valueChanged(long addr, long value) {
+        return !UnsafeAccess.UNSAFE.compareAndSwapLong(null, addr, value, value);
     }
 
 }
