@@ -74,18 +74,8 @@ public class OffHeapByteQueue {
      * @return size of buffer.
      */
     public static int               getRecommendedBufSize(int elements) {
-        if (Integer.bitCount(elements) == 1)
-            return elements + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
-
-        int k = 1 << 30;
-        while (k != 0) {
-            k >>= 1;
-            if ((k & elements) != 0)
-                return (k << 1) + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
-        }
-
-        //default
-        return 1 << 20 + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+        return (1 << (int)(Math.ceil(Math.log(elements)/Math.log(2))))
+               + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
     }
 
     public int                      capacity() {
