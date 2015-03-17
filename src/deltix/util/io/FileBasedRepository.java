@@ -136,6 +136,9 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
 
         final Path path = file.toPath();
 
+        if (logger.isLoggable(Level.FINE))
+            logger.log(Level.FINE, "[{0}] {1} > {2}", new Object[]{getClass().getSimpleName(), event, path});
+
         if (event == EventType.DELETED) { // a file or folder is deleted                    
 
             final FileItem fItem = items.remove(path);
