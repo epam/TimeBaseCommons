@@ -247,4 +247,51 @@ public class IOUtil extends BasicIOUtil {
             return (NOT_DECRYPTED);
         }                
     }
+
+    public static boolean copiedCompletely(File file) {
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile(file, "r");
+            raf.seek(file.length()); // make sure everything was copied
+            return true;
+        } catch (IOException e) {
+        } finally {
+            Util.close(raf);
+        }
+        return false;
+    }
+    
+    public static boolean waitForCopiedCompletely(File file) throws InterruptedException {        
+        return waitForCopiedCompletely(file, 0);
+    }
+    
+    public static boolean waitForCopiedCompletely(File file, long timeoutInMillis) throws InterruptedException {
+        final long startTime = System.nanoTime();
+                
+        while (true) {
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
+            
+            if ((timeoutInMillis > 0 &&
+                    (System.nanoTime() - startTime) / 1000 >= timeoutInMillis)) {
+                return false;
+            }
+            
+            if (copiedCompletely(file)) {
+                break;
+            }
+            
+            Thread.sleep(100);
+        }
+        
+        return true;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        File file = new File("C:\\Quartus-web-14.1.0.186.iso");
+        System.out.println(copiedCompletely(file));
+        System.out.println(waitForCopiedCompletely(file));
+        System.out.println("DONE");
+    }
 }

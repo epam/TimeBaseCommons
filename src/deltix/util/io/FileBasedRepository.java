@@ -194,21 +194,23 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                         break;
                     }
 
-                    final SCMDRepositoryEvent e = event == EventType.SCANNED ? SCMDRepositoryEvent.SCANNED : SCMDRepositoryEvent.CREATED;
+                    if (IOUtil.copiedCompletely(file)) {
+                        final SCMDRepositoryEvent e = event == EventType.SCANNED ? SCMDRepositoryEvent.SCANNED : SCMDRepositoryEvent.CREATED;
 
-                    if (items.containsKey(path)) { // already exists
-                        break;
-                    }
-
-                    try {
-                        final FileItem fItem = new FileItem(file, prepareItem(file));
-                        items.put(path, fItem);
-
-                        for (RepositoryEventHandler<T> handler : getHandlers(e)) {
-                            handler.onEvent(fItem.item, e);
+                        if (items.containsKey(path)) { // already exists
+                            break;
                         }
-                    } catch (Throwable t) {
-                        logger.log(Level.WARNING, "An error while preparing item for " + path, t);
+
+                        try {
+                            final FileItem fItem = new FileItem(file, prepareItem(file));
+                            items.put(path, fItem);
+
+                            for (RepositoryEventHandler<T> handler : getHandlers(e)) {
+                                handler.onEvent(fItem.item, e);
+                            }
+                        } catch (Throwable t) {
+                            logger.log(Level.WARNING, "An error while preparing item for " + path, t);
+                        }
                     }
                     break;
                 case MODIFIED:
@@ -221,16 +223,18 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
 
                     if (isNew) {
                         if (!isEmpty) {
-                            // created
-                            try {
-                                fItem = new FileItem(file, prepareItem(file));
-                                items.put(path, fItem);
+                            if (IOUtil.copiedCompletely(file)) {
+                                // created
+                                try {
+                                    fItem = new FileItem(file, prepareItem(file));
+                                    items.put(path, fItem);
 
-                                for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.CREATED)) {
-                                    handler.onEvent(fItem.item, SCMDRepositoryEvent.CREATED);
+                                    for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.CREATED)) {
+                                        handler.onEvent(fItem.item, SCMDRepositoryEvent.CREATED);
+                                    }
+                                } catch (Throwable t) {
+                                    logger.log(Level.WARNING, "An error while preparing item for " + path, t);
                                 }
-                            } catch (Throwable t) {
-                                logger.log(Level.WARNING, "An error while preparing item for " + path, t);
                             }
                         }
                     } else {
@@ -247,16 +251,18 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                             }
                         } else if (lastModified != fItem.lastModified) {
                             // modified
-                            try {
-                                fItem.lastModified = lastModified;
+                            if (IOUtil.copiedCompletely(file)) {
+                                try {
+                                    fItem.lastModified = lastModified;
 
-                                fItem.item = prepareItem(file);
+                                    fItem.item = prepareItem(file);
 
-                                for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.MODIFIED)) {
-                                    handler.onEvent(fItem.item, SCMDRepositoryEvent.MODIFIED);
+                                    for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.MODIFIED)) {
+                                        handler.onEvent(fItem.item, SCMDRepositoryEvent.MODIFIED);
+                                    }
+                                } catch (Throwable t) {
+                                    logger.log(Level.WARNING, "An error while preparing item for " + path, t);
                                 }
-                            } catch (Throwable t) {
-                                logger.log(Level.WARNING, "An error while preparing item for " + path, t);
                             }
                         }
                     }
