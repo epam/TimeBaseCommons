@@ -371,7 +371,7 @@ public class TimeKeeper extends Thread {
                 runTasks ();
             } catch (Exception x) {
                 if (exceptionCount++ > 500) {
-                    Util.LOGGER.severe ("TimeLeeper has logged 500 errors. Shutting down.");
+                    Util.LOGGER.severe ("TimeKeeper has logged 500 errors. Shutting down.");
                     System.exit (1);
                 }
 
