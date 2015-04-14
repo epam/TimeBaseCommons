@@ -90,7 +90,9 @@ public class StringUtils {
             sb.append (items [offset + ii]);
         }
         return sb.toString();
-    }/**
+    }
+
+    /**
      * Capitalizes first letter of each word in the buffer, and lowercases
      * each letter after the first of each word.
      */
@@ -117,6 +119,23 @@ public class StringUtils {
             else
                 buf.setCharAt (i, Character.toLowerCase(curChar));
         }
+    }
+
+    /** "camelCaseText With Spaces" => "Camel case text with spaces" */
+    public static String deCamelize (String text) {
+        StringBuilder result = new StringBuilder(text.length() + 16);
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (i > 0 && Character.isUpperCase(ch)) {
+                result.append(' ');
+                ch = Character.toLowerCase(ch);
+            } else
+            if (i == 0 && Character.isLowerCase(ch)) {
+                ch = Character.toUpperCase(ch);
+            }
+            result.append(ch);
+        }
+        return result.toString();
     }
 
     public static String	replace (
