@@ -1,22 +1,21 @@
 package deltix.util.os;
 
-import deltix.util.concurrent.UncheckedInterruptedException;
-import deltix.util.io.UncheckedIOException;
-import deltix.util.lang.Util;
-import deltix.util.text.table.AlignedNoWhitespacesTable;
-import deltix.util.text.table.Row;
-
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.management.*;
+import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+
+import deltix.util.concurrent.UncheckedInterruptedException;
+import deltix.util.lang.Util;
+import deltix.util.text.table.AlignedNoWhitespacesTable;
+import deltix.util.text.table.Row;
 
 public class LinuxOS {
 
@@ -81,15 +80,14 @@ public class LinuxOS {
     public static String[] paramsForStartScriptInTerminal(String shell, String title, File script, String... parameters) {
 
         List<String> cmdarray = new ArrayList<>();
-        if (new File("/usr/bin/xterm").exists()) {
-            cmdarray.add("/usr/bin/xterm");
-            cmdarray.add("-T");
-            cmdarray.add(title);
-            cmdarray.add("-e");
-        } else
         if (new File("/usr/bin/gnome-terminal").exists()) {
             cmdarray.add("/usr/bin/gnome-terminal");
             cmdarray.add("-t");
+            cmdarray.add(title);
+            cmdarray.add("-e");
+        } else if (new File("/usr/bin/xterm").exists()) {
+            cmdarray.add("/usr/bin/xterm");
+            cmdarray.add("-T");
             cmdarray.add(title);
             cmdarray.add("-e");
         }
