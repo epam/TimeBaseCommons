@@ -8,27 +8,16 @@ import java.io.*;
 /**
  *
  */
-public class NamedPipe implements Disposable {
+public class NamedPipe implements Closeable {
     final private RandomAccessFile pipe;
     private byte[] readBuf = new byte[2048];
 
-    public NamedPipe(String name, String mode) {
-        if (!Util.IS_WINDOWS_OS && mode == "rw")
-            throw new IllegalArgumentException("Bidirection mode available only for Windows.");
-
-        try {
-            pipe = new RandomAccessFile(name, mode);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public NamedPipe(String name, String mode) throws FileNotFoundException {
+        pipe = new RandomAccessFile(name, mode);
     }
 
-    public synchronized void             close() {
-        try {
-            pipe.close();
-        } catch (Exception e) {
-            Util.LOGGER.warning(e.getMessage());
-        }
+    public synchronized void             close() throws IOException {
+        pipe.close();
     }
 
     public synchronized RandomAccessFile getRAF() {
