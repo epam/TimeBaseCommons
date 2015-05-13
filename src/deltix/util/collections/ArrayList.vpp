@@ -604,8 +604,33 @@ public final class ${name}ArrayList
                 (iter.next ()).${type}Value ();
 #end
 
+        size += numNew;
 		return numNew != 0;
     }
+
+    #if($name != "Object")
+
+     /**
+     * Appends all of the elements in the specified array to the end of
+     * this list.
+     *
+     * @param c         the array to be inserted into this list.
+     * @param offset    starting position in the array.
+     * @param length    the number of array elements to be inserted.
+     * @throws    IndexOutOfBoundsException if offset out of range <tt>(index
+     *		  &lt; 0 || index &gt; size())</tt>.
+     */
+    public boolean addAll (${type} c[], int offset, int length) {
+        modCount++;
+    	int numNew = length - offset;
+    	ensureCapacity(size + numNew);
+
+    	SafeArrays.safeArrayCopy(c, offset, elementData, size, length);
+    	size += numNew;
+
+    	return numNew != 0;
+    }
+    #end
 
     /**
      * Inserts all of the elements in the specified Collection into this
