@@ -49,7 +49,9 @@ public class StringUtils {
         "throw", "true", "try", "typeof", "uint", "ulong", "unchecked",
         "unsafe", "ushort", "using", "virtual", "void", "volatile", "while"
     };
-        
+
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
     public static void      setStringBuilder (StringBuilder sb, CharSequence value) {
         sb.setLength (0);
         sb.append (value);
@@ -1117,15 +1119,18 @@ public class StringUtils {
         return (String.valueOf (x));
     }
 
-    public static String listToString(String s, List<String> users) {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0;i<users.size();i++)
-        {
-            if(i>0)
-                sb.append(s);
-            sb.append(users.get(i));
+    public static String toHex(byte[] bytes) {
+        return toHex(bytes, 0, bytes.length);
+    }
+        
+    public static String toHex(byte[] bytes, int offset, int len) {
+        final char[] hexChars = new char[len * 2];
+        for (int i = 0; i < len; i++) {
+            final int v = bytes[i + offset] & 0xFF;
+            hexChars[i * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[i * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-        return sb.toString();
+        return new String(hexChars);
     }
 }
 
