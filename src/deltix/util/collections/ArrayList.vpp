@@ -622,13 +622,12 @@ public final class ${name}ArrayList
      */
     public boolean addAll (${type} c[], int offset, int length) {
         modCount++;
-    	int numNew = length - offset;
-    	ensureCapacity(size + numNew);
+    	ensureCapacity(size + length);
 
     	SafeArrays.safeArrayCopy(c, offset, elementData, size, length);
-    	size += numNew;
 
-    	return numNew != 0;
+    	size += length;
+    	return length != 0;
     }
     #end
 
