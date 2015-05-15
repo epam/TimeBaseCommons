@@ -1,15 +1,15 @@
 package deltix.util.lang;
 
-public interface CookieContainer {    
+public interface CookieContainer<T> {    
     /**
      * Allows user to store an object.
-     * @param object object to store
+     * @param cookie object to store
      */
-    void setCookie(Object object);
+    void setCookie(T cookie);
     
     /**
-     * Returns user object stored by {@link #setCookie(Object)}
+     * Returns user object stored by {@link #setCookie(T)}
      * @return user object
      */
-    Object getCookie();
+    T getCookie();
 }
