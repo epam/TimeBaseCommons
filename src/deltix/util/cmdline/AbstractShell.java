@@ -1,5 +1,6 @@
 package deltix.util.cmdline;
 
+import deltix.qsrv.QSHome;
 import deltix.util.Version;
 import deltix.util.io.Home;
 import deltix.util.io.IOUtil;
@@ -41,6 +42,12 @@ public abstract class AbstractShell extends DefaultApplication {
         if (option.equalsIgnoreCase ("confirm")) {            
             confirm = Boolean.parseBoolean (value);
             confirm ("confirm: " + confirm);
+            return (true);
+        }
+
+        if (option.equalsIgnoreCase ("home")) {
+            System.out.println("Setting " + QSHome.QSRV_HOME_SYS_PROP + "=" + value);
+            QSHome.set(value);
             return (true);
         }
         
