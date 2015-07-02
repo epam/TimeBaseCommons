@@ -45,4 +45,8 @@ public abstract class LoggerFactory {
         return INSTANCE.getLog(name);
     }
 
+    public static Logger getLogger(Class<?> clazz) {
+        return getLogger(clazz.getName());
+    }
+
 }
