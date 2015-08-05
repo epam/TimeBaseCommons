@@ -450,6 +450,16 @@ public class QuickList <T extends QuickList.Entry> implements java.io.Serializab
 		return (new EntryEnumeration (mHead.mNext));
 	}
 
+	public boolean contains (Entry entry) {
+		Entry e = getFirst();
+		while (e != null) {
+			if (e == entry)
+				return true;
+			e = e.next();
+		}
+		return false;
+	}
+
     @SuppressWarnings("unchecked")
     public final int              size() {
         if (isEmpty())
