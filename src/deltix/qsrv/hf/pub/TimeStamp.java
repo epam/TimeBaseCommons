@@ -16,6 +16,19 @@ public class TimeStamp implements TimeStampedMessage {
     @Title ("Nanoseconds Component")
     public int                  nanosComponent = 0;
 
+
+    public static TimeStamp     fromMilliseconds(long timestamp) {
+        TimeStamp ts = new TimeStamp();
+        ts.setTime(timestamp);
+        return ts;
+    }
+
+    public static TimeStamp     fromNanoseconds(long nanoseconds) {
+        TimeStamp ts = new TimeStamp();
+        ts.setNanoTime(nanoseconds);
+        return ts;
+    }
+
     public void                 setNanoTime(long nanoSeconds) {
         if (nanoSeconds != TIMESTAMP_UNKNOWN) {
             nanosComponent = (int) (nanoSeconds % TimeStamp.NANOS_PER_MS);
@@ -26,11 +39,17 @@ public class TimeStamp implements TimeStampedMessage {
         }
     }
 
+    /*
+     *  Returns number of nanoseconds that passed since January 1, 1970 UTC
+     */
     @Override
     public long                 getNanoTime() {
         return timestamp == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : (getNanoTime(timestamp) + nanosComponent);
     }
 
+    /*
+    *  Returns number of milliseconds that passed since January 1, 1970 UTC
+    */
     @Override
     public long                 getTimeStampMs() {
         return getTime();
@@ -49,7 +68,7 @@ public class TimeStamp implements TimeStampedMessage {
         return isUndefined(timestamp);
     }
 
-    public static boolean isUndefined(long timestamp) {
+    public static boolean       isUndefined(long timestamp) {
         return timestamp == TIMESTAMP_UNKNOWN;
     }
 
