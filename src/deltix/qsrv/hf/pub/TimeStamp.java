@@ -30,12 +30,12 @@ public class TimeStamp implements TimeStampedMessage {
     }
 
     public void                 setNanoTime(long nanoSeconds) {
-        if (nanoSeconds != TIMESTAMP_UNKNOWN) {
+        if (nanoSeconds != TIMESTAMP_UNKNOWN && nanoSeconds != Long.MAX_VALUE) {
             nanosComponent = (int) (nanoSeconds % TimeStamp.NANOS_PER_MS);
             timestamp = nanoSeconds / TimeStamp.NANOS_PER_MS;
         } else {
             nanosComponent = 0;
-            timestamp = TIMESTAMP_UNKNOWN;
+            timestamp = nanoSeconds;
         }
     }
 
@@ -44,7 +44,7 @@ public class TimeStamp implements TimeStampedMessage {
      */
     @Override
     public long                 getNanoTime() {
-        return timestamp == TIMESTAMP_UNKNOWN ? TIMESTAMP_UNKNOWN : (getNanoTime(timestamp) + nanosComponent);
+        return timestamp == TIMESTAMP_UNKNOWN || timestamp == Long.MAX_VALUE ? timestamp : (getNanoTime(timestamp) + nanosComponent);
     }
 
     /*
@@ -88,7 +88,6 @@ public class TimeStamp implements TimeStampedMessage {
     }
 
     public static long          getNanoTime (long milliseconds, int nanosComponent) {
-        return milliseconds == TIMESTAMP_UNKNOWN ?
-                TIMESTAMP_UNKNOWN : getNanoTime(milliseconds) + nanosComponent;
+        return milliseconds == TIMESTAMP_UNKNOWN || milliseconds == Long.MAX_VALUE ? milliseconds : (getNanoTime(milliseconds) + nanosComponent);
     }
 }
