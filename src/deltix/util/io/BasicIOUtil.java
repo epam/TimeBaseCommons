@@ -774,7 +774,8 @@ public abstract class BasicIOUtil {
         return (ret);
     }
 
-    public static void      readFully (
+    /** @return number of bytes remaining in buffer after read completion */
+    public static int      readFully (
         InputStream             is, 
         byte []                 bytes, 
         int                     offset, 
@@ -791,6 +792,7 @@ public abstract class BasicIOUtil {
             offset += count;
             length -= count;
         }
+        return length;
     }
     
     public static void      skipFully (
