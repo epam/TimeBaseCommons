@@ -77,7 +77,7 @@ public class TimeStamp implements TimeStampedMessage {
     }
 
     public static long          getMilliseconds (long nanoSeconds) {
-        return nanoSeconds != TIMESTAMP_UNKNOWN ? nanoSeconds / TimeStamp.NANOS_PER_MS : TIMESTAMP_UNKNOWN;
+        return nanoSeconds != TIMESTAMP_UNKNOWN && nanoSeconds != Long.MAX_VALUE ? nanoSeconds / TimeStamp.NANOS_PER_MS : nanoSeconds;
     }
 
     public static long          getNanoTime (long milliseconds) {
