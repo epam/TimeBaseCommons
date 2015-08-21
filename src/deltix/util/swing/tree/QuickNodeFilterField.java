@@ -163,8 +163,8 @@ public class QuickNodeFilterField extends QuickFilterField {
                     final int j = c1 != 0 ? s.indexOf (c1) : -1;
                     final char c2 = getOneOrMoreQuantifier ();
                     final int k = c2 != 0 ? s.indexOf (c2) : -1;
-                    if (i == -1 && j == -1 && k == -1)
-                        return s;
+                    //if (i == -1 && j == -1 && k == -1)
+                    //    return s;
                     final StringBuffer stringbuffer = new StringBuffer ();
                     final int l = s.length ();
                     for (int i1 = 0; i1 < l; i1++) {
