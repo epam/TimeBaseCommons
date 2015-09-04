@@ -42,6 +42,10 @@ public final class TimeRange {
         return f + '-' + t;
     }
 
+    public boolean isUndefined() {
+        return (from == UNDEFINED || to == UNDEFINED);
+    }
+
 //    public static TimeRange parse(String timeRangeProp) {
 //        return null;  //To change body of created methods use File | Settings | File Templates.
 //    }
