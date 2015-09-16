@@ -28,6 +28,7 @@ public final class GFLoggerFactory extends LoggerFactory {
         if (!configurationLoaded) {
             Configuration configuration = createDefaultConfiguration();
             Configurator.configure(configuration);
+            Runtime.getRuntime().addShutdownHook(createUnconfigurer());
         }
     }
 
@@ -36,7 +37,7 @@ public final class GFLoggerFactory extends LoggerFactory {
         return new GFLogger(GFLogFactory.getLog(name));
     }
 
-    protected static Configuration createDefaultConfiguration() {
+    private static Configuration createDefaultConfiguration() {
         Configuration configuration = new Configuration();
 
         LoggerServiceFactory serviceFactory = new DLoggerServiceFactory();
@@ -56,6 +57,15 @@ public final class GFLoggerFactory extends LoggerFactory {
         configuration.addLoggerBuilder(rootLogger);
 
         return configuration;
+    }
+
+    private static Thread createUnconfigurer() {
+        return new Thread(){
+            @Override
+            public void run() {
+                Configurator.unconfigure();
+            }
+        };
     }
 
 }
