@@ -45,6 +45,12 @@ final class JULLogger extends AbstractLogger {
         return logger.isLoggable(getJULLogLevel(level));
     }
 
+    @Override
+    public void setLevel(Level level) {
+        java.util.logging.Level logLevel = getJULLogLevel(level);
+        logger.setLevel(logLevel);
+    }
+
     private static java.util.logging.Level getJULLogLevel(Level level) {
         switch (level) {
             case TRACE:

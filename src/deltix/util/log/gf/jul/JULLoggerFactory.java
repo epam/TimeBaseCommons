@@ -11,12 +11,13 @@ import java.util.logging.LogManager;
 
 public final class JULLoggerFactory extends LoggerFactory {
 
-    public static final String CONFIGURATION_LOADED_FLAG = "deltix.util.log.gf.jul.custom.configuration.loaded";
+    public static final String CONFIGURATION_LOADED_FLAG = "deltix.util.log.gf.jul.JULLoggerFactory.configuration.loaded";
 
     public JULLoggerFactory() {
         LogManager logManager = LogManager.getLogManager();
-        if ( ! Boolean.parseBoolean(logManager.getProperty(CONFIGURATION_LOADED_FLAG))) {
-            // Let's use terse log format by default (otherwise we will see JULLogger.commit() as log source for each log entry
+        boolean configurationLoaded = Boolean.parseBoolean(logManager.getProperty(CONFIGURATION_LOADED_FLAG));
+        if (!configurationLoaded) {
+             // Let's use terse log format by default (otherwise we will see JULLogger.commit() as log source for each log entry
             java.util.logging.Logger root = logManager.getLogger("");
             Handler [] handlers = root.getHandlers();
             for(Handler handler : handlers)
