@@ -3,7 +3,7 @@ package deltix.util.collections;
 /**
  * Similar to ByteArrayList but not resizable (although supports flyweight pattern)
  */
-public class ByteArray {
+public final class ByteArray {
 
     private byte[] array;
     private int offset;
