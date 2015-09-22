@@ -60,4 +60,15 @@ public final class ByteArray {
     public void setLength(int length) {
         this.length = length;
     }
+
+    public boolean isIdentical(ByteArray other) {
+        if (length != other.length)
+            return false;
+
+        for (int i=0; i < length; i++) {
+            if (get(i) != other.get(i))
+                return false;
+        }
+        return true;
+    }
 }
