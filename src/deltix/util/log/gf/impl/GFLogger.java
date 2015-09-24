@@ -1,6 +1,7 @@
 package deltix.util.log.gf.impl;
 
 import org.gflogger.GFLog;
+import org.gflogger.LogLevel;
 
 import deltix.util.log.gf.AbstractLogger;
 import deltix.util.log.gf.Level;
@@ -72,4 +73,30 @@ final class GFLogger extends AbstractLogger {
                 throw new IllegalArgumentException("Invalid level: " + level);
         }
     }
+
+    @Override
+    public void setLevel(Level level) {
+        LogLevel logLevel = getLogLevel(level);
+        logger.setLogLevel(logLevel);
+    }
+
+    private static LogLevel getLogLevel(Level level) {
+        switch (level) {
+            case TRACE:
+                return LogLevel.TRACE;
+            case DEBUG:
+                return LogLevel.DEBUG;
+            case INFO:
+                return LogLevel.INFO;
+            case WARN:
+                return LogLevel.WARN;
+            case ERROR:
+                return LogLevel.ERROR;
+            case FATAL:
+                return LogLevel.FATAL;
+            default:
+                throw new IllegalArgumentException("Invalid level: " + level);
+        }
+    }
+
 }

@@ -58,4 +58,9 @@ public class HCMultiMap <K, V> implements MultiMap <K, V> {
     public Set<K>               keySet() {
         return map.keySet();
     }
+
+    @Override
+    public Collection<Collection<V>> values() {
+        return map.values();
+    }
 }

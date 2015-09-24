@@ -7,4 +7,6 @@ public interface Logger {
 
     boolean isLoggable(Level level);
 
+    void setLevel(Level level);
+
 }
