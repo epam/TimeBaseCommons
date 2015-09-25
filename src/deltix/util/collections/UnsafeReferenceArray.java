@@ -9,8 +9,6 @@ import deltix.util.memory.UnsafeAccess;
 
 /**
  * Use with care. Access without bounds check.
- *
- * @param <E> element type
  */
 public final class UnsafeReferenceArray<E> {
 
