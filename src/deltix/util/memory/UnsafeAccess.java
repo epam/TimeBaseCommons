@@ -1,14 +1,15 @@
 package deltix.util.memory;
 
-/**
- *
- */
-import sun.misc.Unsafe;
-
 import java.lang.reflect.Field;
 
-public class UnsafeAccess {
+import sun.misc.Unsafe;
+
+import deltix.util.lang.Bits;
+
+public final class UnsafeAccess {
+
     public static final Unsafe UNSAFE;
+
     static {
         try {
             // This is a bit of voodoo to force the UNSAFE object into
@@ -22,6 +23,23 @@ public class UnsafeAccess {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private UnsafeAccess() {
+        throw new AssertionError("Not for you!");
+    }
+
+    public static int arrayBaseOffset(Class clazz) {
+        return UNSAFE.arrayBaseOffset(clazz);
+    }
+
+    public static int arrayIndexScale(Class clazz) {
+        int scale = UNSAFE.arrayIndexScale(clazz);
+
+        if (!Bits.isPowerOfTwo(scale))
+            throw new Error("data type scale not a power of two: " + clazz);
+
+        return scale;
     }
 
 }
