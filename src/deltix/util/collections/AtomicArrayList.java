@@ -66,8 +66,7 @@ public final class AtomicArrayList<E> implements AtomicContainer<E> {
 
             int index = findElement(e, head, array);
             if (index != NO_ELEMENT) {
-                array.set(index, null);
-                this.array = array;
+                array.setOrdered(index, null);
                 size--;
             }
         }
@@ -88,7 +87,7 @@ public final class AtomicArrayList<E> implements AtomicContainer<E> {
         if (index >= head)
             return null;
 
-        return array.get(index);
+        return array.getVolatile(index);
     }
 
     @Override
@@ -96,7 +95,12 @@ public final class AtomicArrayList<E> implements AtomicContainer<E> {
         if (e != null) {
             int head = this.head;
             UnsafeReferenceArray<E> array = this.array;
-            return findElement(e, head, array) != NO_ELEMENT;
+
+            for (int i = 0; i < head; i++) {
+                E obj = array.getVolatile(i);
+                if (e.equals(obj))
+                    return true;
+            }
         }
 
         return false;
@@ -110,7 +114,7 @@ public final class AtomicArrayList<E> implements AtomicContainer<E> {
         UnsafeReferenceArray<E> array = this.array;
 
         for (int i = 0; i < head; i++) {
-            E e = array.get(i);
+            E e = array.getVolatile(i);
             if (e != null) {
                 boolean stop = !visitor.visit(e);
                 if (stop)
@@ -126,8 +130,7 @@ public final class AtomicArrayList<E> implements AtomicContainer<E> {
             this.array = newArray;
             this.head = head + 1;
         } else {
-            array.set(index, e);
-            this.array = array;
+            array.setOrdered(index, e);
             if (index == head)
                 this.head = head + 1;
         }
