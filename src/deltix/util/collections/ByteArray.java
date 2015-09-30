@@ -10,7 +10,7 @@ public final class ByteArray {
     private int length;
 
     public ByteArray() {
-        array = new byte[0];
+        //array = new byte[0];
     }
 
     public ByteArray(byte [] array) {
