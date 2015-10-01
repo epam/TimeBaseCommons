@@ -1521,6 +1521,12 @@ public class Util {
         return (qname.substring (0, qname.length () - sname.length ()));
     }
 
+    public static  long           getAvailableMemory () {
+        final Runtime     rt = Runtime.getRuntime ();
+
+        return (rt.maxMemory () - rt.totalMemory () + rt.freeMemory ());
+    }
+
     public static long          fractionOfAvailableMemory (double k) {
         final Runtime rt = Runtime.getRuntime();
         final long maxMem = rt.maxMemory();

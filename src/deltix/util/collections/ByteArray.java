@@ -10,7 +10,7 @@ public final class ByteArray {
     private int length;
 
     public ByteArray() {
-        array = new byte[0];
+        //array = new byte[0];
     }
 
     public ByteArray(byte [] array) {
@@ -45,6 +45,10 @@ public final class ByteArray {
         return array[index + offset];
     }
 
+    public int         getOffset(int local) {
+        return offset + local;
+    }
+
     public byte[] getArray() {
         return array;
     }
@@ -70,5 +74,9 @@ public final class ByteArray {
                 return false;
         }
         return true;
+    }
+
+    public static void arraycopy(ByteArray src, int srcPos, ByteArray dest, int destPos, int length) {
+        System.arraycopy(src.getArray(), src.getOffset(srcPos), dest.getArray(), dest.getOffset(destPos), length);
     }
 }
