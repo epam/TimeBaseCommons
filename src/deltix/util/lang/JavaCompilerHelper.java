@@ -1,6 +1,5 @@
 package deltix.util.lang;
 
-import com.jcraft.jsch.Logger;
 import deltix.util.io.ByteArrayInputStreamEx;
 import deltix.util.io.ByteArrayOutputStreamEx;
 import javax.tools.*;
@@ -18,8 +17,6 @@ public class JavaCompilerHelper {
 
     static {
         JAVA_COMPILER_INSTANCE = ToolProvider.getSystemJavaCompiler();
-//        if (JAVA_COMPILER_INSTANCE == null)
-//            JAVA_COMPILER_INSTANCE = getCompiler4IKVM(loader);
         JAVA_FILEMGR_INSTANCE = JAVA_COMPILER_INSTANCE.getStandardFileManager(null, null, null);
     }
 
@@ -56,7 +53,7 @@ public class JavaCompilerHelper {
     public Class<?> compileClass (String className, String code) throws ClassNotFoundException {
         List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
-        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<>();
         final String optionString = System.getProperty("javac.options");
         final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
         JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
@@ -92,12 +89,12 @@ public class JavaCompilerHelper {
 //        for (String code : mapClassName2Code.values())
 //            Util.LOGGER.warning(code);
 
-        final ArrayList<MemorySource> compilationUnits = new ArrayList<MemorySource>(mapClassName2Code.size());
+        final ArrayList<MemorySource> compilationUnits = new ArrayList<>(mapClassName2Code.size());
         for (Map.Entry<String, String> entry : mapClassName2Code.entrySet()) {
             compilationUnits.add(new MemorySource(entry.getKey(), entry.getValue()));
         }
         Writer out = new PrintWriter(System.err);
-        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<>();
         final String optionString = System.getProperty("javac.options");
         final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
         JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
@@ -118,7 +115,7 @@ public class JavaCompilerHelper {
         }
 
         if (ok) {
-            final HashMap<String, Class<?>> result = new HashMap<String, Class<?>>(mapClassName2Code.size());
+            final HashMap<String, Class<?>> result = new HashMap<>(mapClassName2Code.size());
             for (String className : mapClassName2Code.keySet())
                 result.put(className, cl.findClass(className));
 
@@ -221,7 +218,7 @@ public class JavaCompilerHelper {
         extends ClassLoader 
         implements ClassDirectory
     {
-        private Map<String, MemoryByteCode> m = new HashMap<String, MemoryByteCode>();
+        private Map<String, MemoryByteCode> m = new HashMap<>();
 
         public SpecialClassLoader(ClassLoader parent) {
             super(parent);
@@ -265,7 +262,7 @@ public class JavaCompilerHelper {
             else
                 packageName += '.';
             
-            ArrayList <Class <?>>       ret = new ArrayList <Class <?>> ();
+            ArrayList <Class <?>>       ret = new ArrayList <> ();
             
             for (String cname : m.keySet ()) {
                 if (packageName == null ? !cname.contains (".") : cname.startsWith (packageName)) {
@@ -280,33 +277,4 @@ public class JavaCompilerHelper {
             return (ret);
         }                
     }
-
-    private static final String defaultJavaCompilerName
-            = "com.sun.tools.javac.api.JavacTool";
-
-/*
-    private static JavaCompiler getCompiler4IKVM() {
-        try {
-            String jre_home = System.getProperty("java.home");
-            if (jre_home == null || jre_home.endsWith("virtual-ikvm-home"))
-                jre_home = System.getenv("JAVA_HOME");
-            if (jre_home == null)
-                throw new RuntimeException("Neither the JAVA_HOME environment, nor the java.home system property is set");
-            if (new File(jre_home, "jre").exists())
-                jre_home += "/jre";
-            System.setProperty("sun.boot.class.path", jre_home + "/lib/rt.jar");
-
-            String class_path = System.getProperty("java.class.path");
-            if (class_path == null || class_path.length() == 0)
-                class_path = System.getenv("CLASSPATH");
-            System.setProperty("java.class.path", class_path);
-
-            Class<?> clazz = Class.forName(defaultJavaCompilerName, true, MY CLASS LOADER);
-            return (JavaCompiler) clazz.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
- *
- */
 }
