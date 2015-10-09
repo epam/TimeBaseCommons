@@ -39,10 +39,15 @@ public final class ByteArray {
     }
 
     public byte get(int index) {
-        int i = index + offset;
         if (index > length)
             throw new ArrayIndexOutOfBoundsException(index);
         return array[index + offset];
+    }
+
+    public void put(int index, int b) {
+        if (index > length)
+            throw new ArrayIndexOutOfBoundsException(index);
+        array[index + offset] = (byte) b;
     }
 
     public int         getOffset(int local) {
@@ -76,7 +81,20 @@ public final class ByteArray {
         return true;
     }
 
+    public void copyTo (int srcPos, byte [] dest, int destPos, int length) {
+        System.arraycopy(array, offset + srcPos, dest, destPos, length);
+    }
+
+    public void copyFrom (byte [] src, int srcPos, int destPos, int length) {
+        System.arraycopy(src, srcPos, array, offset + destPos, length);
+    }
+
     public static void arraycopy(ByteArray src, int srcPos, ByteArray dest, int destPos, int length) {
         System.arraycopy(src.getArray(), src.getOffset(srcPos), dest.getArray(), dest.getOffset(destPos), length);
+    }
+
+    public void fill(byte b) {
+        for (int i=0; i < length; i++)
+            array[i + offset] = b;
     }
 }
