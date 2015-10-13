@@ -1,8 +1,8 @@
 package deltix.util.lang;
 
-public final class Assert {
+public final class Assertions {
     public static boolean  ENABLED = false;
-    private Assert() {}
+    private Assertions() {}
 
     static {
         try {
