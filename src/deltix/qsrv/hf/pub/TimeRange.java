@@ -11,7 +11,6 @@ public final class TimeRange {
     public static final long UNDEFINED = Long.MIN_VALUE;
 
     public final long from;
-
     public final long to;
 
     public TimeRange() {
