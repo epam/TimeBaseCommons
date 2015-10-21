@@ -3,6 +3,7 @@
 
 namespace Deltix.Util.Concurrent
 {
+	[System.Obsolete("Not used")]
     public enum NextResult
     {
         OK,
@@ -10,7 +11,7 @@ namespace Deltix.Util.Concurrent
         UNAVAILABLE
     }
 
-
+	[System.Obsolete("Not used")]
     public interface IIntermittentlyAvailableCursor
     {
         /**
