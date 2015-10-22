@@ -6,7 +6,7 @@ import deltix.util.time.GMT;
  * @author Andy
  *         Date: Jan 14, 2010 4:20:52 PM
  */
-public final class TimeRange {
+public final class TimeRange implements TimeInterval {
 
     public static final long UNDEFINED = Long.MIN_VALUE;
 
@@ -73,5 +73,15 @@ public final class TimeRange {
                 to = r1.to;
 
         return new TimeRange (from, to);
+    }
+
+    @Override
+    public long getFromTime() {
+        return from;
+    }
+
+    @Override
+    public long getToTime() {
+        return to;
     }
 }
