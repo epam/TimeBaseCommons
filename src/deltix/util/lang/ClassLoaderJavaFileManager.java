@@ -94,7 +94,7 @@ public class ClassLoaderJavaFileManager extends ForwardingJavaFileManager<JavaFi
 
         @Override
         public String getName() {
-            throw new UnsupportedOperationException();
+            return "Deltix " + getClass().getSimpleName();
         }
 
         @Override
