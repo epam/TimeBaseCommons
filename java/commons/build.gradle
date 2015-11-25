@@ -1,0 +1,18 @@
+
+dependencies {
+    //    compile files('../libs/bcel-6.0-SNAPSHOT.jar', '../libs/gflogger.jar')
+    //    compile 'commons-collections:commons-collections:3.2'
+    //    compile 'commons-httpclient:commons-httpclient:3.1'
+    //    compile 'org.apache.commons:commons-compress:1.10'
+    //    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    //    compile 'net.java.dev.jna:jna:3.4.0'
+    //    compile 'javax.mail:mailapi:1.4.3'
+}
+
+jar {
+    manifest {
+        baseName 'deltix-commons'
+        attributes 'Implementation-Title': 'Deltix Commons',
+                   'Implementation-Version': version
+    }
+}
