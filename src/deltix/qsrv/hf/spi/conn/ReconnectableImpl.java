@@ -250,7 +250,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         }
     }
 
-    public boolean             isConnected () {
+    public synchronized boolean             isConnected () {
         return (isConnected);
     }
     
