@@ -1,7 +1,5 @@
 package deltix.util.jide;
 
-import static deltix.qsrv.hf.tickdb.ui.administrator.res.CommonResourceBundle.RB;
-
 import java.awt.*;
 import java.util.*;
 
@@ -22,8 +20,11 @@ public abstract class SelectorPanel<T> extends JPanel {
 
     private boolean                adjust = false;
 
-    public SelectorPanel () {
+    private final ResourceBundle rb;
+
+    public SelectorPanel(ResourceBundle rb) {
         super (new GridBagLayout ());
+        this.rb = rb;
         init ();
     }
 
@@ -42,9 +43,9 @@ public abstract class SelectorPanel<T> extends JPanel {
         this.list.getCheckBoxListSelectionModel ().setSelectionMode (ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         this.field = new QuickListFilterField ();
-        this.field.setHintText (RB.getString ("msg.symbolsFilterHint"));
+        this.field.setHintText (rb.getString ("msg.symbolsFilterHint"));
 
-        this.tristateCheckBox = new TriStateCheckBox (RB.getString ("btn.selectDeselectAll"),
+        this.tristateCheckBox = new TriStateCheckBox (rb.getString ("btn.selectDeselectAll"),
                                                       TriStateCheckBox.NOT_SELECTED) {
             @Override
             public void nextState () {
