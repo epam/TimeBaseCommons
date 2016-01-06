@@ -1,7 +1,6 @@
 package deltix.util.time;
 
 import deltix.data.stream.TimeStampedMessage;
-import deltix.qsrv.hf.pub.TimeStamp;
 import org.apache.commons.lang.time.FastDateFormat;
 
 import java.text.DecimalFormat;
@@ -11,7 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class TicksFormat {
-
+    private static final int                    NANOS_PER_MS = 1000000;
     private final StringBuffer              sb = new StringBuffer();
     private final Calendar                  calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
@@ -29,7 +28,7 @@ public class TicksFormat {
             TICKS.format(calendar, sb);
 
             long ms = milliseconds % 1000;
-            DF.format(ms * TimeStamp.NANOS_PER_MS + nanosComponent, sb, new FieldPosition(0));
+            DF.format(ms * NANOS_PER_MS + nanosComponent, sb, new FieldPosition(0));
         }
 
         return sb.toString();
