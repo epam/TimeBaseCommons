@@ -17,7 +17,8 @@ public interface StringKeyAttributeMap<V> {
 
     //////////////////////////// HELPER CLASSES //////////////////////////
 
-    public static interface StringKeyVisitor<V> {
+    interface StringKeyVisitor<V> {
+        /** @return false to stop iterating over map */
         boolean visit(CharSequence key, V value);
     }
 }
