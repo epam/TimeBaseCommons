@@ -1,11 +1,10 @@
 package deltix.util.cmdline;
 
-import deltix.qsrv.QSHome;
 import deltix.util.Version;
 import deltix.util.io.Home;
 import deltix.util.io.IOUtil;
-import deltix.util.lang.ComparableComparator;
 import deltix.util.lang.StringUtils;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
@@ -45,12 +44,6 @@ public abstract class AbstractShell extends DefaultApplication {
             return (true);
         }
 
-        if (option.equalsIgnoreCase ("home")) {
-            System.out.println("Setting " + QSHome.QSRV_HOME_SYS_PROP + "=" + value);
-            QSHome.set(value);
-            return (true);
-        }
-        
         return (false);
     }
 

@@ -1,14 +1,16 @@
 package deltix.util.time;
 
-import deltix.qsrv.hf.pub.TimeStamp;
-
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
  */
-public abstract class GMT {	
+public abstract class GMT {
+    private static final int                    NANOS_PER_MS = 1000000;
     public static final String                  TIME_FORMAT_STR = "HH:mm:ss";
     public static final String                  DATETIME_FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
     public static final String                  DATETIME_MILLIS_FORMAT_STR = "yyyy-MM-dd HH:mm:ss.S";
@@ -86,8 +88,8 @@ public abstract class GMT {
     }
 
     public static String                formatNanos (long nanoTime) {
-        int ticksPart = (int) (nanoTime % TimeStamp.NANOS_PER_MS);
-        long ms = (nanoTime - ticksPart) / TimeStamp.NANOS_PER_MS;
+        int ticksPart = (int) (nanoTime % NANOS_PER_MS);
+        long ms = (nanoTime - ticksPart) / NANOS_PER_MS;
         return TICKS.format(ms, ticksPart);
     }
     

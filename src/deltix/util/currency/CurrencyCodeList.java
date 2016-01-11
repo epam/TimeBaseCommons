@@ -1,25 +1,25 @@
 package deltix.util.currency;
 
-import java.io.*;
-import java.util.logging.*;
-
-import javax.xml.parsers.*;
-
 import deltix.util.collections.CharSequenceToObjectMapQuick;
-import org.w3c.dom.*;
+import deltix.util.io.BasicIOUtil;
+import deltix.util.lang.Depends;
+import deltix.util.lang.Util;
+import deltix.util.text.CharSequenceParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import deltix.qsrv.hf.pub.*;
-import deltix.util.io.*;
-import deltix.util.lang.*;
-import deltix.util.text.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.util.logging.Level;
 
 @Depends("deltix/util/currency/CurrencyCodes.xml")
 public class CurrencyCodeList {
     private static final int                             amount        =   1000;
     private static final CurrencyInfo[]                  numericIndex  = new CurrencyInfo[amount];
     private static final CharSequenceToObjectMapQuick<CurrencyInfo> symbolicIndex = new CharSequenceToObjectMapQuick<>(amount);
-    private static final int                             TEXT_MARKER   = 0x8000;
 
     static {
         read ("deltix/util/currency/CurrencyCodes.xml");
@@ -119,34 +119,6 @@ public class CurrencyCodeList {
 
     public static CurrencyInfo getInfoBySymbolic (String code) {
         return getInfoBySymbolic((CharSequence) code);
-    }
-
-    public static CurrencyInfo getCurrencyCodeByObject (final Object value) {
-        if (value != null) {
-            final String s = String.valueOf (value);
-
-            if (!s.isEmpty ()) {
-
-                if (!(Character.isLetter (s.charAt (0)))) {
-                    try {
-                        final int n = Integer.parseInt (s);
-                        if ((n & TEXT_MARKER) == 0)
-                            return getInfoByNumeric (n);
-                        else
-                            return getInfoBySymbolic (CurrencyCodec.intToCode (n));
-                    } catch (final NumberFormatException e) {
-                        return null;
-                    }
-                }
-
-                return getInfoBySymbolic (s);
-            }
-        }
-        return null;
-    }
-
-    public static boolean isValidValue (final Object value) {
-        return getCurrencyCodeByObject (value) != null;
     }
 
     public static class CurrencyInfo implements Comparable<CurrencyInfo> {

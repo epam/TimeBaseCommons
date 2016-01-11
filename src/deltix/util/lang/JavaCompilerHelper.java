@@ -17,6 +17,8 @@ public class JavaCompilerHelper {
 
     static {
         JAVA_COMPILER_INSTANCE = ToolProvider.getSystemJavaCompiler();
+        if (JAVA_COMPILER_INSTANCE == null)
+            throw new ExceptionInInitializerError("Cannot instantiate Java Compiler using ToolProvider");
         JAVA_FILEMGR_INSTANCE = JAVA_COMPILER_INSTANCE.getStandardFileManager(null, null, null);
     }
 

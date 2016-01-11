@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.tickdb.ui.administrator.util;
+package deltix.util.log;
 
 import java.io.*;
 import java.text.*;
