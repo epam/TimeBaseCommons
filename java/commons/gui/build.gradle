@@ -1,0 +1,11 @@
+
+dependencies {
+}
+
+jar {
+    manifest {
+        baseName 'deltix-commons-gui'
+        attributes 'Implementation-Title': 'Deltix Commons',
+                   'Implementation-Version': version
+    }
+}

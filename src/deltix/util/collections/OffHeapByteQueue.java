@@ -1,11 +1,15 @@
 package deltix.util.collections;
 
+import deltix.util.lang.Bits;
 import deltix.util.lang.Changeable;
 import deltix.util.memory.UnsafeDirectByteBuffer;
 import deltix.util.memory.UnsafeAccess;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  *
@@ -30,10 +34,11 @@ public class OffHeapByteQueue {
         }
     }
 
+    @SuppressWarnings("unused")
+    private final ByteBuffer        buf;    //prevent GC
+
     private final int               capacity;
     private final int               mask;
-
-    private ByteBuffer              buf;
 
     private final long              headAddr;
     private final long              tailAddr;
@@ -49,18 +54,23 @@ public class OffHeapByteQueue {
      *              returned by OffHeapByteQueue.getRecommendedBufSize.
      * @throws IOException
      */
-    public OffHeapByteQueue(ByteBuffer buf) throws IOException {
+    public OffHeapByteQueue(ByteBuffer buf) {
+        this.buf = buf;
         capacity = buf.capacity() - 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
-        if (Integer.bitCount(capacity) != 1)
+        if (!Bits.isPowerOfTwo(capacity))
             throw new IllegalArgumentException(
                 "ByteBuffer capacity must be power of 2 + 2 * cache line size. " +
-                "Please use getRecommendedBufSize method.");
+                "Please use getRecommendedBufSize() method.");
         mask = capacity - 1;
 
-        this.buf = buf;
-        headAddr = UnsafeDirectByteBuffer.getAddress(this.buf);
+        headAddr = UnsafeDirectByteBuffer.getAddress(buf);
         tailAddr = headAddr + UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
         queueAddr = tailAddr + UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+
+        headCache = 0;
+        tailCache = 0;
+        putHead(headCache);
+        putTail(tailCache);
 
         headSequence = new Sequence(headAddr);
         tailSequence = new Sequence(tailAddr);
@@ -76,6 +86,12 @@ public class OffHeapByteQueue {
     public static int               getRecommendedBufSize(int elements) {
         return (1 << (int)(Math.ceil(Math.log(elements)/Math.log(2))))
                + 2*UnsafeDirectByteBuffer.CACHE_LINE_SIZE;
+    }
+
+    public static OffHeapByteQueue  newInstance(RandomAccessFile raf, int elements) throws IOException {
+        int queueSize = OffHeapByteQueue.getRecommendedBufSize(elements);
+        MappedByteBuffer buffer = raf.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, queueSize);
+        return new OffHeapByteQueue(buffer);
     }
 
     public int                      capacity() {
