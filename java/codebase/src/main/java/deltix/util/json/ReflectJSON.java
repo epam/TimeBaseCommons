@@ -1,9 +1,9 @@
 package deltix.util.json;
 
 import deltix.util.lang.*;
+
 import java.io.*;
 import java.lang.reflect.*;
-import org.fife.rsta.ac.java.rjc.lang.*;
 
 /**
  *
@@ -131,7 +131,7 @@ public class ReflectJSON {
             boolean         first = true;
 
             for (Field f : obj.getClass ().getFields ()) {
-                if ((f.getModifiers () & Modifiers.STATIC) != 0)
+                if ((f.getModifiers () & Modifier.STATIC) != 0)
                     continue;
 
                 if (first)

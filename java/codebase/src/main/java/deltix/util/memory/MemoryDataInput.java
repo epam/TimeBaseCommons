@@ -1,7 +1,6 @@
 package deltix.util.memory;
 
-import deltix.util.collections.generated.ByteArrayList;
-import deltix.util.io.ByteArrayOutputStreamEx;
+
 import deltix.util.io.UncheckedIOException;
 
 /**
@@ -36,14 +35,6 @@ public final class MemoryDataInput {
         setBytes (buffer);
     }
     
-    public MemoryDataInput (ByteArrayList list) {
-        setBytes (list);
-    }
-    
-    public MemoryDataInput (ByteArrayOutputStreamEx buffer) {
-        setBytes (buffer);
-    }
-    
     public MemoryDataInput (MemoryDataOutput mout) {
         setBytes (mout);
     }
@@ -61,14 +52,7 @@ public final class MemoryDataInput {
         mStart = mPos = offset;
     }
     
-    public void       setBytes (ByteArrayList buffer) {
-        setBytes (buffer.getInternalBuffer (), 0, buffer.size ());
-    }
-    
-    public void       setBytes (ByteArrayOutputStreamEx buffer) {
-        setBytes (buffer.getInternalBuffer (), 0, buffer.size ());
-    }
-    
+
     public void       setBytes (byte [] buffer) {
         mBuffer = buffer;
         mLimit = buffer.length;
@@ -444,7 +428,7 @@ public final class MemoryDataInput {
                     count += 2;
                     
                     if (count > utflen)
-                        throw new UncheckedIOException (
+                        throw new UncheckedIOException(
                             "malformed input: partial character at end"
                         );
                     
@@ -462,7 +446,7 @@ public final class MemoryDataInput {
                     /* 1110 xxxx  10xx xxxx  10xx xxxx */
                     count += 3;
                     if (count > utflen)
-                        throw new UncheckedIOException (
+                        throw new UncheckedIOException(
                             "malformed input: partial character at end"
                         );
                     char2 = readByte ();
