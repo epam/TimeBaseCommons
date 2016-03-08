@@ -1,6 +1,6 @@
 package deltix.data.stream;
 
-import deltix.util.concurrent.AbstractCursor;
+import deltix.util.collections.AbstractCursor;
 
 /**
  *

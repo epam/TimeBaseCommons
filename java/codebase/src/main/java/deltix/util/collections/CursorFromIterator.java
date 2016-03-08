@@ -1,6 +1,5 @@
 package deltix.util.collections;
 
-import deltix.util.concurrent.AbstractCursor;
 import java.util.*;
 
 /**
