@@ -1,0 +1,308 @@
+package deltix.util.collections.generated;
+
+#if($name == "Object")
+import java.util.Enumeration;
+import java.util.Iterator;
+#end
+
+import deltix.util.collections.HashMapBase;
+
+/**
+ *	$name to anything open addressing hash map with
+ *	quadratic probing.
+ */
+#if( $name == "Object" )
+public abstract class ${name}HashMapBase<${type}> extends HashMapBase {
+#else
+public abstract class ${name}HashMapBase extends HashMapBase {
+#end
+
+    private static final boolean        INCREMENTAL_GC = false;
+
+	/**
+	 *	Thrown by some methods to signify that a
+	 *	key was not found in the map.
+	 */
+    @SuppressWarnings("serial")
+	public static class KeyNotFoundException extends Exception {
+#if($name == "Object")
+		private Object mKey;
+
+		/**
+		 *	Returns the key that was not found.
+		 */
+		public Object getKey () {
+			return (mKey);
+		}
+
+		KeyNotFoundException (Object key) {
+			mKey = key;
+		}
+#else
+		private ${type}	mKey;
+
+		/**
+		 *	Returns the key that was not found.
+		 */
+		public ${type} getKey () {
+			return (mKey);
+		}
+
+		KeyNotFoundException (${type} key) {
+			mKey = key;
+		}
+#end
+	}
+
+
+
+#if ($name == "Object")
+	protected Object [] mKeys;
+	protected void allocKeys (int size) {
+        mKeys = new Object [size];
+	}
+#else
+	protected ${type} [] mKeys;
+	protected void allocKeys (int size) {
+ 		mKeys = new ${type} [size];
+	}
+#end
+
+    public long getSizeInMemory () {
+        return (super.getSizeInMemory () + mKeys.length * ${size});
+    }
+
+	protected abstract void setValue (Object values, int idx, int pos);
+
+    @SuppressWarnings("unchecked")
+	protected final int rehashOne (Object keys, Object values, int idx) {
+		${type}	key = ((${type} []) keys) [idx];
+		int	pos = find (key);
+		mKeys [pos] = key;
+		setValue (values, idx, pos);
+		return (pos);
+	}
+
+	protected final Object keyArray () {
+		return (mKeys);
+	}
+
+    /**
+     *	Constructs a has map with specified capacity, i.e.
+     *	number of elements that can be added before it is resized.
+     *	The actual internal table size is at least 2*capacity.
+     */
+    public ${name}HashMapBase (int initCapacity) {
+    	super (initCapacity);
+    }
+
+    /**
+     *	Constructs a has map with default capacity.
+     */
+    public ${name}HashMapBase () {
+    	super ();
+    }
+
+    protected void putKey (${type} key, int pos) {
+    	mKeys [pos] = key;
+		onPut (pos);
+    }
+
+    /**
+     *	Override to hash badly distributed integer keys.
+     */
+    protected int hash (${type} key) {
+#if($name == "Object")
+        return key.hashCode();
+#else
+#if($name == "Long")
+        return (int)(key ^ (key >>> 32));
+#else
+        return (int)(key);
+#end
+#end
+    }
+
+#if($name == "Object")
+    protected void onRemove (int pos) {
+        super.onRemove (pos);
+        mKeys [pos] = null;
+    }
+#end
+
+    /**
+     *	Quick test for the presence of the specified key.
+     */
+    public boolean containsKey (${type} key) {
+    	return (isFound (find (key)));
+    }
+
+#if($name == "Object")
+    protected class KeyEnumeration implements Enumeration<${type}> {
+#else
+    protected class KeyEnumeration implements ${name}Enumeration {
+#end
+    	private int	mIndex = -1;
+
+    	public KeyEnumeration () {
+    		move ();
+    	}
+
+    	private void move () {
+    		do {
+    			mIndex++;
+    		} while (mIndex < mKeys.length && !isFound (mIndex));
+    	}
+
+    	public boolean hasMoreElements () {
+    		return (mIndex < mKeys.length);
+    	}
+
+#if ($name == "Object")
+        public ${type} nextElement() {
+#else
+    	public ${type_Object} nextElement () {
+#end
+    		return (next${name_abbr}Element ());
+    	}
+
+	    @SuppressWarnings("unchecked")
+    	public ${type} next${name_abbr}Element () {
+    		${type} ret = (${type}) mKeys [mIndex];
+    		move ();
+    		return (ret);
+    	}
+    }
+
+#if($name == "Object")
+    protected class KeysIterator implements Iterator<${type}> {
+        private int	mIndex = -1;
+        private int currentIndex = -1;
+
+        public KeysIterator () {
+            move ();
+        }
+
+        private void move () {
+            currentIndex = mIndex;
+            do {
+                mIndex++;
+            } while (mIndex < mKeys.length && !isFound (mIndex));
+        }
+
+        public boolean hasNext () {
+            return (mIndex < mKeys.length);
+        }
+
+        public ${type} next() {
+            return (next${name_abbr}Element ());
+        }
+
+        @SuppressWarnings("unchecked")
+        public ${type} next${name_abbr}Element () {
+            ${type} ret = (${type}) mKeys [mIndex];
+            move ();
+            return (ret);
+        }
+
+        public void             remove () {
+            onRemove(currentIndex);
+        }
+    }
+#end
+
+
+    public KeyEnumeration keys () {
+    	return (new KeyEnumeration ());
+    }
+
+    @Override
+    protected void moveEntry (int from, int to) {
+        super.moveEntry (from, to);
+        mKeys [to] = mKeys [from];
+#if($name == "Object")
+        mKeys [from] = null;
+#end
+    }
+
+    /**
+     *	Finds the present or insert position for the specified key.
+     */
+    protected int find (final ${type} key) {
+        return find(key, false);
+    }
+
+    /**
+     *	Finds the present or insert position for the specified key.
+     */
+    protected int find (final ${type} key, boolean deleted) {
+        final int   tabSize = tableSize ();
+        int         pos = (hash (key) & 0x7FFFFFFF) % tabSize;
+		int         firstGap = -1;
+
+        for (int numCollisions = 1; ; numCollisions++) {
+        	//
+        	//	If we hit the end of the chain, return the insertion
+        	//	position.
+        	//
+        	if (isCellEmpty (pos))
+        		return (firstGap == -1 ? pos : firstGap);
+            else if (deleted && isCellDeleted(pos))
+                return (firstGap == -1 ? pos : firstGap);
+
+        	//
+        	//	Did we find the key?
+        	//
+            if (isFound (pos)) {
+#if( $name == "Object" )
+                final Object        posKey = mKeys [pos];
+
+        	    if (posKey == key || key.equals (posKey)) {                    
+#else
+                if (key == mKeys [pos]) {
+#end
+                    if (INCREMENTAL_GC) {
+                        if (firstGap != -1) {
+                            moveEntry (pos, firstGap);
+                            return (firstGap);
+                        }
+                    }
+
+                    return (pos);
+                }
+            }
+            else /* it must be DELETED */ if (firstGap == -1)
+        		firstGap = pos;            
+        	
+            pos += (numCollisions << 1) - 1;
+
+            if (pos >= tabSize)
+                pos -= tabSize;
+        }
+    }
+
+    /// serialization code
+
+    static final long  serialVersionUID = 1L;
+    static final short mSerialVersion = 1;
+
+    private void writeObject (java.io.ObjectOutputStream out)
+         throws java.io.IOException
+    {
+        out.writeShort (mSerialVersion);
+    }
+
+    private void readObject (java.io.ObjectInputStream in)
+         throws java.io.IOException, ClassNotFoundException
+    {
+    	@SuppressWarnings("unused")
+        short readSerialVersion = in.readShort();
+    }
+
+	protected void writeKey (java.io.ObjectOutputStream out, int pos)
+	    throws java.io.IOException
+	{
+		out.write${name_abbr} (mKeys [pos]);
+	}
+
+}

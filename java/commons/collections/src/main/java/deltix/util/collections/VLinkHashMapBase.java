@@ -43,9 +43,9 @@ public abstract class VLinkHashMapBase
     @Override
     public long                 getSizeInMemory () {
         return (
-            (OBJECT_OVERHEAD + 2 * SIZE_OF_INT + 
-                3 * SIZE_OF_POINTER + 3 * ARRAY_OVERHEAD) + 
-            hashIndex.length * (SIZE_OF_INT * 3)
+            (MemorySizeEstimator.OBJECT_OVERHEAD + 2 * MemorySizeEstimator.SIZE_OF_INT +
+                3 * MemorySizeEstimator.SIZE_OF_POINTER + 3 * MemorySizeEstimator.ARRAY_OVERHEAD) +
+            hashIndex.length * (MemorySizeEstimator.SIZE_OF_INT * 3)
         );
     }
     
