@@ -3,6 +3,7 @@ package deltix.util.lang;
 /**
  *
  */
+@FunctionalInterface
 public interface Factory <T> {
-    public T        create ();
+     T        create ();
 }

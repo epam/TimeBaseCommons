@@ -7,7 +7,6 @@
 package deltix.util.swing.treeedit;
 
 import java.util.*;
-import javax.swing.*;
 import javax.swing.tree.*;
 
 import deltix.util.collections.*;

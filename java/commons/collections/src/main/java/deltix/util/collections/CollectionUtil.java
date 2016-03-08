@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import deltix.util.id.Identifiable;
 import deltix.util.lang.Filter;
 import deltix.util.lang.StringUtils;
 import deltix.util.lang.Transformer;
@@ -78,20 +77,6 @@ public class CollectionUtil {
 
     public static int[] toPrimitiveArray(Collection<Integer> values) {
         return (int[]) toArray(values, int.class);
-    }
-
-    public static <T, E extends Identifiable<T>> Map<T, E> identifiableToMap(Collection<E> values) {
-        Map<T, E> result = new HashMap<T, E>(values.size());
-        for (E value : values)
-            result.put(value.getId(), value);
-        return result;
-    }
-
-    public static <T, E extends Identifiable<T>> Set<T> identifiableToSet(Collection<E> values) {
-        Set<T> result = new HashSet<T>(values.size());
-        for (E value : values)
-            result.add(value.getId());
-        return result;
     }
 
     public static <T, E> Set<T> convertToSet(Collection<E> values, Transformer<T, ? super E> transformer) {

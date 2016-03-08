@@ -1,7 +1,7 @@
 package deltix.util.io;
 
 import deltix.util.collections.*;
-import deltix.util.vsocket.ChannelClosedException;
+
 import java.io.*;
 
 /**

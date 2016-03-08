@@ -1,6 +1,5 @@
 package deltix.util.time;
 
-import deltix.data.stream.TimeStampedMessage;
 import org.apache.commons.lang.time.FastDateFormat;
 
 import java.text.DecimalFormat;
@@ -22,7 +21,7 @@ public class TicksFormat {
         sb.setLength(0);
         calendar.setTimeInMillis(milliseconds);
 
-        if (nanosComponent == 0 || milliseconds == TimeStampedMessage.TIMESTAMP_UNKNOWN) {
+        if (nanosComponent == 0 || milliseconds == Long.MIN_VALUE) {
             MS.format(calendar, sb);
         } else {
             TICKS.format(calendar, sb);

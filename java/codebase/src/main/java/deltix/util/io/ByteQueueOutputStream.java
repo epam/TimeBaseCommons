@@ -1,8 +1,5 @@
 package deltix.util.io;
 
-import deltix.util.collections.ByteQueue;
-
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 

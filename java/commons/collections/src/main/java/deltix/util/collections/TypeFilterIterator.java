@@ -1,6 +1,5 @@
 package deltix.util.collections;
 
-import deltix.util.lang.Filter;
 import deltix.util.lang.InstanceOfFilter;
 import java.util.Iterator;
 

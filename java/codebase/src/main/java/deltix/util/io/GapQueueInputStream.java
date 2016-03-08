@@ -1,6 +1,5 @@
 package deltix.util.io;
 
-import deltix.util.collections.ByteQueue;
 import deltix.util.collections.GapByteQueue;
 
 import java.io.EOFException;

@@ -3,7 +3,6 @@ package deltix.util.memory;
 /**
  *
  */
-import deltix.util.memory.UnsafeAccess;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
