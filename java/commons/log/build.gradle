@@ -1,6 +1,7 @@
 dependencies {
-    //compile project(':commons:lang')
-    //compile project(':commons:collections')
+    compile project(':commons:util')
+    compile 'org.gflogger:gflogger:1.0'
+    compile 'javax.mail:mailapi:1.4.3'
     //    compile files('../libs/bcel-6.0-SNAPSHOT.jar', '../libs/gflogger.jar')
 }
 
