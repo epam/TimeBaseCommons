@@ -1,10 +1,13 @@
 package deltix.util.xml;
 
 import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.xml.bind.v2.model.annotation.*;
-import deltix.util.lang.IKVMUtil;
-import java.util.*;
-import javax.xml.bind.*;
+import com.sun.xml.bind.v2.model.annotation.AnnotationReader;
+import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Patched version of JAXB's RuntimeAnnotationReader that marks java.lang.Exception as @XmlTransient
@@ -14,12 +17,11 @@ public class JAXBStackTraceSuppressor
     implements RuntimeAnnotationReader 
 {
     public JAXBStackTraceSuppressor () {
-        if (!IKVMUtil.IS_IKVM)
-            try {
-                addTransientField(Throwable.class.getDeclaredField("stackTrace"));            
-            } catch (NoSuchFieldException unexpected) {
-                throw new RuntimeException (unexpected);
-            }
+        try {
+            addTransientField(Throwable.class.getDeclaredField("stackTrace"));
+        } catch (NoSuchFieldException unexpected) {
+            throw new RuntimeException (unexpected);
+        }
         
         try {
             addTransientMethod(Throwable.class.getDeclaredMethod("getStackTrace"));
