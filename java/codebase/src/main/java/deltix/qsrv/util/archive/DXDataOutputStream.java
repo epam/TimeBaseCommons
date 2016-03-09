@@ -1,4 +1,4 @@
-package deltix.util.archive;
+package deltix.qsrv.util.archive;
 
 import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;

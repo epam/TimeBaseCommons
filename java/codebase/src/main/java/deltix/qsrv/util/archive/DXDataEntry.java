@@ -1,4 +1,4 @@
-package deltix.util.archive;
+package deltix.qsrv.util.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 

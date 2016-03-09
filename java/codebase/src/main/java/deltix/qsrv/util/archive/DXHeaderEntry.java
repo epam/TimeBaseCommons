@@ -1,4 +1,4 @@
-package deltix.util.archive;
+package deltix.qsrv.util.archive;
 
 public class DXHeaderEntry extends DXDataEntry {
 
