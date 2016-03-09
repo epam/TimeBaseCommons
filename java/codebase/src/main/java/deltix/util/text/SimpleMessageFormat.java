@@ -2,7 +2,6 @@ package deltix.util.text;
 
 import java.io.IOException;
 
-import deltix.util.io.IOUtil;
 import deltix.util.lang.Util;
 
 /**
