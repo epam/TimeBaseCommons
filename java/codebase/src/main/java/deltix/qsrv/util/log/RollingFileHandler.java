@@ -1,12 +1,10 @@
-package deltix.util.log;
+package deltix.qsrv.util.log;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
-
-import deltix.util.io.UncheckedIOException;
 
 /**
  * Description: deltix.util.log.RollingFileHandler

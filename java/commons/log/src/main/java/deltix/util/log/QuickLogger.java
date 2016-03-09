@@ -1,6 +1,5 @@
 package deltix.util.log;
 
-import deltix.util.io.*;
 import deltix.util.lang.*;
 import deltix.util.time.TimeKeeper;
 import java.io.*;
@@ -14,6 +13,7 @@ import java.util.logging.Level;
  *  for every JVM session.
  */
 public class QuickLogger {
+    private static final String  CR = System.getProperty ("line.separator");
     static final Object                     lock = new Object ();
     static long                             dayStart;
     static Writer                           writer;
@@ -109,7 +109,7 @@ public class QuickLogger {
                     writer.write (message);
                 }
                 
-                writer.write (IOUtil.CR);
+                writer.write (CR);
             }
         } catch (IOException ex) {
             Util.LOGGER.log (Level.SEVERE, null, ex);

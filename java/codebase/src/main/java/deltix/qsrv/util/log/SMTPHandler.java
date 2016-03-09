@@ -1,4 +1,4 @@
-package deltix.util.log;
+package deltix.qsrv.util.log;
 
 import javax.mail.Authenticator;
 import javax.mail.Session;
@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import deltix.util.lang.Filter;
 import deltix.util.concurrent.DirectExecutor;
 import deltix.util.lang.Util;
+import deltix.util.log.TerseFormatter;
 import deltix.util.text.SimpleMessageFormat;
 
 public class SMTPHandler extends Handler {
