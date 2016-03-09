@@ -1,0 +1,13 @@
+dependencies {
+    //compile project(':commons:lang')
+    //compile project(':commons:collections')
+    //    compile files('../libs/bcel-6.0-SNAPSHOT.jar', '../libs/gflogger.jar')
+}
+
+jar {
+    manifest {
+        baseName 'deltix-commons-util'
+        attributes 'Implementation-Title': 'Deltix Commons Logging',
+                   'Implementation-Version': version
+    }
+}
