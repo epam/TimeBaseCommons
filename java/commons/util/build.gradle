@@ -1,5 +1,6 @@
-
 dependencies {
+    compile project(':commons:lang')
+    compile project(':commons:collections')
     //    compile files('../libs/bcel-6.0-SNAPSHOT.jar', '../libs/gflogger.jar')
     //    compile 'commons-collections:commons-collections:3.2'
     //    compile 'commons-httpclient:commons-httpclient:3.1'

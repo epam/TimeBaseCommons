@@ -2,7 +2,6 @@ package deltix.util.log.gf;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
 
 import org.gflogger.GFLog;
 import org.gflogger.GFLogEntry;
