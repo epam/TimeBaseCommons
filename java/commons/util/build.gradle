@@ -11,8 +11,8 @@ dependencies {
 
 jar {
     manifest {
-        baseName 'deltix-commons-text'
-        attributes 'Implementation-Title': 'Deltix Commons Text',
+        baseName 'deltix-commons-util'
+        attributes 'Implementation-Title': 'Deltix Commons Util',
                    'Implementation-Version': version
     }
 }
