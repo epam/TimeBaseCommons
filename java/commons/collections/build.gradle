@@ -1,6 +1,6 @@
 
 dependencies {
-    compile project(':commons:lang')
+    compile project(':java:commons:lang')
 }
 
 jar {
