@@ -1,4 +1,4 @@
-package deltix.util.log;
+package deltix.qsrv.util.log;
 
 import java.io.*;
 import java.text.*;
