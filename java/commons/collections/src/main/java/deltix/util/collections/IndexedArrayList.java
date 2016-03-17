@@ -8,12 +8,12 @@ import java.io.Serializable;
 /**
  *  <p>A special implementation of List which provides very fast indexOf and 
  *  contains operations.</p>
- *  <p>Notes:
+ *  Notes:
  *  <ul>
  *      <li>Duplicate elements are not allowed. Therefore, indexOf () 
  *          and lastIndexOf () always return identical results.</li>
  *      <li>Insertion into the middle is not allowed.</li>
- *  </ul></p>
+ *  </ul>
  */
 public class IndexedArrayList <E> implements List <E>, Serializable {
     static final long   serialVersionUID = 1L;

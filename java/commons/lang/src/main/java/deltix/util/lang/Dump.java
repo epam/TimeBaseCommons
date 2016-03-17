@@ -43,7 +43,6 @@ public class Dump {
 
     /**
      * Dumps byte[] buffer as table:
-     * <p/>
      * <pre>
      * 00000000:  64 74 64 3d 66 69 6c 65 25 33 41 44 25 33 41 25  [dtd=file%3AD%3A%]
      * 00000010:  32 46 70 72 6f 6a 65 63 74 73 25 32 46 77 70 63  [2Fprojects%2Fwpc]
@@ -146,7 +145,7 @@ public class Dump {
     }
 
     /**
-     * Function converts char[] => byte []. Characters > 0xFF are illegal!
+     * Function converts char[] =&gt; byte []. Characters &gt; 0xFF are illegal!
      */
     public static byte[] c2b(char[] chars) {
         int i, cnt = chars.length;

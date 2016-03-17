@@ -123,7 +123,7 @@ public class StringUtils {
         }
     }
 
-    /** "camelCaseText With Spaces" => "Camel case text with spaces" */
+    /** "camelCaseText With Spaces" =&gt; "Camel case text with spaces" */
     public static String deCamelize (String text) {
         StringBuilder result = new StringBuilder(text.length() + 16);
         for (int i = 0; i < text.length(); i++) {
@@ -405,12 +405,14 @@ public class StringUtils {
     }
     
     /**
-     *identifier-part-character:<br/>
-     *  letter-character - A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nl <br/>
-     *  decimal-digit-character - A Unicode character of the class Nd <br/>
-     *  connecting-character - A Unicode character of the class Pc <br/>
-     *  combining-character - A Unicode character of classes Mn or Mc <br/>
-     *  formatting-character - A Unicode character of the class Cf    
+     * <pre>
+     *  identifier-part-character:
+     *  letter-character - A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nl
+     *  decimal-digit-character - A Unicode character of the class Nd
+     *  connecting-character - A Unicode character of the class Pc
+     *  combining-character - A Unicode character of classes Mn or Mc
+     *  formatting-character - A Unicode character of the class Cf
+     *  </pre>
      */
     public static boolean   isCSIdentifierPart (char c) {
         switch (Character.getType (c)) {
@@ -749,7 +751,7 @@ public class StringUtils {
         if (strs == null)
             return (null);
 
-        StringBuffer    buf = new StringBuffer();
+        StringBuilder    buf = new StringBuilder();
         if (strs != null)
             for (int i = 0; i < strs.length; i++) {
                 if (i > 0)
@@ -996,15 +998,13 @@ public class StringUtils {
     }
 
     /**
-     * <p>Abbreviates a String using ellipses.</p>
+     * <p>Abbreviates a String using ellipses. Specifically:</p>
      *
-     * <p>Specifically:
      * <ul>
      * <li>If <code>value</code> is less than <code>maxWidth</code> characters long, return it.</li>
      * <li>Else abbreviate it to <code>(substring(value, 0, max-3) + "...")</code>.</li>
      * <li>If <code>maxWidth</code> is less than <code>4</code>, throw an <code>IllegalArgumentException</code>.</li>
      * </ul>
-     * </p>
      *
      * <pre>
      * StringUtils.abbreviate(null, *) = null
@@ -1037,8 +1037,6 @@ public class StringUtils {
      * compareSignatures(",a_ b++ 3=c", "__a%b3c+") 
      * </pre>
      * returns true.
-     * @param signature1
-     * @param signature2
      * @return true if the signatures contains the same sequence of letters and digits
      */
     public static boolean matchSignatures(String signature1, String signature2) {

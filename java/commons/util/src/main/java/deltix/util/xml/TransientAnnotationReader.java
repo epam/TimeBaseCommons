@@ -21,7 +21,7 @@ import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
  * <p>Patched version of JAXB's RuntimeAnnotationReader that can annotate set of classes, fields, and methods as XmlTransient.
  * Note that "<tt>@XmlTransient</tt> is mutually exclusive with all other JAXB defined annotations.</p>
  *
- * <p>Usage:
+ * Usage:
  * <pre>
  *     // initialize our custom reader
  *     TransientAnnotationReader reader = new TransientAnnotationReader();
@@ -29,7 +29,7 @@ import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
  *     reader.addTransientMethod(Throwable.class.getDeclaredMethod("getStackTrace"));
  *
  *     // initialize JAXB context
- *     Map<String, Object> jaxbConfig = new HashMap<String, Object>();
+ *     Map&lt;String, Object&gt; jaxbConfig = new HashMap&lt;String, Object&gt;();
  *     jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, reader);
  *     JAXBContext ctx = JAXBContext.newInstance (PACKAGE_PATH, TransientAnnotationReader.class.getClassLoader(), jaxbConfig);
  *
@@ -37,7 +37,6 @@ import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
  *     Marshaller m = ctx.create ();
  *     m.marshal (...);
  * </pre>
- * </p>
  *
  * @see <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JAXBIntroductions">JAXB Introductions</a>
  *

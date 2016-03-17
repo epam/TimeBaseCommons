@@ -52,7 +52,6 @@ public class OffHeapByteQueue {
     /**
      * @param buf - ByteBuffer, which capacity must be
      *              returned by OffHeapByteQueue.getRecommendedBufSize.
-     * @throws IOException
      */
     public OffHeapByteQueue(ByteBuffer buf) {
         this.buf = buf;

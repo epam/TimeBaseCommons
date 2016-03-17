@@ -7,13 +7,14 @@ import deltix.util.lang.Bits;
 /**
  * Single writer with many readers. If you want to use with many writers you should synchronize writes.
  * Use read operations independently.
- * <p/>
+ * <pre>
  * Add operation is O(n)       - Write
  * Remove operation is O(n)    - Write
  * Contains operation is O(n)  - Read
  * Visit operation is O(n)     - Read
  * Size operation is O(1)      - Read
  * Get operation is O(1).      - Read
+ * </pre>
  */
 public final class AtomicArrayList<E> implements AtomicContainer<E> {
 

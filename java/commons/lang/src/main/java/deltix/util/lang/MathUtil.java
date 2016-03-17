@@ -91,7 +91,7 @@ public class MathUtil {
 
     /**
      *	Returns the ceiling of log<sub>2</sub> of the argument, i.e.
-     *	the smallest integer k such that 2<sup>k</sup> >= v.
+     *	the smallest integer k such that 2<sup>k</sup> &gt;= v.
      */
     public static int		log2 (int v) {
     	int             ret = 0;
@@ -107,7 +107,7 @@ public class MathUtil {
 
     /**
      *	Returns the ceiling of log<sub>2</sub> of the argument, i.e.
-     *	the smallest integer k such that 2<sup>k</sup> >= v.
+     *	the smallest integer k such that 2<sup>k</sup> &gt;= v.
      */
     public static int		log2 (long v) {
     	int             ret = 0;

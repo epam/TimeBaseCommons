@@ -181,12 +181,12 @@ public final class TimeFormatter {
      *    <u>No trailing or leading spaces are allowed.</u>
      *    Digit groups may defined using one or two digits.</p>
      *
-     * <p>Duration string format: <code>M+ | M+:SS | H+:M[M]:S[S]</code>, or:
+     * Duration string format: <code>M+ | M+:SS | H+:M[M]:S[S]</code>, or:
      *              <ul>
      *                  <li>HH:MM:SS (HH can exceed 60)</li>
      *                  <li>MM:SS (MM can exceed 60)</li>
      *                  <li>MM (MM can exceed 60)</li>
-     *              </ul></p>
+     *              </ul>
      *
      * @param text input string (e.g. "0:12" or "00:12:00")
      * @return number of seconds in duration
@@ -342,7 +342,7 @@ public final class TimeFormatter {
      *    <u>No trailing or leading spaces are allowed.</u>
      *    Digit groups may defined using one or two digits.</p>
      *
-     * <p>Time of day string format: <code> H[H][:M[M][:S[S]]] [am|pm|AM|PM] </code>, for example:
+     * Time of day string format: <code> H[H][:M[M][:S[S]]] [am|pm|AM|PM] </code>, for example:
      *  <ul>
      *     <li>HH:MM:SS (24-hour)</li>
      *     <li>HH:MM (24-hour)</li>
@@ -351,7 +351,6 @@ public final class TimeFormatter {
      *     <li>HH am/pm</li>
      *     <li>HH</li>
      *   </ul>
-     * </p>
      *
      * @param text input string (e.g. "0:12" or "11:12:13 pm")
      * @return number of seconds since midnight represented by given time of day string

@@ -10,7 +10,7 @@ public class StringSplitter {
 	                                       };
 
 	/**
-	 * "a b 'c d' ''" -> {"a", "b", "c d", ""}
+	 * "a b 'c d' ''" -&gt; {"a", "b", "c d", ""}
 	 * predefined separators ',', ' ', ';', '\r', '\n'
 	 */
 	public static String[] smartSplitSymbols ( String s ) {
@@ -36,7 +36,7 @@ public class StringSplitter {
 
 	
 	/**
-	 * "a b 'c d' ''" -> {"a", "b", "c d", ""}
+	 * "a b 'c d' ''" -&gt; {"a", "b", "c d", ""}
 	 */
 	public static String[] smartSplit ( String s,
 	                                    char[] separator ) {
