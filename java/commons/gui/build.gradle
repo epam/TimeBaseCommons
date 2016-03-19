@@ -1,11 +1,4 @@
 
 dependencies {
-}
-
-jar {
-    manifest {
-        baseName 'deltix-commons-gui'
-        attributes 'Implementation-Title': 'Deltix Commons',
-                   'Implementation-Version': version
-    }
+    compile project(':java:commons:util')
 }

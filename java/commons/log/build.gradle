@@ -2,11 +2,3 @@ dependencies {
     compile project(':java:commons:util')
     compile 'org.gflogger:gflogger:1.0'
 }
-
-jar {
-    manifest {
-        baseName 'deltix-commons-util'
-        attributes 'Implementation-Title': 'Deltix Commons Logging',
-                   'Implementation-Version': version
-    }
-}

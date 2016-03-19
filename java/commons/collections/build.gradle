@@ -2,11 +2,3 @@
 dependencies {
     compile project(':java:commons:lang')
 }
-
-jar {
-    manifest {
-        baseName 'deltix-commons-collections'
-        attributes 'Implementation-Title': 'Deltix Commons Collections',
-                   'Implementation-Version': version
-    }
-}
