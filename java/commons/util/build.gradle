@@ -1,0 +1,14 @@
+dependencies {
+    compile project(':java:commons:lang'),
+            project(':java:commons:collections')
+
+    compile('commons-lang:commons-lang:2.4')
+
+    //TODO: Since we no longer use IKVM we can switch to Java's version of JAXB
+    compile files('../../../lib/endorsed/jaxb-api.jar'),
+            files('../../../lib/jaxb/activation.jar'),
+            files('../../../lib/jaxb/jaxb-impl.jar'),
+            files('../../../lib/jaxb/jaxb-xjc.jar'),
+            files('../../../lib/jaxb/jsr173_1.0_api.jar')
+
+}

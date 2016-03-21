@@ -1,0 +1,17 @@
+package deltix.util.concurrent;
+
+import deltix.util.collections.AbstractCursor;
+
+/**
+ *  Thrown from {@link AbstractCursor#next} if the cursor has been
+ *  previously or asynchronously closed.
+ */
+public class CursorIsClosedException extends RuntimeException {
+    public CursorIsClosedException() {
+        super ("Cursor is closed");
+    }
+
+    public CursorIsClosedException(Throwable cause) {
+        super("Cursor is closed", cause);
+    }
+}
