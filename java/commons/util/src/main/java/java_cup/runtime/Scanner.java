@@ -6,7 +6,7 @@ package java_cup.runtime;
  * of scanners implementing <code>Scanner</code> is facilitated.
  *
  * @version last updated 23-Jul-1999
- * @author David MacMahon <davidm@smartsc.com>
+ * @author David MacMahon davidm@smartsc.com
  */
 
 /* *************************************************
