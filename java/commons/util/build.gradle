@@ -1,3 +1,5 @@
+description = 'QuantServer general purpose utilities'
+
 dependencies {
     compile project(':java:commons:lang'),
             project(':java:commons:collections')
