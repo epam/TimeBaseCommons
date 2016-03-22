@@ -577,7 +577,7 @@ public class lalr_state {
    *
    *  @param p           the production
    *  @param term_index  the index of the lokahead terminal
-   *  @param parse_action_row  a row of the action table
+   *  @param table_row  a row of the action table
    *  @param act         the rule in conflict with the table entry
    */
 

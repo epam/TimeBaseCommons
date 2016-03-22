@@ -7,7 +7,7 @@ package java_cup;
  *  for each release.  
  *
  *  Version numbers used here are broken into 3 parts: major, minor, and 
- *  update, and are written as v<major>.<minor>.<update> (e.g. v0.10a).  
+ *  update, and are written as v[major].[minor].[update] (e.g. v0.10a).
  *  Major numbers will change at the time of major reworking of some 
  *  part of the system.  Minor numbers for each public release or 
  *  change big enough to cause incompatibilities.  Finally update

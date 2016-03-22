@@ -410,8 +410,7 @@ public class production {
    * @param rhs          array of RHS parts.
    * @param rhs_len      how much of rhs to consider valid.
    * @param final_action the final action string of the production. 
-   * @param lhs_type     the object type associated with the LHS symbol.
-   */ 
+   */
   protected String declare_labels(
     production_part  rhs[], 
     int              rhs_len, 
