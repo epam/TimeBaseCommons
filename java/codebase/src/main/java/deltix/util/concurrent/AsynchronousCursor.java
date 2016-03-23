@@ -1,8 +1,6 @@
 package deltix.util.concurrent;
 
 
-import deltix.util.collections.AbstractCursor;
-
 /**
  *  A cursor supporting asynchronous data transfer. Note that
  *  the concept of "data being available" supported by AsynchronousDataSource

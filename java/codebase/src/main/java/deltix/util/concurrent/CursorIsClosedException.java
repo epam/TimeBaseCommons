@@ -1,7 +1,5 @@
 package deltix.util.concurrent;
 
-import deltix.util.collections.AbstractCursor;
-
 /**
  *  Thrown from {@link AbstractCursor#next} if the cursor has been
  *  previously or asynchronously closed.
