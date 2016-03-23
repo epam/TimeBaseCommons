@@ -1,4 +1,4 @@
-package deltix.util.collections;
+package deltix.util.concurrent;
 
 import deltix.util.lang.Disposable;
 
