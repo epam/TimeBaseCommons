@@ -1,31 +1,30 @@
-package deltix.qsrv.hf.server.common.db.cache;
+package deltix.util.collections;
 
-import deltix.qsrv.hf.server.common.util.CircularBufferOfInt;
-import deltix.util.collections.generated.LongHashMapBase;
+import deltix.util.collections.generated.CharacterHashMapBase;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * Special version of LongToObjectMap that keeps maximum capacity and doesn't support explicit removal.
+ * Special version of CharSequenceToObjectMap that keeps maximum capacity and doesn't support explicit removal.
  * Instead oldest entries are removed to provide space for new additions.
  */
-class FixedSizeLongToObjectMap<V> {
-    private final LimitedLong2ObjectHashMap<V> map;
+public class FixedSizeCharSeqToObjectMap<V> {
+    private final LimitedCharSeq2ObjectHashMap<V> map;
 
-    interface OnDeleteCallback<V> {
+    public interface OnDeleteCallback<V> {
         void itemDeleted(V item);
     }
 
-    FixedSizeLongToObjectMap(int maxSize, OnDeleteCallback<V> itemDeleteCallback) {
-        map = new LimitedLong2ObjectHashMap<>(maxSize, itemDeleteCallback);
+    public FixedSizeCharSeqToObjectMap(int maxSize, OnDeleteCallback<V> itemDeleteCallback) {
+        map = new LimitedCharSeq2ObjectHashMap<>(maxSize, itemDeleteCallback);
     }
 
-    public V get(long key) {
+    public V get(CharSequence key) {
         return map.get(key);
     }
 
-    public V putIfEmpty(long key, V value) {
+    public V putIfEmpty(CharSequence key, V value) {
         return map.putAndGetIfEmpty(key, value);
     }
 
@@ -40,12 +39,12 @@ class FixedSizeLongToObjectMap<V> {
 
 
     /// Hides access to Map itself to avoid accidental access to base class functionality like .remove().
-    private static class LimitedLong2ObjectHashMap<V> extends LongHashMapBase {
+    private static class LimitedCharSeq2ObjectHashMap<V> extends CharSequenceToObjectMapQuick {
         private final OnDeleteCallback<V> itemDeleteCallback;
         private final CircularBufferOfInt insertionPoints;
         private Object [] values;
 
-        public LimitedLong2ObjectHashMap(int maxSize, OnDeleteCallback<V> itemDeleteCallback) {
+        public LimitedCharSeq2ObjectHashMap(int maxSize, OnDeleteCallback<V> itemDeleteCallback) {
             super(maxSize);
             this.values = new Object [maxSize];
             this.insertionPoints = new CircularBufferOfInt (maxSize);
@@ -53,43 +52,10 @@ class FixedSizeLongToObjectMap<V> {
         }
 
         @SuppressWarnings("unchecked")
-        public V           get (long key) {
+        public V           get (CharSequence key) {
             int         pos = find (key);
             return (V)(pos == NULL ? null : values [pos]);
         }
-
-//        /**
-//         *  Put new element into the map
-//         *
-//         *  @param key       The key
-//         *  @param value     The value
-//         *  @return  true if the element is new, false if the key was found.
-//         */
-//        public boolean              put (long key, V value) {
-//            int         hidx = hashIndex(key);
-//            int         idx = find (hidx, key);
-//
-//            if (idx != NULL) {
-//                values [idx] = value;
-//                insertionPoints.add(idx);
-//                return (false);
-//            }
-//
-//            if (freeHead == NULL) { // no more free capacity => evict the oldest entry
-//                idx = insertionPoints.tail();
-//                assert idx != CircularBufferOfInt.EMPTY;
-//                free (idx);
-//            }
-//
-//            int newidx = allocEntry (hidx);
-//            assert newidx == idx;
-//
-//            values [idx] = value;
-//            keys [idx] = key;
-//            insertionPoints.add(idx);
-//            return (true);
-//        }
-
 
         /**
          *  Put new element into the map only if there no previously stored element under the same key
@@ -99,7 +65,7 @@ class FixedSizeLongToObjectMap<V> {
          *  @return  Element that remains in the map. Never null.
          */
         @SuppressWarnings("unchecked")
-        public V              putAndGetIfEmpty (long key, V value) {
+        public V              putAndGetIfEmpty (CharSequence key, V value) {
             int         hidx = hashIndex (key);
             int         idx = find (hidx, key);
 

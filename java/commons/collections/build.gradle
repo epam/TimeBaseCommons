@@ -2,4 +2,5 @@ description = 'QuantServer commons-collections set of utilities'
 
 dependencies {
     compile project(':java:commons:lang')
+    testCompile 'commons-collections:commons-collections:3.2.1'
 }

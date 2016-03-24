@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.server.common.db.cache;
+package deltix.util.collections;
 
 import deltix.util.collections.hash.HashCodeComputer;
 import deltix.util.collections.hash.SimpleHashCodeComputer;
@@ -10,16 +10,18 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
-/*  ##UHF.FRAMEWORK## */
-public class Test_FixedSizeLongToOrderHashMap {
+
+public class Test_FixedSizeCharSeqToOrderHashMap {
+
     private static final int MAX_SIZE = 16;
 
-    private FixedSizeLongToObjectMap<Long> map = new FixedSizeLongToObjectMap<>(MAX_SIZE, null);
+    private FixedSizeCharSeqToObjectMap<Long> map = new FixedSizeCharSeqToObjectMap<>(MAX_SIZE, null);
 
     @Test
     public void testEmpty() {
-        assertNull(map.get(1L));
+        assertNull(map.get("1L"));
         assertFalse(map.iterator().hasNext());
     }
 
@@ -29,29 +31,29 @@ public class Test_FixedSizeLongToOrderHashMap {
         map.clear();
         testEmpty();
 
-        map.putIfEmpty(1, 1L);
+        map.putIfEmpty("ONE", 1L);
         map.clear();
         testEmpty();
     }
 
     @Test
     public void testSingleElement() {
-        map.putIfEmpty(1, 1L);
-        assertEquals(new Long(1), map.get(1));
+        map.putIfEmpty("ONE", 1L);
+        assertEquals(new Long(1), map.get("ONE"));
 
         Iterator<Long> iter = map.iterator();
         assertTrue(iter.hasNext());
-        assertEquals(new Long(1), iter.next());
+        assertEquals("ONE", iter.next());
         assertFalse(iter.hasNext());
     }
 
     @Test
     public void testPutIfEmpty() {
-        map.putIfEmpty(1, 11L);
-        assertEquals(new Long(11), map.get(1));
-        Long result = map.putIfEmpty(1, 111L); // shouldn't affect map
+        map.putIfEmpty("1", 11L);
+        assertEquals(new Long(11), get(1));
+        Long result = map.putIfEmpty("1", 111L); // shouldn't affect map
         assertEquals(new Long(11), result);
-        assertEquals(new Long(11), map.get(1));
+        assertEquals(new Long(11), get(1));
 
         Iterator<Long> iter = map.iterator();
         assertTrue(iter.hasNext());
@@ -67,10 +69,10 @@ public class Test_FixedSizeLongToOrderHashMap {
         insert(3, 3L);
         assertContent("1, 2, 3");
         insert(4, 4L);
-        assertEquals(new Long(1), map.get(1));
-        assertEquals(new Long(2), map.get(2));
-        assertEquals(new Long(3), map.get(3));
-        assertEquals(new Long(4), map.get(4));
+        assertEquals(new Long(1), get(1));
+        assertEquals(new Long(2), get(2));
+        assertEquals(new Long(3), get(3));
+        assertEquals(new Long(4), get(4));
         assertContent("1, 2, 3, 4");
 // no longer expose override method (Map.put)
 //        override(2, 22L);
@@ -81,6 +83,10 @@ public class Test_FixedSizeLongToOrderHashMap {
 //        assertEquals(new Long(3), map.get(3));
 //        assertEquals(new Long(44), map.get(4));
 
+    }
+
+    private Long get(int i) {
+        return map.get(Integer.toString(i));
     }
 
 // Hashing algorith m:
@@ -145,13 +151,17 @@ public class Test_FixedSizeLongToOrderHashMap {
     }
 
 
-    private void insert(long key, Long value) {
+    private void insert(int key, Long value) {
+        insert (Integer.toString(key), value);
+    }
+
+    private void insert(CharSequence key, Long value) {
         Long newItem = map.putIfEmpty(key, value);
         assertSame(newItem, value);
     }
 
 
-    private void override(long key, Long value) {
+    private void override(CharSequence key, Long value) {
         Long newItem = map.putIfEmpty(key, value);
         assertNotSame(newItem, value);
     }

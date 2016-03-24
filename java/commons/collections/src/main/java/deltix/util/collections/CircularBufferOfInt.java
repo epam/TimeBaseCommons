@@ -1,4 +1,4 @@
-package deltix.qsrv.hf.server.common.util;
+package deltix.util.collections;
 
 import java.util.Arrays;
 
