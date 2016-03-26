@@ -77,11 +77,4 @@ public class Base64Encoder extends BinCharEncoder {
         
         super.close ();
     }
-    
-    public static void main (String [] args) throws Exception {
-        OutputStreamWriter  wr = new OutputStreamWriter (System.out);
-        Base64Encoder       b64enc = new Base64Encoder (wr);    
-        deltix.util.io.StreamPump.pump (System.in, b64enc);
-        b64enc.flush ();
-    }
 }

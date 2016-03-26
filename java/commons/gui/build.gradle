@@ -1,4 +1,8 @@
 
 dependencies {
     compile project(':java:commons:util')
+
+    // company repository
+    compile 'com.jidesoft:deltix-jide-grids:3.3.3'
+
 }
