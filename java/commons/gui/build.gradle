@@ -7,6 +7,11 @@ dependencies {
             'com.jidesoft:deltix-jide-dialogs:3.3.3',
             'com.jidesoft:deltix-jide-action:3.3.3'
 
+    compile ('com.jidesoft:deltix-jide-grids:3.3.3') {
+        exclude module: 'log4j'
+        exclude module: 'commons-logging'
+    }
+
     compile files('../../../lib/jgoodies/binding.jar'),
             files('../../../lib/jgoodies/forms.jar'),
             files('../../../lib/jgoodies/jgoodies-common.jar'),

@@ -9,7 +9,6 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import org.jdesktop.jxlayer.plaf.ext.*;
-import org.springframework.util.*;
 
 import com.jidesoft.grid.*;
 import com.jidesoft.swing.*;
@@ -82,8 +81,7 @@ public class QuickNodeFilterField extends QuickFilterField {
             setLocked (true);
             try {
                 final Object o = _treeModel.getRoot ();
-                Assert.isInstanceOf (FilterableNode.class,
-                                     o);
+                assert o instanceof FilterableNode;
                 root = (FilterableNode<?>) o;
                 if (!_filterAdded) { // only add filter for the first time.
                     root.addFilter (getFilter ());
