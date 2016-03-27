@@ -4,7 +4,7 @@ package deltix.util.swing;
  *
  */
 public class AppExceptionHandler {
-    public static AbstractApp     currentApp;
+    public static SwingAbstractApp     currentApp;
     
     public AppExceptionHandler () {
     }

@@ -1,6 +1,6 @@
 package deltix.util.swing.gridpanel;
 
-import deltix.util.swing.AbstractApp;
+import deltix.util.swing.SwingAbstractApp;
 import deltix.util.swing.SwingUtil;
 import deltix.util.swing.TabFocusSelector;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class Test {
     public static void main (String [] args) throws Exception {
         SwingUtil.setWindowsLookAndFeel ();
         
-        AbstractApp     app = new AbstractApp ();
+        SwingAbstractApp     app = new SwingAbstractApp ();
         
         final JTabbedPane     tabs = new JTabbedPane ();
         

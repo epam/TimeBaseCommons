@@ -3,6 +3,16 @@ dependencies {
     compile project(':java:commons:util')
 
     // company repository
-    compile 'com.jidesoft:deltix-jide-grids:3.3.3'
+    compile 'com.jidesoft:deltix-jide-components:3.3.3',
+            'com.jidesoft:deltix-jide-dialogs:3.3.3',
+            'com.jidesoft:deltix-jide-action:3.3.3'
 
+    compile files('../../../lib/jgoodies/binding.jar'),
+            files('../../../lib/jgoodies/forms.jar'),
+            files('../../../lib/jgoodies/jgoodies-common.jar'),
+            files('../../../lib/jgoodies/looks.jar'),
+            files('../../../lib/jgoodies/validation.jar'),
+            files('../../../lib/swingx/filters.jar'),
+            files('../../../lib/swingx/jxlayer.jar'),
+            files('../../../lib/swingx/swingx.jar')
 }

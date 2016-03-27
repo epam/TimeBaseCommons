@@ -1,10 +1,8 @@
 package deltix.qsrv.ui.util;
 
-import deltix.qsrv.hf.pub.InstrumentType;
 import deltix.util.swing.SwingUtil;
 
 import javax.swing.*;
-import java.util.HashMap;
 
 /**
  *
@@ -180,31 +178,5 @@ public class Icons {
     public static final Icon WIZARD              = SwingUtil.loadIcon("deltix/qsrv/ui/util/wizard.png"             );
     public static final Icon ZOOM_IN             = SwingUtil.loadIcon("deltix/qsrv/ui/util/zoom_in.png"            );
     public static final Icon ZOOM_OUT            = SwingUtil.loadIcon("deltix/qsrv/ui/util/zoom_out.png"           );
-
-
-    public static final HashMap<InstrumentType, Icon> INSTRUMENT_TYPE_ICONS = new HashMap<>();
-    static
-    {
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.BOND, BOND                      );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.CUSTOM, CUSTOM                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.DATA_CONNECTOR, DATA_CONNECTOR  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EQUITY, EQUITY                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EQUITY, EQUITY                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.ETF, ETF                        );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE, EXCHANGE              );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.FUTURE, FUTURE                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.FX, CURRENCY                    );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.INDEX, INDEX                    );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.OPTION, OPTION                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.SIMPLE_OPTION, SIMPLE_OPTION    );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.EXCHANGE_TRADED_SYNTHETIC, SPREAD);
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.STREAM, STREAM                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.SYSTEM, SYSTEM                  );
-        INSTRUMENT_TYPE_ICONS.put(InstrumentType.TRADING_SESSION, TRADING_SESSION);
-    }
-
-    public static Icon forInstrumentType(InstrumentType t) {
-        return (INSTRUMENT_TYPE_ICONS.get(t));
-    }
 
 }
