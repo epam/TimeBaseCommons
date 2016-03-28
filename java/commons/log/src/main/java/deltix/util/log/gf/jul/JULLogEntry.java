@@ -1,89 +1,92 @@
 package deltix.util.log.gf.jul;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import deltix.util.lang.Util;
+import deltix.util.log.gf.FormattedLogEntry;
 import deltix.util.log.gf.LogEntry;
 import deltix.util.log.gf.Loggable;
 import deltix.util.text.DecimalFormatter;
 
-final class JULLogEntry implements LogEntry {
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-    private final StringBuilder messageBuilder = new StringBuilder(256);
+
+final class JULLogEntry implements LogEntry, FormattedLogEntry {
+
+    private final StringBuilder builder = new StringBuilder(1024);
+
+    private boolean committed = true;
 
     private Logger logger;
     private Level level;
+
+    private String template;
+    private int index;
+
     private Throwable exception;
-    private boolean committed = true; // for first check
 
     @Override
     public LogEntry append(char c) {
-        if (checkNotCommitted())
-            messageBuilder.append(c);
-
+        checkNotCommitted();
+        builder.append(c);
         return this;
     }
 
     @Override
     public LogEntry append(CharSequence csq) {
-        if (checkNotCommitted())
-            messageBuilder.append(csq);
-
+        checkNotCommitted();
+        builder.append(csq);
         return this;
     }
 
     @Override
     public LogEntry append(CharSequence csq, int start, int end) {
-        if (checkNotCommitted())
-            messageBuilder.append(csq, start, end);
-
+        checkNotCommitted();
+        builder.append(csq, start, end);
         return this;
     }
 
     @Override
     public LogEntry append(boolean b) {
-        if (checkNotCommitted())
-            messageBuilder.append(b);
-
+        checkNotCommitted();
+        builder.append(b);
         return this;
     }
 
     @Override
     public LogEntry append(int i) {
-        if (checkNotCommitted())
-            messageBuilder.append(i);
-
+        checkNotCommitted();
+        builder.append(i);
         return this;
     }
 
     @Override
     public LogEntry append(long i) {
-        if (checkNotCommitted())
-            messageBuilder.append(i);
-
+        checkNotCommitted();
+        builder.append(i);
         return this;
     }
 
     @Override
     public LogEntry append(double d) {
-        if (checkNotCommitted())
-            messageBuilder.append(d);
-
+        checkNotCommitted();
+        builder.append(d);
         return this;
     }
 
     @Override
     public LogEntry append(double d, int precision) {
-        if (checkNotCommitted())
-            messageBuilder.append(formatDouble(d, precision));
-
+        checkNotCommitted();
+        builder.append(formatDouble(d, precision));
         return this;
     }
 
     @Override
     public LogEntry append(Loggable value) {
-        if (checkNotCommitted())
+        checkNotCommitted();
+
+        if (value == null)
+            builder.append((CharSequence) null);
+        else
             value.appendTo(this);
 
         return this;
@@ -91,34 +94,203 @@ final class JULLogEntry implements LogEntry {
 
     @Override
     public LogEntry append(Enum value) {
-        if (checkNotCommitted())
-            messageBuilder.append(value != null ? value.name() : null);
-
+        checkNotCommitted();
+        builder.append(value != null ? value.name() : null);
         return this;
     }
 
     @Override
     public LogEntry append(Throwable e) {
-        if (checkNotCommitted()) {
-            if (exception != null) {
-                messageBuilder
-                        .append(Util.NATIVE_LINE_BREAK)
-                        .append(Util.printStackTrace(exception))
-                        .append(Util.NATIVE_LINE_BREAK);
-            }
+        checkNotCommitted();
 
-            exception = e;
+        if (exception != null) {
+            builder
+                    .append(Util.NATIVE_LINE_BREAK)
+                    .append(Util.printStackTrace(exception))
+                    .append(Util.NATIVE_LINE_BREAK);
         }
+
+        exception = e;
 
         return this;
     }
 
     @Override
     public void commit() {
-        if (checkNotCommitted()) {
-            logger.log(level, messageBuilder.toString(), exception);
-            committed = true;
-        }
+        checkNotCommitted();
+
+        logger.log(level, builder.toString(), exception);
+
+        logger = null;
+        level = null;
+        template = null;
+        index = 0;
+        exception = null;
+        builder.delete(0, builder.length());
+        committed = true;
+    }
+
+    @Override
+    public FormattedLogEntry with(char value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(CharSequence value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(CharSequence value, int start, int end) {
+        appendChunk();
+        append(value, start, end);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(boolean value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(int value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(long value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(double value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(double value, int precision) {
+        appendChunk();
+        append(value, precision);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(Loggable value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(Enum value) {
+        appendChunk();
+        append(value);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry with(Throwable e) {
+        appendChunk();
+        append(e);
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(char value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(CharSequence value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(CharSequence value, int start, int end) {
+        with(value, start, end);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(boolean value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(int value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(long value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(double value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(double value, int precision) {
+        with(value, precision);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(Loggable value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(Enum value) {
+        with(value);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public FormattedLogEntry withLast(Throwable e) {
+        with(e);
+        appendLastChunk();
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return builder.toString();
+    }
+
+    void setTemplate(String template) {
+        this.template = template;
     }
 
     void setLogger(Logger logger) {
@@ -129,35 +301,44 @@ final class JULLogEntry implements LogEntry {
         this.level = level;
     }
 
-    void clear() {
-        logger = null;
-        level = null;
-        exception = null;
-        committed = false;
-        messageBuilder.delete(0, messageBuilder.length());
+    void setCommitted(boolean committed) {
+        this.committed = committed;
     }
 
     boolean isCommitted() {
         return committed;
     }
 
-    private boolean checkNotCommitted() {
+    private void checkNotCommitted() {
         if (committed)
-            System.err.println("JUL log entry is already committed");
-
-        return !committed;
+            throw new IllegalStateException("JUL log entry is already committed");
     }
 
-    @Override
-    public String toString() {
-        return messageBuilder.toString();
+    private void appendChunk() {
+        int i = template.indexOf("%s", index);
+        if (i == -1)
+            throw new IllegalArgumentException("Too many parameters for template " + template);
+
+        builder.append(template, index, i);
+        index = i + 2;
+    }
+
+    private void appendLastChunk() {
+        int i = template.indexOf("%s", index);
+        if (i != -1)
+            throw new IllegalArgumentException("Too few parameters for template " + template);
+
+        builder.append(template, index, template.length());
+        index = template.length();
     }
 
     private static String formatDouble(double d, int precision) {
         if (Double.isNaN(d))
             return "NaN";
-        else if (Double.isInfinite(d))
-            return "Infinity";
+        if (Double.isInfinite(d))
+            return d < 0 ? "-Infinity" : "Infinity";
+
         return DecimalFormatter.format(d, precision);
     }
+
 }

@@ -3,6 +3,7 @@ package deltix.util.log.gf.impl;
 import deltix.util.log.gf.LogEntry;
 import deltix.util.log.gf.Loggable;
 
+
 final class GFLogEntry implements LogEntry {
 
     private org.gflogger.GFLogEntry entry;
@@ -61,7 +62,11 @@ final class GFLogEntry implements LogEntry {
 
     @Override
     public LogEntry append(Loggable value) {
-        value.appendTo(this);
+        if(value == null)
+            append((CharSequence) null);
+        else
+            value.appendTo(this);
+
         return this;
     }
 

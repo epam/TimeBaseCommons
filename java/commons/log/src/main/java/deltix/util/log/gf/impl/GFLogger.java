@@ -1,5 +1,6 @@
 package deltix.util.log.gf.impl;
 
+import deltix.util.log.gf.FormattedLogEntry;
 import org.gflogger.GFLog;
 import org.gflogger.LogLevel;
 
@@ -7,12 +8,20 @@ import deltix.util.log.gf.AbstractLogger;
 import deltix.util.log.gf.Level;
 import deltix.util.log.gf.LogEntry;
 
+
 final class GFLogger extends AbstractLogger {
 
-    private static final ThreadLocal<GFLogEntry> THREAD_LOCAL_ENTRY = new ThreadLocal<GFLogEntry>() {
+    private static final ThreadLocal<GFLogEntry> ENTRY = new ThreadLocal<GFLogEntry>() {
         @Override
         protected GFLogEntry initialValue() {
             return new GFLogEntry();
+        }
+    };
+
+    private static final ThreadLocal<FormattedGFLogEntry> FORMATTED_ENTRY = new ThreadLocal<FormattedGFLogEntry>() {
+        @Override
+        protected FormattedGFLogEntry initialValue() {
+            return new FormattedGFLogEntry();
         }
     };
 
@@ -24,7 +33,7 @@ final class GFLogger extends AbstractLogger {
 
     @Override
     protected LogEntry log(Level level) {
-        GFLogEntry entry = THREAD_LOCAL_ENTRY.get();
+        GFLogEntry entry = ENTRY.get();
         org.gflogger.GFLogEntry gfEntry;
 
         switch (level) {
@@ -47,7 +56,39 @@ final class GFLogger extends AbstractLogger {
                 gfEntry = logger.fatal();
                 break;
             default:
-                throw new IllegalArgumentException("Invalid level: " + level);
+                throw new IllegalArgumentException("Invalid level " + level);
+        }
+
+        entry.setEntry(gfEntry);
+        return entry;
+    }
+
+    @Override
+    protected FormattedLogEntry log(Level level, String template) {
+        FormattedGFLogEntry entry = FORMATTED_ENTRY.get();
+        org.gflogger.FormattedGFLogEntry gfEntry;
+
+        switch (level) {
+            case TRACE:
+                gfEntry = logger.trace(template);
+                break;
+            case DEBUG:
+                gfEntry = logger.debug(template);
+                break;
+            case INFO:
+                gfEntry = logger.info(template);
+                break;
+            case WARN:
+                gfEntry = logger.warn(template);
+                break;
+            case ERROR:
+                gfEntry = logger.error(template);
+                break;
+            case FATAL:
+                gfEntry = logger.fatal(template);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid level " + level);
         }
 
         entry.setEntry(gfEntry);
@@ -70,7 +111,7 @@ final class GFLogger extends AbstractLogger {
             case FATAL:
                 return logger.isFatalEnabled();
             default:
-                throw new IllegalArgumentException("Invalid level: " + level);
+                throw new IllegalArgumentException("Invalid level " + level);
         }
     }
 
@@ -95,7 +136,7 @@ final class GFLogger extends AbstractLogger {
             case FATAL:
                 return LogLevel.FATAL;
             default:
-                throw new IllegalArgumentException("Invalid level: " + level);
+                throw new IllegalArgumentException("Invalid level " + level);
         }
     }
 

@@ -1,184 +1,146 @@
-package deltix.util.log.gf;
+package deltix.util.log.gf.impl;
+
+import deltix.util.log.gf.FormattedLogEntry;
+import deltix.util.log.gf.Loggable;
 
 
-public class NullLogEntry implements LogEntry, FormattedLogEntry {
+final class FormattedGFLogEntry implements FormattedLogEntry {
 
-    private static final NullLogEntry INSTANCE = new NullLogEntry();
+    private org.gflogger.FormattedGFLogEntry entry;
 
-    public static NullLogEntry getInstance() {
-        return INSTANCE;
-    }
-
-    private NullLogEntry() {
-    }
-
-    @Override
-    public LogEntry append(char c) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(CharSequence csq) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(CharSequence csq, int start, int end) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(boolean b) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(int i) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(long i) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(double i) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(double i, int precision) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(Throwable e) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(Loggable value) {
-        return this;
-    }
-
-    @Override
-    public LogEntry append(Enum value) {
-        return this;
-    }
-
-    @Override
-    public void commit() {
-        // skip
+    void setEntry(org.gflogger.FormattedGFLogEntry entry) {
+        this.entry = entry;
     }
 
     @Override
     public FormattedLogEntry with(char value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(CharSequence value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(CharSequence value, int start, int end) {
+        entry.with(value, start, end);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(boolean value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(int value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(long value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(double value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(double value, int precision) {
+        entry.with(value, precision);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(Loggable value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(Enum value) {
+        entry.with(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry with(Throwable e) {
+        entry.with(e);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(char value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(CharSequence value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(CharSequence value, int start, int end) {
+        entry.withLast(value, start, end);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(boolean value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(int value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(long value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(double value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(double value, int precision) {
+        entry.withLast(value, precision);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(Loggable value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(Enum value) {
+        entry.withLast(value);
         return this;
     }
 
     @Override
     public FormattedLogEntry withLast(Throwable e) {
+        entry.withLast(e);
         return this;
     }
 

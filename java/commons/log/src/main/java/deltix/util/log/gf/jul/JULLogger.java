@@ -1,20 +1,23 @@
 package deltix.util.log.gf.jul;
 
-import java.util.logging.Logger;
-
 import deltix.util.log.gf.AbstractLogger;
+import deltix.util.log.gf.FormattedLogEntry;
 import deltix.util.log.gf.Level;
 import deltix.util.log.gf.LogEntry;
 
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import static java.util.Objects.requireNonNull;
+
+
 final class JULLogger extends AbstractLogger {
 
-    private static final ThreadLocal<JULLogEntry> THREAD_LOCAL_ENTRY = new ThreadLocal<JULLogEntry>() {
-
+    private static final ThreadLocal<JULLogEntry> ENTRY = new ThreadLocal<JULLogEntry>() {
         @Override
         protected JULLogEntry initialValue() {
             return new JULLogEntry();
         }
-
     };
 
     private final Logger logger;
@@ -25,19 +28,13 @@ final class JULLogger extends AbstractLogger {
 
     @Override
     protected LogEntry log(Level level) {
-        java.util.logging.Level julLogLevel = getJULLogLevel(level);
+        return logEntry(level, null);
+    }
 
-        JULLogEntry entry = THREAD_LOCAL_ENTRY.get();
-        if (!entry.isCommitted()) {
-            System.err.println("JUL log entry is not committed properly at thread: " + Thread.currentThread() + ". Content: " + entry);
-            entry.commit();
-        }
-
-        entry.clear();
-        entry.setLogger(logger);
-        entry.setLevel(julLogLevel);
-
-        return entry;
+    @Override
+    protected FormattedLogEntry log(Level level, String template) {
+        requireNonNull(template, "template is null");
+        return logEntry(level, template);
     }
 
     @Override
@@ -49,6 +46,23 @@ final class JULLogger extends AbstractLogger {
     public void setLevel(Level level) {
         java.util.logging.Level logLevel = getJULLogLevel(level);
         logger.setLevel(logLevel);
+    }
+
+    private JULLogEntry logEntry(Level level, String template) {
+        java.util.logging.Level julLogLevel = getJULLogLevel(level);
+
+        JULLogEntry entry = ENTRY.get();
+        if (!entry.isCommitted()) {
+            System.err.println("JUL log entry is not committed properly at thread: " + Thread.currentThread() + ". Content: " + entry);
+            entry.commit();
+        }
+
+        entry.setCommitted(false);
+        entry.setTemplate(template);
+        entry.setLogger(logger);
+        entry.setLevel(julLogLevel);
+
+        return entry;
     }
 
     private static java.util.logging.Level getJULLogLevel(Level level) {

@@ -7,15 +7,34 @@ public abstract class AbstractLogger implements Logger {
     public LogEntry level(Level level) {
         LogEntry result = NullLogEntry.getInstance();
 
-        if (isLoggable(level))
+        if (isLoggable(level)) {
             try {
                 result = log(level);
             } catch (Exception e) {
                 ErrorManager.error(e);
             }
+        }
+
+        return result;
+    }
+
+    @Override
+    public FormattedLogEntry level(Level level, String template) {
+        FormattedLogEntry result = NullLogEntry.getInstance();
+
+        if (isLoggable(level)) {
+            try {
+                result = log(level, template);
+            } catch (Exception e) {
+                ErrorManager.error(e);
+            }
+        }
 
         return result;
     }
 
     protected abstract LogEntry log(Level level);
+
+    protected abstract FormattedLogEntry log(Level level, String template);
+
 }
