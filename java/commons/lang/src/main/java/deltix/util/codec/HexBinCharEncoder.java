@@ -24,7 +24,7 @@ public class HexBinCharEncoder extends BinCharEncoder {
      *  @param wr       	The Writer to write to
      *  @param insertSpace  Whether to insert spaces bertween each byte
      *	@param upperCase	Whether to use upper-case letters
-     *  @param numPerLine   If > 0, a line separator will be inserted
+     *  @param numPerLine   If it more 0, a line separator will be inserted
      *                      after this many bytes.
      *	@param prefix		The characters to write at the beginning
      *							of each line
@@ -54,7 +54,7 @@ public class HexBinCharEncoder extends BinCharEncoder {
      *  @param wr       	The Writer to write to
      *  @param insertSpace  Whether to insert spaces bertween each byte
      *	@param upperCase	Whether to use upper-case letters
-     *  @param numPerLine   If > 0, a line separator will be inserted
+     *  @param numPerLine   If it more 0, a line separator will be inserted
      *                      after this many bytes.
      */
     public HexBinCharEncoder (
@@ -122,7 +122,7 @@ public class HexBinCharEncoder extends BinCharEncoder {
      *  @param bytes       	Bytes to encode
      *  @param insertSpace  Whether to insert spaces between each byte
      *	@param upperCase	Whether to use upper-case letters
-     *  @param numPerLine   If > 0, a line separator will be inserted
+     *  @param numPerLine   If it more 0, a line separator will be inserted
      *                      after this many bytes.
      *	@return				The encoded string.
      */
@@ -144,7 +144,7 @@ public class HexBinCharEncoder extends BinCharEncoder {
      *  @param length       Number of bytes to encode
      *  @param insertSpace  Whether to insert spaces between each byte
      *	@param upperCase	Whether to use upper-case letters
-     *  @param numPerLine   If > 0, a line separator will be inserted
+     *  @param numPerLine   If it more 0, a line separator will be inserted
      *                      after this many bytes.
      *	@return				The encoded string.
      */
