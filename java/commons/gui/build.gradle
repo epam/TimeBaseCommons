@@ -6,6 +6,7 @@ dependencies {
     compile 'com.jidesoft:deltix-jide-components:3.3.3',
             'com.jidesoft:deltix-jide-dialogs:3.3.3',
             'com.jidesoft:deltix-jide-action:3.3.3'
+            'com.jidesoft:deltix-jide-dock:3.3.3'
 
     compile ('com.jidesoft:deltix-jide-grids:3.3.3') {
         exclude module: 'log4j'
