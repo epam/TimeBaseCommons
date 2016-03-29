@@ -392,7 +392,7 @@ public abstract class DefaultApplication {
 		if (x instanceof SAXParseException) {
 			SAXParseException	saxx = (SAXParseException) x;
 			out.write (                
-				">>> XML Error at " + saxx.getLineNumber () + "." +
+				">>> XML Error at " + saxx.getLineNumber () + "" +
 				saxx.getColumnNumber () + ": "
 			);
 		}

@@ -12,6 +12,7 @@ dependencies {
             files('../../../lib/jaxb/activation.jar'),
             files('../../../lib/jaxb/jaxb-impl.jar'),
             files('../../../lib/jaxb/jaxb-xjc.jar'),
-            files('../../../lib/jaxb/jsr173_1.0_api.jar')
+            files('../../../lib/jaxb/jsr173_1.0_api.jar'),
+            files('../../../lib/bcel-6.0-SNAPSHOT.jar')
 
 }
