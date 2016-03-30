@@ -322,7 +322,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
     /**
      * Skip over bytes in the stream. See the general contract of the <code>skipBytes</code> method of
      * <code>DataInput</code>.
-     * <p/>
+     *
      * Bytes for this operation are read from the contained input stream.
      *
      * @param n the number of bytes to be skipped.

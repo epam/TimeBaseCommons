@@ -16,7 +16,6 @@ import org.xml.sax.SAXParseException;
 
 /**
  *  Helps parse command-line arguments and handle exceptions.
- *	<p>
  *	Usage:
  *<pre>
  *public class MyApp extends deltix.util.cmdline.DefaultApplication {
@@ -33,7 +32,6 @@ import org.xml.sax.SAXParseException;
  *    }
  *}
  *</pre>
- * </p>
  */
 public abstract class DefaultApplication {
     public static final PrintWriter             errWriter = 
