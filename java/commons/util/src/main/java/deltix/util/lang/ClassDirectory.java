@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Lists classes within the specified package.
  * <p>
- * Used by {@link ClassLoaderJavaFileManager}. Any class loader, which keeps 
+ * Used by <tt>ClassLoaderJavaFileManager</tt>. Any class loader, which keeps
  * classes outside the CLASSPATH, must implement this interface to make them visible
  * to the on-the-fly Java compiler.   
  * </p>
