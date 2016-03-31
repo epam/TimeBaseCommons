@@ -6,11 +6,6 @@ public interface Logger {
     void setLevel(Level level);
 
     Level getLevel();
-    FormattedLogEntry debug(String template);
-    FormattedLogEntry trace(String template);
-    FormattedLogEntry info(String template);
-    FormattedLogEntry warn(String template);
-    FormattedLogEntry error(String template);
 
     boolean isLoggable(Level level);
 
