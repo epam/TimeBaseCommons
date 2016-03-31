@@ -3,9 +3,9 @@ package deltix.util.log.gf;
 
 public interface Logger {
 
-    LogEntry level(Level level);
+    void setLevel(Level level);
 
-    FormattedLogEntry level(Level level, String template);
+    Level getLevel();
     FormattedLogEntry debug(String template);
     FormattedLogEntry trace(String template);
     FormattedLogEntry info(String template);
@@ -14,6 +14,30 @@ public interface Logger {
 
     boolean isLoggable(Level level);
 
-    void setLevel(Level level);
+    LogEntry level(Level level);
+
+    LogEntry trace();
+
+    LogEntry debug();
+
+    LogEntry info();
+
+    LogEntry warn();
+
+    LogEntry error();
+
+    LogEntry fatal();
+
+    FormattedLogEntry trace(String template);
+
+    FormattedLogEntry debug(String template);
+
+    FormattedLogEntry info(String template);
+
+    FormattedLogEntry warn(String template);
+
+    FormattedLogEntry error(String template);
+
+    FormattedLogEntry fatal(String template);
 
 }

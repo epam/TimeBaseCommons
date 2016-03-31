@@ -4,8 +4,6 @@ import deltix.util.log.gf.AbstractLogger;
 import deltix.util.log.gf.FormattedLogEntry;
 import deltix.util.log.gf.Level;
 import deltix.util.log.gf.LogEntry;
-
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
@@ -27,14 +25,24 @@ final class JULLogger extends AbstractLogger {
     }
 
     @Override
-    protected LogEntry log(Level level) {
-        return logEntry(level, null);
+    public void setLevel(Level level) {
+        java.util.logging.Level logLevel = getJULLogLevel(level);
+        logger.setLevel(logLevel);
     }
 
     @Override
-    protected FormattedLogEntry log(Level level, String template) {
-        requireNonNull(template, "template is null");
-        return logEntry(level, template);
+    public Level getLevel() {
+        int level = logger.getLevel().intValue();
+        if (level < java.util.logging.Level.FINER.intValue())
+            return Level.TRACE;
+        else if (level < java.util.logging.Level.INFO.intValue())
+            return Level.DEBUG;
+        else if (level < java.util.logging.Level.WARNING.intValue())
+            return Level.INFO;
+        else if (level < java.util.logging.Level.SEVERE.intValue())
+           return Level.WARN;
+        else
+            return Level.ERROR;
     }
 
     @Override
@@ -43,12 +51,17 @@ final class JULLogger extends AbstractLogger {
     }
 
     @Override
-    public void setLevel(Level level) {
-        java.util.logging.Level logLevel = getJULLogLevel(level);
-        logger.setLevel(logLevel);
+    protected LogEntry logEntry(Level level) {
+        return entry(level, null);
     }
 
-    private JULLogEntry logEntry(Level level, String template) {
+    @Override
+    protected FormattedLogEntry logEntry(Level level, String template) {
+        requireNonNull(template, "Template can be null");
+        return entry(level, template);
+    }
+
+    private JULLogEntry entry(Level level, String template) {
         java.util.logging.Level julLogLevel = getJULLogLevel(level);
 
         JULLogEntry entry = ENTRY.get();

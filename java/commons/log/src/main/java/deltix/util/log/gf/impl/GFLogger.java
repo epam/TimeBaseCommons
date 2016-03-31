@@ -1,12 +1,8 @@
 package deltix.util.log.gf.impl;
 
-import deltix.util.log.gf.FormattedLogEntry;
+import deltix.util.log.gf.*;
 import org.gflogger.GFLog;
 import org.gflogger.LogLevel;
-
-import deltix.util.log.gf.AbstractLogger;
-import deltix.util.log.gf.Level;
-import deltix.util.log.gf.LogEntry;
 
 
 final class GFLogger extends AbstractLogger {
@@ -32,7 +28,78 @@ final class GFLogger extends AbstractLogger {
     }
 
     @Override
-    protected LogEntry log(Level level) {
+    public void setLevel(Level level) {
+        LogLevel logLevel;
+
+        switch (level) {
+            case TRACE:
+                logLevel = LogLevel.TRACE;
+                break;
+            case DEBUG:
+                logLevel = LogLevel.DEBUG;
+                break;
+            case INFO:
+                logLevel = LogLevel.INFO;
+                break;
+            case WARN:
+                logLevel = LogLevel.WARN;
+                break;
+            case ERROR:
+                logLevel = LogLevel.ERROR;
+                break;
+            case FATAL:
+                logLevel = LogLevel.FATAL;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid level " + level);
+        }
+
+        logger.setLogLevel(logLevel);
+    }
+
+    @Override
+    public Level getLevel() {
+        LogLevel logLevel = logger.getLogLevel();
+        switch (logLevel) {
+            case TRACE:
+                return Level.TRACE;
+            case DEBUG:
+                return Level.DEBUG;
+            case INFO:
+                return Level.INFO;
+            case WARN:
+                return Level.WARN;
+            case ERROR:
+                return Level.ERROR;
+            case FATAL:
+                return Level.FATAL;
+            default:
+                throw new IllegalArgumentException("Invalid log level " + logLevel);
+        }
+    }
+
+    @Override
+    public boolean isLoggable(Level level) {
+        switch (level) {
+            case TRACE:
+                return logger.isTraceEnabled();
+            case DEBUG:
+                return logger.isDebugEnabled();
+            case INFO:
+                return logger.isInfoEnabled();
+            case WARN:
+                return logger.isWarnEnabled();
+            case ERROR:
+                return logger.isErrorEnabled();
+            case FATAL:
+                return logger.isFatalEnabled();
+            default:
+                throw new IllegalArgumentException("Invalid level " + level);
+        }
+    }
+
+    @Override
+    protected LogEntry logEntry(Level level) {
         GFLogEntry entry = ENTRY.get();
         org.gflogger.GFLogEntry gfEntry;
 
@@ -64,7 +131,7 @@ final class GFLogger extends AbstractLogger {
     }
 
     @Override
-    protected FormattedLogEntry log(Level level, String template) {
+    protected FormattedLogEntry logEntry(Level level, String template) {
         FormattedGFLogEntry entry = FORMATTED_ENTRY.get();
         org.gflogger.FormattedGFLogEntry gfEntry;
 
@@ -93,51 +160,6 @@ final class GFLogger extends AbstractLogger {
 
         entry.setEntry(gfEntry);
         return entry;
-    }
-
-    @Override
-    public boolean isLoggable(Level level) {
-        switch (level) {
-            case TRACE:
-                return logger.isTraceEnabled();
-            case DEBUG:
-                return logger.isDebugEnabled();
-            case INFO:
-                return logger.isInfoEnabled();
-            case WARN:
-                return logger.isWarnEnabled();
-            case ERROR:
-                return logger.isErrorEnabled();
-            case FATAL:
-                return logger.isFatalEnabled();
-            default:
-                throw new IllegalArgumentException("Invalid level " + level);
-        }
-    }
-
-    @Override
-    public void setLevel(Level level) {
-        LogLevel logLevel = getLogLevel(level);
-        logger.setLogLevel(logLevel);
-    }
-
-    private static LogLevel getLogLevel(Level level) {
-        switch (level) {
-            case TRACE:
-                return LogLevel.TRACE;
-            case DEBUG:
-                return LogLevel.DEBUG;
-            case INFO:
-                return LogLevel.INFO;
-            case WARN:
-                return LogLevel.WARN;
-            case ERROR:
-                return LogLevel.ERROR;
-            case FATAL:
-                return LogLevel.FATAL;
-            default:
-                throw new IllegalArgumentException("Invalid level " + level);
-        }
     }
 
 }
