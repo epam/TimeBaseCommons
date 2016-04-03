@@ -68,7 +68,7 @@ public abstract class CompositeEditor extends AbstractUIBean {
     /**
      * Run each ChangeListeners stateChanged() method.
      * 
-     * @see #setValue
+     * @see CompositeEditor#setEditorValue(Object)
      * @see EventListenerList
      */
     protected void fireStateChanged () {
