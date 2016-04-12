@@ -1,17 +1,11 @@
 package deltix.util.cmdline;
 
-import deltix.util.Version;
-import deltix.util.io.Home;
 import deltix.util.io.IOUtil;
 import deltix.util.lang.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.util.regex.Matcher;
 
-/**
- *
- */
 public abstract class AbstractShell extends DefaultApplication {
     public static final String STDIN_FILEID = "stdin";
     private int             errorCode = 0;
@@ -22,15 +16,15 @@ public abstract class AbstractShell extends DefaultApplication {
         super (args);
     }
 
-    public static String    expandPath (String path) {
-        return (path.replaceAll ("\\$\\{home\\}", Matcher.quoteReplacement (Home.get ())));
-    }
-    
     public void             confirm (String msg) {
         if (getConfirm ())
             System.out.println (msg);
     }
-        
+
+    protected String expandPath(String path) {
+        return path;
+    }
+
     protected boolean       doSet (String option, String value) throws Exception {
         if (option.equalsIgnoreCase ("exitOnError")) {            
             exitOnError = Boolean.parseBoolean (value);
@@ -71,11 +65,6 @@ public abstract class AbstractShell extends DefaultApplication {
 
         if (key.equalsIgnoreCase ("showtime")) {
             System.out.println (new java.util.Date ());
-            return (true);
-        }
-
-        if (key.equalsIgnoreCase ("version")) {
-            System.out.println ("Version " + Version.VERSION_STRING);
             return (true);
         }
 
