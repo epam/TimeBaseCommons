@@ -1,5 +1,6 @@
 package deltix.util.id;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -15,12 +16,12 @@ import java.nio.channels.FileLock;
 public final class SharedFileHiLowIdentifierGenerator extends FileBasedHiLowIdentifierGenerator {
 
     @SuppressWarnings("unused")
-    public SharedFileHiLowIdentifierGenerator (String key, int blockSize) {
-        this(key, blockSize, 1);
+    public SharedFileHiLowIdentifierGenerator (File dir, String key, int blockSize) {
+        this(dir, key, blockSize, 1);
     }
     
-    public SharedFileHiLowIdentifierGenerator (String key, int blockSize, long startId) {
-        super(key, blockSize, startId);
+    public SharedFileHiLowIdentifierGenerator (File dir, String key, int blockSize, long startId) {
+        super(dir, key, blockSize, startId);
     }
 
     @Override

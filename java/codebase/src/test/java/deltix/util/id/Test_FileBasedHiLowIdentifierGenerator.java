@@ -104,13 +104,13 @@ public class Test_FileBasedHiLowIdentifierGenerator {
         if (usedFileKeys.add(fileKey))
             deleteFile(fileKey);
 
-        return new FileHiLowIdentifierGenerator (fileKey, blockSize, storeLastUsed);
+        return new FileHiLowIdentifierGenerator (new File(System.getProperty("java.io.tmpdir")), fileKey, blockSize, storeLastUsed);
     }
 
-    private Set<String> usedFileKeys = new HashSet<String>();
+    private Set<String> usedFileKeys = new HashSet<>();
 
     private static void deleteFile(String fileKey) throws InterruptedException {
-        File file = FileBasedHiLowIdentifierGenerator.getSequenceFile(fileKey);
+        File file = new File(new File(System.getProperty("java.io.tmpdir")), "sequence-"+fileKey+".id");
 
         int numberOfAttempts = 5;
         while (file.exists()) {

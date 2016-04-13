@@ -1,6 +1,7 @@
 package deltix.util.id;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -18,16 +19,12 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
     private final FileLock lock;
     private final boolean storeLastUsedOnClose;
 
-    public FileHiLowIdentifierGenerator (String key, int blockSize, boolean writeLastUsedOnClose)
-        throws IOException
-    {
-    	this (key, blockSize, 1, writeLastUsedOnClose, "rwd");
+    public FileHiLowIdentifierGenerator (File dir, String key, int blockSize, boolean writeLastUsedOnClose) throws IOException {
+        this (dir, key, blockSize, 1, writeLastUsedOnClose, "rwd");
 	}
 
-    public FileHiLowIdentifierGenerator (String key, int blockSize, long startId, boolean writeLastUsedOnClose, String fileMode)
-        throws IOException
-    {
-        super(key, blockSize, startId);
+    public FileHiLowIdentifierGenerator(File dir, String key, int blockSize, long startId, boolean writeLastUsedOnClose, String fileMode) throws IOException {
+        super(dir, key, blockSize, startId);
 
         storeLastUsedOnClose = writeLastUsedOnClose;
         raf = new RandomAccessFile(file, fileMode);
