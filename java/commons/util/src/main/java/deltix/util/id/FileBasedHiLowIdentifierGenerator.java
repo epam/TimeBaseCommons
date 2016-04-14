@@ -8,6 +8,7 @@ public abstract class FileBasedHiLowIdentifierGenerator extends HiLowIdentifierG
 	
 	protected FileBasedHiLowIdentifierGenerator(File dir, String key, int blockSize, long startId) {
 		super(key, blockSize, startId);
+		dir.getAbsoluteFile().mkdirs();
         file = new File (dir, "sequence-"+key+".id");
 	}
 }
