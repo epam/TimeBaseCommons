@@ -5,7 +5,8 @@ dependencies {
             project(':java:commons:collections')
 
     compile 'commons-lang:commons-lang:2.4',
-            'org.apache.commons:commons-compress:1.7'
+            'org.apache.commons:commons-compress:1.7',
+            'javax.servlet:javax.servlet-api:3.1.0'
 
     //TODO: Since we no longer use IKVM we can switch to Java's version of JAXB
     compile files('../../../lib/endorsed/jaxb-api.jar'),
