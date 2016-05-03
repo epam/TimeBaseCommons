@@ -1,0 +1,71 @@
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import static org.junit.Assert.*;
+import deltix.util.collections.generated.ByteArrayList;
+import deltix.util.collections.ByteArrayListUtils;
+
+
+@Category(Test.class)
+public class Test_ByteArrayListUtils {
+    @Test
+    public void testAppendByte() {
+        ByteArrayList ar = new ByteArrayList();
+        for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (byte) i);
+        for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toByte(ar, i), i);
+    }
+    @Test
+    public void testAppendShort() {
+        ByteArrayList ar = new ByteArrayList();
+        for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (short)(512 + i));
+        for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toShort(ar, i * 2), 512 + i);
+    }
+    @Test
+    public void testAppendInt() {
+        ByteArrayList ar = new ByteArrayList();
+        for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (int) (100000 + i));
+        assertEquals(ar.getByte(0), 0);
+        assertEquals(ar.getByte(1), 1);
+        assertEquals(ar.getByte(2), -122);
+        assertEquals(ar.getByte(3), -96);
+
+        for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toInt(ar, i * 4), 100000 + i);
+    }
+    @Test
+    public void testAppendLong() {
+        ByteArrayList ar = new ByteArrayList();
+        for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (long)((long) 1000000 * (long) 1000000  + i));
+        for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toLong(ar, i * 8), (long)1000000 * (long) 1000000 + i);
+    }
+    @Test
+    public void testAppendString() {
+        ByteArrayList ar = new ByteArrayList();
+        ByteArrayListUtils.append(ar, "aba");
+        ByteArrayListUtils.append(ar, "caba");
+        assertEquals(ByteArrayListUtils.toString(ar), "abacaba");
+        assertEquals(ByteArrayListUtils.toString(ar, 6), "caba");
+    }
+    @Test
+    public void testEquals() {
+        ByteArrayList ar1 = new ByteArrayList();
+        ByteArrayList ar2 = new ByteArrayList();
+        ar1.add((byte)1);
+        ar1.add((byte)2);
+        ar1.add((byte)3);
+        ar1.add((byte)4);
+        ar2.add((byte)1);
+        ar2.add((byte)2);
+        ar2.add((byte)3);
+        assertEquals(ByteArrayListUtils.equals(ar1, ar2), false);
+        ar2.add((byte)4);
+        assertEquals(ByteArrayListUtils.equals(ar1, ar2), true);
+        ar1.add((byte)17);
+        ar2.add((byte)18);
+        assertEquals(ByteArrayListUtils.equals(ar1, ar2), false);
+    }
+
+
+
+
+
+
+}
