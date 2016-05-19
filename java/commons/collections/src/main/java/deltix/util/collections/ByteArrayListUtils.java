@@ -7,120 +7,178 @@ import deltix.util.collections.generated.ByteArrayList;
  * Created by DriapkoA on 02.05.2016.
  */
 public class ByteArrayListUtils{
+    private static StringBuilder builder = new StringBuilder();
     /**
      * Assign binary array ar by x
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void assign(ByteArrayList ar, byte x) {
+    public static ByteArrayList assign(ByteArrayList ar, byte x) {
+        if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
+        return ar;
     }
 
     /**
      * Assign binary array ar by x
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void assign(ByteArrayList ar, short x) {
+    public static ByteArrayList assign(ByteArrayList ar, short x) {
+        if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
+        return ar;
     }
     /**
      * Assign binary array ar by x
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void assign(ByteArrayList ar, int x) {
+    public static ByteArrayList assign(ByteArrayList ar, int x) {
+        if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
+        return ar;
     }
     /**
      * Assign binary array ar by x
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void assign(ByteArrayList ar, long x) {
+    public static ByteArrayList assign(ByteArrayList ar, long x) {
+        if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
+        return ar;
     }
     /**
      * Assign binary array ar by x
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void assign(ByteArrayList ar, String x) {
+    public static ByteArrayList assign(ByteArrayList ar, String x) {
+        if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
+        return ar;
     }
-
+    /**
+     * Assign binary array ar by x
+     * @param ar binary array
+     * @param x x
+     * @return this
+     */
+    public static ByteArrayList assign(ByteArrayList ar, CharSequence x) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.clear();
+        append(ar, x);
+        return ar;
+    }
     /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void append(ByteArrayList ar, byte x) {
+    public static ByteArrayList append(ByteArrayList ar, byte x) {
+        if (ar == null) ar = new ByteArrayList();
         ar.add(x);
+        return ar;
     }
     /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
+     * @return this
      */
 
-    public static void append(ByteArrayList ar, short x) {
+    public static ByteArrayList append(ByteArrayList ar, short x) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.add((byte)(x & 255));
         ar.add((byte)(x >>> 8));
-        ar.add((byte)(x & 255));
-
+        return ar;
     }
     /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void append(ByteArrayList ar, int x) {
+    public static ByteArrayList append(ByteArrayList ar, int x) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.add((byte)(x & 255));
+        ar.add((byte)((x >>> 8) & 255));
+        ar.add((byte)((x >>> 16) & 255));
         ar.add((byte)(x >>> 24));
-        ar.add((byte)((x >>> 16) & 255));
-        ar.add((byte)((x >>> 8) & 255));
-        ar.add((byte)(x & 255));
+        return ar;
     }
     /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void append(ByteArrayList ar, long x) {
-        ar.add((byte)(x >>> 56));
-        ar.add((byte)((x >>> 48) & 255));
-        ar.add((byte)((x >>> 40) & 255));
-        ar.add((byte)((x >>> 32) & 255));
+    public static ByteArrayList append(ByteArrayList ar, long x) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.add((byte)(x & 255));
+        ar.add((byte)((x >>> 8) & 255));
+        ar.add((byte)((x >>> 16) & 255));
         ar.add((byte)((x >>> 24) & 255));
-        ar.add((byte)((x >>> 16) & 255));
-        ar.add((byte)((x >>> 8) & 255));
-        ar.add((byte)(x & 255));
+        ar.add((byte)((x >>> 32) & 255));
+        ar.add((byte)((x >>> 40) & 255));
+        ar.add((byte)((x >>> 48) & 255));
+        ar.add((byte)(x >>> 56));
+        return ar;
     }
     /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
+     * @return this
      */
-    public static void append(ByteArrayList ar, String x) {
+    public static ByteArrayList append(ByteArrayList ar, String x) {
+        if (ar == null) ar = new ByteArrayList();
         for (int i = 0; i < x.length(); ++i) {
             char ch = x.charAt(i);
             append(ar, (short) ch);
         }
+        return ar;
     }
     /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
+     * @return this
+     */
+    public static ByteArrayList append(ByteArrayList ar, CharSequence x) {
+        if (ar == null) ar = new ByteArrayList();
+        for (int i = 0; i < x.length(); ++i) {
+            char ch = x.charAt(i);
+            append(ar, (short) ch);
+        }
+        return ar;
+    }
+    /**
+     * Append x to binary array ar
+     * @param ar binary array
+     * @param x x
+     * @return this
      */
 
-    public static void appendASCII(ByteArrayList ar, String x) {
+    public static ByteArrayList appendASCII(ByteArrayList ar, String x) {
+        if (ar == null) ar = new ByteArrayList();
         for (int i = 0; i < x.length(); ++i) {
             char ch = x.charAt(i);
             append(ar, (byte) ch);
         }
+        return ar;
     }
 
     /**
@@ -139,8 +197,8 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static short toShort(ByteArrayList ar, int offset) {
-        return (short) ((((short)(ar.getByte(offset)) << 8) & (short)(0xff00)) |
-                       ((short) ar.getByte(offset + 1)) & (short)(0xff));
+        return (short) ((((short)(ar.getByte(offset + 1)) << 8) & (short)(0xff00)) |
+                       ((short) ar.getByte(offset)) & (short)(0xff));
     }
     /**
      * Convert binary array, started from offset to int
@@ -149,10 +207,10 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static int toInt(ByteArrayList ar, int offset) {
-        return ((int)(ar.getByte(offset)) << 24) & 0xff000000 |
-                ((int)(ar.getByte(offset + 1)) << 16) & 0x00ff0000 |
-                ((int)(ar.getByte(offset + 2)) << 8)&0x0000ff00 |
-                ((int)ar.getByte(offset + 3)) & 0x000000ff;
+        return ((int)(ar.getByte(offset + 3)) << 24) & 0xff000000 |
+                ((int)(ar.getByte(offset + 2)) << 16) & 0x00ff0000 |
+                ((int)(ar.getByte(offset + 1)) << 8)&0x0000ff00 |
+                ((int)ar.getByte(offset)) & 0x000000ff;
     }
     /**
      * Convert binary array, started from offset to long
@@ -161,14 +219,14 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static long toLong(ByteArrayList ar, int offset) {
-        return ((long) (ar.getByte(offset)) << 56) & 0xff00000000000000L |
-                ((long) (ar.getByte(offset + 1)) << 48) & 0x00ff000000000000L |
-                ((long) (ar.getByte(offset + 2)) << 40) & 0x0000ff0000000000L |
-                ((long) (ar.getByte(offset + 3)) << 32) & 0x000000ff00000000L |
-                ((long) (ar.getByte(offset + 4)) << 24) & 0x00000000ff000000L |
-                ((long) (ar.getByte(offset + 5)) << 16) & 0x0000000000ff0000L |
-                ((long) (ar.getByte(offset + 6)) << 8) & 0x000000000000ff00L |
-                ((long) (ar.getByte(offset + 7))) & 0x000000000000ffL;
+        return ((long) (ar.getByte(offset + 7)) << 56) & 0xff00000000000000L |
+                ((long) (ar.getByte(offset + 6)) << 48) & 0x00ff000000000000L |
+                ((long) (ar.getByte(offset + 5)) << 40) & 0x0000ff0000000000L |
+                ((long) (ar.getByte(offset + 4)) << 32) & 0x000000ff00000000L |
+                ((long) (ar.getByte(offset + 3)) << 24) & 0x00000000ff000000L |
+                ((long) (ar.getByte(offset + 2)) << 16) & 0x0000000000ff0000L |
+                ((long) (ar.getByte(offset + 1)) << 8) & 0x000000000000ff00L |
+                ((long) (ar.getByte(offset))) & 0x000000000000ffL;
 
     }
     /**
@@ -178,11 +236,23 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static String toString(ByteArrayList ar, int offset) {
-        StringBuilder builder = new StringBuilder();
+        builder.setLength(0);
         for (int i = offset; i < ar.size(); i += 2) {
             builder.append((char)toShort(ar, i));
         }
         return builder.toString();
+    }
+    /**
+     * Convert binary array, started from offset to CharSequence
+     * @param ar binary array
+     * @param offset offset
+     * @param builder result.
+     */
+    public static void toStringBuilder(ByteArrayList ar, int offset, StringBuilder builder) {
+        builder.setLength(0);
+        for (int i = offset; i < ar.size(); i += 2) {
+            builder.append((char) toShort(ar, i));
+        }
     }
     /**
      * Convert binary array, started from offset to ASCII string
@@ -191,7 +261,7 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static String toStringASCII(ByteArrayList ar, int offset) {
-        StringBuilder builder = new StringBuilder();
+        builder.setLength(0);
         for (int i = offset; i < ar.size(); i++) {
             builder.append((char)toByte(ar, i));
         }
@@ -240,6 +310,15 @@ public class ByteArrayListUtils{
 
     public static String toString(ByteArrayList ar) {
         return toString(ar, 0);
+    }
+    /**
+     * convert binary array to CharSequence
+     * @param ar binary array
+     * @param builder result
+     */
+
+    public static void toStringBuilder(ByteArrayList ar, StringBuilder builder) {
+        toStringBuilder(ar, 0, builder);
     }
     /**
      * convert binary array to ASCII string
