@@ -1130,6 +1130,123 @@ public class StringUtils {
         }
         return new String(hexChars);
     }
+
+
+    /**
+     * Searches for a specified pattern in an expression.
+     *
+     * @param expression - any valid expression of character data type.
+     * @param pattern - specific string of characters to search for in {@param expression},
+     *                  and can include the following valid wildcard characters:
+     *                  % - Any string of zero or more characters.
+     *                  _ (underscore) - Any single character.
+     * @return true, if {@param expression} is match to specified {@param pattern}, else false.
+     */
+    public static boolean wildcardMatchRegexp(String expression, String pattern, boolean caseSensitive) {
+        if (expression == null || pattern == null)
+            return false;
+
+        if (!caseSensitive) {
+            pattern = pattern.toLowerCase();
+            expression = expression.toLowerCase();
+        }
+
+        pattern = escapeSpecialCharacters(pattern, ".+*$^?|()[]{}");
+        pattern = pattern.replaceAll("(?<!\\\\)_", ".");
+        pattern = pattern.replaceAll("(?<!\\\\)%", ".*");
+
+        return expression.matches(pattern);
+    }
+
+    private static String escapeSpecialCharacters(String expression, String specialSymbols) {
+        if (expression == null)
+            return null;
+
+        if (specialSymbols == null)
+            return expression;
+
+        int len = expression.length();
+        if (len == 0)
+            return "";
+
+        StringBuilder sb = new StringBuilder(len * 2);
+        for (int i = 0; i < len; ++i) {
+            char c = expression.charAt(i);
+            if (specialSymbols.indexOf(c) != -1)
+                sb.append("\\");
+            sb.append(c);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Searches for a specified pattern in an expression.
+     *
+     * @param expression - any valid expression of character data type.
+     * @param pattern - specific string of characters to search for in {@param expression},
+     *                  and can include the following valid wildcard characters:
+     *                  % - Any string of zero or more characters.
+     *                  _ (underscore) - Any single character.
+     * @return true, if {@param expression} is match to specified {@param pattern}, else false.
+     */
+    public static boolean wildcardMatch(CharSequence expression, CharSequence pattern, boolean caseSensitive) {
+        if (expression == null || pattern == null)
+            return false;
+
+        int exprPos = 0, exprSubMatchPos = 0;
+        int patPos = 0, patSubMatchPos = 0;
+
+        while (!isAtEnd(expression, exprPos)) {
+            boolean isQuoted = isWildcardQuoted(pattern, patPos);
+            if (isQuoted)
+                ++patPos;
+
+            boolean patIsAtEnd = isAtEnd(pattern, patPos);
+
+            if (!patIsAtEnd && !isQuoted && pattern.charAt(patPos) == '%') {
+                ++patPos;
+                if (isAtEnd(pattern, patPos))
+                    return true;
+
+                exprSubMatchPos = exprPos + 1;
+                patSubMatchPos = patPos;
+            } else if (!patIsAtEnd &&
+                    ((!isQuoted && pattern.charAt(patPos) == '_') ||
+                            isCharactersEqual(expression.charAt(exprPos), pattern.charAt(patPos), caseSensitive))) {
+                ++exprPos;
+                ++patPos;
+            } else if (exprSubMatchPos == 0) {
+                return false;
+            } else {
+                patPos = patSubMatchPos;
+                exprPos = exprSubMatchPos++;
+            }
+        }
+
+        while (!isAtEnd(pattern, patPos) && pattern.charAt(patPos) == '%')
+            ++patPos;
+
+        return isAtEnd(pattern, patPos);
+    }
+
+    private static boolean isAtEnd(CharSequence expression, int pos) {
+        return pos >= expression.length();
+    }
+
+    private static boolean isCharactersEqual(char c1, char c2, boolean caseSensitive) {
+        char cc1 = caseSensitive ? c1 : Character.toUpperCase(c1);
+        char cc2 = caseSensitive ? c2 : Character.toUpperCase(c2);
+        return Character.compare(cc1, cc2) == 0;
+    }
+
+    private static boolean isWildcardQuoted(CharSequence expression, int pos) {
+        return !isAtEnd(expression, pos) &&
+                expression.charAt(pos) == '\\' &&
+                pos < expression.length() - 1 &&
+                ("_%".indexOf(expression.charAt(pos + 1)) != -1);
+    }
+
 }
 
 
