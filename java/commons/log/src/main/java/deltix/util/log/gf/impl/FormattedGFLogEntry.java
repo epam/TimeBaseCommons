@@ -67,14 +67,14 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     }
 
     @Override
-    public FormattedLogEntry with(Enum value) {
-        entry.with(value);
+    public FormattedLogEntry with(Throwable e) {
+        entry.with(e);
         return this;
     }
 
     @Override
-    public FormattedLogEntry with(Throwable e) {
-        entry.with(e);
+    public FormattedLogEntry with(Object o) {
+        entry.with(o);
         return this;
     }
 
@@ -124,13 +124,13 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     }
 
     @Override
-    public void withLast(Enum value) {
-        entry.withLast(value);
+    public void withLast(Throwable e) {
+        entry.withLast(e);
     }
 
     @Override
-    public void withLast(Throwable e) {
-        entry.withLast(e);
+    public void withLast(Object o) {
+        entry.withLast(o);
     }
 
 }

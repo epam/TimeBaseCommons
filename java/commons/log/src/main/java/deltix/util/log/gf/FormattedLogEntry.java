@@ -21,9 +21,9 @@ public interface FormattedLogEntry {
 
     FormattedLogEntry with(Loggable value);
 
-    FormattedLogEntry with(Enum value);
-
     FormattedLogEntry with(Throwable e);
+
+    FormattedLogEntry with(Object o);
 
 
     void withLast(char value);
@@ -44,8 +44,8 @@ public interface FormattedLogEntry {
 
     void withLast(Loggable value);
 
-    void withLast(Enum value);
-
     void withLast(Throwable e);
+
+    void withLast(Object o);
 
 }

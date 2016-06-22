@@ -53,23 +53,62 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public LogEntry append(Loggable e) {
+        return this;
+    }
+
+    @Override
     public LogEntry append(Throwable e) {
         return this;
     }
 
     @Override
-    public LogEntry append(Loggable value) {
+    public LogEntry append(Object o) {
         return this;
     }
 
     @Override
-    public LogEntry append(Enum value) {
-        return this;
+    public void appendLast(char c) {
     }
 
     @Override
-    public void commit() {
-        // skip
+    public void appendLast(CharSequence csq) {
+    }
+
+    @Override
+    public void appendLast(CharSequence csq, int start, int end) {
+    }
+
+    @Override
+    public void appendLast(boolean b) {
+    }
+
+    @Override
+    public void appendLast(int i) {
+    }
+
+    @Override
+    public void appendLast(long i) {
+    }
+
+    @Override
+    public void appendLast(double i) {
+    }
+
+    @Override
+    public void appendLast(double i, int precision) {
+    }
+
+    @Override
+    public void appendLast(Loggable e) {
+    }
+
+    @Override
+    public void appendLast(Throwable e) {
+    }
+
+    @Override
+    public void appendLast(Object o) {
     }
 
     @Override
@@ -118,12 +157,12 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public FormattedLogEntry with(Enum value) {
+    public FormattedLogEntry with(Throwable e) {
         return this;
     }
 
     @Override
-    public FormattedLogEntry with(Throwable e) {
+    public FormattedLogEntry with(Object o) {
         return this;
     }
 
@@ -164,11 +203,15 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public void withLast(Enum value) {
+    public void withLast(Throwable e) {
     }
 
     @Override
-    public void withLast(Throwable e) {
+    public void withLast(Object o) {
+    }
+
+    @Override
+    public void commit() {
     }
 
 }

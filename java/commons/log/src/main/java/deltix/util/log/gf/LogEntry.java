@@ -28,12 +28,37 @@ public interface LogEntry extends AppendableEntry {
     LogEntry append(double i, int precision);
 
     @Override
-    LogEntry append(Loggable value);
+    LogEntry append(Loggable e);
 
     @Override
-    LogEntry append(Enum value);
-
     LogEntry append(Throwable e);
+
+    @Override
+    LogEntry append(Object o);
+
+
+    void appendLast(char c);
+
+    void appendLast(CharSequence csq);
+
+    void appendLast(CharSequence csq, int start, int end);
+
+    void appendLast(boolean b);
+
+    void appendLast(int i);
+
+    void appendLast(long i);
+
+    void appendLast(double i);
+
+    void appendLast(double i, int precision);
+
+    void appendLast(Loggable e);
+
+    void appendLast(Throwable e);
+
+    void appendLast(Object o);
+
 
     void commit();
 }

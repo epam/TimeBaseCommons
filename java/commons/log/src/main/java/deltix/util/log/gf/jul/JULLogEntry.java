@@ -81,21 +81,14 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public LogEntry append(Loggable value) {
+    public LogEntry append(Loggable e) {
         checkNotCommitted();
 
-        if (value == null)
+        if (e == null)
             builder.append((CharSequence) null);
         else
-            value.appendTo(this);
+            e.appendTo(this);
 
-        return this;
-    }
-
-    @Override
-    public LogEntry append(Enum value) {
-        checkNotCommitted();
-        builder.append(value != null ? value.name() : null);
         return this;
     }
 
@@ -116,18 +109,64 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public void commit() {
-        checkNotCommitted();
+    public LogEntry append(Object o) {
+        append(o == null ? null : o.toString());
+        return this;
+    }
 
-        logger.log(level, builder.toString(), exception);
+    @Override
+    public void appendLast(char c) {
+        append(c).commit();
+    }
 
-        logger = null;
-        level = null;
-        template = null;
-        index = 0;
-        exception = null;
-        builder.delete(0, builder.length());
-        committed = true;
+    @Override
+    public void appendLast(CharSequence csq) {
+        append(csq).commit();
+    }
+
+    @Override
+    public void appendLast(CharSequence csq, int start, int end) {
+        append(csq, start, end).commit();
+    }
+
+    @Override
+    public void appendLast(boolean b) {
+        append(b).commit();
+    }
+
+    @Override
+    public void appendLast(int i) {
+        append(i).commit();
+    }
+
+    @Override
+    public void appendLast(long i) {
+        append(i).commit();
+    }
+
+    @Override
+    public void appendLast(double i) {
+        append(i).commit();
+    }
+
+    @Override
+    public void appendLast(double i, int precision) {
+        append(i, precision).commit();
+    }
+
+    @Override
+    public void appendLast(Loggable e) {
+        append(e).commit();
+    }
+
+    @Override
+    public void appendLast(Throwable e) {
+        append(e).commit();
+    }
+
+    @Override
+    public void appendLast(Object o) {
+        append(o).commit();
     }
 
     @Override
@@ -194,16 +233,16 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public FormattedLogEntry with(Enum value) {
+    public FormattedLogEntry with(Throwable e) {
         appendChunk();
-        append(value);
+        append(e);
         return this;
     }
 
     @Override
-    public FormattedLogEntry with(Throwable e) {
+    public FormattedLogEntry with(Object o) {
         appendChunk();
-        append(e);
+        append(o);
         return this;
     }
 
@@ -262,15 +301,30 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public void withLast(Enum value) {
-        with(value);
+    public void withLast(Throwable e) {
+        with(e);
         appendLastChunk();
     }
 
     @Override
-    public void withLast(Throwable e) {
-        with(e);
+    public void withLast(Object o) {
+        with(o);
         appendLastChunk();
+    }
+
+    @Override
+    public void commit() {
+        checkNotCommitted();
+
+        logger.log(level, builder.toString(), exception);
+
+        logger = null;
+        level = null;
+        template = null;
+        index = 0;
+        exception = null;
+        builder.delete(0, builder.length());
+        committed = true;
     }
 
     @Override
