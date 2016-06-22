@@ -208,80 +208,69 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public FormattedLogEntry withLast(char value) {
+    public void withLast(char value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(CharSequence value) {
+    public void withLast(CharSequence value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(CharSequence value, int start, int end) {
+    public void withLast(CharSequence value, int start, int end) {
         with(value, start, end);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(boolean value) {
+    public void withLast(boolean value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(int value) {
+    public void withLast(int value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(long value) {
+    public void withLast(long value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(double value) {
+    public void withLast(double value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(double value, int precision) {
+    public void withLast(double value, int precision) {
         with(value, precision);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(Loggable value) {
+    public void withLast(Loggable value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(Enum value) {
+    public void withLast(Enum value) {
         with(value);
         appendLastChunk();
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(Throwable e) {
+    public void withLast(Throwable e) {
         with(e);
         appendLastChunk();
-        return this;
     }
 
     @Override

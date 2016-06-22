@@ -128,58 +128,47 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
-    public FormattedLogEntry withLast(char value) {
-        return this;
+    public void withLast(char value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(CharSequence value) {
-        return this;
+    public void withLast(CharSequence value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(CharSequence value, int start, int end) {
-        return this;
+    public void withLast(CharSequence value, int start, int end) {
     }
 
     @Override
-    public FormattedLogEntry withLast(boolean value) {
-        return this;
+    public void withLast(boolean value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(int value) {
-        return this;
+    public void withLast(int value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(long value) {
-        return this;
+    public void withLast(long value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(double value) {
-        return this;
+    public void withLast(double value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(double value, int precision) {
-        return this;
+    public void withLast(double value, int precision) {
     }
 
     @Override
-    public FormattedLogEntry withLast(Loggable value) {
-        return this;
+    public void withLast(Loggable value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(Enum value) {
-        return this;
+    public void withLast(Enum value) {
     }
 
     @Override
-    public FormattedLogEntry withLast(Throwable e) {
-        return this;
+    public void withLast(Throwable e) {
     }
 
 }

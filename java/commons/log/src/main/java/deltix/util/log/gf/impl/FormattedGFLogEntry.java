@@ -79,69 +79,58 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     }
 
     @Override
-    public FormattedLogEntry withLast(char value) {
+    public void withLast(char value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(CharSequence value) {
+    public void withLast(CharSequence value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(CharSequence value, int start, int end) {
+    public void withLast(CharSequence value, int start, int end) {
         entry.withLast(value, start, end);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(boolean value) {
+    public void withLast(boolean value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(int value) {
+    public void withLast(int value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(long value) {
+    public void withLast(long value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(double value) {
+    public void withLast(double value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(double value, int precision) {
+    public void withLast(double value, int precision) {
         entry.withLast(value, precision);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(Loggable value) {
+    public void withLast(Loggable value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(Enum value) {
+    public void withLast(Enum value) {
         entry.withLast(value);
-        return this;
     }
 
     @Override
-    public FormattedLogEntry withLast(Throwable e) {
+    public void withLast(Throwable e) {
         entry.withLast(e);
-        return this;
     }
 
 }

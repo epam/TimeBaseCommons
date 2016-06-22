@@ -26,26 +26,26 @@ public interface FormattedLogEntry {
     FormattedLogEntry with(Throwable e);
 
 
-    FormattedLogEntry withLast(char value);
+    void withLast(char value);
 
-    FormattedLogEntry withLast(CharSequence value);
+    void withLast(CharSequence value);
 
-    FormattedLogEntry withLast(CharSequence value, int start, int end);
+    void withLast(CharSequence value, int start, int end);
 
-    FormattedLogEntry withLast(boolean value);
+    void withLast(boolean value);
 
-    FormattedLogEntry withLast(int value);
+    void withLast(int value);
 
-    FormattedLogEntry withLast(long value);
+    void withLast(long value);
 
-    FormattedLogEntry withLast(double value);
+    void withLast(double value);
 
-    FormattedLogEntry withLast(double value, int precision);
+    void withLast(double value, int precision);
 
-    FormattedLogEntry withLast(Loggable value);
+    void withLast(Loggable value);
 
-    FormattedLogEntry withLast(Enum value);
+    void withLast(Enum value);
 
-    FormattedLogEntry withLast(Throwable e);
+    void withLast(Throwable e);
 
 }
