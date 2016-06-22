@@ -1,5 +1,6 @@
 package deltix.util.log.gf;
 
+import deltix.util.lang.Util;
 import deltix.util.text.DecimalFormatter;
 
 public class StringBuilderEntry implements AppendableEntry {
@@ -72,8 +73,17 @@ public class StringBuilderEntry implements AppendableEntry {
     }
 
     @Override
-    public AppendableEntry append(Enum value) {
-        builder.append(value != null ? value.name() : null);
+    public AppendableEntry append(Throwable e) {
+        builder.append(Util.NATIVE_LINE_BREAK)
+                .append(Util.printStackTrace(e))
+                .append(Util.NATIVE_LINE_BREAK);
+
+        return this;
+    }
+
+    @Override
+    public AppendableEntry append(Object e) {
+        append(e == null ? null : e.toString());
         return this;
     }
 
