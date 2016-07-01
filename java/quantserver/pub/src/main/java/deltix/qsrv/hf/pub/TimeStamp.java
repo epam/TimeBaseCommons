@@ -59,7 +59,11 @@ public class TimeStamp implements TimeStampedMessage {
         timestamp = milliseconds;
         nanosComponent = 0;
     }
-    
+
+    /*
+     * Returns time in milliseconds according to the given nanoseconds, rounding to the next millisecond.
+     */
+
     public long                 getTime() {
         return timestamp + (nanosComponent > 0 ? 1 : 0);
     }
@@ -78,6 +82,16 @@ public class TimeStamp implements TimeStampedMessage {
 
     public static long          getMilliseconds (long nanoSeconds) {
         return nanoSeconds != TIMESTAMP_UNKNOWN && nanoSeconds != Long.MAX_VALUE ? nanoSeconds / TimeStamp.NANOS_PER_MS : nanoSeconds;
+    }
+
+    /*
+     * Returns time in milliseconds according to the given nanoseconds, rounding to the next millisecond.
+     */
+    public static long          getTime(long nanoseconds) {
+        if (nanoseconds != TIMESTAMP_UNKNOWN && nanoseconds != Long.MAX_VALUE)
+            return  nanoseconds / TimeStamp.NANOS_PER_MS + (nanoseconds % TimeStamp.NANOS_PER_MS > 0 ? 1 : 0);
+
+        return nanoseconds;
     }
 
     public static long          getNanoTime (long milliseconds) {
