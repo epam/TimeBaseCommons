@@ -240,7 +240,7 @@ public class JavaCompilerHelper {
         }
         
         @Override
-        protected Class <?>     findClass(String name) 
+        public Class <?>     findClass(String name)
             throws ClassNotFoundException 
         {
             MemoryByteCode mbc = m.get(name);

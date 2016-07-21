@@ -13,6 +13,7 @@ import java.util.List;
 
 import deltix.util.collections.SafeArrays;
 import deltix.util.memory.*;
+import deltix.util.collections.ICapacity;
 
 
 
@@ -34,7 +35,7 @@ public final class ${name}ArrayList<${type}>
 public final class ${name}ArrayList
 #end
     extends AbstractList<${type_Object}>
-	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator
+	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity
 
 {
     static final long  serialVersionUID = 1L;
@@ -155,6 +156,15 @@ public final class ${name}ArrayList
             elementData = new ${actualType} [newCapacity];
 		}
     }
+
+	/**
+    * Returns the capacity of this list.
+    *
+    * @return the capacity of this list.
+    */
+    public int capacity() {
+		return elementData.length ;
+    } 
 
     /**
      * Returns the number of elements in this list.
