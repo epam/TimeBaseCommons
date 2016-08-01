@@ -1,3 +1,6 @@
+#if( $name == "Object" )
+#set( $type = "ObjectType" )
+#end
 package deltix.util.collections.generated;
 
 
@@ -35,7 +38,7 @@ public final class ${name}ArrayList<${type}>
 public final class ${name}ArrayList
 #end
     extends AbstractList<${type_Object}>
-	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity
+	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator
 
 {
     static final long  serialVersionUID = 1L;
@@ -164,7 +167,7 @@ public final class ${name}ArrayList
     */
     public int capacity() {
 		return elementData.length ;
-    } 
+    }
 
     /**
      * Returns the number of elements in this list.
@@ -928,3 +931,7 @@ public final class ${name}ArrayList
     }
 #end
 }
+
+#if( $name == "Object" )
+#set( $type = "Object" )
+#end
