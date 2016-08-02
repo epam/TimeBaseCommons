@@ -38,7 +38,7 @@ public final class ${name}ArrayList<${type}>
 public final class ${name}ArrayList
 #end
     extends AbstractList<${type_Object}>
-	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator
+	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity
 
 {
     static final long  serialVersionUID = 1L;
