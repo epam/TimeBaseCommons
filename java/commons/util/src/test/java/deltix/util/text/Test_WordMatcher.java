@@ -1,7 +1,5 @@
 package deltix.util.text;
 
-/*  ##UTILS## */
-
 import deltix.util.io.IOUtil;
 
 import java.util.*;
@@ -9,6 +7,10 @@ import java.util.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_WordMatcher {
     private WordMatcherBuilder                  wm;
     private String []                           words;

@@ -5,7 +5,10 @@ import org.junit.Test;
 
 import java.util.StringTokenizer;
 
-/*  ##UTILS## */
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_TimeFormatter {
 
 	private final static long MILLIS_PER_DAY = 24*60*60*1000L;

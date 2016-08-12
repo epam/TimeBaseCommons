@@ -1,10 +1,12 @@
 package deltix.util.text;
 
-/*  ##UTILS## */
-
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_CharSequenceParser {
     private static final String     PREFIX = " %%$";
     private static final String     POSTFIX = "&&$$#";

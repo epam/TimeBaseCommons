@@ -11,11 +11,14 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 /**
  * @author Andy
  *         Date: 5/3/11 12:48 PM
  */
-/*  ##UHF.FRAMEWORK## */
+@Category(Utils.class)
 public class Test_FileBasedHiLowIdentifierGenerator {
 
     private FileHiLowIdentifierGenerator idgen;

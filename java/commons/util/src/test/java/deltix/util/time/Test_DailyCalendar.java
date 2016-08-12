@@ -1,9 +1,10 @@
 package deltix.util.time;
 
-/*  ##UTILS## */
-
 import org.junit.*;
 import static org.junit.Assert.*;
+
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
 
 /**
  *
@@ -18,7 +19,8 @@ import static org.junit.Assert.*;
  * 
  *<h3>Test Holidays (fake)</h3>
  * 1,11,12
- */ 
+ */
+@Category(Utils.class)
 public class Test_DailyCalendar {
     private DailyCalendar       mCal;
     

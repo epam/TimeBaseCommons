@@ -1,15 +1,18 @@
 package deltix.util.io;
 
-/*  ##UTILS## */
-
 import java.io.*;
+
 import org.junit.*;
 import static org.junit.Assert.*;
+
+import org.junit.experimental.categories.Category;
+import deltix.util.JUnitCategories.UHFUtils;
 
 /**
  *
  */
-public class Test_TeraByteOutputStream {        
+@Category(UHFUtils.class)
+public class Test_TeraByteOutputStream {
     @Test
     public void     testSingleBytes () throws IOException {
         final int                   num = 7777;

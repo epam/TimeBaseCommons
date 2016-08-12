@@ -5,7 +5,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-/*  ##UTILS## */
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_CharSequenceCounter {
 
     CharSequenceCounter counter;

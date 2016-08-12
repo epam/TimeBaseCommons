@@ -1,7 +1,5 @@
 package deltix.util.lang;
 
-/*  ##UTILS## */
-
 import deltix.util.collections.GapByteQueue;
 import deltix.util.io.GapQueueInputStream;
 import org.junit.Test;
@@ -11,9 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import deltix.util.JUnitCategories.UHFUtils;
+import org.junit.experimental.categories.Category;
+
 /**
  *
  */
+@Category(UHFUtils.class)
 public class Test_GapQueue {
 
     private byte[] data = new byte[1024];

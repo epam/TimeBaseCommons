@@ -1,12 +1,14 @@
 package deltix.util.time;
 
-/*  ##UTILS## */
-
 import java.text.*;
 import java.util.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_TimeZoneUtils {
     public static final TimeZone    NYTZ = TimeZone.getTimeZone ("America/New_York");
     public static final DateFormat  DF = new SimpleDateFormat ("yyyy-MM-dd HH:mm");

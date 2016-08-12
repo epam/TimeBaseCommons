@@ -6,11 +6,14 @@ import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
 import java.util.Calendar;
 
-/*  ##UTILS## */
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 /**
  * @author Andy
  *         Date: Feb 19, 2010 11:13:56 AM
  */
+@Category(Utils.class)
 public class Test_CurrentMonthDate {
     private final static long MILLISECONDS_IN_DAY 	= TimeUnit.DAYS.toMillis(1);
 

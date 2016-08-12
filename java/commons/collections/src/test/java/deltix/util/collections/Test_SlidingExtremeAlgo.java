@@ -1,14 +1,18 @@
 package deltix.util.collections;
 
-/*  ##UTILS## */
-
 import java.util.Random;
+
+import deltix.util.lang.Util;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
 
 /**
  *
  */
+@Category(Utils.class)
 public class Test_SlidingExtremeAlgo {
     public static final int     WIDTH = 47; // prime!
     public static final int     RESET_PERIOD = 30691;

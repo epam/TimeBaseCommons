@@ -10,7 +10,10 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-/*  ##UHF.FRAMEWORK## */
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_FixedSizeLongToOrderHashMap {
     private static final int MAX_SIZE = 16;
 

@@ -23,6 +23,7 @@ apply plugin: 'velocity'
 dependencies {
     compile project(':java:commons:lang')
     testCompile 'commons-collections:commons-collections:3.2.1'
+    testCompile project(':java:commons:lang').sourceSets.test.output
 }
 
 ext {

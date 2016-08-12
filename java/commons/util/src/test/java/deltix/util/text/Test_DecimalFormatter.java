@@ -9,11 +9,14 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/*  ##UTILS## */
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 /**
  * @author Andy
  *         Date: 10/24/11 2:07 PM
  */
+@Category(Utils.class)
 public class Test_DecimalFormatter {
 
     @Test

@@ -1,10 +1,14 @@
 package deltix.util.collections;
 
+import deltix.util.lang.Util;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/*  ##UTILS## */
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_CharSequenceToObjectMapQuick {
 
     @Test

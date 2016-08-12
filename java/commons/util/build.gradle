@@ -18,4 +18,5 @@ dependencies {
             files('../../../lib/platform.jar'),
             files('../../../lib/bcel-6.0-SNAPSHOT.jar')
 
+    testCompile project(':java:commons:lang').sourceSets.test.output
 }

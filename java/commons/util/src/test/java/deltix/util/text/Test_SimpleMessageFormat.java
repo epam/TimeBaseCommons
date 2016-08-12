@@ -5,12 +5,14 @@ import org.junit.Assert;
 
 import java.text.MessageFormat;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 /**
- * ##UTILS##
  * @author Andy
  *         Date: Jul 22, 2009 5:19:17 PM
  */
-
+@Category(Utils.class)
 public class Test_SimpleMessageFormat {
 
 

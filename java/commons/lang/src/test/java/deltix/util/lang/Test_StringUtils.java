@@ -3,11 +3,14 @@ package deltix.util.lang;
 import org.junit.Assert;
 import org.junit.Test;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 /**
  * @author Andy
  *         Date: 12/17/13
  */
-/*  ##UTILS## */
+@Category(Utils.class)
 public class Test_StringUtils {
 
     @Test

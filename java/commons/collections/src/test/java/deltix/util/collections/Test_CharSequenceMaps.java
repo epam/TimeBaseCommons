@@ -1,16 +1,18 @@
 package deltix.util.collections;
 
-/*  ##UTILS## */
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.junit.experimental.categories.Category;
+import deltix.util.JUnitCategories.Utils;
+
 /**
  *
  */
+@Category(Utils.class)
 public class Test_CharSequenceMaps {
     private StringBuilder           sb = new StringBuilder ();
 

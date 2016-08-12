@@ -1,15 +1,19 @@
 package deltix.util.collections;
 
-/*  ##UTILS## */
-
 import deltix.util.collections.generated.*;
 import java.util.*;
+
+import deltix.util.lang.Util;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
 
 /**
  *
  */
+@Category(Utils.class)
 public class Test_HashMaps {
 
     private static class HorribleLong {

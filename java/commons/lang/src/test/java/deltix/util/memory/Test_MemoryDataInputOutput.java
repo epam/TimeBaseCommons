@@ -1,10 +1,12 @@
 package deltix.util.memory;
 
-/*  ##UTILS## */
-
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_MemoryDataInputOutput {
     private MemoryDataOutput        out;
     private MemoryDataInput         in;

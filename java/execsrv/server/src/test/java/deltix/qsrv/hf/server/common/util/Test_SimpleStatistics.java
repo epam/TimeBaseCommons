@@ -5,7 +5,10 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-/*  ##UHF.FRAMEWORK## */
+import org.junit.experimental.categories.Category;
+import deltix.util.JUnitCategories.UHFFramework;
+
+@Category(UHFFramework.class)
 public class Test_SimpleStatistics {
 
     @Test

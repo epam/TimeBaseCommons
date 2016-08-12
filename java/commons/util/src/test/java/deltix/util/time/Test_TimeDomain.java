@@ -1,10 +1,12 @@
 package deltix.util.time;
 
-/*  ##UTILS## */
-
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import deltix.util.JUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_TimeDomain {
     private TimeDomain     td;
 
