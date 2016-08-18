@@ -3,6 +3,7 @@ description = 'QuantServer abstraction/wrapper for gflogger'
 dependencies {
     compile project(':java:commons:util')
     compile 'org.gflogger:gflogger:1.0'
+    compile 'javax.mail:mail:1.4.3'
 
     testCompile project(':java:commons:lang').sourceSets.test.output
 }
