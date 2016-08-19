@@ -1,11 +1,11 @@
 package deltix.util;
 
 public final class JUnitCategories {
-    public interface Utils {}
+    public interface Utils extends All {}
 
-    public interface UHFFramework {}
+    public interface UHFFramework extends All {}
 
-    public interface TickDB {}
+    public interface TickDB extends All {}
 
     public interface TickDBFast extends TickDB {}
 
@@ -15,9 +15,10 @@ public final class JUnitCategories {
 
     public interface TickDBStress extends TickDB {}
 
-    public interface RAMDisk {}
+    public interface RAMDisk extends All {}
 
-    public interface UHFUtils {}
+    public interface UHFUtils extends All {}
+
+    public interface All {}
 }
-
 
