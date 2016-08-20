@@ -3,6 +3,9 @@ package deltix.util.net;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static deltix.util.net.TCPConfiguration.configure;
+
+/** Binds on given port, when client connects this server bombards it with messages at specified rate */
 public class TCPServer {
 
     public static void main(String[] args) throws Exception {
@@ -21,8 +24,7 @@ public class TCPServer {
 
         while (true) {
             Socket socket = ss.accept();
-            socket.setKeepAlive(true);
-            socket.setTcpNoDelay(true);
+            configure(socket);
 
             System.out.println("Accepted connection on " + bindPort);
 

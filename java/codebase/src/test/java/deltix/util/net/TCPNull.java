@@ -1,70 +1,91 @@
 package deltix.util.net;
 
-import deltix.util.time.GlobalTimer;
-import deltix.util.time.TimerRunner;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
+
+import static deltix.util.net.TCPConfiguration.MESSAGE_RECEIVE_BUFFER_SIZE;
+import static deltix.util.net.TCPConfiguration.MESSAGE_SIZE;
+import static deltix.util.net.TCPConfiguration.STATISTICS_INTERVAL_S;
+import static deltix.util.net.TCPConfiguration.configure;
+import static deltix.util.net.TCPConfiguration.print;
+
+import deltix.util.time.GlobalTimer;
+import deltix.util.time.TimerRunner;
 
 /**
  * Server socket that discards incoming messages and collects avg msg/sec statistic. Used in latency experiments.
  * Usage: java deltix.util.net.TCPNull port
- *
- *
  */
 public class TCPNull {
 
-    private static final int intervalInMillis = 60000;
-    private final ServerSocket ss;
-    private volatile int messageCount;
+    private final ServerSocket serverSocket;
+    private volatile long reads;
+    private volatile long bytes;
 
-    private TCPNull (int bindPort, String iface) throws IOException {
+    TCPNull(String host, int port) throws IOException {
+        InetAddress address = (host != null) ? InetAddress.getByName(host) : null;
+        serverSocket = new ServerSocket(port, 50, address);
 
-        InetAddress bindAddr = (iface != null) ? InetAddress.getByName(iface) : null;
-        ss = new ServerSocket(bindPort, 50, bindAddr);
-        System.out.println("TCP Null is listening on port " + ss.getLocalPort());
+        System.out.println("TCP Null is listening on port " + serverSocket.getLocalPort());
+        System.out.println("Assuming each message is " + MESSAGE_SIZE + " bytes");
     }
 
     private void setupStatsTimer() {
         TimerRunner meter = new TimerRunner() {
-            private long lastMessageCount;
-            private final int intevalInSeconds = intervalInMillis / 1000;
+
+            private long lastReads;
+            private long lastBytes;
+
             protected void runInternal() throws Exception {
-                final long currentMessageCount = messageCount; // volatile
-                System.out.println("Average messages per second: " + (currentMessageCount- lastMessageCount) / intevalInSeconds);
-                lastMessageCount = currentMessageCount;
+                long reads = TCPNull.this.reads; // volatile
+                long bytes = TCPNull.this.bytes; // freeze
+                long messages = (bytes - lastBytes) / MESSAGE_SIZE;
+
+                System.out.println("Reads: " + (reads - lastReads) / STATISTICS_INTERVAL_S + "/sec; Messages: " + messages / STATISTICS_INTERVAL_S + "/sec");
+
+                lastReads = reads;
+                lastBytes = bytes;
             }
+
         };
-        GlobalTimer.INSTANCE.scheduleAtFixedRate(meter, intervalInMillis, intervalInMillis);
+
+        long statisticsIntervalMs = TimeUnit.SECONDS.toMillis(STATISTICS_INTERVAL_S);
+        GlobalTimer.INSTANCE.scheduleAtFixedRate(meter, statisticsIntervalMs, statisticsIntervalMs);
     }
 
-    private void run () throws IOException {
-        while (true) {
-            Socket s = ss.accept();
-            final InputStream is = s.getInputStream();
-            new Thread() {
-                @Override
-                public void run() {
-                    System.out.println("Accepted new client");
-                    byte[] buf = new byte[8192];
-                    try {
-                        while (true) {
-                            int numRead = is.read(buf);
-                            if (numRead < 0)
-                                break;
+    void run() throws IOException {
+        setupStatsTimer();
 
-                            messageCount++;
+        Socket socket = serverSocket.accept();
+        configure(socket);
+        print("Accepted new client", socket);
+        final InputStream stream = socket.getInputStream();
 
-                        }
-                    } catch (IOException iox) {
-                        iox.printStackTrace();
+        new Thread() {
+            @Override
+            public void run() {
+                byte[] buffer = new byte[MESSAGE_RECEIVE_BUFFER_SIZE];
+
+                try {
+                    while (true) {
+                        int bytesRead = stream.read(buffer);
+                        if (bytesRead < 0)
+                            break;
+
+                        reads++;
+                        bytes += bytesRead;
                     }
+                } catch (IOException iox) {
+                    System.err.println("Error in receiver thread");
+                    iox.printStackTrace();
                 }
-            }.start();
-        }    }
+            }
+        }.start();
+    }
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
@@ -72,12 +93,10 @@ public class TCPNull {
             return;
         }
 
-        int bindPort = Integer.parseInt(args[0]);
-        String iface = (args.length > 1) ? args[1] : null;
-        TCPNull nul = new TCPNull(bindPort, iface);
-        nul.setupStatsTimer();
+        int port = Integer.parseInt(args[0]);
+        String host = (args.length > 1) ? args[1] : null;
+        TCPNull nul = new TCPNull(host, port);
         nul.run();
-
-
     }
+
 }
