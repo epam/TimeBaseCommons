@@ -58,7 +58,8 @@ public class TCPNull {
     }
 
     void run() throws IOException {
-        setupStatsTimer();
+        if (STATISTICS_INTERVAL_S > 0)
+            setupStatsTimer();
 
         Socket socket = serverSocket.accept();
         configure(socket);

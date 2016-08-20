@@ -14,7 +14,7 @@ class TCPConfiguration {
     public static final int MESSAGE_SEND_BUFFER_SIZE = 1 << 16;
 
     public static final int PASS_EACH_N = Integer.getInteger("pass.each.n", 1);
-    public static final int STATISTICS_INTERVAL_S = 10;
+    public static final int STATISTICS_INTERVAL_S = Integer.getInteger("stat.interval", 10);
 
     public static final int SOCKET_RECEIVE_BUFFER_SIZE = Integer.getInteger("socket.receive.buffer.size", 1 << 16);
     public static final int SOCKET_SEND_BUFFER_SIZE = Integer.getInteger("socket.send.buffer.size", 1 << 16);
