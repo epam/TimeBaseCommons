@@ -21,7 +21,7 @@ public abstract class AbstractShell extends DefaultApplication {
             System.out.println (msg);
     }
 
-    protected String expandPath(String path) {
+    public String expandPath(String path) {
         return path;
     }
 

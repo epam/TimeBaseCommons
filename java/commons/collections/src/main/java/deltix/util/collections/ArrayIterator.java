@@ -13,6 +13,11 @@ public class ArrayIterator <T> implements Iterator <T>, Iterable <T> {
     public ArrayIterator (T ... array) {
         mArray = array;
     }
+
+    public void             reset(T[] array) {
+        mArray = array;
+        mIdx = 0;
+    }
     
     @Override
     public void             remove () {
