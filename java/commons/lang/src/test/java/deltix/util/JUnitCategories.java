@@ -11,9 +11,9 @@ public final class JUnitCategories {
 
     public interface TickDBQQL extends TickDB {}
 
-    public interface TickDBSlow extends TickDB {}
+    public interface TickDBSlow extends TickDBStress {}
 
-    public interface TickDBStress extends TickDB {}
+    public interface TickDBStress {}
 
     public interface RAMDisk extends All {}
 
