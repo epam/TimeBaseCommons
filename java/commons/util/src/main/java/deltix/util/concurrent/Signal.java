@@ -38,4 +38,19 @@ public class Signal {
         state = false;
         return true;
     }
+
+
+    public synchronized boolean await(int timeout) throws InterruptedException {
+        state = false;
+
+        wait(timeout);
+
+//        state = false;
+        return true;
+    }
+
+    public boolean getState(){
+        return state;
+    }
+
 }
