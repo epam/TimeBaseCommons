@@ -40,16 +40,18 @@ public class Signal {
     }
 
 
+    /**
+     *  If not signalled, wait given timeout and returns state value.
+     */
     public synchronized boolean await(int timeout) throws InterruptedException {
-        state = false;
+        if (!state)
+            wait(timeout);
 
-        wait(timeout);
+        if(state){
+            state = false;
+            return true;
+        }
 
-//        state = false;
-        return true;
-    }
-
-    public boolean getState(){
         return state;
     }
 
