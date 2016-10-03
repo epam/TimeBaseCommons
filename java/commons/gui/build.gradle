@@ -24,6 +24,7 @@ dependencies {
 
     compile('org.swinglabs:swingx:1.6') // have filters.jar v:2.0.235 in dependencies
     compile('com.jgoodies:jgoodies-forms:1.6.0')            // have jgoodies-common.jar v:1.4.0 in dependencies
+    compile('com.jgoodies:jgoodies-looks:2.5.2')
     compile('com.jgoodies:jgoodies-binding:2.7.0'){ transitive = false }
     compile('com.jgoodies:jgoodies-validation:2.4.2'){ transitive = false }
     compile('org.swinglabs:jxlayer:3.0.4'){ transitive = false }
