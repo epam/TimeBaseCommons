@@ -8,12 +8,12 @@ public class TimeStamp implements TimeStampedMessage {
     public static final int     NANOS_PER_MS = 1000000;
 
     /** Time is measured in milliseconds that passed since January 1, 1970 UTC */
-    @Title ("Time")
-    @FieldType("TIMESTAMP")
+    //@Title ("Time")
+    //@FieldType("TIMESTAMP")
     public long                 timestamp = TIMESTAMP_UNKNOWN;
 
     /** Nanoseconds part of the TimeStamp#timestamp */
-    @Title ("Nanoseconds Component")
+    //@Title ("Nanoseconds Component")
     public int                  nanosComponent = 0;
 
 
@@ -39,6 +39,10 @@ public class TimeStamp implements TimeStampedMessage {
         }
     }
 
+    public static int                  getNanosComponent(long nstime) {
+        return (int) (nstime % TimeStamp.NANOS_PER_MS);
+    }
+
     /*
      *  Returns number of nanoseconds that passed since January 1, 1970 UTC
      */
@@ -59,11 +63,7 @@ public class TimeStamp implements TimeStampedMessage {
         timestamp = milliseconds;
         nanosComponent = 0;
     }
-
-    /*
-     * Returns time in milliseconds according to the given nanoseconds, rounding to the next millisecond.
-     */
-
+    
     public long                 getTime() {
         return timestamp + (nanosComponent > 0 ? 1 : 0);
     }
@@ -82,16 +82,6 @@ public class TimeStamp implements TimeStampedMessage {
 
     public static long          getMilliseconds (long nanoSeconds) {
         return nanoSeconds != TIMESTAMP_UNKNOWN && nanoSeconds != Long.MAX_VALUE ? nanoSeconds / TimeStamp.NANOS_PER_MS : nanoSeconds;
-    }
-
-    /*
-     * Returns time in milliseconds according to the given nanoseconds, rounding to the next millisecond.
-     */
-    public static long          getTime(long nanoseconds) {
-        if (nanoseconds != TIMESTAMP_UNKNOWN && nanoseconds != Long.MAX_VALUE)
-            return  nanoseconds / TimeStamp.NANOS_PER_MS + (nanoseconds % TimeStamp.NANOS_PER_MS > 0 ? 1 : 0);
-
-        return nanoseconds;
     }
 
     public static long          getNanoTime (long milliseconds) {

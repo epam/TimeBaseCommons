@@ -1136,11 +1136,11 @@ public class StringUtils {
      * Searches for a specified pattern in an expression.
      *
      * @param expression - any valid expression of character data type.
-     * @param pattern - specific string of characters to search for in {@param expression},
+     * @param pattern - specific string of characters to search for in {expression},
      *                  and can include the following valid wildcard characters:
      *                  % - Any string of zero or more characters.
      *                  _ (underscore) - Any single character.
-     * @return true, if {@param expression} is match to specified {@param pattern}, else false.
+     * @return true, if {expression} is match to specified {pattern}, else false.
      */
     public static boolean wildcardMatchRegexp(String expression, String pattern, boolean caseSensitive) {
         if (expression == null || pattern == null)
@@ -1184,11 +1184,11 @@ public class StringUtils {
      * Searches for a specified pattern in an expression.
      *
      * @param expression - any valid expression of character data type.
-     * @param pattern - specific string of characters to search for in {@param expression},
+     * @param pattern - specific string of characters to search for in {expression},
      *                  and can include the following valid wildcard characters:
      *                  % - Any string of zero or more characters.
      *                  _ (underscore) - Any single character.
-     * @return true, if {@param expression} is match to specified {@param pattern}, else false.
+     * @return true, if {expression} is match to specified {pattern}, else false.
      */
     public static boolean wildcardMatch(CharSequence expression, CharSequence pattern, boolean caseSensitive) {
         if (expression == null || pattern == null)

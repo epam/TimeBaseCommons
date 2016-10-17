@@ -1,8 +1,9 @@
+package deltix.util.collections;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 import deltix.util.collections.generated.ByteArrayList;
-import deltix.util.collections.ByteArrayListUtils;
 
 
 @Category(Test.class)
@@ -23,10 +24,10 @@ public class Test_ByteArrayListUtils {
     public void testAppendInt() {
         ByteArrayList ar = new ByteArrayList();
         for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (int) (100000 + i));
-        assertEquals(ar.getByte(0), 0);
-        assertEquals(ar.getByte(1), 1);
-        assertEquals(ar.getByte(2), -122);
-        assertEquals(ar.getByte(3), -96);
+        assertEquals(ar.getByte(0), -96);
+        assertEquals(ar.getByte(1), -122);
+        assertEquals(ar.getByte(2), 1);
+        assertEquals(ar.getByte(3), 0);
 
         for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toInt(ar, i * 4), 100000 + i);
     }

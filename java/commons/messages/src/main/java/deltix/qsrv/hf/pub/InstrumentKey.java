@@ -2,22 +2,22 @@ package deltix.qsrv.hf.pub;
 
 import deltix.util.lang.Util;
 
-import java.io.Serializable;
-import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 /**
  * Pair { InstrumentType, symbol } that provides InstrumentIdentity.
  *
- * Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead.
+ * Warning: this class is mutable and cannot be used as java.util.Map key. Use {ConstantInstrumentKey} instead.
  */
 public class InstrumentKey
     implements InstrumentIdentity, Comparable <InstrumentIdentity>, Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    public InstrumentType       instrumentType;
+    public InstrumentType instrumentType;
     public CharSequence         symbol;
 
     public InstrumentKey () { }
@@ -28,7 +28,7 @@ public class InstrumentKey
     }
 
     public InstrumentKey (InstrumentIdentity copy) {
-        instrumentType = copy.getType ();
+        instrumentType = copy.getInstrumentType ();
         symbol = copy.getSymbol ();
     }
 
@@ -38,7 +38,7 @@ public class InstrumentKey
     }
 
     @Override
-    public InstrumentType       getType () {
+    public InstrumentType       getInstrumentType () {
         return (instrumentType);
     }
 
@@ -51,18 +51,18 @@ public class InstrumentKey
     }
 
     public static int           hashCode (InstrumentIdentity id) {
-        return (hashCode (id.getType (), id.getSymbol ()));
+        return (hashCode (id.getInstrumentType (), id.getSymbol ()));
     }
 
     public static boolean       equals (InstrumentIdentity id1, InstrumentIdentity id2) {
         return (
-            id1.getType () == id2.getType () &&
+            id1.getInstrumentType () == id2.getInstrumentType () &&
             Util.equals (id1.getSymbol (), id2.getSymbol ())
         );
     }
 
     public static int           compare (InstrumentIdentity id1, InstrumentIdentity id2) {
-        int dif = id1.getType ().compareTo (id2.getType ());
+        int dif = id1.getInstrumentType ().compareTo (id2.getInstrumentType ());
 
         if (dif != 0)
             return (dif);
@@ -71,10 +71,10 @@ public class InstrumentKey
     }
 
     public static String        toString (InstrumentIdentity id) {
-        return (id.getSymbol () + ":" + id.getType ());
+        return (id.getSymbol () + ":" + id.getInstrumentType ());
     }
 
-    /** Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead. */
+    /** Warning: this class is mutable and cannot be used as java.util.Map key. Use {ConstantInstrumentKey} instead. */
     @Override
     public final boolean              equals (Object obj) {
         // Must be the same as ConstantInstrumentKey.equals()
@@ -85,7 +85,7 @@ public class InstrumentKey
         return (equals (this, (InstrumentIdentity) obj));
     }
 
-    /** Warning: this class is mutable and cannot be used as java.util.Map key. Use {@link ConstantInstrumentKey} instead. */
+    /** Warning: this class is mutable and cannot be used as java.util.Map key. Use {ConstantInstrumentKey} instead. */
     @Override
     public final int                  hashCode () {
         // Must be the same as ConstantInstrumentKey.hashCode()

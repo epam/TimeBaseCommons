@@ -1,13 +1,17 @@
 package deltix.util.collections;
-import java.lang.String;
-
 import deltix.util.collections.generated.ByteArrayList;
 
 /**
  * Created by DriapkoA on 02.05.2016.
  */
 public class ByteArrayListUtils{
-    private static StringBuilder builder = new StringBuilder();
+    private static ThreadLocal<StringBuilder> threadLocalBuilder = new ThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder();
+        }
+    };
+
     /**
      * Assign binary array ar by x
      * @param ar binary array
@@ -76,6 +80,18 @@ public class ByteArrayListUtils{
      * @return this
      */
     public static ByteArrayList assign(ByteArrayList ar, CharSequence x) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.clear();
+        append(ar, x);
+        return ar;
+    }
+    /**
+     * Assign binary array ar by x
+     * @param ar binary array
+     * @param x x
+     * @return this
+     */
+    public static ByteArrayList assign(ByteArrayList ar, ByteArrayList x) {
         if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
@@ -171,6 +187,20 @@ public class ByteArrayListUtils{
      * @param x x
      * @return this
      */
+    public static ByteArrayList append(ByteArrayList ar, ByteArrayList x) {
+        if (ar == null) ar = new ByteArrayList();
+        for (int i = 0; i < x.size(); ++i) {
+            byte ch = x.get(i);
+            append(ar, ch);
+        }
+        return ar;
+    }
+    /**
+     * Append x to binary array ar
+     * @param ar binary array
+     * @param x x
+     * @return this
+     */
 
     public static ByteArrayList appendASCII(ByteArrayList ar, String x) {
         if (ar == null) ar = new ByteArrayList();
@@ -236,6 +266,7 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static String toString(ByteArrayList ar, int offset) {
+        StringBuilder builder = threadLocalBuilder.get();
         builder.setLength(0);
         for (int i = offset; i < ar.size(); i += 2) {
             builder.append((char)toShort(ar, i));
@@ -261,6 +292,7 @@ public class ByteArrayListUtils{
      * @return result of convertation
      */
     public static String toStringASCII(ByteArrayList ar, int offset) {
+        StringBuilder builder = threadLocalBuilder.get();
         builder.setLength(0);
         for (int i = offset; i < ar.size(); i++) {
             builder.append((char)toByte(ar, i));

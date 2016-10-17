@@ -6,5 +6,5 @@ package deltix.qsrv.hf.pub;
 public interface InstrumentIdentity {
     public CharSequence         getSymbol ();
     
-    public InstrumentType       getType ();
+    public InstrumentType getInstrumentType();
 }

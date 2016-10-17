@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 /**
  * <p>Allows to scan and watch the file system folders.</p>
- * <p>An example of using:
+ * An example of using:
  * <pre>
  *    final FileSystemWatcher.EventHandler h = new FileSystemWatcher.EventHandler() {
  *           {@literal @}Override
@@ -45,7 +45,6 @@ import java.util.logging.Logger;
  *       
  *       FileSystemWatcher.getInstance().unsubscribe(h); 
  * </pre>
- * </p>
  */
 public class FileSystemWatcher {
     public enum EventType {
