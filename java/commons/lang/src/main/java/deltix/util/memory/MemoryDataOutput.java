@@ -31,17 +31,21 @@ public final class MemoryDataOutput {
             int         currentSize = mBuffer.length;
 
             if (currentSize < minSize) {
-                do { 
-                    currentSize = currentSize << 1; 
-                } while (currentSize < minSize);
-
-                byte [] newBuffer = new byte [currentSize];
-                System.arraycopy (mBuffer, 0, newBuffer, 0, oldSize);
-                mBuffer = newBuffer;
+                extendBuffer(oldSize, currentSize, minSize);
             }
         }
     }
-    
+
+    private void extendBuffer(int oldSize, int currentSize, int minSize) {
+        do {
+            currentSize = currentSize << 1;
+        } while (currentSize < minSize);
+
+        byte [] newBuffer = new byte [currentSize];
+        System.arraycopy (mBuffer, 0, newBuffer, 0, oldSize);
+        mBuffer = newBuffer;
+    }
+
     /**
      *  Reset buffer with the size of 0.
      */
@@ -182,8 +186,24 @@ public final class MemoryDataOutput {
     
     public void           writeByte (byte v) {
         makeRoom (1);
+        writeByteUnsafe(v);
+    }
+
+    /**
+     * Writes byte to buffer without checking if there space for this byte available.
+     * This call *must* be prepended with corresponding {@link #makeRoom(int)} call.
+     */
+    private void           writeByteUnsafe (byte v) {
         mBuffer [mPos] = v;
         mPos++;
+    }
+
+    /**
+     * Writes byte to buffer without checking if there space for this byte available.
+     * This call *must* be prepended with corresponding {@link #makeRoom(int)} call.
+     */
+    public void           writeByteUnsafe (long v) {
+        writeByteUnsafe((byte) v);
     }
 
     public void           writeUnsignedByte (int v) {
