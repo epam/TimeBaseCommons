@@ -1,21 +1,21 @@
 package deltix.util.io;
 
+import deltix.util.lang.Bits;
+
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
- *
+ * {@link BufferedInputStream} populates it's buffer with initial data from provided buffer.
  */
 public class BufferedInputStreamEx extends BufferedInputStream {
     public BufferedInputStreamEx(InputStream in, byte[] buf, int size) {
-        super(in);
+        super(in, Math.max(Bits.nextPowerOfTwo(size), 8192));
 
-        //copy buf to this.buf
-        for (int i = 0; i < size && i < this.buf.length; ++i)
-            this.buf[i] = buf[i];
+        assert size <= this.buf.length;
 
+        // Copy provided buffer to internal buffer
+        System.arraycopy(buf, 0, this.buf, 0, size);
         this.count = size;
     }
-
 }
