@@ -110,7 +110,7 @@ public class InstrumentMessage
 
     public int                  compareTime(TimeStamp time) {
         return timestamp == time.timestamp ?
-            Util.compare(nanoTime, time.getNanoTime()) : (timestamp > time.timestamp ? 1 : -1);
+            Util.compare(nanoTime, time.nanosComponent) : (timestamp > time.timestamp ? 1 : -1);
     }
     
     @Override
