@@ -109,8 +109,13 @@ public class InstrumentMessage
     }
 
     public int                  compareTime(TimeStamp time) {
-        return timestamp == time.timestamp ?
-            Util.compare(nanoTime, time.nanosComponent) : (timestamp > time.timestamp ? 1 : -1);
+        // Do not change. JIT compile this implementation into highly optimized branch free code with 4 cmovnl instructions.
+        // If nanos does not belong to 0..999999 range or timestamp does not belong to 0..2^53
+        // then timestamp comparison result is Undefined
+        long nanos1 = timestamp * TimeStamp.NANOS_PER_MS + nanoTime;
+        long nanos2 = time.timestamp * TimeStamp.NANOS_PER_MS + time.nanosComponent;
+        nanos1 -= nanos2;
+        return (nanos1 > 0 ? 1 : 0) - (nanos1 < 0 ? 1 : 0);
     }
     
     @Override
