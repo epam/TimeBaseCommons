@@ -21,6 +21,9 @@ public enum InstrumentType {
     STREAM('M', "Stream"),
     DATA_CONNECTOR('Q', "DataConnector"),
     EXCHANGE_TRADED_SYNTHETIC('Z', "Exchange-Traded Synthetic"),
+    
+    CONTRACT_FOR_DIFFERENSE('D', "Contrach-For-DifferenseSynthetic"),
+
 
     SYSTEM('X', "System");
 
