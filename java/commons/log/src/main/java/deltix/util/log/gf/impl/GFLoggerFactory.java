@@ -8,7 +8,7 @@ import org.gflogger.GFLogFactory;
 public final class GFLoggerFactory extends LoggerFactory {
 
     public GFLoggerFactory() {
-        GFLoggerConfigurator.configureWithShutdown();
+        GFLoggerConfigurator.configureIfNot();
     }
 
     @Override
