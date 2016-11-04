@@ -1,6 +1,8 @@
 package deltix.util.collections;
 import deltix.util.collections.generated.ByteArrayList;
 
+import java.util.UUID;
+
 /**
  * Created by DriapkoA on 02.05.2016.
  */
@@ -95,6 +97,18 @@ public class ByteArrayListUtils{
         if (ar == null) ar = new ByteArrayList();
         ar.clear();
         append(ar, x);
+        return ar;
+    }
+    /**
+     * Assign binary array ar by x
+     * @param ar binary array
+     * @param id id
+     * @return this
+     */
+    public static ByteArrayList assign(ByteArrayList ar, UUID id) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.clear();
+        append(ar, id);
         return ar;
     }
     /**
@@ -198,6 +212,18 @@ public class ByteArrayListUtils{
     /**
      * Append x to binary array ar
      * @param ar binary array
+     * @param id UUID
+     * @return this
+     */
+    public static ByteArrayList append(ByteArrayList ar, UUID id) {
+        if (ar == null) ar = new ByteArrayList();
+        ar = ByteArrayListUtils.append(ar, id.getMostSignificantBits());
+        ar = ByteArrayListUtils.append(ar, id.getLeastSignificantBits());
+        return ar;
+    }
+    /**
+     * Append x to binary array ar
+     * @param ar binary array
      * @param x x
      * @return this
      */
@@ -215,7 +241,7 @@ public class ByteArrayListUtils{
      * Convert binary array, started from offset to byte
      * @param ar binary array
      * @param offset offset
-     * @return result of convertation
+     * @return result of conversion
      */
     public static byte toByte(ByteArrayList ar, int offset) {
         return ar.getByte(offset);
@@ -224,7 +250,7 @@ public class ByteArrayListUtils{
      * Convert binary array, started from offset to short
      * @param ar binary array
      * @param offset offset
-     * @return result of convertation
+     * @return result of conversion
      */
     public static short toShort(ByteArrayList ar, int offset) {
         return (short) ((((short)(ar.getByte(offset + 1)) << 8) & (short)(0xff00)) |
@@ -234,7 +260,7 @@ public class ByteArrayListUtils{
      * Convert binary array, started from offset to int
      * @param ar binary array
      * @param offset offset
-     * @return result of convertation
+     * @return result of conversion
      */
     public static int toInt(ByteArrayList ar, int offset) {
         return ((int)(ar.getByte(offset + 3)) << 24) & 0xff000000 |
@@ -246,7 +272,7 @@ public class ByteArrayListUtils{
      * Convert binary array, started from offset to long
      * @param ar binary array
      * @param offset offset
-     * @return result of convertation
+     * @return result of conversion
      */
     public static long toLong(ByteArrayList ar, int offset) {
         return ((long) (ar.getByte(offset + 7)) << 56) & 0xff00000000000000L |
@@ -263,7 +289,7 @@ public class ByteArrayListUtils{
      * Convert binary array, started from offset to string
      * @param ar binary array
      * @param offset offset
-     * @return result of convertation
+     * @return result of conversion
      */
     public static String toString(ByteArrayList ar, int offset) {
         StringBuilder builder = threadLocalBuilder.get();
@@ -289,7 +315,7 @@ public class ByteArrayListUtils{
      * Convert binary array, started from offset to ASCII string
      * @param ar binary array
      * @param offset offset
-     * @return result of convertation
+     * @return result of conversion
      */
     public static String toStringASCII(ByteArrayList ar, int offset) {
         StringBuilder builder = threadLocalBuilder.get();
@@ -303,7 +329,7 @@ public class ByteArrayListUtils{
     /**
      * convert binary array to byte
      * @param ar binary array
-     * @return result of convertation
+     * @return result of conversion
      */
     public static byte toByte(ByteArrayList ar) {
         return toByte(ar, 0);
@@ -312,7 +338,7 @@ public class ByteArrayListUtils{
     /**
      * convert binary array to short
      * @param ar binary array
-     * @return result of convertation
+     * @return result of conversion
      */
     public static short toShort(ByteArrayList ar) {
         return toShort(ar, 0);
@@ -320,7 +346,7 @@ public class ByteArrayListUtils{
     /**
      * convert binary array to int
      * @param ar binary array
-     * @return result of convertation
+     * @return result of conversion
      */
 
     public static int toInt(ByteArrayList ar) {
@@ -329,7 +355,7 @@ public class ByteArrayListUtils{
     /**
      * convert binary array to long
      * @param ar binary array
-     * @return result of convertation
+     * @return result of conversion
      */
     public static long toLong(ByteArrayList ar) {
         return toLong(ar, 0);
@@ -337,7 +363,7 @@ public class ByteArrayListUtils{
     /**
      * convert binary array to string
      * @param ar binary array
-     * @return result of convertation
+     * @return result of conversion
      */
 
     public static String toString(ByteArrayList ar) {
@@ -355,11 +381,22 @@ public class ByteArrayListUtils{
     /**
      * convert binary array to ASCII string
      * @param ar binary array
-     * @return result of convertation
+     * @return result of conversion
      */
 
     public static String toStringASCII(ByteArrayList ar) {
         return toStringASCII(ar, 0);
+    }
+
+    /**
+     * convert binary array to UUID
+     * @param ar binary array
+     * @return result of conversion
+     */
+    public static UUID toUUID(ByteArrayList ar) {
+        if (ar.size() != 16)
+            return null;
+        return new UUID(toLong(ar, 0), toLong(ar, 8));
     }
 
     /**

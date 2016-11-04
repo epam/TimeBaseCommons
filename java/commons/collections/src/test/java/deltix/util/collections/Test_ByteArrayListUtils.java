@@ -5,6 +5,8 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 import deltix.util.collections.generated.ByteArrayList;
 
+import java.util.UUID;
+
 
 @Category(Test.class)
 public class Test_ByteArrayListUtils {
@@ -64,7 +66,16 @@ public class Test_ByteArrayListUtils {
         assertEquals(ByteArrayListUtils.equals(ar1, ar2), false);
     }
 
+    @Test
+    public void testUUID() {
+        UUID u1 = new UUID(0xFEDCBA9876543210L, 0x8091A2B3C4D5E6F7L);
 
+        ByteArrayList ar = ByteArrayListUtils.assign(null, u1);
+        UUID u2 = ByteArrayListUtils.toUUID(ar);
+
+        assertEquals(u1, u2);
+
+    }
 
 
 
