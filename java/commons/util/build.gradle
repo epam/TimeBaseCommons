@@ -4,7 +4,7 @@ dependencies {
     compile project(':java:commons:lang'),
             project(':java:commons:collections'),
             project(':java:commons:messages')
-    compile 'commons-lang:commons-lang:2.4',
+    compile 'commons-lang:commons-lang',
             'org.apache.commons:commons-compress:1.7',
             'javax.servlet:javax.servlet-api:3.1.0'
 

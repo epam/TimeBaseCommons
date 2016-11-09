@@ -4,15 +4,12 @@ import org.gflogger.GFLoggerBuilder;
 import org.gflogger.LogLevel;
 import org.gflogger.appender.ConsoleAppender;
 import org.gflogger.appender.SingleAppenderFactory;
-import org.gflogger.config.xml.Configuration;
-import org.gflogger.config.xml.Configurator;
-import static org.gflogger.config.xml.Configurator.XML_FILE_PATH_PROPERTY;
-import org.gflogger.config.xml.DLoggerServiceFactory;
-import org.gflogger.config.xml.LoggerServiceFactory;
-import org.gflogger.config.xml.XmlConfigurationLoader;
+import org.gflogger.config.xml.*;
 import org.gflogger.helpers.LogLog;
 
 import java.io.File;
+
+import static org.gflogger.config.xml.Configurator.XML_FILE_PATH_PROPERTY;
 
 
 public class GFLoggerConfigurator {
@@ -24,9 +21,11 @@ public class GFLoggerConfigurator {
 
     private static boolean configured;
 
-    public static synchronized void configureWithShutdown() {
-        configure();
-        addShutdownHook();
+    static synchronized void configureIfNot() {
+        if (!configured) {
+            Configuration configuration = getDefaultConfiguration();
+            configureWithShutdown(configuration);
+        }
     }
 
     public static void configureWithShutdown(String file) throws Exception {
@@ -41,30 +40,6 @@ public class GFLoggerConfigurator {
     public static synchronized void configureWithShutdown(Configuration configuration) {
         configure(configuration);
         addShutdownHook();
-    }
-
-    public static synchronized void configure() {
-        if (!configured) {
-            String file = System.getProperty(XML_FILE_PATH_PROPERTY);
-            Configuration configuration = null;
-
-            if (file != null) {
-                try {
-                    configuration = XmlConfigurationLoader.load(System.getProperties(), new File(file));
-                    LogLog.info("GFLogger uses configuration from file: " + file);
-                } catch (Exception e) {
-                    LogLog.error("Can't load GFLogger configuration from file: " + file, e);
-                }
-            }
-
-            if (configuration == null) {
-                configuration = createDefaultConfiguration();
-                LogLog.info(String.format("GFLogger uses default configuration: entries=%s, maxMessageSize=%s, appender=console, layout=%s",
-                        DEFAULT_ENTRIES, DEFAULT_MESSAGE_SIZE, DEFAULT_LAYOUT_PATTERN));
-            }
-
-            configure(configuration);
-        }
     }
 
     public static void configure(String file) throws Exception {
@@ -98,7 +73,29 @@ public class GFLoggerConfigurator {
         Runtime.getRuntime().addShutdownHook(new Thread(GFLoggerConfigurator::unconfigure));
     }
 
-    private static Configuration createDefaultConfiguration() {
+    private static Configuration getDefaultConfiguration() {
+        String file = System.getProperty(XML_FILE_PATH_PROPERTY);
+        Configuration configuration = null;
+
+        if (file != null) {
+            try {
+                configuration = XmlConfigurationLoader.load(System.getProperties(), new File(file));
+                LogLog.info("GFLogger uses configuration from file: " + file);
+            } catch (Exception e) {
+                LogLog.error("Can't load GFLogger configuration from file: " + file, e);
+            }
+        }
+
+        if (configuration == null) {
+            configuration = createConsoleConfiguration();
+            LogLog.info(String.format("GFLogger uses default configuration: entries=%s, maxMessageSize=%s, appender=console, layout=%s",
+                    DEFAULT_ENTRIES, DEFAULT_MESSAGE_SIZE, DEFAULT_LAYOUT_PATTERN));
+        }
+
+        return configuration;
+    }
+
+    private static Configuration createConsoleConfiguration() {
         Configuration configuration = new Configuration();
 
         LoggerServiceFactory serviceFactory = new DLoggerServiceFactory();
