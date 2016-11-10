@@ -74,6 +74,9 @@ public class Test_ByteArrayListUtils {
         UUID u2 = ByteArrayListUtils.toUUID(ar);
 
         assertEquals(u1, u2);
+        // Ensure endian
+        assertEquals(ar.getByte(0), (byte)0xFE);
+        assertEquals(ar.getByte(8), (byte)0x80);
 
     }
 

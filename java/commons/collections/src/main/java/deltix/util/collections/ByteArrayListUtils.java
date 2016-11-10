@@ -168,6 +168,24 @@ public class ByteArrayListUtils{
         return ar;
     }
     /**
+     * Append x to binary array ar, x will be interpreted as Big-endian long.
+     * @param ar binary array
+     * @param x x
+     * @return this
+     */
+    public static ByteArrayList appendBigEndian(ByteArrayList ar, long x) {
+        if (ar == null) ar = new ByteArrayList();
+        ar.add((byte)(x >>> 56));
+        ar.add((byte)((x >>> 48) & 255));
+        ar.add((byte)((x >>> 40) & 255));
+        ar.add((byte)((x >>> 32) & 255));
+        ar.add((byte)((x >>> 24) & 255));
+        ar.add((byte)((x >>> 16) & 255));
+        ar.add((byte)((x >>> 8) & 255));
+        ar.add((byte)(x & 255));
+        return ar;
+    }
+    /**
      * Append x to binary array ar
      * @param ar binary array
      * @param x x
@@ -217,8 +235,8 @@ public class ByteArrayListUtils{
      */
     public static ByteArrayList append(ByteArrayList ar, UUID id) {
         if (ar == null) ar = new ByteArrayList();
-        ar = ByteArrayListUtils.append(ar, id.getMostSignificantBits());
-        ar = ByteArrayListUtils.append(ar, id.getLeastSignificantBits());
+        ar = ByteArrayListUtils.appendBigEndian(ar, id.getMostSignificantBits());
+        ar = ByteArrayListUtils.appendBigEndian(ar, id.getLeastSignificantBits());
         return ar;
     }
     /**
@@ -285,6 +303,24 @@ public class ByteArrayListUtils{
                 ((long) (ar.getByte(offset))) & 0x000000000000ffL;
 
     }
+    /**
+     * Convert binary array, started from offset to Big-endian long
+     * @param ar binary array
+     * @param offset offset
+     * @return result of conversion
+     */
+    public static long toBigEndianLong(ByteArrayList ar, int offset) {
+        return ((long) (ar.getByte(offset)) << 56) & 0xff00000000000000L |
+                ((long) (ar.getByte(offset + 1)) << 48) & 0x00ff000000000000L |
+                ((long) (ar.getByte(offset + 2)) << 40) & 0x0000ff0000000000L |
+                ((long) (ar.getByte(offset + 3)) << 32) & 0x000000ff00000000L |
+                ((long) (ar.getByte(offset + 4)) << 24) & 0x00000000ff000000L |
+                ((long) (ar.getByte(offset + 5)) << 16) & 0x0000000000ff0000L |
+                ((long) (ar.getByte(offset + 6)) << 8) & 0x000000000000ff00L |
+                ((long) (ar.getByte(offset + 7))) & 0x000000000000ffL;
+
+    }
+
     /**
      * Convert binary array, started from offset to string
      * @param ar binary array
@@ -396,7 +432,7 @@ public class ByteArrayListUtils{
     public static UUID toUUID(ByteArrayList ar) {
         if (ar.size() != 16)
             return null;
-        return new UUID(toLong(ar, 0), toLong(ar, 8));
+        return new UUID(toBigEndianLong(ar, 0), toBigEndianLong(ar, 8));
     }
 
     /**
