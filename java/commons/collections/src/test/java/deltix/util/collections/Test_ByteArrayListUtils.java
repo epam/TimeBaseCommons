@@ -1,8 +1,11 @@
+package deltix.util.collections;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 import deltix.util.collections.generated.ByteArrayList;
-import deltix.util.collections.ByteArrayListUtils;
+
+import java.util.UUID;
 
 
 @Category(Test.class)
@@ -23,10 +26,10 @@ public class Test_ByteArrayListUtils {
     public void testAppendInt() {
         ByteArrayList ar = new ByteArrayList();
         for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (int) (100000 + i));
-        assertEquals(ar.getByte(0), 0);
-        assertEquals(ar.getByte(1), 1);
-        assertEquals(ar.getByte(2), -122);
-        assertEquals(ar.getByte(3), -96);
+        assertEquals(ar.getByte(0), -96);
+        assertEquals(ar.getByte(1), -122);
+        assertEquals(ar.getByte(2), 1);
+        assertEquals(ar.getByte(3), 0);
 
         for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toInt(ar, i * 4), 100000 + i);
     }
@@ -63,7 +66,19 @@ public class Test_ByteArrayListUtils {
         assertEquals(ByteArrayListUtils.equals(ar1, ar2), false);
     }
 
+    @Test
+    public void testUUID() {
+        UUID u1 = new UUID(0xFEDCBA9876543210L, 0x8091A2B3C4D5E6F7L);
 
+        ByteArrayList ar = ByteArrayListUtils.assign(null, u1);
+        UUID u2 = ByteArrayListUtils.toUUID(ar);
+
+        assertEquals(u1, u2);
+        // Ensure endian
+        assertEquals(ar.getByte(0), (byte)0xFE);
+        assertEquals(ar.getByte(8), (byte)0x80);
+
+    }
 
 
 

@@ -8,7 +8,7 @@ public interface CookieContainer<T> {
     void setCookie(T cookie);
     
     /**
-     * Returns user object stored by {@link #setCookie(T)}
+     * Returns user object stored by {setCookie(T)}
      * @return user object
      */
     T getCookie();

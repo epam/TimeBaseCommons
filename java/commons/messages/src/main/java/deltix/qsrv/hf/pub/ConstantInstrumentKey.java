@@ -39,7 +39,7 @@ public class ConstantInstrumentKey
     }
 
     public ConstantInstrumentKey (InstrumentIdentity copy) {
-        this (copy.getType (), copy.getSymbol ());
+        this (copy.getInstrumentType (), copy.getSymbol ());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ConstantInstrumentKey
     }
 
     @Override
-    public InstrumentType       getType () {
+    public InstrumentType       getInstrumentType () {
         return (instrumentType);
     }
 

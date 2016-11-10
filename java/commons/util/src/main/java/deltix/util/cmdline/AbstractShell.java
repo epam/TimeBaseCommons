@@ -188,7 +188,14 @@ public abstract class AbstractShell extends DefaultApplication {
         try {
             switch (sig) {
                 case -1:
-                    if (!doCommand (key, args, fileId, rd)) 
+                    boolean result;
+                    try {
+                        result = doCommand (key, args, fileId, rd);
+                    } catch (ShellCommandException e) {
+                        result = true; // Command was recognized but failed to complete
+                        error (e.getMessage(), e.getErrorLevel());
+                    }
+                    if (!result)
                         error (key + ": unrecognized command. (Type ? for usage)", 1);                    
                     break;
                     

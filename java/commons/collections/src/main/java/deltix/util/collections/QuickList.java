@@ -1,6 +1,7 @@
 package deltix.util.collections;
 
-import deltix.util.memory.*;
+import deltix.util.memory.MemorySizeEstimator;
+
 import java.util.Enumeration;
 
 /**
