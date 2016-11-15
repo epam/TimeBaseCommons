@@ -9,10 +9,12 @@ import deltix.util.io.UncheckedIOException;
  *  no virtual method calls and presents a non-virtual public API.
  */
 public final class MemoryDataInput {
+    // Contract: 0 <= mStart <= mPos <= mLimit <= mBuffer.length
     private byte []         mBuffer;
-    private int             mStart;
-    private int             mPos;
-    private int             mLimit;
+    private int             mStart; // Low boundary (inclusive). First index of mBuffer that is accessible by this instance of MemoryDataInput. Similar to ByteBuffer.offset field.
+    private int             mPos; // Current position (includes mStart offset).
+    private int             mLimit; // Hi boundary (exclusive, includes mStart offset).
+
     private StringBuilder   mStringBuilder;
         
     public MemoryDataInput (int capacity) {

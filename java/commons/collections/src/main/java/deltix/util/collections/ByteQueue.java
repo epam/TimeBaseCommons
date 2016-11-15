@@ -6,7 +6,7 @@ import java.io.OutputStream;
 /**
  * Fixed size circular buffer of byte values
  */
-public final class ByteQueue {
+public final class ByteQueue implements ByteContainer {
     private int                 capacity;
     private byte []             buffer;
     private int                 size = 0;
@@ -133,6 +133,7 @@ public final class ByteQueue {
         return (ret);
     }
 
+    @Override
     public byte                 get (int srcOffset) {
         assert srcOffset < size : "srcOffset: " + srcOffset + "; size: " + size;
 
