@@ -6,9 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import org.junit.experimental.categories.Category;
-import deltix.util.JUnitCategories.UHFFramework;
+import deltix.util.JUnitCategories.Utils;
 
-@Category(UHFFramework.class)
+@Category(Utils.class)
 public class Test_SimpleStatistics {
 
     @Test
