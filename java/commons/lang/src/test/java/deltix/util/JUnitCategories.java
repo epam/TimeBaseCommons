@@ -20,5 +20,7 @@ public final class JUnitCategories {
     public interface UHFUtils extends All {}
 
     public interface All {}
+
+    public interface External {}
 }
 
