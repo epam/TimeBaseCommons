@@ -642,6 +642,12 @@ public final class ${name}ArrayList
     	size += length;
     	return length != 0;
     }
+
+    public void copyTo (${name}ArrayList list) {
+        list.ensureCapacity(size);
+
+        SafeArrays.safeArrayCopy(elementData, 0, list.elementData, 0, size);
+    }
     #end
 
     /**

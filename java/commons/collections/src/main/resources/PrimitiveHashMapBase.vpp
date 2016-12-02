@@ -61,7 +61,7 @@ public abstract class ${name}HashMapBase$!{key_param} extends VLinkHashMapBase {
     }
 
     protected final class KeyIterator implements Iterator <K> {
-    	private int             pos = 0;
+    	private int             pos = -1;
 
     	public KeyIterator () {
     		move ();
