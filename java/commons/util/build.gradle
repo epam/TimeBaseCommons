@@ -8,6 +8,8 @@ dependencies {
             'org.apache.commons:commons-compress:1.7',
             'javax.servlet:javax.servlet-api:3.1.0'
 
+    compileOnly 'com.google.code.findbugs:jsr305'
+
     //TODO: Since we no longer use IKVM we can switch to Java's version of JAXB
 //    compile files('../../../lib/endorsed/jaxb-api.jar'),
 //            files('../../../lib/jaxb/activation.jar'),

@@ -1,9 +1,13 @@
 package deltix.util.concurrent;
 
+import deltix.thread.affinity.AffinityConfig;
+import deltix.thread.affinity.AffinityThreadFactoryBuilder;
 import deltix.util.collections.QuickList;
 import deltix.util.collections.generated.ObjectHashSet;
 
 import java.util.*;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.*;
 
@@ -12,6 +16,9 @@ import deltix.util.time.Interval;
 import deltix.util.time.TimeKeeper;
 import deltix.util.time.TimeUnit;
 import net.jcip.annotations.GuardedBy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  *  Similar to standard Java executors, but does not allocate memory on task
@@ -89,6 +96,10 @@ public class QuickExecutor {
             this.executor = executor;
         }
 
+        /**
+         * @deprecated use {@link #QuickTask(QuickExecutor)} instead
+         */
+        @Deprecated
         protected QuickTask () {
             this (getGlobalInstance());
         }
@@ -142,7 +153,7 @@ public class QuickExecutor {
                     if (DEBUG_TASKS)
                         System.out.println (this + " is being killed");
 
-                    worker.interrupt ();
+                    worker.thread.interrupt ();
                     break;
             }
         }
@@ -189,40 +200,44 @@ public class QuickExecutor {
         }
     }
 
-    private class Worker extends Thread {
+    private class Worker implements Runnable {
+        private final Thread    thread;
         volatile QuickTask      task;
         volatile boolean        stop = false;
         volatile long           timestamp = Long.MIN_VALUE; // time of getting into free pool
 
         final WorkerEntry       entry;
 
-        Worker (QuickTask task, int idx) {
-            super (String.format("Worker #%d for %s", idx, QuickExecutor.this));
-
+        Worker(QuickTask task, ThreadFactory factory) {
             this.entry = new WorkerEntry(this);
             this.task = task;
+
+            // Please do not copy-paste this code. In general case it's may be wrong.
+            this.thread = factory.newThread(this);
         }
 
         void                    terminate () {
             stop = true;
-            interrupt ();
+            thread.interrupt ();
         }
 
         void                    wakeUp (QuickTask task) {
             this.task = task;
 
-            LockSupport.unpark (this);
+            LockSupport.unpark (thread);
         }
 
         @Override
         public void             run () {
+            assert Thread.currentThread() == this.thread;
+
             try {
                 while (!stop) {
                     if (task == null) {
 
                         LockSupport.park ();
 
-                        if (interrupted() && stop)
+                        if (Thread.interrupted() && stop)
                             break;
 
                         if (task == null)
@@ -264,12 +279,13 @@ public class QuickExecutor {
     }
 
     private static QuickExecutor            globalInstance = null;
-    private static int                      usages = 0;
+    private final AtomicInteger instanceUsages = new AtomicInteger(0);
 
-    public static synchronized QuickExecutor getGlobalInstance () {
-        if (globalInstance == null)
-            globalInstance = new QuickExecutor ("Global Executor");
-
+    @Deprecated
+    public static synchronized QuickExecutor getGlobalInstance() {
+        if (globalInstance == null) {
+            globalInstance = createNewInstance("Global Executor", null);
+        }
         return (globalInstance);
     }
 
@@ -286,12 +302,22 @@ public class QuickExecutor {
 
     private final String                    fullName;
     private final String                    name;
+    private final ThreadFactory             threadFactory;
 
     //private int                             depth; // free pool depth
 
-    private QuickExecutor (String name) {
+    public static QuickExecutor createNewInstance(@Nonnull String name, @Nullable AffinityConfig affinityConfig) {
+        return new QuickExecutor(name, affinityConfig);
+    }
+
+    private QuickExecutor(@Nonnull String name, @Nullable AffinityConfig affinityConfig) {
+        AffinityThreadFactoryBuilder threadFactoryBuilder = new AffinityThreadFactoryBuilder(affinityConfig);
+
         this.name = name;
         this.fullName = "QuickExecutor \"" + name + "\"";
+        this.threadFactory = threadFactoryBuilder
+                .setNameFormat("Worker #%d for " + this.fullName)
+                .build();;
 
         long delay = Long.getLong("QuickExecutor.Sweeper.delay", DELAY);
 
@@ -320,11 +346,11 @@ public class QuickExecutor {
             w.wakeUp (task);
         } else {
             synchronized (workers) {
-                w = new Worker (task, workerId++);
+                w = new Worker (task, threadFactory);
                 workers.add (w);
             }
 
-            w.start();
+            w.thread.start();
 
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine ("# Workers: " + getWorkersSize());
@@ -373,25 +399,19 @@ public class QuickExecutor {
         }
     }
 
-    public synchronized static QuickExecutor    reuse() {
-        usages++;
-        //LOGGER.log(Level.WARNING, "QuickExecutor usages: " + usages, new Exception());
-
-        return getGlobalInstance();
+    public void reuseInstance() {
+        instanceUsages.incrementAndGet();
     }
 
-    public synchronized static void             shutdown() {
-        usages--;
+    public synchronized void shutdownInstance() {
+        int decrementedValue = instanceUsages.decrementAndGet();
+        if (decrementedValue < 0) {
+            LOGGER.log(Level.SEVERE, "QuickExecutor instance usages violated: " + decrementedValue, new Exception());
+        }
 
-        //LOGGER.log(Level.WARNING, "QuickExecutor usages: " + usages, new Exception());
-
-        if (usages < 0)
-            LOGGER.log(Level.SEVERE, "QuickExecutor usages violated: " + usages, new Exception());
-
-        assert usages >=0;
-
-        if (usages <= 0)
-            globalInstance.shutdown(true);
+        if (decrementedValue == 0) {
+            this.shutdown(true);
+        }
     }
 
     private void             shutdown(boolean waitForCompleteShutdown) {
@@ -415,9 +435,9 @@ public class QuickExecutor {
                     //  This works around ignored interrupts in
                     //      misbehaving tasks.
                     for (;;) {
-                        w.join (1000);
+                        w.thread.join (1000);
 
-                        if (!w.isAlive ())
+                        if (!w.thread.isAlive ())
                             break;
 
                         LOGGER.warning (w + " failed to terminate in 1s, interrupting again ...");
