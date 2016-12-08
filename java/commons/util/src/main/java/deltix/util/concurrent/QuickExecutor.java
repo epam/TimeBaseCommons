@@ -317,7 +317,7 @@ public class QuickExecutor {
         this.fullName = "QuickExecutor \"" + name + "\"";
         this.threadFactory = threadFactoryBuilder
                 .setNameFormat("Worker #%d for " + this.fullName)
-                .build();;
+                .build();
 
         long delay = Long.getLong("QuickExecutor.Sweeper.delay", DELAY);
 
@@ -399,11 +399,11 @@ public class QuickExecutor {
         }
     }
 
-    public void reuseInstance() {
+    public void                                 reuseInstance() {
         instanceUsages.incrementAndGet();
     }
 
-    public synchronized void shutdownInstance() {
+    public synchronized void                    shutdownInstance() {
         int decrementedValue = instanceUsages.decrementAndGet();
         if (decrementedValue < 0) {
             LOGGER.log(Level.SEVERE, "QuickExecutor instance usages violated: " + decrementedValue, new Exception());
@@ -414,7 +414,7 @@ public class QuickExecutor {
         }
     }
 
-    private void             shutdown(boolean waitForCompleteShutdown) {
+    private void                                shutdown(boolean waitForCompleteShutdown) {
         Worker []               workerSnapshot;
         
         shutdownInProgress = true;
