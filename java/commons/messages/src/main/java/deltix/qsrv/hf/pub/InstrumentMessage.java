@@ -38,7 +38,7 @@ public class InstrumentMessage
      * @return true if Symbolis not null
      */
     public boolean hasSymbol() {
-      return symbol == null;
+      return symbol != null;
     }
 
     /**
@@ -68,7 +68,7 @@ public class InstrumentMessage
      * @return true if Instrument Typeis not null
      */
     public boolean hasInstrumentType() {
-      return instrumentType == null;
+        return instrumentType != null;
     }
 
     /**

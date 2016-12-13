@@ -54,7 +54,7 @@ public class AbstractMessage implements
      * @return true if Timeis not null
      */
     public boolean hasTimeStampMs() {
-      return timestamp == TIMESTAMP_UNKNOWN;
+      return timestamp != TIMESTAMP_UNKNOWN;
     }
 
     /**
@@ -92,6 +92,7 @@ public class AbstractMessage implements
         this.timestamp = TIMESTAMP_UNKNOWN;
     }
 
+    @Deprecated // use clone(), copyTo(), copyFrom ()
     public AbstractMessage      copy (boolean deep) {
         try {
             AbstractMessage     out = getClass ().newInstance ();
@@ -106,6 +107,7 @@ public class AbstractMessage implements
      * Method copies state of given template into this object
      * @param deep if true performs deep copy of mutable properties
      */
+    @Deprecated  // use clone(), copyTo(), copyFrom ()
     public void                 copy (Object template, boolean deep) {
         if (template instanceof AbstractMessage) {
             AbstractMessage t = (AbstractMessage) template;
