@@ -193,6 +193,7 @@ public class ByteArrayListUtils{
      */
     public static ByteArrayList append(ByteArrayList ar, String x) {
         if (ar == null) ar = new ByteArrayList();
+        if (x == null) return ar;
         for (int i = 0; i < x.length(); ++i) {
             char ch = x.charAt(i);
             append(ar, (short) ch);
@@ -207,6 +208,7 @@ public class ByteArrayListUtils{
      */
     public static ByteArrayList append(ByteArrayList ar, CharSequence x) {
         if (ar == null) ar = new ByteArrayList();
+        if (x == null) return ar;
         for (int i = 0; i < x.length(); ++i) {
             char ch = x.charAt(i);
             append(ar, (short) ch);
@@ -221,6 +223,7 @@ public class ByteArrayListUtils{
      */
     public static ByteArrayList append(ByteArrayList ar, ByteArrayList x) {
         if (ar == null) ar = new ByteArrayList();
+        if (x == null) return ar;
         for (int i = 0; i < x.size(); ++i) {
             byte ch = x.get(i);
             append(ar, ch);
@@ -235,6 +238,7 @@ public class ByteArrayListUtils{
      */
     public static ByteArrayList append(ByteArrayList ar, UUID id) {
         if (ar == null) ar = new ByteArrayList();
+        if (id == null) return ar;
         ar = ByteArrayListUtils.appendBigEndian(ar, id.getMostSignificantBits());
         ar = ByteArrayListUtils.appendBigEndian(ar, id.getLeastSignificantBits());
         return ar;
@@ -248,6 +252,7 @@ public class ByteArrayListUtils{
 
     public static ByteArrayList appendASCII(ByteArrayList ar, String x) {
         if (ar == null) ar = new ByteArrayList();
+        if (x == null) return ar;
         for (int i = 0; i < x.length(); ++i) {
             char ch = x.charAt(i);
             append(ar, (byte) ch);
