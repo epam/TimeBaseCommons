@@ -803,8 +803,8 @@ public abstract class BasicIOUtil {
     {
         while (length > 0) {
             long        count = is.skip (length);
-            
-            if (count < 0)
+            // Note: actually count can't be negative
+            if (count <= 0)
                 throw new EOFException ();
             
             length -= count;
