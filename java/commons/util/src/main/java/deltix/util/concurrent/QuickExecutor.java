@@ -414,6 +414,28 @@ public class QuickExecutor {
         }
     }
 
+    /**
+     * Shutdowns global instance of QuickExecutor (if it exists).
+     *
+     * This method is needed because there still code that explicitly or implicitly uses global QuickExecutor instance.
+     * So it have to be explicitly stopped by at least one (main?) thread.
+     */
+    public static synchronized void             shutdownGlobalInstance() {
+        QuickExecutor globalInstance = QuickExecutor.globalInstance;
+        if (globalInstance != null) {
+            synchronized (globalInstance) {
+                int usages = globalInstance.instanceUsages.get();
+                if (usages > 0) {
+                    LOGGER.log(Level.WARNING, "Global instance in use", new Exception());
+                } else if (usages == 0) {
+                    globalInstance.shutdown(true);
+                } else {
+                    LOGGER.log(Level.SEVERE, "QuickExecutor instance usages violated: " + usages, new Exception());
+                }
+            }
+        }
+    }
+
     private void                                shutdown(boolean waitForCompleteShutdown) {
         Worker []               workerSnapshot;
         
