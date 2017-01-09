@@ -224,10 +224,9 @@ public class ByteArrayListUtils{
     public static ByteArrayList append(ByteArrayList ar, ByteArrayList x) {
         if (ar == null) ar = new ByteArrayList();
         if (x == null) return ar;
-        for (int i = 0; i < x.size(); ++i) {
-            byte ch = x.get(i);
-            append(ar, ch);
-        }
+        ar.ensureCapacityUnsafe(ar.size() + x.size());
+        System.arraycopy(x.getInternalBuffer(), 0, ar.getInternalBuffer(), ar.size(), x.size());
+        ar.setSizeUnsafe(ar.size() + x.size());
         return ar;
     }
     /**
