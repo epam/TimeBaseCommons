@@ -617,7 +617,6 @@ public final class ${name}ArrayList
                 (iter.next ()).${type}Value ();
 #end
 
-        size += numNew;
 		return numNew != 0;
     }
 
