@@ -1,10 +1,12 @@
 package deltix.util.collections;
 
+import deltix.util.JUnitCategories;
 import deltix.util.collections.hash.HashCodeComputer;
 import deltix.util.collections.hash.SimpleHashCodeComputer;
 import org.apache.commons.collections.SortedBag;
 import org.apache.commons.collections.bag.TreeBag;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Iterator;
 
@@ -12,7 +14,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
-
+@Category(JUnitCategories.Utils.class)
 public class Test_FixedSizeCharSeqToOrderHashMap {
 
     private static final int MAX_SIZE = 16;

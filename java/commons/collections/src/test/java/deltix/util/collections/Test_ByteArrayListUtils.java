@@ -1,5 +1,6 @@
 package deltix.util.collections;
 
+import deltix.util.JUnitCategories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
@@ -8,13 +9,28 @@ import deltix.util.collections.generated.ByteArrayList;
 import java.util.UUID;
 
 
-@Category(Test.class)
+@Category(JUnitCategories.Utils.class)
 public class Test_ByteArrayListUtils {
+
     @Test
     public void testAppendByte() {
         ByteArrayList ar = new ByteArrayList();
         for (int i = 0; i < 5; ++i) ByteArrayListUtils.append(ar, (byte) i);
         for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toByte(ar, i), i);
+    }
+
+    @Test
+    public void testAssign() {
+        ByteArrayList ar = new ByteArrayList();
+        for (int i = 0; i < 5; ++i)
+            ByteArrayListUtils.append(ar, (byte) i);
+
+        ByteArrayList bytes = ByteArrayListUtils.assign(null, ar);
+        assertEquals(5, bytes.size());
+        for (int i = 0; i < 5; ++i)
+            assertEquals(ar.get(i), bytes.get(i));
+
+        for (int i = 0; i < 5; ++i) assertEquals(ByteArrayListUtils.toByte(bytes, i), i);
     }
     @Test
     public void testAppendShort() {

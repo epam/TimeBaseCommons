@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+
+import deltix.util.JUnitCategories;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(JUnitCategories.Utils.class)
 public class Test_AtomicArrayList {
 
     private AtomicArrayList<Integer> list;
