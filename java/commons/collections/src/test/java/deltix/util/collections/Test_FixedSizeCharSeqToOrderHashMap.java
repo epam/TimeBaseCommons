@@ -45,7 +45,7 @@ public class Test_FixedSizeCharSeqToOrderHashMap {
 
         Iterator<Long> iter = map.iterator();
         assertTrue(iter.hasNext());
-        assertEquals("ONE", iter.next());
+        assertEquals(new Long(1), iter.next());
         assertFalse(iter.hasNext());
     }
 
