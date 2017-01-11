@@ -68,6 +68,7 @@ public class StringBuilderEntry implements AppendableEntry {
 
     @Override
     public AppendableEntry append(long mantissa, int scale) {
+        DecimalAppender.append(mantissa, scale, builder);
         return this;
     }
 
