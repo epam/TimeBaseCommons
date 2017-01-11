@@ -19,6 +19,13 @@ public interface FormattedLogEntry {
 
     FormattedLogEntry with(double value, int precision);
 
+    /**
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * @param mantissa - mantissa
+     * @param scale - negative decimal exponent
+     */
+    FormattedLogEntry with(long mantissa, int scale);
+
     FormattedLogEntry with(Loggable value);
 
     FormattedLogEntry with(Throwable e);
@@ -41,6 +48,13 @@ public interface FormattedLogEntry {
     void withLast(double value);
 
     void withLast(double value, int precision);
+
+    /**
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * @param mantissa - mantissa
+     * @param scale - negative decimal exponent
+     */
+    void withLast(long mantissa, int scale);
 
     void withLast(Loggable value);
 

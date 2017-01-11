@@ -61,6 +61,12 @@ final class GFLogEntry implements LogEntry {
     }
 
     @Override
+    public LogEntry append(long mantissa, int scale) {
+        entry.append(mantissa, scale);
+        return this;
+    }
+
+    @Override
     public LogEntry append(Loggable e) {
         if(e == null)
             append((CharSequence) null);
@@ -120,6 +126,11 @@ final class GFLogEntry implements LogEntry {
     @Override
     public void appendLast(double i, int precision) {
         entry.appendLast(i, precision);
+    }
+
+    @Override
+    public void appendLast(long mantissa, int scale) {
+        entry.appendLast(mantissa, scale);
     }
 
     @Override

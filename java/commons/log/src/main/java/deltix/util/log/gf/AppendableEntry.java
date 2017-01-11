@@ -21,6 +21,13 @@ public interface AppendableEntry extends Appendable {
 
     AppendableEntry append(double i, int precision);
 
+    /**
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * @param mantissa - mantissa
+     * @param scale - negative decimal exponent
+     */
+    AppendableEntry append(long mantissa, int scale);
+
     AppendableEntry append(Loggable e);
 
     AppendableEntry append(Throwable e);

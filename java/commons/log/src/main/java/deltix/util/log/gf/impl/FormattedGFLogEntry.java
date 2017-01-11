@@ -61,6 +61,12 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     }
 
     @Override
+    public FormattedLogEntry with(long mantissa, int scale) {
+        entry.with(mantissa, scale);
+        return this;
+    }
+
+    @Override
     public FormattedLogEntry with(Loggable value) {
         entry.with(value);
         return this;
@@ -116,6 +122,11 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     @Override
     public void withLast(double value, int precision) {
         entry.withLast(value, precision);
+    }
+
+    @Override
+    public void withLast(long mantissa, int scale) {
+        entry.withLast(mantissa, scale);
     }
 
     @Override

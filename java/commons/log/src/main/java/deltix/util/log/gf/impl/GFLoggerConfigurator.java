@@ -17,7 +17,7 @@ public class GFLoggerConfigurator {
     private static final int DEFAULT_ENTRIES = 1 << 10;
     private static final int DEFAULT_MESSAGE_SIZE = 1 << 13;
     private static final int DEFAULT_CONSOLE_APPENDER_BUFFER_SIZE = DEFAULT_MESSAGE_SIZE + 1024; // layout
-    private static final String DEFAULT_LAYOUT_PATTERN = "%d{d MMM HH:mm:ss} %p %m%n";
+    private static final String DEFAULT_LAYOUT_PATTERN = "%d{d MMM HH:mm:ss.SSS} %p [%t] %m%n";
 
     private static boolean configured;
 

@@ -81,6 +81,11 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public LogEntry append(long mantissa, int scale) {
+        throw new UnsupportedOperationException("append(long mantissa, int scale)");
+    }
+
+    @Override
     public LogEntry append(Loggable e) {
         checkNotCommitted();
 
@@ -155,6 +160,11 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public void appendLast(long mantissa, int scale) {
+        append(mantissa, scale).commit();
+    }
+
+    @Override
     public void appendLast(Loggable e) {
         append(e).commit();
     }
@@ -226,6 +236,13 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public FormattedLogEntry with(long mantissa, int scale) {
+        appendChunk();
+        append(mantissa, scale);
+        return this;
+    }
+
+    @Override
     public FormattedLogEntry with(Loggable value) {
         appendChunk();
         append(value);
@@ -291,6 +308,12 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     @Override
     public void withLast(double value, int precision) {
         with(value, precision);
+        appendLastChunk();
+    }
+
+    @Override
+    public void withLast(long mantissa, int scale) {
+        with(mantissa, scale);
         appendLastChunk();
     }
 

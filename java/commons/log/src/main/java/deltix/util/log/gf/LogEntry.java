@@ -28,6 +28,9 @@ public interface LogEntry extends AppendableEntry {
     LogEntry append(double i, int precision);
 
     @Override
+    LogEntry append(long mantissa, int scale);
+
+    @Override
     LogEntry append(Loggable e);
 
     @Override
@@ -52,6 +55,13 @@ public interface LogEntry extends AppendableEntry {
     void appendLast(double i);
 
     void appendLast(double i, int precision);
+
+    /**
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * @param mantissa - mantissa
+     * @param scale - negative decimal exponent
+     */
+    void appendLast(long mantissa, int scale);
 
     void appendLast(Loggable e);
 

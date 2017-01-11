@@ -53,6 +53,11 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public LogEntry append(long mantissa, int scale) {
+        return this;
+    }
+
+    @Override
     public LogEntry append(Loggable e) {
         return this;
     }
@@ -97,6 +102,10 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
 
     @Override
     public void appendLast(double i, int precision) {
+    }
+
+    @Override
+    public void appendLast(long mantissa, int scale) {
     }
 
     @Override
@@ -152,6 +161,11 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public FormattedLogEntry with(long mantissa, int scale) {
+        return this;
+    }
+
+    @Override
     public FormattedLogEntry with(Loggable value) {
         return this;
     }
@@ -196,6 +210,10 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
 
     @Override
     public void withLast(double value, int precision) {
+    }
+
+    @Override
+    public void withLast(long mantissa, int scale) {
     }
 
     @Override
