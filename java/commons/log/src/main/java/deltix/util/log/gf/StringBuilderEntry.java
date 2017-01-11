@@ -1,9 +1,10 @@
 package deltix.util.log.gf;
 
 import deltix.util.lang.Util;
-import deltix.util.text.DecimalFormatter;
+
 
 public class StringBuilderEntry implements AppendableEntry {
+
     private final StringBuilder builder;
 
     public StringBuilderEntry(StringBuilder builder) {
@@ -14,7 +15,7 @@ public class StringBuilderEntry implements AppendableEntry {
         this(new StringBuilder(capacity));
     }
 
-    public StringBuilder getStringBuilder() {
+    public StringBuilder getBuilder() {
         return builder;
     }
 
@@ -62,7 +63,7 @@ public class StringBuilderEntry implements AppendableEntry {
 
     @Override
     public AppendableEntry append(double d, int precision) {
-        builder.append(formatDouble(d, precision));
+        builder.append(d);
         return this;
     }
 
@@ -98,11 +99,4 @@ public class StringBuilderEntry implements AppendableEntry {
         return builder.toString();
     }
 
-    private static String formatDouble(double d, int precision) {
-        if (Double.isNaN(d))
-            return "NaN";
-        if (Double.isInfinite(d))
-            return "Infinity";
-        return DecimalFormatter.format(d, precision);
-    }
 }
