@@ -58,6 +58,11 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public LogEntry appendTimestamp(long timestamp) {
+        return this;
+    }
+
+    @Override
     public LogEntry append(Loggable e) {
         return this;
     }
@@ -106,6 +111,10 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
 
     @Override
     public void appendLast(long mantissa, int scale) {
+    }
+
+    @Override
+    public void appendTimestampLast(long timestamp) {
     }
 
     @Override
@@ -166,6 +175,11 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public FormattedLogEntry withTimestamp(long timestamp) {
+        return this;
+    }
+
+    @Override
     public FormattedLogEntry with(Loggable value) {
         return this;
     }
@@ -214,6 +228,10 @@ public class NullLogEntry implements LogEntry, FormattedLogEntry {
 
     @Override
     public void withLast(long mantissa, int scale) {
+    }
+
+    @Override
+    public void withTimestampLast(long timestamp) {
     }
 
     @Override

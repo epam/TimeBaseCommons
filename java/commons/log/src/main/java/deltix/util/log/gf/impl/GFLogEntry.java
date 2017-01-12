@@ -67,6 +67,12 @@ final class GFLogEntry implements LogEntry {
     }
 
     @Override
+    public LogEntry appendTimestamp(long timestamp) {
+        entry.appendTimestamp(timestamp);
+        return this;
+    }
+
+    @Override
     public LogEntry append(Loggable e) {
         if(e == null)
             append((CharSequence) null);
@@ -131,6 +137,11 @@ final class GFLogEntry implements LogEntry {
     @Override
     public void appendLast(long mantissa, int scale) {
         entry.appendLast(mantissa, scale);
+    }
+
+    @Override
+    public void appendTimestampLast(long timestamp) {
+        entry.appendTimestampLast(timestamp);
     }
 
     @Override

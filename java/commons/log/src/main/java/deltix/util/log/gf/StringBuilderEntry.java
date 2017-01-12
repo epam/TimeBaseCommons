@@ -74,6 +74,12 @@ public class StringBuilderEntry implements AppendableEntry {
     }
 
     @Override
+    public AppendableEntry appendTimestamp(long timestamp) {
+        TimestampFormatter.appendTimestamp(timestamp, builder);
+        return this;
+    }
+
+    @Override
     public AppendableEntry append(Loggable value) {
         value.appendTo(this);
         return this;

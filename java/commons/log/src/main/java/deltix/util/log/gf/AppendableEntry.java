@@ -22,11 +22,17 @@ public interface AppendableEntry extends Appendable {
     AppendableEntry append(double i, int precision);
 
     /**
-     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale)).
      * @param mantissa - mantissa
      * @param scale - negative decimal exponent
      */
     AppendableEntry append(long mantissa, int scale);
+
+    /**
+     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS".
+     * @param timestamp timestamp in ms
+     */
+    AppendableEntry appendTimestamp(long timestamp);
 
     AppendableEntry append(Loggable e);
 

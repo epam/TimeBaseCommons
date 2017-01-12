@@ -67,6 +67,12 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     }
 
     @Override
+    public FormattedLogEntry withTimestamp(long timestamp) {
+        entry.withTimestamp(timestamp);
+        return this;
+    }
+
+    @Override
     public FormattedLogEntry with(Loggable value) {
         entry.with(value);
         return this;
@@ -127,6 +133,11 @@ final class FormattedGFLogEntry implements FormattedLogEntry {
     @Override
     public void withLast(long mantissa, int scale) {
         entry.withLast(mantissa, scale);
+    }
+
+    @Override
+    public void withTimestampLast(long timestamp) {
+        entry.withTimestampLast(timestamp);
     }
 
     @Override

@@ -86,6 +86,11 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public LogEntry appendTimestamp(long timestamp) {
+        throw new UnsupportedOperationException("appendTimestamp(long timestamp)");
+    }
+
+    @Override
     public LogEntry append(Loggable e) {
         checkNotCommitted();
 
@@ -162,6 +167,11 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     @Override
     public void appendLast(long mantissa, int scale) {
         append(mantissa, scale).commit();
+    }
+
+    @Override
+    public void appendTimestampLast(long timestamp) {
+        appendTimestamp(timestamp).commit();
     }
 
     @Override
@@ -243,6 +253,13 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     }
 
     @Override
+    public FormattedLogEntry withTimestamp(long timestamp) {
+        appendChunk();
+        appendTimestamp(timestamp);
+        return this;
+    }
+
+    @Override
     public FormattedLogEntry with(Loggable value) {
         appendChunk();
         append(value);
@@ -267,72 +284,91 @@ final class JULLogEntry implements LogEntry, FormattedLogEntry {
     public void withLast(char value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(CharSequence value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(CharSequence value, int start, int end) {
         with(value, start, end);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(boolean value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(int value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(long value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(double value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(double value, int precision) {
         with(value, precision);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(long mantissa, int scale) {
         with(mantissa, scale);
         appendLastChunk();
+        commit();
+    }
+
+    @Override
+    public void withTimestampLast(long timestamp) {
+        withTimestamp(timestamp);
+        appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(Loggable value) {
         with(value);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(Throwable e) {
         with(e);
         appendLastChunk();
+        commit();
     }
 
     @Override
     public void withLast(Object o) {
         with(o);
         appendLastChunk();
+        commit();
     }
 
     @Override

@@ -31,6 +31,9 @@ public interface LogEntry extends AppendableEntry {
     LogEntry append(long mantissa, int scale);
 
     @Override
+    LogEntry appendTimestamp(long timestamp);
+
+    @Override
     LogEntry append(Loggable e);
 
     @Override
@@ -57,11 +60,17 @@ public interface LogEntry extends AppendableEntry {
     void appendLast(double i, int precision);
 
     /**
-     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale)).
      * @param mantissa - mantissa
      * @param scale - negative decimal exponent
      */
     void appendLast(long mantissa, int scale);
+
+    /**
+     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS" and commits entry.
+     * @param timestamp timestamp in ms
+     */
+    void appendTimestampLast(long timestamp);
 
     void appendLast(Loggable e);
 

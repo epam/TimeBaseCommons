@@ -20,11 +20,17 @@ public interface FormattedLogEntry {
     FormattedLogEntry with(double value, int precision);
 
     /**
-     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale)).
      * @param mantissa - mantissa
      * @param scale - negative decimal exponent
      */
     FormattedLogEntry with(long mantissa, int scale);
+
+    /**
+     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS".
+     * @param timestamp timestamp in ms
+     */
+    FormattedLogEntry withTimestamp(long timestamp);
 
     FormattedLogEntry with(Loggable value);
 
@@ -50,11 +56,17 @@ public interface FormattedLogEntry {
     void withLast(double value, int precision);
 
     /**
-     * Appends decimal. Decimal = mantissa * (10 ^ (- scale))
+     * Appends decimal. Decimal = mantissa * (10 ^ (- scale)) and commits entry.
      * @param mantissa - mantissa
      * @param scale - negative decimal exponent
      */
     void withLast(long mantissa, int scale);
+
+    /**
+     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS" and commits entry.
+     * @param timestamp timestamp in ms
+     */
+    void withTimestampLast(long timestamp);
 
     void withLast(Loggable value);
 
