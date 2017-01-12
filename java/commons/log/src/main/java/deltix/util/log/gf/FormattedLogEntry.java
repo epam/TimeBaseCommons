@@ -27,7 +27,7 @@ public interface FormattedLogEntry {
     FormattedLogEntry with(long mantissa, int scale);
 
     /**
-     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS".
+     * Appends timestamp in format "uuuu-MM-ddTHH:mm:ss.SSS".
      * @param timestamp timestamp in ms
      */
     FormattedLogEntry withTimestamp(long timestamp);
@@ -63,7 +63,7 @@ public interface FormattedLogEntry {
     void withLast(long mantissa, int scale);
 
     /**
-     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS" and commits entry.
+     * Appends timestamp in format "uuuu-MM-ddTHH:mm:ss.SSS" and commits entry.
      * @param timestamp timestamp in ms
      */
     void withTimestampLast(long timestamp);

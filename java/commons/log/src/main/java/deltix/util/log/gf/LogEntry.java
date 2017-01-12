@@ -67,7 +67,7 @@ public interface LogEntry extends AppendableEntry {
     void appendLast(long mantissa, int scale);
 
     /**
-     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS" and commits entry.
+     * Appends timestamp in format "uuuu-MM-ddTHH:mm:ss.SSS" and commits entry.
      * @param timestamp timestamp in ms
      */
     void appendTimestampLast(long timestamp);

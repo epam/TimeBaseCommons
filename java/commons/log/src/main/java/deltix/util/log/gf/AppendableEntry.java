@@ -29,7 +29,7 @@ public interface AppendableEntry extends Appendable {
     AppendableEntry append(long mantissa, int scale);
 
     /**
-     * Appends timestamp in format "uuuu-MM-dd HH:mm:ss.SSS".
+     * Appends timestamp in format "uuuu-MM-ddTHH:mm:ss.SSS".
      * @param timestamp timestamp in ms
      */
     AppendableEntry appendTimestamp(long timestamp);
