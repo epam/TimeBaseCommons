@@ -1,6 +1,6 @@
 description = 'QuantServer abstraction/wrapper for gflogger'
 
-version = '5.0.2'
+version = '5.0.3'
 
 dependencies {
     compile project(':java:commons:util')

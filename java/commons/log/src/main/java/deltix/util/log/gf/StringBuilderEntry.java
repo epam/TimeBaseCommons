@@ -81,7 +81,11 @@ public class StringBuilderEntry implements AppendableEntry {
 
     @Override
     public AppendableEntry append(Loggable value) {
-        value.appendTo(this);
+        if (value == null) {
+            append("null");
+        } else {
+            value.appendTo(this);
+        }
         return this;
     }
 
