@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-public class TicksFormat {
+class TicksFormat {
     private static final int                    NANOS_PER_MS = 1000000;
     private final StringBuffer              sb = new StringBuffer();
     private final Calendar                  calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
