@@ -21,10 +21,11 @@ public enum InstrumentType {
     STREAM('M', "Stream"),
     DATA_CONNECTOR('Q', "DataConnector"),
     EXCHANGE_TRADED_SYNTHETIC('Z', "Exchange-Traded Synthetic"),
-    
-    CONTRACT_FOR_DIFFERENCE('D', "Contrach-For-DifferenseSynthetic"),
 
-    SYSTEM('X', "System");
+    SYSTEM('X', "System"),
+
+    CONTRACT_FOR_DIFFERENSE('Z', "Contrach-For-DifferenseSynthetic"), // TODO: remove it
+    CFD('D', "Contract-For-Difference-Synthetic");
 
     //NB: If you plan to extend this enum, please support isTradable() method below!
 
