@@ -5,7 +5,7 @@ import org.junit.Assert;
 
 import java.text.MessageFormat;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 /**

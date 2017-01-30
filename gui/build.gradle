@@ -1,6 +1,6 @@
 
 dependencies {
-    compile project(':java:commons:util')
+    compile project(':util')
 
     // company repository
     compile 'com.jidesoft:deltix-jide-components:3.3.3',

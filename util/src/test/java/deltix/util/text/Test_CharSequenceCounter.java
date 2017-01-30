@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 @Category(Utils.class)

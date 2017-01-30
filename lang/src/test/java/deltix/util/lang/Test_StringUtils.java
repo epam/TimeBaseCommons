@@ -3,7 +3,7 @@ package deltix.util.lang;
 import org.junit.Assert;
 import org.junit.Test;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 /**

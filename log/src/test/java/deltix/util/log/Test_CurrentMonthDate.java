@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
 import java.util.Calendar;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 /**

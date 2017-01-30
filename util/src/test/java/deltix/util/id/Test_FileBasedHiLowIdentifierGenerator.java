@@ -1,5 +1,6 @@
 package deltix.util.id;
 
+import deltix.util.CommonsJUnitCategories.Stress;
 import org.junit.After;
 import org.junit.Test;
 
@@ -11,14 +12,13 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-import deltix.util.JUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 /**
  * @author Andy
  *         Date: 5/3/11 12:48 PM
  */
-@Category(Utils.class)
+@Category(Stress.class)
 public class Test_FileBasedHiLowIdentifierGenerator {
 
     private FileHiLowIdentifierGenerator idgen;

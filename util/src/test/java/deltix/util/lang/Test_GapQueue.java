@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import deltix.util.JUnitCategories.UHFUtils;
+import deltix.util.CommonsJUnitCategories.UHFUtils;
 import org.junit.experimental.categories.Category;
 
 /**

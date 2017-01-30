@@ -1,17 +1,9 @@
 description = 'QuantServer commons-collections set of utilities'
 
+// This repository provides velocity plugin
 buildscript {
     repositories {
-        maven {
-            credentials {
-                username repositoryUser
-                password repositoryPass
-            }
-            authentication {
-                digest(BasicAuthentication)
-            }
-            url deltixFeedUrl
-        }
+        mavenDeltix("QuantServer.Java")
         mavenCentral()
     }
     dependencies {
@@ -21,9 +13,8 @@ buildscript {
 apply plugin: 'velocity'
 
 dependencies {
-    compile project(':java:commons:lang')
+    compile project(':lang')
     testCompile 'commons-collections:commons-collections:3.2.1'
-    testCompile project(':java:commons:lang').sourceSets.test.output
 }
 
 ext {

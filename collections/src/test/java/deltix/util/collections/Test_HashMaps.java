@@ -3,11 +3,10 @@ package deltix.util.collections;
 import deltix.util.collections.generated.*;
 import java.util.*;
 
-import deltix.util.lang.Util;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 /**

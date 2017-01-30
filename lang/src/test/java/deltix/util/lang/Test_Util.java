@@ -1,6 +1,6 @@
 package deltix.util.lang;
 
-import deltix.util.JUnitCategories;
+import deltix.util.CommonsJUnitCategories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
  * @author Andy
  *         Date: 6/4/12 11:15 AM
  */
-@Category(JUnitCategories.Utils.class)
+@Category(CommonsJUnitCategories.Utils.class)
 public class Test_Util {
 
     @Test

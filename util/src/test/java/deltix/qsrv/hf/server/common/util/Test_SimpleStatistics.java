@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import org.junit.experimental.categories.Category;
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 
 @Category(Utils.class)
 public class Test_SimpleStatistics {

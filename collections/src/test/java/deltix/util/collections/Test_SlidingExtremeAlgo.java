@@ -2,11 +2,10 @@ package deltix.util.collections;
 
 import java.util.Random;
 
-import deltix.util.lang.Util;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 /**

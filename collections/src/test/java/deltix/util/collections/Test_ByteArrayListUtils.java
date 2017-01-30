@@ -1,6 +1,6 @@
 package deltix.util.collections;
 
-import deltix.util.JUnitCategories;
+import deltix.util.CommonsJUnitCategories;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
@@ -9,7 +9,7 @@ import deltix.util.collections.generated.ByteArrayList;
 import java.util.UUID;
 
 
-@Category(JUnitCategories.Utils.class)
+@Category(CommonsJUnitCategories.Utils.class)
 public class Test_ByteArrayListUtils {
 
     @Test

@@ -5,12 +5,12 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-import deltix.util.JUnitCategories;
+import deltix.util.CommonsJUnitCategories;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(JUnitCategories.Utils.class)
+@Category(CommonsJUnitCategories.Utils.class)
 public class Test_AtomicArrayList {
 
     private AtomicArrayList<Integer> list;

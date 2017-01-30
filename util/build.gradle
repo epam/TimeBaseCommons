@@ -1,9 +1,9 @@
 description = 'QuantServer general purpose utilities'
 
 dependencies {
-    compile project(':java:commons:lang'),
-            project(':java:commons:collections'),
-            project(':java:commons:messages')
+    compile project(':lang'),
+            project(':collections'),
+            project(':messages')
 
     compile 'commons-lang:commons-lang',
             'org.apache.commons:commons-compress:1.7',
@@ -27,6 +27,4 @@ dependencies {
     compile('net.java.dev.jna:jna:3.4.0'){ transitive = false }
     compile('net.java.dev.jna:platform:3.4.0'){ transitive = false }
     compile('org.apache.bcel:bcel:6.0'){ transitive = false }
-
-    testCompile project(':java:commons:lang').sourceSets.test.output
 }

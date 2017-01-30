@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-import deltix.util.JUnitCategories.Utils;
+import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
 @Category(Utils.class)

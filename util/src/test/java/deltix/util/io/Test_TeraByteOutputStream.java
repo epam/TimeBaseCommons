@@ -6,7 +6,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.junit.experimental.categories.Category;
-import deltix.util.JUnitCategories.UHFUtils;
+import deltix.util.CommonsJUnitCategories.UHFUtils;
 
 /**
  *
