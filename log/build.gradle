@@ -1,7 +1,5 @@
 description = 'QuantServer abstraction/wrapper for gflogger'
 
-version = '5.0.4'
-
 dependencies {
     compile project(':util')
     compile 'org.gflogger:gflogger:1.2.0'
