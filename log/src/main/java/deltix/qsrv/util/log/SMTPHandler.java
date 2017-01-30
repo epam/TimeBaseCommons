@@ -172,7 +172,7 @@ public class SMTPHandler extends Handler {
 
     /**
      * The <b>triggerClass</b> option takes a string value
-     * representing the name of the class implementing the {@link Filter<LogRecord>} interface.
+     * representing the name of the class implementing the {@link Filter}{@code <LogRecord>} interface.
      * A corresponding object will be instantiated and assigned
      * as the triggering record evaluator for the SMTPHandler.
      */
