@@ -82,8 +82,8 @@ public class LinuxOS {
         List<String> cmdarray = new ArrayList<>();
         if (new File("/usr/bin/gnome-terminal").exists()) {
             cmdarray.add("/usr/bin/gnome-terminal");
-            cmdarray.add("-t");
-            cmdarray.add(title);
+            //cmdarray.add("-t");
+            //cmdarray.add(title);
             cmdarray.add("-e");
         } else if (new File("/usr/bin/xterm").exists()) {
             cmdarray.add("/usr/bin/xterm");
@@ -101,7 +101,7 @@ public class LinuxOS {
         else {
             throw new IllegalStateException("Cann't find supported terminal. Please install 'gnome-terminal' or 'xtrem'.");
         }
-        String command = shell + " '" + script.getPath() + "'";
+        String command = shell + " -c \"'" + script.getPath() + "'";
 
         if (parameters != null) {
             for (String parameter : parameters) {
@@ -109,6 +109,7 @@ public class LinuxOS {
                 command += parameter;
             }
         }
+        command += "\"";
         cmdarray.add(command);
         return cmdarray.toArray(new String[cmdarray.size()]);
 
