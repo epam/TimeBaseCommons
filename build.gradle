@@ -1,5 +1,6 @@
-
 plugins {
+	id 'idea'
+	
     // Supports functionality similar to Maven BOM.
     // Helps to avoid re-declaring dependency version in each subproject.
     // See https://github.com/spring-gradle-plugins/dependency-management-plugin

@@ -3,7 +3,6 @@ package deltix.qsrv.hf.pub;
 import deltix.util.lang.Util;
 import deltix.util.memory.EstimatorUtils;
 
-
 /**
  *
  */

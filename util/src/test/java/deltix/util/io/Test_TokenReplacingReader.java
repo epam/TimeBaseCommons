@@ -1,6 +1,5 @@
 package deltix.util.io;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -63,7 +62,7 @@ public class Test_TokenReplacingReader {
     private static void assertReplacementEquals(String expectedResult, String text, String dictionary) throws IOException, InterruptedException {
         MapBasedTokenReplacer replacer = new MapBasedTokenReplacer (dictionary);
         String actualResult = replace(text, replacer);
-        Assert.assertEquals(expectedResult, actualResult);
+        assertEquals(expectedResult, actualResult);
     }
 
     private static String replace (String text, TokenReplacingReader.ITokenResolver resolver) throws IOException, InterruptedException {
