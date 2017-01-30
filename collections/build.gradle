@@ -18,8 +18,9 @@ dependencies {
 }
 
 ext {
-    srcDir = "src/main/resources"
-    dstDir = "src/main/java/deltix/util/collections/generated"
+    srcDir = "src/main/templates"
+    generatedSourcesDir = "${buildDir}/generated/main/java"
+    dstDir = "${generatedSourcesDir}/deltix/util/collections/generated"
 
     types = [:]
 
@@ -113,3 +114,5 @@ project.tasks.getByName('compileJava').dependsOn(vppHashMap)
 clean.doFirst {
     delete fileTree(dir: "$dstDir")
 }
+
+sourceSets.main.java.srcDirs += ext.generatedSourcesDir
