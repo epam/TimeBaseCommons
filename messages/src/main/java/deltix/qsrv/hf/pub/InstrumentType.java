@@ -24,7 +24,6 @@ public enum InstrumentType {
 
     SYSTEM('X', "System"),
 
-    CONTRACT_FOR_DIFFERENSE('Z', "Contrach-For-DifferenseSynthetic"), // TODO: remove it
     CFD('D', "Contract-For-Difference-Synthetic");
 
     //NB: If you plan to extend this enum, please support isTradable() method below!
