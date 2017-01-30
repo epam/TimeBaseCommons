@@ -209,7 +209,7 @@ configure(leafProjects) {
                 configuration = configurations.deployerJars
                 repository(url: deltixFeedUrl) {
                     // also relies on the fact that we provide custom SSL store that includes ProGet CA
-                    authentication(userName: publisherUsername, password: publisherPassword)
+                    authentication(userName: properties.get('publisherUsername'), password: properties.get('publisherPassword'))
                 }
             }
         }
