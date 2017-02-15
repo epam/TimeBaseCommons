@@ -643,7 +643,7 @@ public final class ${name}ArrayList
     }
 
     public void copyTo (${name}ArrayList list) {
-        list.ensureCapacity(size);
+        list.setSize(size);
 
         SafeArrays.safeArrayCopy(elementData, 0, list.elementData, 0, size);
     }
