@@ -63,6 +63,7 @@ public class Test_ByteArrayListUtils {
         assertEquals(ByteArrayListUtils.toString(ar), "abacaba");
         assertEquals(ByteArrayListUtils.toString(ar, 6), "caba");
     }
+
     @Test
     public void testEquals() {
         ByteArrayList ar1 = new ByteArrayList();
@@ -80,6 +81,26 @@ public class Test_ByteArrayListUtils {
         ar1.add((byte)17);
         ar2.add((byte)18);
         assertEquals(ByteArrayListUtils.equals(ar1, ar2), false);
+    }
+
+    @Test
+    public void testCopy2() {
+        ByteArrayList ar1 = new ByteArrayList();
+        ByteArrayList ar2 = new ByteArrayList();
+        ar1.add((byte)1);
+        ar1.add((byte)2);
+        ar1.add((byte)3);
+
+        ar1.copyTo(ar2);
+        assertEquals(ByteArrayListUtils.equals(ar1, ar2), true);
+        ar2.add((byte)4);
+        ar1.copyTo(ar2);
+        assertEquals(ByteArrayListUtils.equals(ar1, ar2), true);
+        ar1.add((byte)17);
+        ar2.add((byte)18);
+
+        ar1.copyTo(ar2);
+        assertEquals(ByteArrayListUtils.equals(ar1, ar2), true);
     }
 
     @Test
