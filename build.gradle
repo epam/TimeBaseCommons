@@ -16,7 +16,6 @@ group 'deltix.qsrv'
 // -PincludeJavaDocs
 def includeJavaDocs = hasProperty("includeJavaDocs")
 
-apply plugin: 'base'
 
 // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
 // So we create a list of leaf projects and apply all java-related plugins on them only.
@@ -115,9 +114,6 @@ configure(leafProjects) {
         jar.manifest.attributes 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
     }
 
-    // Don't start resource copy if we not finished root "clean"
-    classes.mustRunAfter rootProject.tasks.getByName("clean")
-
     // Contains current project jar and all required dependencies for that project
     def allJarsPath = 'build/alljars'
 
@@ -156,9 +152,6 @@ configure(leafProjects) {
 
         into allTestJarsPath
     }
-
-    // Don't start resource copy if we not finished root "clean"
-    testClasses.mustRunAfter rootProject.tasks.getByName("clean")
 
     /// Support for publishing -sources.jar and -javadoc.jar artifacts:
 
