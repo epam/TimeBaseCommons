@@ -16,7 +16,7 @@ stages:
     stage: publish
     image: oracle-jdk:8
     script:
-      - ./gradlew uploadArchives
+      - ./gradlew publish
     dependencies:
       - "Build: Java"
     only:
