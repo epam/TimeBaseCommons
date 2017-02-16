@@ -178,7 +178,7 @@ configure(leafProjects) {
     publishing {
         repositories {
             maven {
-                url repositoryUrl
+                url deltixFeedUrl
                 credentials {
                     username findProperty('publisherUsername')
                     password findProperty('publisherPassword')
