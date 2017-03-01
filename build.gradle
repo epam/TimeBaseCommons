@@ -16,7 +16,6 @@ group 'deltix.qsrv'
 // -PincludeJavaDocs
 def includeJavaDocs = hasProperty("includeJavaDocs")
 
-apply plugin: 'base'
 
 // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
 // So we create a list of leaf projects and apply all java-related plugins on them only.
@@ -31,7 +30,6 @@ ext.categories = 'Unit'
 configure(leafProjects) {
     apply from: "$rootDir/gradle/Deltix.gradle"
     apply plugin: 'java'
-    apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'io.spring.dependency-management'
 
@@ -71,13 +69,7 @@ configure(leafProjects) {
         mavenDeltix("ThirdParty.Java")
     }
 
-    configurations {
-        deployerJars
-    }
-
     dependencies {
-        deployerJars "org.apache.maven.wagon:wagon-http:2.2"
-
         testCompile 'junit:junit:4.12'
                 //'org.mockito:mockito-core:1.10.19'
     }
@@ -114,9 +106,6 @@ configure(leafProjects) {
         // populate project classpath after evaluating
         jar.manifest.attributes 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
     }
-
-    // Don't start resource copy if we not finished root "clean"
-    classes.mustRunAfter rootProject.tasks.getByName("clean")
 
     // Contains current project jar and all required dependencies for that project
     def allJarsPath = 'build/alljars'
@@ -157,9 +146,6 @@ configure(leafProjects) {
         into allTestJarsPath
     }
 
-    // Don't start resource copy if we not finished root "clean"
-    testClasses.mustRunAfter rootProject.tasks.getByName("clean")
-
     /// Support for publishing -sources.jar and -javadoc.jar artifacts:
 
     task sourcesJar(type: Jar, dependsOn: classes) {
@@ -190,6 +176,16 @@ configure(leafProjects) {
 
     // Publishing
     publishing {
+        repositories {
+            maven {
+                url deltixFeedUrl
+                credentials {
+                    username findProperty('publisherUsername')
+                    password findProperty('publisherPassword')
+                }
+            }
+        }
+
         publications {
             mavenJava(MavenPublication) {
                 from components.java
@@ -198,19 +194,6 @@ configure(leafProjects) {
                 }
                 artifact sourcesJar
                 artifactId = archivesBaseName
-            }
-        }
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                //println "Using credentials: $publisherUsername"
-                configuration = configurations.deployerJars
-                repository(url: deltixFeedUrl) {
-                    // also relies on the fact that we provide custom SSL store that includes ProGet CA
-                    authentication(userName: properties.get('publisherUsername'), password: properties.get('publisherPassword'))
-                }
             }
         }
     }

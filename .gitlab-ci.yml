@@ -1,0 +1,26 @@
+stages:
+  - build
+  - publish
+"Build: Java":
+    stage: build
+    image: oracle-jdk:8
+    script:
+      - ./gradlew build
+    artifacts:
+        paths:
+          - libs/
+    tags:
+      - Linux
+      - Docker
+"Publish: Java":
+    stage: publish
+    image: oracle-jdk:8
+    script:
+      - ./gradlew publish
+    dependencies:
+      - "Build: Java"
+    only:
+      - master
+    tags:
+      - Linux
+      - Docker
