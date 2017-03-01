@@ -3,7 +3,6 @@ package deltix.qsrv.hf.pub;
 import deltix.data.stream.TimeStampedMessage;
 import deltix.util.lang.Util;
 import deltix.util.memory.MemorySizeEstimator;
-import deltix.util.time.GMT;
 
 /**
  *
@@ -136,7 +135,14 @@ public class AbstractMessage implements
     }
 
     public String               getTimeString() {
-        return GMT.formatNanos(timestamp, (int)nanoTime);
+        return formatNanos(timestamp, (int)nanoTime);
+    }
+
+    public static String                formatNanos (long milliseconds, int nanos) {
+        if (milliseconds == Long.MIN_VALUE)
+            return ("<null>");
+
+        return TicksFormat.format(milliseconds, nanos);
     }
 
     /**
