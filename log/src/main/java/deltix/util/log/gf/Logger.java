@@ -9,7 +9,14 @@ public interface Logger {
 
     boolean isLoggable(Level level);
 
+    /**
+     * Will be deprecated soon.
+     * Use deltix.util.log.gf.Logger#log(deltix.util.log.gf.Level) instead.
+     */
+    // @Deprecated
     LogEntry level(Level level);
+
+    LogEntry log(Level level);
 
     LogEntry trace();
 
@@ -22,6 +29,8 @@ public interface Logger {
     LogEntry error();
 
     LogEntry fatal();
+
+    FormattedLogEntry log(Level level, String template);
 
     FormattedLogEntry trace(String template);
 
