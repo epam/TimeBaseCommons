@@ -34,6 +34,16 @@ public abstract class AbstractLogger implements Logger {
     }
 
     @Override
+    public final LogEntry level(Level level) {
+        return log(level);
+    }
+
+    @Override
+    public final LogEntry log(Level level) {
+        return isLoggable(level) ? logEntry(level) : NullLogEntry.getInstance();
+    }
+
+    @Override
     public FormattedLogEntry trace(String template) {
         return log(Level.TRACE, template);
     }
@@ -64,15 +74,7 @@ public abstract class AbstractLogger implements Logger {
     }
 
     @Override
-    public final LogEntry level(Level level) {
-        return log(level);
-    }
-
-    protected final LogEntry log(Level level) {
-        return isLoggable(level) ? logEntry(level) : NullLogEntry.getInstance();
-    }
-
-    protected final FormattedLogEntry log(Level level, String template) {
+    public final FormattedLogEntry log(Level level, String template) {
         return isLoggable(level) ? logEntry(level, template) : NullLogEntry.getInstance();
     }
 
