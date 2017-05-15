@@ -1,26 +1,94 @@
 stages:
+  - prepare
   - build
+  - release
   - publish
-"Build: Java":
-    stage: build
-    image: oracle-jdk:8
+  - clean-up
+
+"Prepare":
+    stage: prepare
     script:
-      - ./gradlew build
+        - env
+        - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+        - echo $CI_PUSH_REPO
+        - git config user.name "Robot"
+        - git config user.email "<internal@rtmath.net>"
+        - git checkout -b pipeline-$CI_PIPELINE_ID
+        - ./gradlew prepareReleaseVersion
+        - git commit -am "[Skip CI] Generate release version"
+        - ./gradlew prepareSnapshotVersion
+        - git commit -am "[Skip CI] Generate next development version"
+        - git remote set-url --push origin "${CI_PUSH_REPO}"
+        - git push origin -u pipeline-$CI_PIPELINE_ID
+    tags:
+        - Linux
+        - ShellExecutor
+    only:
+        - /^release-.*$/
+    except:
+        - tags
+
+"Build: Java 8":
+    stage: build
+    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-3.3:latest
+    script:
+        - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
+        - ./gradlew build
     artifacts:
         paths:
           - libs/
     tags:
-      - Linux
-      - Docker
-"Publish: Java":
-    stage: publish
-    image: oracle-jdk:8
+        - DockerExecutor
+    except:
+        - tags
+
+"Release":
+    stage: release
     script:
-      - ./gradlew publish
-    dependencies:
-      - "Build: Java"
-    only:
-      - master
+        - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+        - git config user.name "Robot"
+        - git config user.email "<internal@rtmath.net>"
+        - git remote set-url --push origin "${CI_PUSH_REPO}"
+        - git checkout pipeline-$CI_PIPELINE_ID~1
+        - ./gradlew pushVersion
+        - git checkout pipeline-$CI_PIPELINE_ID
+        - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_BUILD_REF_NAME}
     tags:
-      - Linux
-      - Docker
+        - Linux
+        - ShellExecutor
+    only:
+        - /^release-.*$/
+    except:
+        - tags
+
+"Publish: Java 8":
+    stage: publish
+    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-3.3:latest
+    script:
+        - git checkout origin/pipeline-$CI_PIPELINE_ID~1
+        - ./gradlew publish
+    dependencies:
+        - "Build: Java 7"
+    only:
+        - /^release-.*$/
+    tags:
+        - DockerExecutor
+    except:
+        - tags
+
+"Clean Up":
+    stage: clean-up
+    script:
+        - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+        - git config user.name "Robot"
+        - git config user.email "<internal@rtmath.net>"
+        - git remote set-url --push origin "${CI_PUSH_REPO}"
+        - git push origin --delete pipeline-$CI_PIPELINE_ID
+    only:
+        - /^release-.*$/
+    when: always
+    tags:
+        - Linux
+        - ShellExecutor
+    except:
+        - tags

@@ -1,7 +1,7 @@
 package deltix.qsrv.hf.pub;
 
 /**
- * Created by VavilauA on 7/7/2016.
+ * Base read-write interface for all messages in TimeBase hierarchy/
  */
 public interface RecordInterface extends RecordInfo {
     /**

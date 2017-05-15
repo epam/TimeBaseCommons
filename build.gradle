@@ -27,6 +27,8 @@ ext.leafProjects = leafProjects // Publish as external variable
 // Default test categories
 ext.categories = 'Unit'
 
+apply from: "$rootDir/gradle/Release.gradle"
+
 configure(leafProjects) {
     apply from: "$rootDir/gradle/Deltix.gradle"
     apply plugin: 'java'
@@ -180,8 +182,8 @@ configure(leafProjects) {
             maven {
                 url deltixFeedUrl
                 credentials {
-                    username findProperty('publisherUsername')
-                    password findProperty('publisherPassword')
+                    username findProperty('PUBLISHER_USERNAME') ?: ''
+                    password findProperty('PUBLISHER_PASSWORD') ?: ''
                 }
             }
         }
