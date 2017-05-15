@@ -1,0 +1,222 @@
+plugins {
+	id 'idea'
+	
+    // Supports functionality similar to Maven BOM.
+    // Helps to avoid re-declaring dependency version in each subproject.
+    // See https://github.com/spring-gradle-plugins/dependency-management-plugin
+    id "io.spring.dependency-management" version "1.0.0.RC2"
+}
+
+// To update Gradle wrapper use:
+// gradlew wrapper --gradle-version 3.3 --distribution-type all
+
+group 'deltix.qsrv'
+
+// To enable JavaDoc generation add Gradle property to command line:
+// -PincludeJavaDocs
+def includeJavaDocs = hasProperty("includeJavaDocs")
+
+
+// We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
+// So we create a list of leaf projects and apply all java-related plugins on them only.
+def leafProjects = subprojects.findAll { subproject ->
+    subproject.subprojects.empty
+}
+ext.leafProjects = leafProjects // Publish as external variable
+
+// Default test categories
+ext.categories = 'Unit'
+
+configure(leafProjects) {
+    apply from: "$rootDir/gradle/Deltix.gradle"
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.spring.dependency-management'
+
+    compileJava.options.encoding = 'UTF-8'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    // Defines versions of dependencies to be used by subprojects
+    // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
+    dependencyManagement {
+        dependencies {
+            dependency('deltix:thread.affinity:0.0.3') {
+                // It import old version of deltix-commons-log. So exclude it for now.
+                // TODO: Remove this exclusion as soon as "deltix-commons-log" is moved to a separate repository with separate version.
+                exclude 'deltix.qsrv:deltix-commons-log'
+            }
+            dependency 'commons-lang:commons-lang:2.6'
+            dependency 'javax.mail:mail:1.4.7'
+            dependency 'com.google.code.findbugs:jsr305:3.0.1'
+
+            // dependency 'org.mockito:mockito-core:1.10.19'
+        }
+    }
+
+    ext {
+        vendor = 'Deltix Inc.'
+    }
+
+    group 'deltix.qsrv'
+    archivesBaseName = 'deltix-commons' + project.path.replaceAll(':', '-')
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        mavenDeltix("Deltix.Java")
+        mavenDeltix("QuantServer.Java")
+        mavenDeltix("ThirdParty.Java")
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+                //'org.mockito:mockito-core:1.10.19'
+    }
+
+//    javadoc {
+//        // Suppress javadoc warnings about unsafe code
+//        options.addStringOption('XDignore.symbol.file', 'quiet')
+//    }
+
+    jar {
+        manifest {
+            baseName archivesBaseName
+            attributes 'Manifest-Version': "1.0",
+                    'Created-By': vendor,
+                    'Implementation-Title': project.name, // TODO: Fill it!
+                    'Implementation-Vendor': vendor,
+                    'Implementation-Version': version
+        }
+    }
+
+    processResources {
+        from sourceSets.main.java.srcDirs
+        exclude '**/*.java'
+        includeEmptyDirs = false
+    }
+
+    processTestResources {
+        from sourceSets.test.java.srcDirs
+        exclude '**/*.java'
+        includeEmptyDirs = false
+    }
+
+    afterEvaluate {
+        // populate project classpath after evaluating
+        jar.manifest.attributes 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
+    }
+
+    // Contains current project jar and all required dependencies for that project
+    def allJarsPath = 'build/alljars'
+
+    task gatherProjectDependencies(type: Sync) {
+        description 'Copies all project runtime dependencies to ' + allJarsPath
+        from project.configurations.runtime
+        into allJarsPath
+    }
+
+    task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
+        group "build"
+        description 'Copies all project JAR and all it\'s runtime dependencies to ' + allJarsPath
+        from jar // Main produced JAR of the subproject
+        into allJarsPath
+    }
+
+    def allTestJarsPath = 'build/alltestjars'
+
+    task gatherProjectTestDependencies(type: Sync) {
+        description 'Copies all project test dependencies to ' + allTestJarsPath
+        from project.configurations.testCompile
+        into allTestJarsPath
+    }
+
+    task generateTestJar(type: Jar) {
+        description 'Generates JAR with test classes'
+        classifier 'tests'
+        from sourceSets.test.output
+    }
+
+    task gatherAllTestJarsWithDependencies(type: Copy, dependsOn: ['jar', generateTestJar, gatherProjectTestDependencies]) {
+        group "build"
+        description 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
+        from jar // Main produced JAR of the subproject
+        from generateTestJar // JAR with test classes
+
+        into allTestJarsPath
+    }
+
+    /// Support for publishing -sources.jar and -javadoc.jar artifacts:
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        baseName = archivesBaseName
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        enabled = includeJavaDocs
+        classifier = 'javadoc'
+        baseName = archivesBaseName
+        from javadoc.destinationDir
+    }
+
+    tasks.withType(Javadoc) {
+        // "Xdoclint:all,-reference" - disables fail on missing JavaDoc reference. TODO: Consider removing this.
+        // "-quiet" - skips warning messages (warnings still shown).
+        options.addStringOption('Xdoclint:all,-reference', '-quiet')
+    }
+
+    artifacts {
+        archives sourcesJar
+        if (includeJavaDocs) {
+            archives javadocJar
+        }
+    }
+
+    // Publishing
+    publishing {
+        repositories {
+            maven {
+                url deltixFeedUrl
+                credentials {
+                    username findProperty('publisherUsername')
+                    password findProperty('publisherPassword')
+                }
+            }
+        }
+
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                if (includeJavaDocs) {
+                    artifact javadocJar
+                }
+                artifact sourcesJar
+                artifactId = archivesBaseName
+            }
+        }
+    }
+
+    if (!includeJavaDocs) {
+        tasks.withType(Javadoc).all { enabled = false }
+    }
+
+    //tasks.test { enabled = false }
+    test {
+        useJUnit {
+            setIncludeCategories categories.split(',').collect { "deltix.util.CommonsJUnitCategories\$${it}".toString() } as Set
+        }
+    }
+}
+
+def testTasks = ext.leafProjects*.test
+
+
+
+task generateTestReport(type: TestReport) {
+    group 'verification'
+    reportOn testTasks
+    destinationDir = file("$rootDir/build/reports/junit/html/all_reports_merged") // TODO: Pick better name for merged report
+}
+task allJunitTests(dependsOn: generateTestReport)

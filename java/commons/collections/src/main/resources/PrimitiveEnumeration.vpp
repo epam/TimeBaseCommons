@@ -1,7 +1,0 @@
-package deltix.util.collections.generated;
-
-import deltix.util.collections.ElementsEnumeration;
-
-public interface ${name}Enumeration extends ElementsEnumeration<$type_Object> {
-    public ${type} next${name_abbr}Element ();
-}

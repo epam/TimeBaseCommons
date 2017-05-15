@@ -1,0 +1,33 @@
+
+dependencies {
+    compile project(':util')
+
+    // company repository
+    compile 'com.jidesoft:deltix-jide-components:3.3.3',
+            'com.jidesoft:deltix-jide-dialogs:3.3.3',
+            'com.jidesoft:deltix-jide-action:3.3.3'
+            'com.jidesoft:deltix-jide-dock:3.3.3'
+
+    compile ('com.jidesoft:deltix-jide-grids:3.3.3') {
+        exclude module: 'log4j'
+        exclude module: 'commons-logging'
+    }
+
+//    compile files('../../../lib/jgoodies/binding.jar'),
+//            files('../../../lib/jgoodies/forms.jar'),           //have dependency to jgoodies-common.jar
+//            files('../../../lib/jgoodies/jgoodies-common.jar'),
+//            files('../../../lib/jgoodies/looks.jar'),           //unused(?)
+//            files('../../../lib/jgoodies/validation.jar'),
+//            files('../../../lib/swingx/filters.jar'),           //unused(?) //dependency at swingx.jar
+//            files('../../../lib/swingx/jxlayer.jar'),           //unused(?)
+//            files('../../../lib/swingx/swingx.jar')
+
+    compile('org.swinglabs:swingx:1.6') // have filters.jar v:2.0.235 in dependencies
+    compile('com.jgoodies:jgoodies-forms:1.6.0')            // have jgoodies-common.jar v:1.4.0 in dependencies
+    compile('com.jgoodies:jgoodies-looks:2.5.2')
+    compile('com.jgoodies:jgoodies-binding:2.7.0'){ transitive = false }
+    compile('com.jgoodies:jgoodies-validation:2.4.2'){ transitive = false }
+    compile('org.swinglabs:jxlayer:3.0.4'){ transitive = false }
+
+
+}

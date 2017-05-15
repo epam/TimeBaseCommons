@@ -1,6 +1,0 @@
-description = 'QuantServer commons-lang set of utilities'
-
-dependencies {
-    compile 'deltix:thread.affinity'
-}
-

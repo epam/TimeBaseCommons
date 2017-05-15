@@ -1,0 +1,26 @@
+repositories.ext.mavenDeltix = { name ->
+    repositories.maven {
+        credentials {
+            username "Builder"
+            password "FPubKkK172yBz9oAKZFk"
+        }
+        authentication {
+            digest(BasicAuthentication)
+        }
+        url "https://packages.deltixhub.com/maven2/" + name
+    }
+}
+
+project.buildscript.repositories.ext.mavenDeltix = { name ->
+    project.buildscript.repositories.maven {
+        credentials {
+            username "Builder"
+            password "FPubKkK172yBz9oAKZFk"
+        }
+        authentication {
+            digest(BasicAuthentication)
+        }
+        url "https://packages.deltixhub.com/maven2/" + name
+    }
+}
+

@@ -1,0 +1,9 @@
+description = 'QuantServer commons-lang set of utilities'
+
+dependencies {
+    compile('deltix:thread.affinity') {
+        // We use explicit 'exclude' because in "Composite Build" mode Gradle doesn't pick up excludes from 'dependencyManagement' section
+        exclude group: 'deltix.qsrv', module: 'deltix-commons-log'
+    }
+}
+

@@ -1,0 +1,8 @@
+description = 'QuantServer commons-messages base classes'
+
+dependencies {
+    compile project(':lang')
+    compile project(':collections')
+    compile 'org.apache.commons:commons-lang3:3.4'
+}
+
