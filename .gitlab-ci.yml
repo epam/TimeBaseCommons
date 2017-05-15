@@ -68,7 +68,7 @@ stages:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1
         - ./gradlew publish
     dependencies:
-        - "Build: Java 7"
+        - "Build: Java 8"
     only:
         - /^release-.*$/
     tags:
