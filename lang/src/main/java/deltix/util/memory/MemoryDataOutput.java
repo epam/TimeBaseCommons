@@ -1,5 +1,7 @@
 package deltix.util.memory;
 
+import deltix.util.BitUtil;
+
 /**
  *  Equivalent of DataOutputStream wrapped around
  *  ByteArrayOutputStream optimized for extreme performance. This class uses
@@ -21,9 +23,13 @@ public final class MemoryDataOutput {
     public void          makeRoom (int space) {
         ensureSize (mPos + space);
     }
-    
+
+    /**
+     * Increases "logical" size up to specified value.
+     */
     public void          ensureSize (int minSize) {
         if (mSize < minSize) {
+            // Increase "logical" size (value of "mSize")
             final int   oldSize = mSize;
             
             mSize = minSize;
@@ -31,17 +37,26 @@ public final class MemoryDataOutput {
             int         currentSize = mBuffer.length;
 
             if (currentSize < minSize) {
-                extendBuffer(oldSize, currentSize, minSize);
+                extendBuffer(oldSize, minSize);
             }
         }
     }
 
-    private void extendBuffer(int oldSize, int currentSize, int minSize) {
-        do {
-            currentSize = currentSize << 1;
-        } while (currentSize < minSize);
+    /**
+     * Increases "physical" size (size of "mBuffer") up to specified value.
+     */
+    private void ensureBufferSize(int minSize) {
+        int currentSize = mBuffer.length;
+        if (currentSize < minSize) {
+            extendBuffer(mSize, minSize);
+        }
+    }
 
-        byte [] newBuffer = new byte [currentSize];
+    private void extendBuffer(int oldSize, int minSize) {
+        assert oldSize < minSize;
+        int newSize = BitUtil.nextPowerOfTwo(minSize);
+
+        byte [] newBuffer = new byte [newSize];
         System.arraycopy (mBuffer, 0, newBuffer, 0, oldSize);
         mBuffer = newBuffer;
     }
@@ -561,12 +576,16 @@ public final class MemoryDataOutput {
      */
     public int                      writeLongBytes (long v) {
         int                 addlPos = mPos;
-        
-        while (v != 0) {   
-            writeByte (v);
+
+        // Expand buffer enough to cover te worst cast
+        // Note: we might expand buffer a bit more than we actually need
+        ensureBufferSize(mPos + 8);
+
+        while (v != 0) {
+            writeByteUnsafe (v);
             v = v >>> 8;
         }
-        
+        mSize = Math.max(mSize, mPos);
         return (mPos - addlPos);
     }
     
