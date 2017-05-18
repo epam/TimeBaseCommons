@@ -66,5 +66,8 @@ public enum InstrumentType {
         int ordinal = ordinal();
         return (ordinal <= SIMPLE_OPTION.ordinal() || this == EXCHANGE_TRADED_SYNTHETIC);
     }
-    
+
+    public int getNumber() {
+        return this.code;
+    }
 }

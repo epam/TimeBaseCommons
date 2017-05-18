@@ -143,12 +143,19 @@ public class InstrumentMessage
     }
 
     /**
+     * Creates new instance of this class.
+     */
+    protected InstrumentMessage createInstance() {
+        return new InstrumentMessage();
+    }
+
+    /**
      * Creates copy of this instance.
      * @return copy.
      */
     @Override
     public InstrumentMessage clone() {
-        InstrumentMessage c = new InstrumentMessage();
+        InstrumentMessage c = createInstance();
         c.copyFrom(this);
         return c;
     }
