@@ -162,7 +162,7 @@ public class DataExchangeUtils {
         writeIntInvertBytes (bytes, offset, Float.floatToIntBits (f));
     }
 
-    public static long  	readLong (byte [] bytes, int offset) {
+    public static long  	readLongOld (byte [] bytes, int offset) {
         return (
 			((long) bytes [offset]) << 56 |
 			lb (bytes, offset + 1) << 48 |
@@ -173,6 +173,31 @@ public class DataExchangeUtils {
 			readByte (bytes, offset + 6) << 8 |
 			readByte (bytes, offset + 7)
 		);
+    }
+
+    public static long readLong(byte[] b, int a) {
+        return makeLong(
+                b[a],
+                b[a + 1],
+                b[a + 2],
+                b[a + 3],
+                b[a + 4],
+                b[a + 5],
+                b[a + 6],
+                b[a + 7]);
+    }
+
+    private static long makeLong(byte b7, byte b6, byte b5, byte b4,
+                                 byte b3, byte b2, byte b1, byte b0)
+    {
+        return ((((long)b7       ) << 56) |
+                (((long)b6 & 0xff) << 48) |
+                (((long)b5 & 0xff) << 40) |
+                (((long)b4 & 0xff) << 32) |
+                (((long)b3 & 0xff) << 24) |
+                (((long)b2 & 0xff) << 16) |
+                (((long)b1 & 0xff) <<  8) |
+                (((long)b0 & 0xff)      ));
     }
 
     /**
