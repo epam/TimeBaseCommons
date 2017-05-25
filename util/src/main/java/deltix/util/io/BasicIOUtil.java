@@ -105,25 +105,34 @@ public abstract class BasicIOUtil {
         }
     }
 
+    public static void      marshall (Marshaller m, OutputStream out, Object object)
+            throws IOException, JAXBException
+    {
+        try {
+            m.marshal(object, out);
+            out.flush();
+        } finally {
+            Util.close(out);
+        }
+    }
+
     public static Object            unmarshal(Unmarshaller u, File file)
         throws FileNotFoundException, JAXBException
     {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(file);
-            return u.unmarshal(in);
-        } finally {
-            Util.close(in);
-        }
+        return unmarshal(u, new FileInputStream(file));
     }
 
 
     public static Object            unmarshal(Unmarshaller u, String resource)
             throws FileNotFoundException, JAXBException
     {
-        InputStream in = null;
+        return unmarshal(u, openResourceAsStream(resource));
+    }
+
+    public static Object            unmarshal(Unmarshaller u, InputStream in)
+            throws FileNotFoundException, JAXBException
+    {
         try {
-            in = openResourceAsStream(resource);
             return u.unmarshal(in);
         } finally {
             Util.close(in);
