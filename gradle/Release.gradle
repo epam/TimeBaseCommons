@@ -1,0 +1,58 @@
+allprojects { prj ->
+    prj.ext.parseVersion = { ->
+        def properties = new Properties()
+        properties.load(new FileInputStream("$rootDir/gradle.properties"))
+        def semanticVersion = properties["version"]
+        if (semanticVersion == null)
+            throw new GradleException("File 'gradle.properties' does not contain property 'version'.")
+        def matcher = semanticVersion =~ "^(\\d+)\\.(\\d+)\\.(\\d+)(-.*)?\$"
+        if (!matcher.matches() || !matcher[0][1].isInteger() || !matcher[0][2].isInteger() || !matcher[0][3].isInteger())
+            throw new GradleException("Version '$semanticVersion' is invalid.")
+        return [matcher[0][1] as Integer, matcher[0][2] as Integer, matcher[0][3] as Integer, matcher[0][4]]
+    }
+}
+
+project.rootProject.task('prepareReleaseVersion') {
+    doLast {
+        def properties = new Properties()
+        properties.load(new FileInputStream("$rootDir/gradle.properties"))
+        def snapshotVersion = properties["version"]
+        if (snapshotVersion == null)
+            throw new GradleException("File 'gradle.properties' does not contain property 'version'.")
+        def matcher = snapshotVersion =~ "^(\\d+)\\.(\\d+)\\.(\\d+)-SNAPSHOT\$"
+        if (!matcher.matches())
+            throw new GradleException("Version '$snapshotVersion' is invalid.")
+        def releaseVersion = "${matcher[0][1]}.${matcher[0][2]}.${matcher[0][3]}"
+        logger.lifecycle("Changing version from '$snapshotVersion' to '$releaseVersion'")
+        properties["version"] = releaseVersion.toString()
+        properties.store(new FileOutputStream("$rootDir/gradle.properties"), null)
+    }
+}
+
+project.rootProject.task('pushVersion') {
+    doLast {
+        def properties = new Properties()
+        properties.load(new FileInputStream("$rootDir/gradle.properties"))
+        def version = properties["version"]
+        exec { commandLine 'git', 'tag', version }
+        exec { commandLine 'git', 'push', 'origin', version }
+    }
+}
+
+project.rootProject.task('prepareSnapshotVersion') {
+    doLast {
+        def properties = new Properties()
+        properties.load(new FileInputStream("$rootDir/gradle.properties"))
+        def releaseVersion = properties["version"]
+        if (releaseVersion == null)
+            throw new GradleException("File 'gradle.properties' does not contain property 'version'.")
+        def matcher = releaseVersion =~ "^(\\d+)\\.(\\d+)\\.(\\d+)\$"
+        if (!matcher.matches())
+            throw new GradleException("Version '$releaseVersion' is invalid.")
+        def snapshotVersion = "${matcher[0][1]}.${matcher[0][2]}.${Integer.parseInt(matcher[0][3]) + 1}-SNAPSHOT"
+        logger.lifecycle("Changing version from '$releaseVersion' to '$snapshotVersion'")
+        properties["version"] = snapshotVersion.toString()
+        properties.store(new FileOutputStream("$rootDir/gradle.properties"), null)
+    }
+}
+

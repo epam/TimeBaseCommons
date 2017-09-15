@@ -4,7 +4,7 @@ plugins {
     // Supports functionality similar to Maven BOM.
     // Helps to avoid re-declaring dependency version in each subproject.
     // See https://github.com/spring-gradle-plugins/dependency-management-plugin
-    id "io.spring.dependency-management" version "1.0.0.RC2"
+    id "io.spring.dependency-management" version "1.0.2.RELEASE"
 }
 
 // To update Gradle wrapper use:
@@ -27,6 +27,8 @@ ext.leafProjects = leafProjects // Publish as external variable
 // Default test categories
 ext.categories = 'Unit'
 
+apply from: "$rootDir/gradle/Release.gradle"
+
 configure(leafProjects) {
     apply from: "$rootDir/gradle/Deltix.gradle"
     apply plugin: 'java'
@@ -41,11 +43,7 @@ configure(leafProjects) {
     // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
     dependencyManagement {
         dependencies {
-            dependency('deltix:thread.affinity:0.0.3') {
-                // It import old version of deltix-commons-log. So exclude it for now.
-                // TODO: Remove this exclusion as soon as "deltix-commons-log" is moved to a separate repository with separate version.
-                exclude 'deltix.qsrv:deltix-commons-log'
-            }
+            dependency 'deltix:deltix-thread-affinity:1.0.0'
             dependency 'commons-lang:commons-lang:2.6'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.1'
@@ -180,8 +178,8 @@ configure(leafProjects) {
             maven {
                 url deltixFeedUrl
                 credentials {
-                    username findProperty('publisherUsername')
-                    password findProperty('publisherPassword')
+                    username findProperty('PUBLISHER_USERNAME') ?: ''
+                    password findProperty('PUBLISHER_PASSWORD') ?: ''
                 }
             }
         }

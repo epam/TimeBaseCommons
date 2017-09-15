@@ -1,9 +1,14 @@
-description = 'QuantServer commons-lang set of utilities'
-
-dependencies {
-    compile('deltix:thread.affinity') {
-        // We use explicit 'exclude' because in "Composite Build" mode Gradle doesn't pick up excludes from 'dependencyManagement' section
-        exclude group: 'deltix.qsrv', module: 'deltix-commons-log'
-    }
+plugins {
+    id "me.champeau.gradle.jmh" version "0.3.1"
 }
 
+description = 'QuantServer commons-lang set of utilities'
+
+// Note: Gradle JMH plugin does not understand implicit versions. So if you want to run it's tasks then you have to add explicit versions for all dependencies.
+dependencies {
+    compile 'deltix:deltix-thread-affinity'
+}
+
+jmh {
+    jmhVersion = '1.19'
+}
