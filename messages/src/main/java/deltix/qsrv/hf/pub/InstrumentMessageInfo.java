@@ -5,7 +5,7 @@ import java.lang.CharSequence;
 /**
  * Base class for all messages that could be written in Timebase.
  */
-public interface InstrumentMessageInfo extends RecordInfo {
+public interface InstrumentMessageInfo extends RecordInfo, InstrumentIdentity {
   /**
    * Time in this field is measured in milliseconds that passed since January 1, 1970 UTC.
    * For inbound messages special constant {link TIMESTAMP_UNKNOWN} marks 'unknown' timestamp in which case TimeBase server stores message using current server time.
