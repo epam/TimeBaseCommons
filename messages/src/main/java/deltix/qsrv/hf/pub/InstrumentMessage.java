@@ -136,7 +136,14 @@ public class InstrumentMessage
             InstrumentMessageInfo t = (InstrumentMessageInfo) template;
             setTimeStampMs(t.getTimeStampMs());
             setNanoTime(t.getNanoTime());
-            setSymbol(t.getSymbol());
+
+            // set symbol should copy value
+            if (symbol instanceof StringBuilder)
+                ((StringBuilder)symbol).setLength(0);
+            else
+                setSymbol(new StringBuilder());
+            ((StringBuilder)symbol).append(t.getSymbol());
+
             setInstrumentType(t.getInstrumentType());
         }
         return this;
