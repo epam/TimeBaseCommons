@@ -5,6 +5,7 @@ import deltix.util.lang.Util;
 import deltix.util.io.IOUtil;
 import java.io.*;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.logging.Level;
 
 /**
@@ -111,6 +112,11 @@ public abstract class AbstractClassLoader extends ClassLoader {
         if (b == null)
             throw new ClassNotFoundException (name);
 
+        final String packageName = getPackageName(name);
+        if (getPackage(packageName) == null) {        
+            definePackage(packageName, null, null, null, null, null, null, null);
+        }
+        
         return (defineClass (name, b, 0, b.length));     
     }
     
@@ -189,5 +195,30 @@ public abstract class AbstractClassLoader extends ClassLoader {
         }
             
         return url;
+    }
+    
+    @Override
+    public Enumeration<URL>             getResources(String name) throws IOException {
+        Enumeration<URL>         urls;
+        
+        if (mSearchParentFirst) {        
+            urls = getParent ().getResources (name);
+        
+            if (urls == null || !urls.hasMoreElements()) 
+                urls = findResources (name);
+        }
+        else {        
+            urls = findResources (name);
+        
+            if (urls == null || !urls.hasMoreElements()) 
+                urls = getParent ().getResources (name);
+        }
+            
+        return urls;
     }                  
+    
+    private static String getPackageName(String className) {
+        int i = className.lastIndexOf('.');
+        return (i > 0) ? className.substring(0, i) : "";
+    }
 }

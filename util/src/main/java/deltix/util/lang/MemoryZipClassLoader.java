@@ -75,8 +75,9 @@ public final class MemoryZipClassLoader extends AbstractClassLoader {
         }
         return url;
     }
-
+    
     @Override
+    //TODO: maybe use the parent one and remove this one? And make the parent method final
     public Enumeration<URL> getResources(final String name) throws IOException {
         if (mResourceURLs.containsKey(name)) {
             return new Enumeration<URL>() {
