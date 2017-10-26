@@ -1357,6 +1357,109 @@
           <Sign>¥</Sign>
       </Currency>
 
+    <Currency>
+      <NumericCode>641</NumericCode>
+      <Name>Litecoin</Name>
+      <AlphabeticCode>LTC</AlphabeticCode>
+      <Sign>LTC</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>741</NumericCode>
+      <Name>Bitcoin</Name>
+      <AlphabeticCode>XBT</AlphabeticCode>
+      <Sign>XBT</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>841</NumericCode>
+      <Name>Ethereum</Name>
+      <AlphabeticCode>ETH</AlphabeticCode>
+      <Sign>ETH</Sign>
+    </Currency>
+
+    <Currency>
+      <NumericCode>301</NumericCode>
+      <Name>Ripple</Name>
+      <AlphabeticCode>XRP</AlphabeticCode>
+      <Sign>XRP</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>302</NumericCode>
+      <Name>Metaverse ETP</Name>
+      <AlphabeticCode>ETP</AlphabeticCode>
+      <Sign>ETP</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>303</NumericCode>
+      <Name>Bitcoin Cash</Name>
+      <AlphabeticCode>BCH</AlphabeticCode>
+      <Sign>BCH</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>304</NumericCode>
+      <Name>OmiseGO</Name>
+      <AlphabeticCode>OMG</AlphabeticCode>
+      <Sign>OMG</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>305</NumericCode>
+      <Name>NEO</Name>
+      <AlphabeticCode>NEO</AlphabeticCode>
+      <Sign>NEO</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>306</NumericCode>
+      <Name>Iota</Name>
+      <AlphabeticCode>IOT</AlphabeticCode>
+      <Sign>IOT</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>307</NumericCode>
+      <Name>DigitalCash</Name>
+      <AlphabeticCode>DSH</AlphabeticCode>
+      <Sign>DSH</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>308</NumericCode>
+      <Name>Zcash</Name>
+      <AlphabeticCode>ZEC</AlphabeticCode>
+      <Sign>ZEC</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>309</NumericCode>
+      <Name>Monero</Name>
+      <AlphabeticCode>XMR</AlphabeticCode>
+      <Sign>XMR</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>310</NumericCode>
+      <Name>Ethereum Classic</Name>
+      <AlphabeticCode>ETC</AlphabeticCode>
+      <Sign>ETC</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>311</NumericCode>
+      <Name>EOS</Name>
+      <AlphabeticCode>EOS</AlphabeticCode>
+      <Sign>EOS</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>312</NumericCode>
+      <Name>Aventus</Name>
+      <AlphabeticCode>AVT</AlphabeticCode>
+      <Sign>AVT</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>313</NumericCode>
+      <Name>Qtum</Name>
+      <AlphabeticCode>QTM</AlphabeticCode>
+      <Sign>QTM</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>314</NumericCode>
+      <Name>Santiment</Name>
+      <AlphabeticCode>SAN</AlphabeticCode>
+      <Sign>SAN</Sign>
+    </Currency>
 
   </Currencies>
 </CurrencyManager>
