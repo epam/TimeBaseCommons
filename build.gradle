@@ -43,7 +43,7 @@ configure(leafProjects) {
     // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
     dependencyManagement {
         dependencies {
-            dependency 'deltix:deltix-thread-affinity:1.0.0'
+            dependency 'deltix:deltix-thread-affinity:1.0.2'
             dependency 'commons-lang:commons-lang:2.6'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.1'
