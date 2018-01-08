@@ -89,16 +89,16 @@ public class InstrumentMessage
         this.timestamp = TIMESTAMP_UNKNOWN;
     }
 
-    @Deprecated // use clone(), copyTo(), copyFrom ()
-    public InstrumentMessage      copy (boolean deep) {
-        try {
-            InstrumentMessage     out = getClass ().newInstance ();
-            out.copy (this, deep);
-            return (out);
-        } catch (Throwable x) {
-            throw new RuntimeException (x);
-        }
-    }
+//    @Deprecated // use clone(), copyTo(), copyFrom ()
+//    public InstrumentMessage      copy (boolean deep) {
+//        try {
+//            InstrumentMessage     out = getClass ().newInstance ();
+//            out.copy (this, deep);
+//            return (out);
+//        } catch (Throwable x) {
+//            throw new RuntimeException (x);
+//        }
+//    }
 
     public void                 setNanoTime(long nanos) {
         if (nanos != TIMESTAMP_UNKNOWN) {
@@ -233,28 +233,29 @@ public class InstrumentMessage
     public void nullifyInstrumentType() {
       this.instrumentType = null;
     }
-    /**
-     * Method copies state of given template into this object
-     * @param deep if true performs deep copy of mutable properties
-     */
-    @Deprecated
-    public void                 copy (Object template, boolean deep) {
 
-        if (template instanceof InstrumentMessage) {
-            InstrumentMessage t = (InstrumentMessage) template;
-            timestamp = t.timestamp;
-            nanoTime = t.nanoTime;
-        }
-
-        if (template instanceof InstrumentIdentity) {
-            InstrumentIdentity   sm = (InstrumentIdentity) template;
-
-            instrumentType = sm.getInstrumentType ();
-            symbol = sm.getSymbol ();
-            if (deep && symbol != null)
-                symbol = symbol.toString ();
-        }
-    }
+//    /**
+//     * Method copies state of given template into this object
+//     * @param deep if true performs deep copy of mutable properties
+//     */
+//    @Deprecated
+//    public void                 copy (Object template, boolean deep) {
+//
+//        if (template instanceof InstrumentMessage) {
+//            InstrumentMessage t = (InstrumentMessage) template;
+//            timestamp = t.timestamp;
+//            nanoTime = t.nanoTime;
+//        }
+//
+//        if (template instanceof InstrumentIdentity) {
+//            InstrumentIdentity   sm = (InstrumentIdentity) template;
+//
+//            instrumentType = sm.getInstrumentType ();
+//            symbol = sm.getSymbol ();
+//            if (deep && symbol != null)
+//                symbol = symbol.toString ();
+//        }
+//    }
 
     public int                  compareTime(TimeStamp time) {
         // Do not change. JIT compile this implementation into highly optimized branch free code with 4 cmovnl instructions.
