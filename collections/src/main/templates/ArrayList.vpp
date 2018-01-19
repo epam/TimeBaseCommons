@@ -33,14 +33,11 @@ import deltix.util.collections.ICapacity;
  */
 
 #if($name == "Object")
-public final class ${name}ArrayList<${type}>
+public final class ${name}ArrayList<${type}> extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List<${type}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
 #else
-public final class ${name}ArrayList
+public final class ${name}ArrayList extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
 #end
-    extends AbstractList<${type_Object}>
-	implements List<${type_Object}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity
 
-{
     static final long  serialVersionUID = 1L;
 
     /**
@@ -304,7 +301,7 @@ public final class ${name}ArrayList
     }
 
     /**
-     * Searches for the first occurence of the given argument, testing
+     * Searches for the first occurrence of the given argument, testing
      * for equality.
      *
      * @param   elem   an object.
@@ -369,7 +366,7 @@ public final class ${name}ArrayList
 
 
     /**
-     * Searches for the first occurence of the given argument, testing
+     * Searches for the first occurrence of the given argument, testing
      * for equality.
      *
      * @param   elem   an object.

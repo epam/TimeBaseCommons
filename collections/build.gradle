@@ -56,6 +56,12 @@ velocity {
         contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean ]
     }
 
+    list {
+        from = "$srcDir/List.vpp"
+        to = "$dstDir/@{name}List.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object ]
+    }
+
     arrayList {
         from = "$srcDir/ArrayList.vpp"
         to = "$dstDir/@{name}ArrayList.java"
