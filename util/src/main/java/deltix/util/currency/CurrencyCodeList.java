@@ -103,6 +103,11 @@ public class CurrencyCodeList {
         return (info == null ? notFoundValue : info.numericCode);
     }
 
+    public static short symbolicToNumeric (String code, final short notFoundValue) {
+        final CurrencyInfo info = getInfoBySymbolic (code);
+        return (info == null ? notFoundValue : info.numericCode);
+    }
+
     public static CurrencyInfo getInfoByNumeric (final int code) {
         return (code >= 0  && code < amount ?  numericIndex[code] : null);
     }
