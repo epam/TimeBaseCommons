@@ -10,12 +10,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.logging.Level;
 
 @Depends("deltix/util/currency/CurrencyCodes.xml")
+@ThreadSafe
 public class CurrencyCodeList {
     private static final int                             amount        =   1000;
     private static final CurrencyInfo[]                  numericIndex  = new CurrencyInfo[amount];
@@ -84,12 +86,10 @@ public class CurrencyCodeList {
     }
 
     public static CurrencyInfo[] getCodes () {
-        synchronized (symbolicIndex) {
-            CurrencyInfo[] result = new CurrencyInfo[symbolicIndex.size()];
-            if (symbolicIndex.size() > 0)
-                symbolicIndex.valuesToArray(result);
-            return result;
-        }
+        CurrencyInfo[] result = new CurrencyInfo[symbolicIndex.size()];
+        if (symbolicIndex.size() > 0)
+            symbolicIndex.valuesToArray(result);
+        return result;
     }
 
     public static String numericToSymbolic (final int code) {
@@ -112,9 +112,7 @@ public class CurrencyCodeList {
     }
 
     public static CurrencyInfo getInfoBySymbolic (CharSequence code, int start, int end) {
-        synchronized (symbolicIndex) {
-            return symbolicIndex.get(code, start, end, null);
-        }
+        return symbolicIndex.get(code, start, end, null);
     }
 
     public static CurrencyInfo getInfoBySymbolic (String code) {
