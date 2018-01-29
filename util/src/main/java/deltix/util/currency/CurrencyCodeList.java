@@ -103,8 +103,13 @@ public class CurrencyCodeList {
         return (info == null ? notFoundValue : info.numericCode);
     }
 
-    public static short symbolicToNumeric (String code, final short notFoundValue) {
+    public static short symbolicToNumeric (CharSequence code, final short notFoundValue) {
         final CurrencyInfo info = getInfoBySymbolic (code);
+        return (info == null ? notFoundValue : info.numericCode);
+    }
+
+    public static short symbolicToNumeric (CharSequence code, int start, int end, final short notFoundValue) {
+        final CurrencyInfo info = getInfoBySymbolic (code, start, end);
         return (info == null ? notFoundValue : info.numericCode);
     }
 
