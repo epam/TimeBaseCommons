@@ -27,7 +27,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
     implements Iterable ${value_param}
 #end
 {
-    private ${second_type} []         values;
+    protected ${second_type} [] values;
 
     public ${first_name}To${second_name}HashMap () {
         super ();
