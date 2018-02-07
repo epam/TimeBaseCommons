@@ -3,6 +3,8 @@ package deltix.qsrv.hf.pub;
 import deltix.data.stream.TimeStampedMessage;
 import deltix.util.lang.Util;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  *
  */
@@ -153,7 +155,11 @@ public class InstrumentMessage
      * Creates new instance of this class.
      */
     protected InstrumentMessage createInstance() {
-        return new InstrumentMessage();
+        try {
+            return Util.newInstance(getClass());
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Cannot create instance for the " + getClass());
+        }
     }
 
     /**
