@@ -1,5 +1,6 @@
 package deltix.util.xml;
 
+import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
 
 import javax.xml.bind.JAXBContext;
@@ -32,7 +33,7 @@ public class JAXBStackTraceSuppressor
         throws JAXBException 
     {
         Map<String, Object> jaxbConfig = new HashMap<String, Object>();
-        jaxbConfig.put(JAXBUtil.ANNOTATION_READER_PROPERTY, new JAXBStackTraceSuppressor());
+        jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, new JAXBStackTraceSuppressor());
 
         return JAXBContextFactory.newInstance (packPath, jaxbConfig);            
     }
