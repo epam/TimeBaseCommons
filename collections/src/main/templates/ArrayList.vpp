@@ -6,10 +6,12 @@ package deltix.util.collections.generated;
 
 import java.util.AbstractList;
 import java.util.Collection;
+import java.util.Arrays;
 import java.lang.reflect.Array;
 #if($name == "Object")
 import deltix.util.lang.Util;
 import java.util.Enumeration;
+import java.util.Comparator;
 #end
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +41,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #end
 
     static final long  serialVersionUID = 1L;
+
+    /**
+     * Maximum length to which the underlying array can grow. Some VMs reserve some header words in an array.
+     */
+    private static final int MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
 
     /**
      * The array buffer into which the elements of the ArrayList are stored.
@@ -72,9 +79,6 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
     public ${name}ArrayList(int initialCapacity) {
 		super();
-        if (initialCapacity < 0)
-            throw new IllegalArgumentException("Illegal Capacity: "+
-                                               initialCapacity);
         elementData = new $actualType [initialCapacity];
     }
 
@@ -95,9 +99,9 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
     public ${name}ArrayList(Collection<? extends ${type_Object}> c) {
         size = c.size ();
-		elementData = new ${actualType} [(size*110) / 100];
-			// Allow 10% room for growth
-        Iterator<? extends ${type_Object}> iter = c.iterator ();
+		elementData = new ${actualType} [(size * 110) / 100];  // allow 10% room for growth
+
+		Iterator<? extends ${type_Object}> iter = c.iterator ();
         int			idx = 0;
 
         while (iter.hasNext ())
@@ -106,8 +110,20 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
     public ${name}ArrayList (${type} [] arr) {
     	size = arr.length;
-    	elementData = new ${actualType} [(size*110) / 100];
-    	SafeArrays.safeArrayCopy(arr, 0, elementData, 0, size);
+#if($name == "Object")
+    	elementData = Arrays.copyOf(arr, (size * 110) / 100, Object[].class); // intrinsic doesn't zero memory
+#else
+        elementData = Arrays.copyOf(arr, (size * 110) / 100); // intrinsic doesn't zero memory
+#end
+    }
+
+    public ${name}ArrayList (${type} [] arr, int offset, int length) {
+        size = length;
+#if($name == "Object")
+        elementData = Arrays.copyOfRange(arr, offset, offset + ((length * 110) / 100), Object[].class); // intrinsic doesn't zero memory
+#else
+        elementData = Arrays.copyOfRange(arr, offset, offset + ((length * 110) / 100)); // intrinsic doesn't zero memory
+#end
     }
 
     /**
@@ -116,13 +132,9 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * the storage of an <tt>ArrayList</tt> instance.
      */
     public void trimToSize() {
-		modCount++;
-		int oldCapacity = elementData.length;
-		if (size < oldCapacity) {
-	    	${actualType} oldData [] = elementData;
-	    	elementData = new ${actualType} [size];
-
-	    	SafeArrays.safeArrayCopy (oldData, 0, elementData, 0, size);
+		if (size < elementData.length) {
+     		elementData = Arrays.copyOf(elementData, size); // intrinsic doesn't zero memory
+     		modCount++;
 		}
     }
 
@@ -134,27 +146,31 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param   minCapacity   the desired minimum capacity.
      */
     public void ensureCapacity(int minCapacity) {
-		modCount++;
-		int oldCapacity = elementData.length;
-		if (minCapacity > oldCapacity) {
-	    	${actualType} oldData [] = elementData;
-	    	int newCapacity = (oldCapacity * 3)/2 + 1;
-    	    if (newCapacity < minCapacity)
-				newCapacity = minCapacity;
-    		elementData = new ${actualType} [newCapacity];
-	    	SafeArrays.safeArrayCopy (oldData, 0, elementData, 0, size);
-		}
+		if (minCapacity > elementData.length) {
+            grow(minCapacity);
+        }
     }
 
     public void ensureCapacityUnsafe(int minCapacity) {
-		modCount++;
-		int oldCapacity = elementData.length;
-		if (minCapacity > oldCapacity) {
-	    	int newCapacity = (oldCapacity * 3)/2 + 1;
-    	    if (newCapacity < minCapacity)
-				newCapacity = minCapacity;
-            elementData = new ${actualType} [newCapacity];
-		}
+		ensureCapacity(minCapacity); // the same cost
+    }
+
+    private void ensureFreeSpace(int required) {
+        long requiredCapacity = (long) size + required;
+
+        if (requiredCapacity > elementData.length) {
+            grow(requiredCapacity);
+        }
+    }
+
+    private void grow(long requiredCapacity) {
+        if (requiredCapacity > MAX_ARRAY_LENGTH) {
+            throw new OutOfMemoryError("required capacity=" + requiredCapacity + " exceeds max");
+        }
+
+        int newCapacity = (int) Math.min(MAX_ARRAY_LENGTH,  requiredCapacity  + (requiredCapacity >>> 1)); // 50% for growth
+        elementData = Arrays.copyOf(elementData, newCapacity);
+        modCount++;
     }
 
 	/**
@@ -163,7 +179,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     * @return the capacity of this list.
     */
     public int capacity() {
-		return elementData.length ;
+		return elementData.length;
     }
 
     /**
@@ -215,14 +231,16 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *         of <code>${type_Object}</code>.
      */
      @SuppressWarnings("unchecked")
-     public <T> T [] toArray(T a[]) {
-        if (a.length < size)
-            a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+     public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+            return (T[]) Arrays.copyOf(elementData, size, a.getClass());
+        }
 
         SafeArrays.safeArrayCopy (elementData, 0, a, 0, size);
 
-        if (a.length > size)
-            a [size] = null;
+        if (a.length > size) {
+            a[size] = null;
+        }
 
         return a;
     }
@@ -272,9 +290,10 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *         of <code>${type_Object}</code>.
      */
     @SuppressWarnings("unchecked")
-    public <T> T [] toArray(T a[]) {
-        if (a.length < size)
-			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+			a = Arrays.copyOf(a, size);
+        }
 
         for (int i = 0; i < size; i++)
         {
@@ -285,8 +304,9 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #end
         }
 
-        if (a.length > size)
-            a [size] = null;
+        if (a.length > size) {
+            a[size] = null;
+        }
 
         return a;
     }
@@ -414,18 +434,12 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @return  a clone of this <tt>${name}ArrayList</tt> instance.
      */
-    @SuppressWarnings("unchecked")
     public Object clone () {
-		try {
-	    	${name}ArrayList v = (${name}ArrayList) super.clone();
-            v.elementData = new ${actualType} [size];
-	    	SafeArrays.safeArrayCopy (elementData, 0, v.elementData, 0, size);
-	    	v.modCount = 0;
-	    	return v;
-		} catch (CloneNotSupportedException e) {
-	    	// this shouldn't happen, since we are Cloneable
-	    	throw new InternalError();
-		}
+#if($name == "Object")
+    	return new ${name}ArrayList<>(elementData, 0, size);
+#else
+        return new ${name}ArrayList(elementData, 0, size);
+#end
     }
 
     /**
@@ -449,13 +463,10 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
 #if($name == "Object")
     public Object [] to${name_abbr}Array () {
-    	Object []		ret = new Object [size];
 #else
     public ${type} [] to${name_abbr}Array () {
-    	${type} []		ret = new ${type} [size];
 #end
-    	SafeArrays.safeArrayCopy (elementData, 0, ret, 0, size);
-		return (ret);
+ 		return Arrays.copyOf(elementData, size);
     }
 
 
@@ -471,7 +482,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
      @SuppressWarnings("unchecked")
     public ${type} get${name} (int index) {
-		RangeCheck(index);
+		rangeCheck(index);
 		return (${type}) elementData[index];
     }
 
@@ -498,9 +509,10 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
      @SuppressWarnings("unchecked")
     public ${type} set (int index, ${type} element) {
-		RangeCheck(index);
+		rangeCheck(index);
 		${type} oldValue = (${type}) elementData[index];
 		elementData[index] = element;
+		modCount++;
 		return oldValue;
     }
 
@@ -511,9 +523,10 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @return <tt>true</tt> (as per the general contract of Collection.add).
      */
     public boolean add (${type} d) {
-		ensureCapacity(size + 1);  // Increments modCount!!
+		ensureFreeSpace(1);
 		elementData[size++] = d;
-		return true;
+		modCount++;
+        return true;
     }
 
     /**
@@ -527,15 +540,12 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
      */
     public void add (int index, ${type} element) {
-		if (index > size || index < 0)
-	    	throw new IndexOutOfBoundsException(
-			"Index: "+index+", Size: "+size);
-
-		ensureCapacity (size+1);  // Increments modCount!!
-		SafeArrays.safeArrayCopy(elementData, index, elementData, index + 1,
-				size - index);
+        rangeCheck(index, 0);
+    	ensureFreeSpace (1);
+		SafeArrays.safeArrayCopy(elementData, index, elementData, index + 1, size - index);
 		elementData[index] = element;
 		size++;
+		modCount++;
     }
 
     /**
@@ -564,17 +574,18 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
      @SuppressWarnings("unchecked")
     public ${type} remove${name} (int index) {
-		RangeCheck(index);
+		rangeCheck(index);
 
-		modCount++;
 		${type} oldValue = (${type}) elementData[index];
-
 		int numMoved = size - index - 1;
-		if (numMoved > 0)
-	    	SafeArrays.safeArrayCopy(elementData, index+1, elementData, index,
-			    	numMoved);
+
+		if (numMoved > 0) {
+	    	SafeArrays.safeArrayCopy(elementData, index+1, elementData, index, numMoved);
+	    }
 
 		size--;
+		modCount++;
+
 		return oldValue;
     }
 
@@ -601,9 +612,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *		  &lt; 0 || index &gt; size())</tt>.
      */
     public boolean addAll (Collection<? extends ${type_Object}> c) {
-		modCount++;
 		int numNew = c.size();
-		ensureCapacity(size + numNew);
+		ensureFreeSpace(numNew);
 
         Iterator<? extends ${type_Object}> iter = c.iterator ();
 		for (int i=0; i<numNew; i++)
@@ -614,6 +624,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
                 (iter.next ()).${type}Value ();
 #end
 
+        modCount++;
 		return numNew != 0;
     }
 
@@ -630,12 +641,12 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *		  &lt; 0 || index &gt; size())</tt>.
      */
     public boolean addAll (${type} c[], int offset, int length) {
-        modCount++;
-    	ensureCapacity(size + length);
-
+        ensureFreeSpace(length);
     	SafeArrays.safeArrayCopy(c, offset, elementData, size, length);
 
     	size += length;
+    	modCount++;
+
     	return length != 0;
     }
 
@@ -661,23 +672,23 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *		  &lt; 0 || index &gt; size())</tt>.
      */
     public boolean addAll (Collection<? extends ${type_Object}> c, int index) {
-		if (index > size || index < 0)
-	    	throw new IndexOutOfBoundsException(
-			"Index: "+index+", Size: "+size);
+		rangeCheck(index, 0);
 
 		int numNew = c.size();
-		ensureCapacity(size + numNew);  // Increments modCount!!
+		ensureFreeSpace(numNew);
 
 		int numMoved = size - index;
-		if (numMoved > 0)
-	    	SafeArrays.safeArrayCopy(elementData, index, elementData, index + numNew,
-			    	numMoved);
+		if (numMoved > 0) {
+	    	SafeArrays.safeArrayCopy(elementData, index, elementData, index + numNew, numMoved);
+	    }
 
         Iterator<? extends ${type_Object}> iter = c.iterator ();
-		for (int i=0; i<numNew; i++)
+		for (int i = 0; i < numNew; i++) {
 	    	elementData[index++] = iter.next ();
+	    }
 
 		size += numNew;
+		modCount++;
 		return numNew != 0;
     }
 
@@ -692,12 +703,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param toIndex index after last element to be removed.
      */
     public void removeRange (int fromIndex, int toIndex) {
-		modCount++;
+		rangeCheck(fromIndex, toIndex - fromIndex);
 		final int numMoved = size - toIndex;
-        SafeArrays.safeArrayCopy (
-        	elementData, toIndex, elementData, fromIndex, numMoved
-        );
+        SafeArrays.safeArrayCopy(elementData, toIndex, elementData, fromIndex, numMoved);
         size -= (toIndex - fromIndex);
+        modCount++;
     }
 
     /**
@@ -711,14 +721,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
     public void insertUnsafe (int atIndex, int offset) {
         final int   newSize = size + offset;
-
 		ensureCapacity (newSize);
 
-		SafeArrays.safeArrayCopy (
-        	elementData, atIndex, elementData, atIndex + offset, size - atIndex
-        );
-
+		SafeArrays.safeArrayCopy(elementData, atIndex, elementData, atIndex + offset, size - atIndex);
         size = newSize;
+        modCount++;
     }
 
     /**
@@ -751,10 +758,20 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * Check if the given index is in range.  If not, throw an appropriate
      * runtime exception.
      */
-    private void RangeCheck(int index) {
-	if (index >= size || index < 0)
-	    throw new IndexOutOfBoundsException(
-		"Index: "+index+", Size: "+size);
+    private void rangeCheck(int index) {
+	    if (Integer.toUnsignedLong(index) >= size) { // 1 conditional branch instead of 2
+	        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+	    }
+    }
+
+    /**
+     * Check if the given range is in range.  If not, throw an appropriate
+     * runtime exception.
+     */
+    private void rangeCheck(int offset, int length) {
+        if (Integer.toUnsignedLong(offset) + Integer.toUnsignedLong(length) > size) { // 1 conditional branch instead of 4
+            throw new IndexOutOfBoundsException("Offset: " + offset + ", Length: " + length + ", Size: " + size);
+        }
     }
 
     /**
@@ -810,8 +827,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
 	@SuppressWarnings("unchecked")
     public void		swap (int idx1, int idx2) {
-		RangeCheck (idx1);
-		RangeCheck (idx2);
+		rangeCheck (idx1);
+		rangeCheck (idx2);
     	${type}		buf = (${type}) elementData [idx1];
     	elementData [idx1] = elementData [idx2];
     	elementData [idx2] = buf;
@@ -831,13 +848,27 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
 #if( $type != "boolean" )
     public void		sort () {
-    	sort (0, size ());
+    	Arrays.sort(elementData, 0, size);
     }
 
-    public void		sort (int offset, int len) {
-    	java.util.Arrays.sort (elementData, offset, len);
+    public void		sort (int offset, int length) {
+        rangeCheck(offset, length);
+    	Arrays.sort(elementData, offset, length);
+    }
+#end
+
+#if( $name == "Object")
+    @Override
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super ObjectType> comparator) {
+        Arrays.sort((ObjectType[]) elementData, 0, size, comparator); // allocation free sort
     }
 
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super ObjectType> comparator, int offset, int length) {
+        rangeCheck(offset, length);
+        Arrays.sort((ObjectType[]) elementData, offset, length, comparator); // allocation free sort
+    }
 #end
 
     public ${actualType} []	getInternalBuffer () {
