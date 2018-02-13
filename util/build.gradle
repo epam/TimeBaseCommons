@@ -2,8 +2,7 @@ description = 'QuantServer general purpose utilities'
 
 dependencies {
     compile project(':lang'),
-            project(':collections'),
-            project(':messages')
+            project(':collections')
 
     compile 'deltix:deltix-thread-affinity'
 
