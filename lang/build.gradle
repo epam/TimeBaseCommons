@@ -5,6 +5,8 @@ plugins {
 description = 'QuantServer commons-lang set of utilities'
 
 dependencies {
+    compile group: 'rtmath', name: 'rtmath-native-utils', version: '1.2'
+    compile group: 'deltix', name: 'decimal', version: '0.2.5'
 }
 
 jmh {

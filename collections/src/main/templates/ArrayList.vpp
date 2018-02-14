@@ -8,7 +8,7 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.Arrays;
 import java.lang.reflect.Array;
-#if($name == "Object")
+#if($name == "Object" || $name == "Decimal")
 import deltix.util.lang.Util;
 import java.util.Enumeration;
 import java.util.Comparator;
@@ -20,7 +20,9 @@ import deltix.util.collections.SafeArrays;
 import deltix.util.memory.*;
 import deltix.util.collections.ICapacity;
 
-
+#if( $name == "Decimal" )
+import deltix.decimal.Decimal64;
+#end
 
 #if( $name == "Object" )
 #set($actualType = "Object")
@@ -210,7 +212,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return indexOf (elem) >= 0;
     }
 
-#if( $name == "Object" )
+#if( $name == "Object" || $name == "Decimal")
     /**
      * <p>Returns an array containing all of the elements in this list in the
      * correct order.  The runtime type of the returned array is that of the
@@ -383,7 +385,16 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 #end
 
-
+#if ($name == "Decimal")
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element.
+     *
+     * @param elem element whose presence in this List is to be tested.
+     */
+    public boolean contains (${type} elem) {
+		return indexOf (elem) >= 0;
+    }
+#end
 
     /**
      * Searches for the first occurrence of the given argument, testing
@@ -395,6 +406,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
 #if ($name == "Object")
     public int indexOf (Object elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
+#elseif ($name == "Decimal")
+    public int indexOf (Decimal64 elem) {
 	    for (int i = 0; i < size; i++)
 			if (Util.xequals (elem, elementData[i]))
 		    	return i;
@@ -417,6 +433,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      */
 #if ($name == "Object")
     public int lastIndexOf (Object elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#elseif ($name == "Decimal")
+    public int lastIndexOf (Decimal64 elem) {
 	    for (int i = size-1; i >= 0; i--)
 			if (Util.xequals (elem, elementData [i]))
 		    	return i;
@@ -618,7 +639,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
         Iterator<? extends ${type_Object}> iter = c.iterator ();
 		for (int i=0; i<numNew; i++)
 	    	elementData[size++] =
-#if( $name == "Object" )
+#if( $name == "Object"  || $name == "Decimal")
                 iter.next ();
 #else
                 (iter.next ()).${type}Value ();
@@ -628,7 +649,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return numNew != 0;
     }
 
-    #if($name != "Object")
+    #if($name != "Object" || $name == "Decimal")
 
      /**
      * Appends all of the elements in the specified array to the end of
@@ -790,7 +811,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
 		// Write out all elements in the proper order.
 		for (int i=0; i<size; i++)
+#if( $name == "Decimal")
+        	s.writeLong (elementData[i].toLong());
+#else
         	s.write${name_abbr} (elementData[i]);
+#end
     }
 
     /**
@@ -807,7 +832,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
 		// Read in all elements in the proper order.
 		for (int i=0; i<size; i++)
+#if( $name == "Decimal")
+        	elementData [i] = Decimal64.fromLong(s.readLong ());
+#else
         	elementData [i] = s.read${name_abbr} ();
+#end
     }
 
     public boolean		equals (Object otherObj) {
@@ -819,7 +848,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
     	return (java.util.Arrays.equals (
     					to${name_abbr}Array (),
-((${name}ArrayList#if( $name == "Object" )<?>#end) otherObj).to${name_abbr}Array ()
+((${name}ArrayList#if( $name == "Object")<?>#end) otherObj).to${name_abbr}Array ()
     			)
 
     	);
@@ -909,7 +938,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return (buf.toString ());
     }
 
-#if( $name == "Object" )
+#if( $name == "Object" || $name == "Decimal" )
 	private class ElemEnumeration implements Enumeration<$type> {
     	private int	mIndex = 0;
 
@@ -965,6 +994,6 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #end
 }
 
-#if( $name == "Object" )
+#if( $name == "Object")
 #set( $type = "Object" )
 #end

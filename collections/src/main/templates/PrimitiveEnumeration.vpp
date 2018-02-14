@@ -1,6 +1,9 @@
 package deltix.util.collections.generated;
 
 import deltix.util.collections.ElementsEnumeration;
+#if( $name == "Decimal" )
+import deltix.decimal.Decimal64;
+#end
 
 public interface ${name}Enumeration extends ElementsEnumeration<$type_Object> {
     public ${type} next${name_abbr}Element ();

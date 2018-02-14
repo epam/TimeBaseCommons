@@ -10,6 +10,9 @@ package deltix.util.collections.generated;
 #set($actualType = $type)
 #end
 
+#if( $name == "Decimal" )
+import deltix.decimal.Decimal64;
+#end
 
 /**
  * Resizable array of primitive ${type}s. Much more efficient than

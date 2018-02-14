@@ -2,15 +2,12 @@ description = 'QuantServer commons-collections set of utilities'
 
 // This repository provides velocity plugin
 buildscript {
-    repositories {
-        mavenDeltix("QuantServer.Java")
-        mavenCentral()
-    }
     dependencies {
         classpath group: 'deltix.gradle.plugins', name: 'velocity', version: '1.0.0'
     }
 }
 apply plugin: 'velocity'
+
 
 dependencies {
     compile project(':lang')
@@ -41,49 +38,51 @@ ext {
     types.boolean = [ name : 'Boolean', 'name_abbr' : 'Boolean', type : 'boolean', 'type_Object' : 'Boolean', size : 'SIZE_OF_BOOLEAN' ]
 
     types.Object =  [ name : 'Object', 'name_abbr' : 'Object', type : 'Object', 'type_Object' : 'ObjectType', size : 'SIZE_OF_POINTER' ]
+
+    types.Decimal =  [ name : 'Decimal', 'name_abbr' : 'Decimal', type : 'Decimal64', 'type_Object' : 'Decimal64', size : 'SIZE_OF_POINTER' ]
 }
 
 velocity {
     entry {
         from = "$srcDir/PrimitiveEntry.vpp"
         to = "$dstDir/@{name}Entry.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal ]
     }
 
     enumeration {
         from = "$srcDir/PrimitiveEnumeration.vpp"
         to = "$dstDir/@{name}Enumeration.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal ]
     }
 
     list {
         from = "$srcDir/List.vpp"
         to = "$dstDir/@{name}List.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal ]
     }
 
     arrayList {
         from = "$srcDir/ArrayList.vpp"
         to = "$dstDir/@{name}ArrayList.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal ]
     }
 
     comparator {
         from = "$srcDir/PrimitiveComparator.vpp"
         to = "$dstDir/@{name}Comparator.java"
-        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double ]
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Decimal ]
     }
 
     hashSet {
         from = "$srcDir/PrimitiveHashSet.vpp"
         to = "$dstDir/@{name}HashSet.java"
-        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object ]
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal ]
     }
 
     hashMapBase {
         from = "$srcDir/PrimitiveHashMapBase.vpp"
         to = "$dstDir/@{name}HashMapBase.java"
-        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object ]
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal ]
     }
 }
 

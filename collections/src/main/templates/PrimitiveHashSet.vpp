@@ -11,6 +11,9 @@ import deltix.util.collections.hash.*;
 import deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
+#if( $name == "Decimal" )
+import deltix.decimal.Decimal64;
+#end
 
 @SuppressWarnings ("unchecked")
 public class ${name}HashSet$!{key_param} extends ${name}HashMapBase$!{key_param}#if($name == "Object") implements Iterable$!{key_param}
@@ -123,7 +126,11 @@ public class ${name}HashSet$!{key_param} extends ${name}HashMapBase$!{key_param}
         for (int ii = 0; ii < tabSize; ii++) {
             if (isFilled (ii)) {
                 numWritten++;
+#if( $name == "Decimal")
+ 				out.writeLong (keys [ii].toLong());
+#else
  				out.write${name_abbr} (keys [ii]);
+#end
             }
         }
 
@@ -144,7 +151,11 @@ public class ${name}HashSet$!{key_param} extends ${name}HashMapBase$!{key_param}
         allocTable (inCount);
 
         for (int ii = 0; ii < inCount; ii++) {
+#if( $name == "Decimal")
+            ${key_type}       key = Decimal64.fromLong(in.readLong ());
+#else
             ${key_type}       key = $!{key_cast}in.read${name_abbr} ();
+#end
 
             add (key);
         }

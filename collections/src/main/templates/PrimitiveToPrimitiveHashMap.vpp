@@ -18,6 +18,9 @@ import deltix.util.collections.hash.*;
 import deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
+#if( $name == "Decimal" )
+import deltix.decimal.Decimal64;
+#end
 
 @SuppressWarnings ("unchecked")
 public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" && $second_name == "Object" )<K, V>#else$!{key_param}$!{value_param}
