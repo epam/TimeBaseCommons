@@ -1,6 +1,7 @@
 package deltix.util.memory;
 
 
+import deltix.decimal.Decimal64Utils;
 import deltix.util.io.UncheckedIOException;
 
 /**
@@ -486,6 +487,11 @@ public final class MemoryDataInput {
             SCALES [ii] = v;
             v *= 10;
         }
+    }
+
+    public double       readDecimal64 () {
+        long v = readLong();
+        return Decimal64Utils.fromLong(v);
     }
     
     public double       readScaledDouble () {
