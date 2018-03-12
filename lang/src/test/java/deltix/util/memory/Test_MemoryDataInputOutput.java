@@ -106,9 +106,9 @@ public class Test_MemoryDataInputOutput {
         final double []                 testValues = {
                 0, 0.7, -0.2, 2.28, -997.82,
                 666.234876, -234876747.6678,
-                0.23476890879672543,
                 0.23476890879672543765, //out of exp range
                 -0.8499999999999943,
+                347689087967254376.5,
                 Double.NaN,
                 Double.POSITIVE_INFINITY,
                 Double.NEGATIVE_INFINITY,

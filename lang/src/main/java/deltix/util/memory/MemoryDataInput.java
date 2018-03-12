@@ -491,7 +491,7 @@ public final class MemoryDataInput {
 
     public double       readDecimal64 () {
         long v = readLong();
-        return Decimal64Utils.toDouble(v);
+        return v == Long.MIN_VALUE ? Double.NaN : Decimal64Utils.toDouble(v);
     }
     
     public double       readScaledDouble () {
