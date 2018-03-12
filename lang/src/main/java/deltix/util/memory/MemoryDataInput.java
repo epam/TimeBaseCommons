@@ -491,7 +491,7 @@ public final class MemoryDataInput {
 
     public double       readDecimal64 () {
         long v = readLong();
-        return Decimal64Utils.fromLong(v);
+        return Decimal64Utils.toDouble(v);
     }
     
     public double       readScaledDouble () {
