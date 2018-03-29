@@ -19,7 +19,7 @@ import deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
 #if( $name == "Decimal" )
-import deltix.decimal.Decimal64;
+import deltix.dfp.Decimal64;
 #end
 
 @SuppressWarnings ("unchecked")

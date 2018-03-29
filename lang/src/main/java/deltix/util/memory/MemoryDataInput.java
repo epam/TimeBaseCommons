@@ -1,7 +1,6 @@
 package deltix.util.memory;
 
-
-import deltix.decimal.Decimal64Utils;
+import deltix.dfp.Decimal64Utils;
 import deltix.util.io.UncheckedIOException;
 
 /**

@@ -21,7 +21,7 @@ import deltix.util.memory.*;
 import deltix.util.collections.ICapacity;
 
 #if( $name == "Decimal" )
-import deltix.decimal.Decimal64;
+import deltix.dfp.Decimal64;
 #end
 
 #if( $name == "Object" )

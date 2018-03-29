@@ -1,7 +1,7 @@
 package deltix.util.memory;
 
 
-import deltix.decimal.Decimal64;
+import deltix.dfp.Decimal64;
 
 /**
  *  Reads/writes primitive values from/to an array of bytes,

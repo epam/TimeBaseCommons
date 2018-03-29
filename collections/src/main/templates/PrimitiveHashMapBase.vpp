@@ -11,7 +11,7 @@ import deltix.util.collections.*;
 import deltix.util.collections.hash.*;
 import java.util.*;
 #if( $name == "Decimal" )
-import deltix.decimal.Decimal64;
+import deltix.dfp.Decimal64;
 #end
 /**
  *  Base class for ${name} to anything hash maps.
