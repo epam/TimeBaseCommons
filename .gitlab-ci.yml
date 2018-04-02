@@ -13,7 +13,7 @@ cache:
   paths:
     - .gradle/wrapper
     - .gradle/caches
-	
+
 "Prepare":
     stage: prepare
     script:
