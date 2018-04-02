@@ -3,8 +3,17 @@ stages:
   - build
   - release
   - publish
-  - clean-up
+  - clean-up 
+# Overwrite Gradle cache directory.
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
 
+# Tell GitLab to cache it between jobs.
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+	
 "Prepare":
     stage: prepare
     script:
