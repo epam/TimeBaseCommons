@@ -1,5 +1,6 @@
 package deltix.util.log.gf;
 
+@Deprecated
 public interface AppendableEntry extends Appendable {
 
     @Override

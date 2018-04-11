@@ -66,6 +66,7 @@ configure(leafProjects) {
         mavenDeltix("Deltix.Java")
         mavenDeltix("QuantServer.Java")
         mavenDeltix("ThirdParty.Java")
+        mavenDeltix("Test.Java") // gflog only
     }
 
     dependencies {
