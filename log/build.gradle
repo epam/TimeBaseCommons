@@ -3,9 +3,9 @@ description = 'QuantServer abstraction/wrapper for gflogger'
 dependencies {
     compile project(':util')
 
-    compile 'deltix:deltix-gflog-api:2.0.6'
-    compile ('deltix:deltix-gflog-dcl:2.0.6') { transitive = false }
-    runtime 'deltix:deltix-gflog-core:2.0.6'
+    compile 'deltix:deltix-gflog-api:2.0.8'
+    compile ('deltix:deltix-gflog-dcl:2.0.8') { transitive = false }
+    runtime 'deltix:deltix-gflog-core:2.0.8'
 
     compile 'javax.mail:mail'
 }
