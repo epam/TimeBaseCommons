@@ -79,7 +79,7 @@ public class LiveProcess {
             }
 
         } catch (IOException e) {
-            Executor.LOG.fine(out.toString());
+            Executor.LOG.debug(out.toString());
         }
     }
 

@@ -1,10 +1,12 @@
 package deltix.util.concurrent;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 import deltix.util.collections.QuickList;
 import deltix.util.lang.Util;
 import java.util.*;
 import java.util.concurrent.locks.LockSupport;
-import java.util.logging.*;
 import net.jcip.annotations.GuardedBy;
 
 /**
@@ -13,7 +15,7 @@ import net.jcip.annotations.GuardedBy;
  */
 public class QuickExecutorWithQueue {
     public static final boolean         DEBUG_TASKS = false;
-    public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
+    public static final Log LOGGER = LogFactory.getLog("deltix.executor");
     private static final int            JOIN_TIMEOUT_MS = 1000;
 
     private enum TaskState {
@@ -173,14 +175,11 @@ public class QuickExecutorWithQueue {
 
                     try {
                         task.run ();
-                    } catch (UncheckedInterruptedException x) {
+                    } catch (UncheckedInterruptedException | InterruptedException x) {
                         if (state != WorkerState.TERMINATED)
-                            LOGGER.log (Level.FINE, task + " interrupted.", x);
-                    } catch (InterruptedException x) {
-                        if (state != WorkerState.TERMINATED)
-                            LOGGER.log (Level.FINE, task + " interrupted.", x);
+                            LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
-                        LOGGER.log (Level.SEVERE, task + " failed", x);
+                        LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
                     } finally {
                         if (task.finished ())
                             task = null;
@@ -386,15 +385,12 @@ public class QuickExecutorWithQueue {
                         if (!w.isAlive ())
                             break;
 
-                        LOGGER.warning (
-                            w + " failed to terminate in " +
-                            JOIN_TIMEOUT_MS + "ms, interrupting again ..."
-                        );
+                        LOGGER.warn("%s failed to terminate in %s ms, interrupting again ...").with(w).with(JOIN_TIMEOUT_MS);
 
                         w.interrupt ();
                     }
                 } catch (InterruptedException x) {
-                    Util.LOGGER.log (Level.WARNING, "While shutting down " + this, x);
+                    LOGGER.warn().append("While shutting down ").append(this).append(x).commit();
                 }
             }
         }

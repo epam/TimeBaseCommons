@@ -10,7 +10,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Util;
@@ -141,7 +140,7 @@ public class LinuxOS {
         try {
             command(null, parameters);
         } catch (Exception e) {
-            Executor.LOG.log(Level.FINE, "An error while execution " + Arrays.toString(parameters), e);
+            Executor.LOG.debug().append("An error while execution ").append(Arrays.toString(parameters)).append(e).commit();
         }
     }
     

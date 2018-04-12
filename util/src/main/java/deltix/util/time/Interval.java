@@ -1,10 +1,12 @@
 package deltix.util.time;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.text.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 /**
  * Represents an interval (also known as time span in some systems), which
@@ -22,7 +24,7 @@ public abstract class Interval implements Serializable {
         }
     }
     
-    private static final Logger LOGGER = Logger.getLogger (Interval.class.getName());
+    private static final Log LOGGER = LogFactory.getLog(Interval.class.getName());
 
 
     public static final Interval    ZERO = null;
@@ -187,11 +189,11 @@ public abstract class Interval implements Serializable {
         Interval interval = Interval.valueOf(intervalValue);
         long result = interval.toMilliseconds();
         if (result < minValue) {
-            LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
+            LOGGER.error().append("Property \"").append(propName).append("\" cannot be less than ").append(minValue).commit();
             result = minValue;
         }
         if (result > maxValue) {
-            LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
+            LOGGER.error().append("Property \"").append(propName).append("\" cannot be more than ").append(maxValue).commit();
             result = maxValue;
         }
         return result;

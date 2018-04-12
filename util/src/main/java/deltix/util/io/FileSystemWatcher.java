@@ -1,5 +1,7 @@
 package deltix.util.io;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.lang.Util;
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * <p>Allows to scan and watch the file system folders.</p>
@@ -113,7 +113,7 @@ public class FileSystemWatcher {
     }
 
     private final static FileSystemWatcher      INSTANCE = new FileSystemWatcher();
-    private final static Logger                 LOGGER = Logger.getLogger(FileSystemWatcher.class.getName());
+    private final static Log LOGGER = LogFactory.getLog(FileSystemWatcher.class.getName());
     
     public static FileSystemWatcher getInstance() {
         return INSTANCE;
@@ -311,7 +311,7 @@ public class FileSystemWatcher {
                             try {
                                 handler.onEvent(path.resolve(file).toFile(), eventType);
                             } catch (Throwable t) {
-                                LOGGER.log(Level.WARNING, "An error while event processing.", t);
+                                LOGGER.warn().append("An error while event processing.").append(t).commit();
                             }
                         }
                     }

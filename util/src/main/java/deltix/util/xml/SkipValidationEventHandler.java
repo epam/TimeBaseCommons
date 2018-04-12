@@ -1,29 +1,25 @@
 package deltix.util.xml;
 
-import deltix.util.lang.Util;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- *
- */
 public class SkipValidationEventHandler implements ValidationEventHandler {
 
-    private Logger logger;
+    private Log logger;
 
     public static final ValidationEventHandler  INSTANCE =
-            new SkipValidationEventHandler (Util.LOGGER);
+            new SkipValidationEventHandler (LogFactory.getLog(ValidationEventHandler.class));
 
-    public SkipValidationEventHandler(Logger logger) {
+    public SkipValidationEventHandler(Log logger) {
         this.logger = logger;
     }
 
     @Override
     public boolean handleEvent (ValidationEvent e) {
-        logger.log(Level.WARNING, "Error processing xml: " + e.getMessage());
+        logger.warn().append("Error processing xml: ").append(e.getMessage()).commit();
         return true;
     }
 }
