@@ -4,9 +4,9 @@ dependencies {
     compile project(':lang'),
             project(':collections')
 
-    compile 'deltix:deltix-gflog-api:2.0.8'
-    compile ('deltix:deltix-gflog-dcl:2.0.8') { transitive = false }
-    runtime 'deltix:deltix-gflog-core:2.0.8'
+    compile 'deltix:deltix-gflog-api'
+    compile ('deltix:deltix-gflog-dcl') { transitive = false }
+    runtime 'deltix:deltix-gflog-core'
 
     compile 'deltix:deltix-thread-affinity'
 

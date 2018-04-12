@@ -6,6 +6,7 @@ description = 'QuantServer commons-lang set of utilities'
 
 dependencies {
     compile group: 'deltix', name: 'deltix-dfp', version: '0.5.2'
+    compile 'deltix:deltix-gflog-api'
 }
 
 jmh {
