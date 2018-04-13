@@ -2,6 +2,9 @@ package deltix.util.swing;
 
 import com.jidesoft.combobox.AbstractComboBox;
 import com.jidesoft.combobox.DateComboBox;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Util;
 import deltix.util.io.StreamPump;
@@ -14,8 +17,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  Colleciton of static utilities
@@ -25,7 +26,9 @@ public abstract class SwingUtil {
     public static final Icon       NEW_ICON = loadIcon ("deltix/util/swing/new.gif");
     public static final Icon       OPEN_ICON = loadIcon ("deltix/util/swing/open.gif");
     public static final Icon       X_ICON = loadIcon ("deltix/util/swing/x.gif");
-        
+
+    static final Log LOGGER = LogFactory.getLog(Util.LOGGER_NAME);
+
     /**
      *  Marks components that call setDeepEnabled from their own setEnabled method
      */
@@ -119,11 +122,7 @@ public abstract class SwingUtil {
 		try {
 			return (loadImageAndCloseStream (is, file.getPath ()));
 		} catch (Throwable x) {
-			Util.LOGGER.log (
-                Level.WARNING, 
-                "Failed to read image file " + file,
-                x
-            );
+			LOGGER.warn().append("Failed to read image file ").append(file).append(x).commit();
 			return (null);
 		} finally {
 			Util.close (is);
@@ -202,14 +201,14 @@ public abstract class SwingUtil {
     public static void		    staticHandle (
         Component                   parent, 
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log                      logger,
+        LogLevel                       logLevel
     ) 
     {
         x = Util.unwrap (x);
 		
         if (logger != null)
-            logger.log (logLevel, "Uncaught Exception", x);
+            logger.log (logLevel).append("Uncaught Exception").append(x).commit();
 
         new StdExceptionDialog (parent, x).setVisible (true);    	
     }
@@ -217,14 +216,14 @@ public abstract class SwingUtil {
     public static void		    staticHandle (
         Component                   parent, 
         Throwable                   x,
-        Level                       logLevel        
+        LogLevel                       logLevel
     )
     {
-        staticHandle (parent, x, Util.LOGGER, logLevel);
+        staticHandle (parent, x, LOGGER, logLevel);
     }
     
     public static void		    staticHandle (Throwable x) {
-        staticHandle (null, x, Level.SEVERE);
+        staticHandle (null, x, LogLevel.ERROR);
     }
 
     public static void          asyncInvoke (Runnable r) {
@@ -237,17 +236,17 @@ public abstract class SwingUtil {
     public static void          asyncHandle (
         final Component             parent, 
         final Throwable             x,
-        final Level                 level
+        final LogLevel                 level
     ) 
     {
-        asyncHandle (parent, x, Util.LOGGER, level);
+        asyncHandle (parent, x, LOGGER, level);
     }
     
     public static void          asyncHandle (
         final Component             parent, 
         final Throwable             x,
-        final Logger                logger,
-        final Level                 level
+        final Log                   logger,
+        final LogLevel level
     ) 
     {
         if (SwingUtilities.isEventDispatchThread())

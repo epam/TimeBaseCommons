@@ -38,5 +38,5 @@ public class LoggingExceptionHandler implements ExceptionHandler {
      * Logs to "deltix.util".
      */
     public static final LoggingExceptionHandler INSTANCE =
-            new LoggingExceptionHandler(LogFactory.getLog("deltix.util"));
+            new LoggingExceptionHandler(LogFactory.getLog(Util.LOGGER_NAME));
 }
