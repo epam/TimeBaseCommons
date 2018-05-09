@@ -1,9 +1,10 @@
 package deltix.util.io;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.codec.HexBinCharEncoder;
 import deltix.util.codec.HexCharBinDecoder;
 import java.io.*;
-import java.util.logging.Level;
 
 import deltix.util.lang.Util;
 import deltix.util.memory.*;
@@ -15,6 +16,7 @@ import javax.crypto.spec.*;
  *
  */
 public class IOUtil extends BasicIOUtil {
+    private static final Log LOG = LogFactory.getLog(IOUtil.class);
     public static final String NOT_DECRYPTED      = "???????";
     public static final String TB_SECURE_CONN_KEY = "SECURE_CONN_KEY";
 
@@ -242,7 +244,7 @@ public class IOUtil extends BasicIOUtil {
             
             return (new String (cleartext, csname));
         } catch (Exception x) {
-            Util.LOGGER.log(Level.FINE, x.getMessage(), x);
+            LOG.trace("Error %s: %s").with(x.getMessage()).with(x);
 
             return (NOT_DECRYPTED);
         }                

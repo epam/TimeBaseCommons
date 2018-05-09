@@ -1,11 +1,10 @@
 package deltix.util.io;
 
-import java.io.*;
-import java.util.logging.*;
-import java.util.*;
-
 import deltix.util.lang.Util;
 import deltix.util.time.GlobalTimer;
+
+import java.io.File;
+import java.util.TimerTask;
 
 /**
  *
@@ -56,7 +55,7 @@ public class FileModificationTracker {
         try {
             checkModified ();
         } catch (Throwable x) {
-            Util.LOGGER.log (Level.SEVERE, "Uncaught: " + x, x);
+            Util.logException ("Uncaught exception", x);
         }
     }
     

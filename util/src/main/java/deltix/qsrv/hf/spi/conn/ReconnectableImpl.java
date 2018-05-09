@@ -1,20 +1,22 @@
 package deltix.qsrv.hf.spi.conn;
 
-import deltix.util.lang.Util;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 import deltix.util.log.LazyLogger;
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
 
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface, including reconnect
  *  capability.
  */
 public class ReconnectableImpl extends DisconnectableEventHandler {
+    protected static final Log DEFAULT_LOG = LogFactory.getLog(ReconnectableImpl.class);
+
     public interface Reconnector {
         /**
          *  Try and reconnect. If successful, this method must call
@@ -94,8 +96,8 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
 
     private volatile long                       initialReconnectInterval = 5000;
     private volatile ReconnectIntervalAdjuster  adjuster = null;
-    private volatile Logger                     logger = Util.LOGGER;
-    private volatile Level                      logLevel = Level.FINE;
+    private volatile Log                        logger = DEFAULT_LOG;
+    private volatile LogLevel                   logLevel = LogLevel.TRACE;
     private volatile String                     logprefix;
 
     private volatile LazyLogger                 lazyLogger = null;
@@ -162,19 +164,19 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         return numReconnectAttempts;
     }
 
-    public Level                            getLogLevel () {
+    public LogLevel                         getLogLevel () {
         return logLevel;
     }
 
-    public void                             setLogLevel (Level logLevel) {
+    public void                             setLogLevel (LogLevel logLevel) {
         this.logLevel = logLevel;
     }
 
-    public Logger                           getLogger () {
+    public Log                              getLogger () {
         return logger;
     }
 
-    public void                             setLogger (Logger logger) {
+    public void                             setLogger (Log logger) {
         this.logger = logger;
     }
 
@@ -195,7 +197,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
             lastExceptionAsString = null;
         }
 
-        log ("[{0}] Connected", logprefix);
+        logger.log (logLevel, "[%s] Connected").with(logprefix);
 
         onReconnected();
     }
@@ -206,48 +208,9 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
             timeDisconnected = System.currentTimeMillis ();
         }
 
-        log("[{0}] Disconnected", logprefix);
+        logger.log(logLevel, "[%s] Disconnected").with(logprefix);
 
         onDisconnected();
-    }
-
-    private void log(String msg, Object ... params) {
-        LazyLogger lz = lazyLogger;
-
-        if (lz != null) {
-            lz.log (logLevel, msg, params);
-        } else {
-            Logger          lg = logger;
-
-            if (lg != null && lg.isLoggable(logLevel))
-                lg.log (logLevel, msg, params);
-        }
-    }
-
-    private void log(String msg, Object param) {
-        LazyLogger lz = lazyLogger;
-
-        if (lz != null) {
-            lz.log (logLevel, msg, param);
-        } else {
-            Logger          lg = logger;
-
-            if (lg != null && lg.isLoggable(logLevel))
-                lg.log (logLevel, msg, param);
-        }
-    }
-
-    private void log(String msg, Throwable x) {
-        LazyLogger lz = lazyLogger;
-
-        if (lz != null) {
-            lz.log (logLevel, msg, x);
-        } else {
-            Logger          lg = logger;
-
-            if (lg != null && lg.isLoggable(logLevel))
-                lg.log (logLevel, msg, x);
-        }
     }
 
     public synchronized boolean             isConnected () {
@@ -268,12 +231,11 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                         this
                     );
             } catch (Throwable x) {
-                String          check = x.toString ();
-
+                String check = x.toString ();
                 if (check.equals (lastExceptionAsString)) {
-                    log ("[{0}] Reconnect failed due to: {1}", logprefix, lastExceptionAsString);
+                    logger.log (logLevel, "[%s] Reconnect failed due to: %s").with(logprefix).with(lastExceptionAsString);
                 } else {
-                    log ("[" + logprefix + "] Reconnect failed", x);
+                    logger.log (logLevel, "[%s] Reconnect failed: %s").with(logprefix).with(x);
                     lastExceptionAsString = check;
                 }
 
@@ -308,14 +270,14 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                     try {
                         tryReconnect ();
                     } catch (Throwable x) {
-                        Util.LOGGER.log (Level.SEVERE, "[" + logprefix + "] Unexpected", x);
+                        logger.error("[%s] Unexpected: %s").with(logprefix ).with(x);
                     }
                 }
             };
 
         GlobalTimer.INSTANCE.schedule (reconnectTask, currentReconnectInterval);
 
-        log("[{0}] Next reconnect in {1}", logprefix, currentReconnectInterval);
+        logger.log(logLevel, "[%s] Next reconnect in %s").with(logprefix).with(currentReconnectInterval);
     }
 
     public synchronized void                scheduleReconnect () {

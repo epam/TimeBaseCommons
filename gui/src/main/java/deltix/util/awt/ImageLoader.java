@@ -1,18 +1,21 @@
 package deltix.util.awt;
 
-import deltix.util.lang.Util;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.io.IOUtil;
 import deltix.util.io.StreamPump;
-import java.net.*;
+import deltix.util.lang.Util;
+
 import java.awt.*;
-import java.awt.image.*;
+import java.awt.image.ImageObserver;
 import java.io.*;
-import java.util.logging.*;
+import java.net.URL;
 
 
-public class ImageLoader {    
-    public static final int     MAX_WAIT_MS = 5000;
-    
+public class ImageLoader {
+	private static final Log LOG = LogFactory.getLog(ImageLoader.class);
+	public static final int     MAX_WAIT_MS = 5000;
+
 	public static Image			loadImage (URL url) 
         throws InterruptedException
     {
@@ -35,11 +38,7 @@ public class ImageLoader {
 		try {
 			return (loadImage (is));
 		} catch (Throwable x) {
-			Util.LOGGER.log (
-                Level.WARNING, 
-                "Failed to read image from relative path " + relPath,
-                x
-            );
+			LOG.warn ("Failed to read image from path %s: %s").with(relPath).with(x);
 			return (null);
 		} finally {
 			Util.close (is);
@@ -52,11 +51,7 @@ public class ImageLoader {
 		try {
 			return (loadImage (is));
 		} catch (Throwable x) {
-			Util.LOGGER.log (
-                Level.WARNING, 
-                "Failed to read image file " + file,
-                x
-            );
+			LOG.warn ("Failed to read image %s: %s").with(file).with(x);
 			return (null);
 		} finally {
 			Util.close (is);
@@ -103,10 +98,7 @@ public class ImageLoader {
                 return (img);
             
             if ((ok & ImageObserver.ABORT) != 0 || (ok & ImageObserver.ERROR) != 0) {
-                Util.LOGGER.log (
-                    Level.WARNING, 
-                    "Failed to read image"
-                );
+                LOG.warn ("Failed to read image");
                 return (null); 
             }
         }        	

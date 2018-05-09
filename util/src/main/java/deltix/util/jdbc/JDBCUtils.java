@@ -3,7 +3,6 @@ package deltix.util.jdbc;
 import deltix.util.lang.Util;
 import deltix.util.lang.Justification;
 import java.sql.*;
-import java.util.logging.*;
 import java.util.*;
 
 
@@ -288,7 +287,7 @@ public class JDBCUtils {
             try {
                 conn.rollback ();
             } catch (Throwable x) {
-                Util.LOGGER.log (Level.SEVERE, "Error while rolling back a transaction", x);
+                Util.logException("Error while rolling back a transaction", x);
             }
     }
         
@@ -297,7 +296,7 @@ public class JDBCUtils {
             try {
                 xf.close ();
             } catch (Throwable x) {
-                Util.LOGGER.log (Level.SEVERE, "Error while closing a DataTransformer", x);
+                Util.logException("Error while closing a DataTransformer", x);
             }
     }
     

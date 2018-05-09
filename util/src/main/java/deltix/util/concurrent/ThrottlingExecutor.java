@@ -1,17 +1,18 @@
 package deltix.util.concurrent;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.collections.QuickList;
 import deltix.util.lang.ExceptionHandler;
-import deltix.util.lang.Util;
 import deltix.util.time.TimeKeeper;
 
 import java.util.ArrayDeque;
-import java.util.logging.Level;
 
 /**
  *  Executes Runnables while maintaining a pre-set level of CPU usage.
  */
 public class ThrottlingExecutor extends Thread {
+    private static final Log LOG = LogFactory.getLog(ThrottlingExecutor.class);
 
     public enum TaskState {
         IDLE,
@@ -151,7 +152,7 @@ public class ThrottlingExecutor extends Thread {
                 throw x;
             } catch (Throwable x) {
                 if (handler == null)
-                    Util.LOGGER.log (Level.SEVERE, "Exception in " + next, x);
+                    LOG.error("Exception in %s: %s").with(next).with(x);
                 else
                     handler.handle (x);
             }
@@ -167,7 +168,7 @@ public class ThrottlingExecutor extends Thread {
 
     @Override
     public void                         run () {
-        Util.LOGGER.fine (this + " is starting.");
+        LOG.trace("%s is starting.").with(this);
 
         try {
             for (;;) {
@@ -190,7 +191,7 @@ public class ThrottlingExecutor extends Thread {
                     break;
             }
         } catch (InterruptedException | UncheckedInterruptedException x) {
-            Util.LOGGER.fine (this + " was interrupted.");
+            LOG.trace("%s was interrupted.").with(this);
         }
 
         synchronized (queue) {
@@ -198,6 +199,6 @@ public class ThrottlingExecutor extends Thread {
             queue.notify();
         }
 
-        Util.LOGGER.fine (this + " is terminating.");
+        LOG.trace("%s is terminating.").with(this);
     }
 }
