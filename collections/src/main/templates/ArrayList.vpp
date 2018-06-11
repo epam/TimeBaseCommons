@@ -671,6 +671,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     	return length != 0;
     }
 
+    /** Method copies content of this list into the list provided as argument. NOTE: destination list is not cleaned. */
     public void copyTo (${name}ArrayList list) {
         list.setSize(size);
 
