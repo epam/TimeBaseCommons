@@ -509,6 +509,13 @@ public final class MemoryDataOutput {
             writeLong(Decimal64Utils.fromDouble(v));
     }
 
+    public void           writeDecimal64 (Decimal64 v) {
+        if (v.isNaN())
+            writeLong(Decimal64Utils.NULL);
+        else
+            writeLong(Decimal64.toUnderlying(v));
+    }
+
     public void           writeDecimal64 (long v) {
         writeLong(v);
     }
