@@ -18,7 +18,7 @@ import org.junit.experimental.categories.Category;
  * @author Andy
  *         Date: 5/3/11 12:48 PM
  */
-@Category(Stress.class)
+@Category(Long.class)
 public class Test_FileBasedHiLowIdentifierGenerator {
 
     private FileHiLowIdentifierGenerator idgen;
