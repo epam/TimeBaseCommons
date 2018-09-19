@@ -25,6 +25,8 @@ public class Test_ObjectArrayList {
         final ObjectArrayList<String> list = new ObjectArrayList<>();
         list.add("1");
         assertList("[1]", list);
+        String[] array = list.toArray(new String[0]);
+        Assert.assertEquals(array[0], list.get(0));
 
         list.add("2");
         assertList("[1, 2]", list);

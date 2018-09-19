@@ -42,7 +42,7 @@ cache:
     image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-3.3:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-        - ./gradlew build --no-daemon
+        - ./gradlew build test --no-daemon
     artifacts:
         paths:
           - libs/
