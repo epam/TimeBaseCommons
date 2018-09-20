@@ -4,7 +4,7 @@ plugins {
     // Supports functionality similar to Maven BOM.
     // Helps to avoid re-declaring dependency version in each subproject.
     // See https://github.com/spring-gradle-plugins/dependency-management-plugin
-    id "io.spring.dependency-management" version "1.0.2.RELEASE"
+    id "io.spring.dependency-management" version "1.0.5.RELEASE"
 }
 
 // To update Gradle wrapper use:
