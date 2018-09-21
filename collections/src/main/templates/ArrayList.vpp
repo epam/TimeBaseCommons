@@ -235,7 +235,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      @SuppressWarnings("unchecked")
      public <T> T[] toArray(T[] a) {
         if (a.length < size) {
+#if($name == "Decimal")
+            return (T[]) Arrays.copyOf(elementData, size);
+#else
             return (T[]) Arrays.copyOf(elementData, size, a.getClass());
+#end
         }
 
         SafeArrays.safeArrayCopy (elementData, 0, a, 0, size);

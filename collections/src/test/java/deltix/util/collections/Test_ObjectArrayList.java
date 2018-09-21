@@ -12,6 +12,14 @@ import static org.junit.Assert.*;
 public class Test_ObjectArrayList {
 
     @Test
+    public void testRegressionAV () {
+        final ObjectArrayList<String> list = new ObjectArrayList<>();
+        list.add("TEST");
+        final String[] array = list.toArray(new String[0]);
+        assertEquals("TEST", array[0]);
+    }
+
+    @Test
     public void testConstructors() {
         assertList("[]", new ObjectArrayList<>());
         assertList("[]", new ObjectArrayList<>(5));
@@ -25,6 +33,8 @@ public class Test_ObjectArrayList {
         final ObjectArrayList<String> list = new ObjectArrayList<>();
         list.add("1");
         assertList("[1]", list);
+        String[] array = list.toArray(new String[0]);
+        Assert.assertEquals(array[0], list.get(0));
 
         list.add("2");
         assertList("[1, 2]", list);

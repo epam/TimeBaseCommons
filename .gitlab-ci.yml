@@ -23,9 +23,9 @@ cache:
         - git config user.name "Robot"
         - git config user.email "<internal@rtmath.net>"
         - git checkout -b pipeline-$CI_PIPELINE_ID
-        - ./gradlew prepareReleaseVersion
+        - ./gradlew prepareReleaseVersion --no-daemon
         - git commit -am "[Skip CI] Generate release version"
-        - ./gradlew prepareSnapshotVersion
+        - ./gradlew prepareSnapshotVersion --no-daemon
         - git commit -am "[Skip CI] Generate next development version"
         - git remote set-url --push origin "${CI_PUSH_REPO}"
         - git push origin -u pipeline-$CI_PIPELINE_ID
@@ -39,10 +39,10 @@ cache:
 
 "Build: Java 8":
     stage: build
-    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-3.3:latest
+    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-        - ./gradlew build
+        - ./gradlew build test --no-daemon
     artifacts:
         paths:
           - libs/
@@ -59,7 +59,7 @@ cache:
         - git config user.email "<internal@rtmath.net>"
         - git remote set-url --push origin "${CI_PUSH_REPO}"
         - git checkout pipeline-$CI_PIPELINE_ID~1
-        - ./gradlew pushVersion
+        - ./gradlew pushVersion --no-daemon
         - git checkout pipeline-$CI_PIPELINE_ID
         - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_BUILD_REF_NAME}
     tags:
@@ -72,7 +72,7 @@ cache:
 
 "Publish: Java 8":
     stage: publish
-    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-3.3:latest
+    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1
         - ./gradlew publish
