@@ -15,7 +15,7 @@ import org.junit.experimental.categories.Category;
 /**
  *
  */
-@Category(UHFUtils.class)
+@Category(Object.class)
 public class Test_GapQueue {
 
     private byte[] data = new byte[1024];

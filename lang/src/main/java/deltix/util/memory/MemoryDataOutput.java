@@ -1,5 +1,7 @@
 package deltix.util.memory;
 
+import deltix.dfp.Decimal64;
+import deltix.dfp.Decimal64Utils;
 import deltix.util.BitUtil;
 
 /**
@@ -498,6 +500,24 @@ public final class MemoryDataOutput {
         assert numBytes < 8;
 
         mBuffer [headerPos] = (byte) (exp | (numBytes << 4) | signBit);
+    }
+
+    public void           writeDecimal64 (double v) {
+        if (Double.isNaN(v))
+            writeLong(Decimal64Utils.NULL);
+        else
+            writeLong(Decimal64Utils.fromDouble(v));
+    }
+
+    public void           writeDecimal64 (Decimal64 v) {
+        if (v == null || v.isNaN())
+            writeLong(Decimal64Utils.NULL);
+        else
+            writeLong(Decimal64.toUnderlying(v));
+    }
+
+    public void           writeDecimal64 (long v) {
+        writeLong(v);
     }
 
     public void           writeScaledDouble (double v) {

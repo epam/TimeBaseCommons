@@ -6,12 +6,11 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.junit.experimental.categories.Category;
-import deltix.util.CommonsJUnitCategories.UHFUtils;
 
 /**
  *
  */
-@Category(UHFUtils.class)
+@Category(Object.class)
 public class Test_TeraByteOutputStream {
     @Test
     public void     testSingleBytes () throws IOException {

@@ -1,6 +1,7 @@
 package deltix.util.memory;
 
 
+import deltix.dfp.Decimal64;
 
 /**
  *  Reads/writes primitive values from/to an array of bytes,
@@ -366,5 +367,9 @@ public class DataExchangeUtils {
 
     public static void   	writeDoubleInvertBytes (byte [] bytes, int offset, double d) {
         writeLongInvertBytes (bytes, offset, Double.doubleToLongBits (d));
+    }
+
+    public static Decimal64 readDecimal (byte [] bytes, int offset) {
+        return Decimal64.fromLong(readLong(bytes, offset));
     }
 }

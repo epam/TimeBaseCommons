@@ -10,7 +10,9 @@ package deltix.util.collections.generated;
 import deltix.util.collections.*;
 import deltix.util.collections.hash.*;
 import java.util.*;
-
+#if( $name == "Decimal" )
+import deltix.dfp.Decimal64;
+#end
 /**
  *  Base class for ${name} to anything hash maps.
  */
@@ -192,10 +194,18 @@ protected final class KeyEnumeration implements ${name}Enumeration {
     		return (ret);
     	}
 
+#if($name == "Decimal")
+        @Override
+    	public ${type}            nextElement () {
+            return (next${name_abbr}Element ());
+        }
+#else
         @Override
     	public ${name}            nextElement () {
             return (next${name_abbr}Element ());
         }
+#end
+
 #end
     }
 

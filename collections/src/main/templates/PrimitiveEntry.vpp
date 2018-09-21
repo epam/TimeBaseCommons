@@ -2,6 +2,14 @@ package deltix.util.collections.generated;
 
 import deltix.util.collections.KeyEntry;
 
+#if( $name == "Decimal" )
+import deltix.dfp.Decimal64;
+
+public interface ${name}Entry extends KeyEntry<${type}> {
+#else
+
 public interface ${name}Entry extends KeyEntry<${name}> {
+#end
+
     public ${type} key${name}();
 }

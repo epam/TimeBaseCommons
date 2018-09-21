@@ -18,6 +18,12 @@ import deltix.util.collections.hash.*;
 import deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
+#if( $name == "Decimal" )
+import deltix.dfp.Decimal64;
+#end
+#if( $second_name == "Object" )
+import java.util.function.Consumer;
+#end
 
 @SuppressWarnings ("unchecked")
 public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" && $second_name == "Object" )<K, V>#else$!{key_param}$!{value_param}
@@ -27,7 +33,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
     implements Iterable ${value_param}
 #end
 {
-    private ${second_type} []         values;
+    protected ${second_type} [] values;
 
     public ${first_name}To${second_name}HashMap () {
         super ();
@@ -107,6 +113,15 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
     @Override
     public Iterator <V>     iterator () {
         return (new ElementIterator ());
+    }
+
+    @Override
+    public void forEach(Consumer<? super V> consumer) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                consumer.accept((V) values[i]);
+            }
+        }
     }
 #end
 

@@ -4,7 +4,7 @@ plugins {
     // Supports functionality similar to Maven BOM.
     // Helps to avoid re-declaring dependency version in each subproject.
     // See https://github.com/spring-gradle-plugins/dependency-management-plugin
-    id "io.spring.dependency-management" version "1.0.2.RELEASE"
+    id "io.spring.dependency-management" version "1.0.5.RELEASE"
 }
 
 // To update Gradle wrapper use:
@@ -43,7 +43,7 @@ configure(leafProjects) {
     // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
     dependencyManagement {
         dependencies {
-            dependency 'deltix:deltix-thread-affinity:1.0.0'
+            dependency 'deltix:deltix-thread-affinity:1.0.2'
             dependency 'commons-lang:commons-lang:2.6'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.1'
@@ -62,6 +62,7 @@ configure(leafProjects) {
     repositories {
         mavenCentral()
         mavenLocal()
+        mavenDeltix("RTMath.Java")
         mavenDeltix("Deltix.Java")
         mavenDeltix("QuantServer.Java")
         mavenDeltix("ThirdParty.Java")
@@ -71,6 +72,18 @@ configure(leafProjects) {
         testCompile 'junit:junit:4.12'
                 //'org.mockito:mockito-core:1.10.19'
     }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+            mavenLocal()
+            mavenDeltix("RTMath.Java")
+            mavenDeltix("Deltix.Java")
+            mavenDeltix("QuantServer.Java")
+            mavenDeltix("ThirdParty.Java")
+        }
+    }
+
 
 //    javadoc {
 //        // Suppress javadoc warnings about unsafe code
