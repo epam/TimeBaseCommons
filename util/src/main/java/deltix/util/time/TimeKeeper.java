@@ -1,14 +1,20 @@
 package deltix.util.time;
 
-import deltix.util.lang.*;
-import java.util.*;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.util.lang.MathUtil;
+import deltix.util.lang.Util;
+
+import java.util.EmptyStackException;
+import java.util.PriorityQueue;
+import java.util.Stack;
 import java.util.concurrent.locks.LockSupport;
-import java.util.logging.Level;
 
 /**
  *
  */
 public class TimeKeeper extends Thread {
+    private static final Log LOG = LogFactory.getLog(TimeKeeper.class);
     public static void          main (String [] args) throws Exception {
         TimeKeeper.setMode (Mode.HIGH_RESOLUTION_SYNC_BACK);
         
@@ -185,11 +191,7 @@ public class TimeKeeper extends Thread {
             //  System clock was set back (usually by NTP)
             //
             if (!setBackReported) {
-                Util.LOGGER.warning (
-                    "System time was adjusted from " +
-                    GMT.formatDateTimeMillis (t) + " -> " +
-                    GMT.formatDateTimeMillis (lastTimeMillis)
-                );
+                LOG.warn ("System time was adjusted from %s -> %s").with(GMT.formatDateTimeMillis (t)).with(GMT.formatDateTimeMillis (lastTimeMillis));
 
                 setBackReported = true;
             }
@@ -371,11 +373,11 @@ public class TimeKeeper extends Thread {
                 runTasks ();
             } catch (Exception x) {
                 if (exceptionCount++ > 500) {
-                    Util.LOGGER.severe ("TimeKeeper has logged 500 errors. Shutting down.");
+                    LOG.error("TimeKeeper has logged 500 errors. Shutting down.");
                     System.exit (1);
                 }
 
-                Util.LOGGER.log (Level.SEVERE, "Exception in TimeKeeper", x);
+                LOG.error("Exception in TimeKeeper: %s").with(x);
             }
         }
     }

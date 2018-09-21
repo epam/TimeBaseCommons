@@ -1,15 +1,17 @@
 package deltix.util.net.timer;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.lang.Util;
 import deltix.util.memory.*;
 import java.io.*;
 import java.net.*;
-import java.util.logging.*;
 
 /**
  *
  */
 public class TimerConnectionThread extends Thread {
+    private static final Log            LOG = LogFactory.getLog(Util.class);
     private final Socket                s;
     private final OutputStream          os;
     private final byte []               buffer = new byte [8];
@@ -23,7 +25,7 @@ public class TimerConnectionThread extends Thread {
 
     @Override
     public void                         run () {   
-        Util.LOGGER.info (s.getRemoteSocketAddress () + " connected.");
+        LOG.info ( "%s connected.").with(s.getRemoteSocketAddress ());
                                 
         try {
             for (int ii = 0; ii < TimerServer.WARMUP_NUM; ii++) {
@@ -37,9 +39,9 @@ public class TimerConnectionThread extends Thread {
             }
         } catch (Exception x) {
             if ((x instanceof SocketException) && x.getMessage ().contains ("reset by peer"))
-                Util.LOGGER.info (s.getRemoteSocketAddress () + " disconnected");
+                LOG.info ("%s disconnected").with(s.getRemoteSocketAddress ());
             else
-                Util.LOGGER.log (Level.WARNING, null, x);
+                LOG.info ("Connection %s produced error %s").with(s.getRemoteSocketAddress ()).with(x);
         } finally {
             Util.close (s);
         }

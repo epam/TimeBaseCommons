@@ -17,6 +17,8 @@ public class FixedSizeCharSeqToObjectMap<V> {
     }
 
     public FixedSizeCharSeqToObjectMap(int maxSize, OnDeleteCallback<V> itemDeleteCallback) {
+        if (maxSize < 16)
+            throw new IllegalArgumentException("Size is too small");
         map = new LimitedCharSeq2ObjectHashMap<>(maxSize, itemDeleteCallback);
     }
 

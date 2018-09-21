@@ -1,5 +1,8 @@
 package deltix.util.lang;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 import deltix.util.io.ByteArrayInputStreamEx;
 import deltix.util.io.ByteArrayOutputStreamEx;
 import javax.tools.*;
@@ -12,6 +15,7 @@ import java.net.URI;
  * Provides helper methods to compile one or several classes on-the-fly.
  */
 public class JavaCompilerHelper {
+    private static final Log LOG = LogFactory.getLog(JavaCompilerHelper.class);
     private static final JavaCompiler           JAVA_COMPILER_INSTANCE;
     private static final JavaFileManager        JAVA_FILEMGR_INSTANCE;
 
@@ -72,7 +76,7 @@ public class JavaCompilerHelper {
                 sb.append(s).append(Util.NATIVE_LINE_BREAK);
             }
             if (ok)
-                Util.LOGGER.warning(sb.toString());
+                LOG.log(LogLevel.WARN).append(sb.toString()).commit();
         }
 
         if (ok) {
@@ -113,7 +117,7 @@ public class JavaCompilerHelper {
                 sb.append(s).append(Util.NATIVE_LINE_BREAK);
             }
             if (ok)
-                Util.LOGGER.warning(sb.toString());
+                LOG.log(LogLevel.WARN).append(sb.toString()).commit();
         }
 
         if (ok) {

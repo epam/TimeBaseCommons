@@ -1,7 +1,6 @@
 package deltix.util.jdbc;
 
 import java.util.*;
-import java.util.logging.*;
 import java.text.*;
 import java.sql.*;
 import java.io.*;
@@ -17,7 +16,7 @@ public class ORACLE {
         try {
             loadDriver ();
         } catch (ClassNotFoundException cnfx) {
-            Util.LOGGER.log (Level.SEVERE, "Failed to load the ORACLE JDBC driver", cnfx);
+            Util.logException("Failed to load the ORACLE JDBC driver", cnfx);
         }
     }
 

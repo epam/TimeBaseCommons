@@ -343,7 +343,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
     }
 
 #if( $second_name == "Object" )
-    // Copy content into provided collection
+    /** Method copies content of this map into the map provided as argument. NOTE: destination is not cleaned. */
     public void copyTo (Collection<V> result) {
         final int       tabSize = values.length;
         for (int ii = 0; ii < tabSize; ii++)

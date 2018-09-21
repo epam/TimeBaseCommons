@@ -1,8 +1,10 @@
 package deltix.util.jdbc;
 
 import deltix.util.lang.Util;
-import java.util.logging.*;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  *
@@ -24,7 +26,7 @@ public class MSSQLServer {
         try {
             loadMS2005Driver ();
         } catch (ClassNotFoundException cnfx) {
-            Util.LOGGER.log (Level.SEVERE, "Failed to load the MS SQL Server driver", cnfx);
+            Util.logException ("Failed to load the MS SQL Server driver", cnfx);
         }
         
         return (
@@ -53,7 +55,7 @@ public class MSSQLServer {
         try {
             loadMSDriver ();
         } catch (ClassNotFoundException cnfx) {
-            Util.LOGGER.log (Level.SEVERE, "Failed to load the MS SQL Server driver", cnfx);
+            Util.logException ("Failed to load the MS SQL Server driver", cnfx);
         }
         
         return (
@@ -82,7 +84,7 @@ public class MSSQLServer {
         try {
             loadInetDriver ();
         } catch (ClassNotFoundException cnfx) {
-            Util.LOGGER.log (Level.SEVERE, "Failed to load the Inet SQL Server driver", cnfx);
+            Util.logException("Failed to load the Inet SQL Server driver", cnfx);
         }
         
         return (

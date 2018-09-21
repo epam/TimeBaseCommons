@@ -1,9 +1,6 @@
 package deltix.util.concurrent;
 
 import java.util.*;
-import java.util.logging.*;
-
-import deltix.util.lang.Util;
 
 /**
  *  Allows a single thread to receive data from multiple

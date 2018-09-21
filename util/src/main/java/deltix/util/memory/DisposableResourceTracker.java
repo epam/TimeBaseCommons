@@ -1,16 +1,21 @@
 package deltix.util.memory;
 
-import deltix.util.lang.Util;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.lang.Disposable;
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
+import deltix.util.lang.Util;
+
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashSet;
 
 
 /**
  *
  */
 public class DisposableResourceTracker implements Disposable {
+    private static final Log LOG = LogFactory.getLog(DisposableResourceTracker.class);
     private static final HashSet <DisposableResourceTracker>  mOpenResources =
         new HashSet <DisposableResourceTracker> ();
     
@@ -104,12 +109,7 @@ public class DisposableResourceTracker implements Disposable {
         throws Throwable 
     {
         if (mCreationStackTrace != null) {
-            Util.LOGGER.log (
-                Level.SEVERE,
-                mCreationStackTrace.getMessage () + " was never closed",
-                mCreationStackTrace
-            );
-
+            LOG.error ("%s was never closed: %s").with(mCreationStackTrace.getMessage ()).with(mCreationStackTrace);
             close ();
         }
         

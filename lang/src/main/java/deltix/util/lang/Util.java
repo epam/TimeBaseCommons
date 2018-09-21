@@ -1,11 +1,13 @@
 package deltix.util.lang;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+
 import java.io.*;
 import java.lang.management.*;
 import java.net.*;
 import java.security.*;
 import java.util.*;
-import java.util.logging.*;
 import java.util.prefs.Preferences;
 
 import java.lang.reflect.*;
@@ -16,7 +18,7 @@ public class Util {
     public static final boolean  IS32BIT            = "32".equals(System.getProperty("sun.arch.data.model"));
 
     public static final String   LOGGER_NAME        = "deltix.util";
-    public static final Logger   LOGGER             = Logger.getLogger(LOGGER_NAME);
+    private static final Log     LOG                = LogFactory.getLog(Util.class);
     public static final boolean  IS_WINDOWS_OS      = System.getProperty ("path.separator").equals(";");
     public static final String   NATIVE_LINE_BREAK  = System.getProperty("line.separator");
     public static final String[] EMPTY_STRING_ARRAY = {};
@@ -538,11 +540,7 @@ public class Util {
                 public void run () {
                     try {
                         fm.invoke (obj);
-                    } catch (IllegalAccessException x) {
-                        throw new RuntimeException (x);
-                    } catch (IllegalArgumentException x) {
-                        throw new RuntimeException (x);
-                    } catch (InvocationTargetException x) {
+                    } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException x) {
                         throw new RuntimeException (x);
                     }
                 }                
@@ -625,14 +623,19 @@ public class Util {
         try {
             return (getResource (path));
         } catch (MalformedURLException mux) {
-            LOGGER.log (Level.SEVERE, "Error getting resource '" + path + "'", mux);
+            LOG.error ("Error getting resource  '%s': %s").with(path).with(mux);
             return (null);
         }
     }
 
-    public static void			handleException (Exception x) {
-        LOGGER.log (Level.SEVERE, "Ignoring (but Logging) Exception ...", x);
+    public static void			handleException (Throwable x) {
+        LOG.error ("Ignoring (but Logging) Exception %s").with(x);
     }
+
+    public static void			logException (String message, Throwable x) {
+        LOG.error ("%s %s").with(message).with(x);
+    }
+
 
     /**
      *  Closes a Closeable without throwing an exception. Checks for null.
@@ -1193,11 +1196,11 @@ public class Util {
             Long.parseLong(System.getProperty (propName, String.valueOf (defaultValue)));
 
         if (result < minValue) {
-            LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
+            LOG.error ("Property \"%s\" cannot be less than %s").with(propName).with(minValue);
             result = minValue;
         }
         if (result > maxValue) {
-            LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
+            LOG.error ("Property \"%s\" cannot be more than %s").with(propName).with(maxValue);
             result = maxValue;
         }
         return result;
@@ -1224,11 +1227,11 @@ public class Util {
             Double.parseDouble(System.getProperty (propName, String.valueOf (defaultValue)));
 
         if (result < minValue) {
-            LOGGER.severe("Property \"" + propName + "\" cannot be less than " + minValue);
+            LOG.error ("Property \"%s\" cannot be less than %s").with(propName).with(minValue);
             result = minValue;
         }
         if (result > maxValue) {
-            LOGGER.severe("Property \"" + propName + "\" cannot be more than " + maxValue);
+            LOG.error ("Property \"%s\" cannot be more than %s").with(propName).with(maxValue);
             result = maxValue;
         }
         return result;

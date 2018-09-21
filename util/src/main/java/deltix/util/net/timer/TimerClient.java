@@ -5,7 +5,6 @@ import deltix.util.lang.*;
 import deltix.util.memory.*;
 import java.io.*;
 import java.net.*;
-import java.util.logging.*;
 
 /**
  *
@@ -63,7 +62,7 @@ public class TimerClient extends Thread {
 //                    );
             }             
         } catch (Exception x) {
-            Util.LOGGER.log (Level.WARNING, null, x);
+            Util.handleException (x);
         } finally {
             Util.close (socket);
         }

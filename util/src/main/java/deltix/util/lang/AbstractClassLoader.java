@@ -1,12 +1,14 @@
 package deltix.util.lang;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.concurrent.UncheckedInterruptedException;
-import deltix.util.lang.Util;
 import deltix.util.io.IOUtil;
-import java.io.*;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.logging.Level;
 
 /**
  *  Utility class which adapts the ClassLoader base class to
@@ -17,6 +19,8 @@ import java.util.logging.Level;
  *  @see #setSearchParentFirst
  */
 public abstract class AbstractClassLoader extends ClassLoader {
+    private static final Log LOG  = LogFactory.getLog(AbstractClassLoader.class);
+
     public static String        classNameToResourcePath (String className) {
         return (className.replace ('.', '/') + ".class");
     }
@@ -101,10 +105,10 @@ public abstract class AbstractClassLoader extends ClassLoader {
         } catch (Exception iox) {
             // #14720 rethrow  UncheckedInterruptedException, when got InterruptedException
             if (iox instanceof InterruptedException) {
-                Util.LOGGER.warning("Failed to read " + name);
+                LOG.warn("Failed to read %s").with(name);
                 throw new UncheckedInterruptedException(iox);
             } else {
-                Util.LOGGER.log(Level.WARNING, "Failed to read " + name, iox);
+                LOG.warn("Failed to read %s: %s").with(name).with(iox);
                 return (null);
             }
         }
@@ -143,7 +147,7 @@ public abstract class AbstractClassLoader extends ClassLoader {
         try {
             return (url == null ? null : url.openStream ());
         } catch (IOException iox) {
-            Util.LOGGER.log (Level.WARNING, "Failed to open " + url, iox);
+            LOG.warn("Failed to open %s: %s").with(url).with(iox);
             return (null);
         }
     }
@@ -152,7 +156,7 @@ public abstract class AbstractClassLoader extends ClassLoader {
         try {
             return (findResourceAsStream (name));
         } catch (IOException iox) {
-            Util.LOGGER.log (Level.WARNING, "Failed to open " + name, iox);
+            LOG.warn("Failed to open %s: %s").with(name).with(iox);
             return (null);
         }
     }
