@@ -1,8 +1,15 @@
+// Developers: please put credentials into ~/.gradle/gradle.properties
+// CI Build robots get these credentials from CI Environment Variables
+gradle.beforeProject {
+    if (findProperty('DELTIX_PROGET_USER') == null && System.getenv('DELTIX_PROGET_USER') == null)
+        ant.fail('ERROR: Credentials to access packages.deltixhub.com repo are NOT defined!\nSee https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/wikis/ProGetCredentials')
+}
+
 repositories.ext.mavenDeltix = { name ->
     repositories.maven {
         credentials {
-            username findProperty('DELTIX_PROGET_USER')
-            password findProperty('DELTIX_PROGET_PASS')
+            username findProperty('DELTIX_PROGET_USER') ?:  System.getenv('DELTIX_PROGET_USER') ?: "FakeProGetUser"
+            password findProperty('DELTIX_PROGET_PASS') ?:  System.getenv('DELTIX_PROGET_PASS') ?: "FakeProGetPass"
         }
         authentication {
             digest(BasicAuthentication)
@@ -14,8 +21,8 @@ repositories.ext.mavenDeltix = { name ->
 project.buildscript.repositories.ext.mavenDeltix = { name ->
     project.buildscript.repositories.maven {
         credentials {
-            username findProperty('DELTIX_PROGET_USER')
-            password findProperty('DELTIX_PROGET_PASS')
+            username findProperty('DELTIX_PROGET_USER') ?:  System.getenv('DELTIX_PROGET_USER') ?: "FakeProGetUser"
+            password findProperty('DELTIX_PROGET_PASS') ?:  System.getenv('DELTIX_PROGET_PASS') ?: "FakeProGetPass"
         }
         authentication {
             digest(BasicAuthentication)
