@@ -22,7 +22,7 @@ import java.io.InputStream;
 @Depends("deltix/util/currency/CurrencyCodes.xml")
 @ThreadSafe
 public class CurrencyCodeList {
-    private static final int                             amount        =   1000;
+    private static final int                             amount        =   10000;
     private static final CurrencyInfo[]                  numericIndex  = new CurrencyInfo[amount];
     private static final ThreeLetterToObjectMapQuick<CurrencyInfo> symbolicIndex = new ThreeLetterToObjectMapQuick<>(amount);
 
