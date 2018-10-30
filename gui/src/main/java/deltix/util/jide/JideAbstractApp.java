@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.Thread.*;
-import java.util.logging.*;
 
 import javax.swing.*;
 
@@ -14,8 +13,9 @@ import com.jidesoft.plaf.*;
 import com.jidesoft.plaf.basic.*;
 import com.jidesoft.swing.*;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogLevel;
 import deltix.util.io.*;
-import deltix.util.lang.*;
 import deltix.util.swing.*;
 
 public class JideAbstractApp extends DefaultDockableBarDockableHolder 
@@ -100,42 +100,42 @@ public class JideAbstractApp extends DefaultDockableBarDockableHolder
     }
     
     public void             handle (Throwable x) {
-        handle (x, Level.SEVERE);
+        handle (x, LogLevel.ERROR);
     }
     
     public void             handle (
         Throwable                   x,
-        Level                       logLevel        
+        LogLevel                       logLevel
     ) 
     {
-        handle (x, Util.LOGGER, logLevel);
+        handle (x, JideUtil.LOGGER, logLevel);
     }
     
     public void             handle (
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log                      logger,
+        LogLevel                       logLevel
     ) 
     {
         JideUtil.staticHandle (this, x, logger, logLevel);
     }
     
     public void             asyncHandle (Throwable x) {
-        asyncHandle (x, Level.SEVERE);
+        asyncHandle (x, LogLevel.ERROR);
     }
     
     public void             asyncHandle (
         Throwable                   x,
-        Level                       logLevel        
+        LogLevel                       logLevel
     ) 
     {
-        asyncHandle (x, Util.LOGGER, logLevel);
+        asyncHandle (x, JideUtil.LOGGER, logLevel);
     }
     
     public void                 asyncHandle (
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log logger,
+        LogLevel logLevel
     ) 
     {
         JideUtil.asyncHandle (this, x, logger, logLevel);

@@ -2,7 +2,6 @@ package deltix.util.jide;
 
 import java.awt.*;
 import java.io.*;
-import java.util.logging.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -10,6 +9,9 @@ import javax.swing.border.*;
 import com.jidesoft.dialog.*;
 import com.jidesoft.swing.*;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 import deltix.util.lang.*;
 
 /**
@@ -17,7 +19,9 @@ import deltix.util.lang.*;
  */
 public abstract class JideUtil {
 
-	  public static JideButton newZeroMarginButton ( Action action ) {
+    static final Log LOGGER = LogFactory.getLog(Util.LOGGER_NAME);
+
+    public static JideButton newZeroMarginButton (Action action ) {
 		JideButton btn = new JideButton ( action );
 
 		btn.setMargin ( new Insets ( 0,
@@ -39,14 +43,14 @@ public abstract class JideUtil {
    public static void		    staticHandle (
         Component                   parent,
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log logger,
+        LogLevel logLevel
     )
     {
         x = Util.unwrap (x);
 
         if (logger != null)
-            logger.log (logLevel, "Uncaught Exception", x);
+            logger.log (logLevel).append("Uncaught Exception").append(x).commit();
 
         StringWriter swr = new StringWriter();
         PrintWriter trace = new PrintWriter(swr);
@@ -97,14 +101,14 @@ public abstract class JideUtil {
     public static void		    staticHandle (
         Component                   parent,
         Throwable                   x,
-        Level                       logLevel
+        LogLevel                       logLevel
     )
     {
-        staticHandle (parent, x, Util.LOGGER, logLevel);
+        staticHandle (parent, x, LOGGER, logLevel);
     }
 
     public static void		    staticHandle (Throwable x) {
-        staticHandle (null, x, Level.SEVERE);
+        staticHandle (null, x, LogLevel.ERROR);
     }
 
     public static void          asyncInvoke (Runnable r) {
@@ -117,17 +121,17 @@ public abstract class JideUtil {
     public static void          asyncHandle (
         final Component             parent,
         final Throwable             x,
-        final Level                 level
+        final LogLevel                 level
     )
     {
-        asyncHandle (parent, x, Util.LOGGER, level);
+        asyncHandle (parent, x, LOGGER, level);
     }
 
     public static void          asyncHandle (
         final Component             parent,
         final Throwable             x,
-        final Logger                logger,
-        final Level                 level
+        final Log                logger,
+        final LogLevel                 level
     )
     {
         if (SwingUtilities.isEventDispatchThread())

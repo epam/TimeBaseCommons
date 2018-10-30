@@ -1,5 +1,8 @@
 package deltix.util.concurrent;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 import deltix.thread.affinity.AffinityConfig;
 import deltix.thread.affinity.AffinityThreadFactoryBuilder;
 import deltix.util.collections.QuickList;
@@ -9,7 +12,6 @@ import java.util.*;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
-import java.util.logging.*;
 
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.Interval;
@@ -26,7 +28,7 @@ import javax.annotation.Nullable;
  */
 public class QuickExecutor {
     public static final boolean         DEBUG_TASKS = false;
-    public static final Logger          LOGGER = Logger.getLogger ("deltix.executor");
+    public static final Log LOGGER = LogFactory.getLog("deltix.executor");
 
     public static int                   DELAY = 1000 * 60 * 5; // 5 min
 
@@ -55,8 +57,8 @@ public class QuickExecutor {
             if (shutdownInProgress)
                 return;
 
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine ("Running sweeper having idle workers: " + getIdleWorkersSize());
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug().append("Running sweeper having idle workers: ").append(getIdleWorkersSize()).commit();
 
             long time = TimeKeeper.currentTime;
             int length = getIdleWorkersSize();
@@ -246,14 +248,11 @@ public class QuickExecutor {
 
                     try {
                         task.run ();
-                    } catch (UncheckedInterruptedException x) {
+                    } catch (UncheckedInterruptedException | InterruptedException x) {
                         if (!stop)
-                            LOGGER.log (Level.FINE, task + " interrupted.", x);
-                    } catch (InterruptedException x) {
-                        if (!stop)
-                            LOGGER.log (Level.FINE, task + " interrupted.", x);
+                            LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
-                        LOGGER.log (Level.SEVERE, task + " failed", x);
+                        LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
                     } finally {
                         if (!task.setDone ()) {
                             task = null;
@@ -272,8 +271,8 @@ public class QuickExecutor {
                     workers.remove (this);
                 }
 
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.fine (this + " is terminating.");
+                if (LOGGER.isDebugEnabled())
+                    LOGGER.debug("%s is terminating.").with(this);
             }
         }
     }
@@ -322,7 +321,7 @@ public class QuickExecutor {
         long delay = Long.getLong("QuickExecutor.Sweeper.delay", DELAY);
 
         if (delay != DELAY)
-            LOGGER.log (Level.INFO, name + ": override threads sweeping delay to " + Interval.create(delay, TimeUnit.MILLISECOND).toHumanString());
+            LOGGER.info("%s: override threads sweeping delay to %s").with(name).with(Interval.create(delay, TimeUnit.MILLISECOND).toHumanString());
 
         GlobalTimer.INSTANCE.schedule(new SweeperTask(), delay, delay);
     }
@@ -352,8 +351,8 @@ public class QuickExecutor {
 
             w.thread.start();
 
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine ("# Workers: " + getWorkersSize());
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("# Workers: %s").with(getWorkersSize());
         }
 
         return (w);
@@ -406,7 +405,7 @@ public class QuickExecutor {
     public synchronized void                    shutdownInstance() {
         int decrementedValue = instanceUsages.decrementAndGet();
         if (decrementedValue < 0) {
-            LOGGER.log(Level.SEVERE, "QuickExecutor instance usages violated: " + decrementedValue, new Exception());
+            LOGGER.error().append("QuickExecutor instance usages violated: ").append(decrementedValue).append(new Exception()).commit();
         }
 
         if (decrementedValue == 0) {
@@ -426,11 +425,11 @@ public class QuickExecutor {
             synchronized (globalInstance) {
                 int usages = globalInstance.instanceUsages.get();
                 if (usages > 0) {
-                    LOGGER.log(Level.WARNING, "Global instance in use", new Exception());
+                    LOGGER.warn().append("Global instance in use").append(new Exception()).commit();
                 } else if (usages == 0) {
                     globalInstance.shutdown(true);
                 } else {
-                    LOGGER.log(Level.SEVERE, "QuickExecutor instance usages violated: " + usages, new Exception());
+                    LOGGER.error().append("QuickExecutor instance usages violated: ").append(usages).append(new Exception()).commit();
                 }
             }
         }
@@ -462,11 +461,11 @@ public class QuickExecutor {
                         if (!w.thread.isAlive ())
                             break;
 
-                        LOGGER.warning (w + " failed to terminate in 1s, interrupting again ...");
+                        LOGGER.warn().append(w).append(" failed to terminate in 1s, interrupting again ...").commit();
                         w.terminate ();
                     }
                 } catch (InterruptedException x) {
-                    LOGGER.log (Level.WARNING, "While shutting down " + this, x);
+                    LOGGER.warn().append("While shutting down ").append(this).append(x).commit();
                 }
             }
         }

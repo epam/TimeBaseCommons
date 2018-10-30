@@ -1,15 +1,19 @@
 package deltix.util.io;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import deltix.util.lang.*;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class FileUploadBean {
+    private static final Log LOG = LogFactory.getLog(FileUploadBean.class);
 
     private String                     _savePath, _filepath, _filename, _contentType;
     private Dictionary<String, String> _fields;
@@ -180,7 +184,7 @@ public class FileUploadBean {
                                               0,
                                               i);
                     }
-                    Util.LOGGER.log (Level.INFO, fieldName + "<->"+fieldValue.toString ());
+                    LOG.info( "%s<->%s").with(fieldName).with(fieldValue);
                     _fields.put (fieldName,
                                  fieldValue.toString ());
                 }

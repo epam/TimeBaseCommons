@@ -1,12 +1,13 @@
 package deltix.util.os;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.io.IOUtil;
 import deltix.util.lang.Util;
 
 import javax.management.*;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
  * Date: 4/29/13
  */
 public class MemoryUtils {
+    private static final Log LOG = LogFactory.getLog(MemoryUtils.class);
 
     public static String getTotalPhysicalMemory() {
 
@@ -25,7 +27,7 @@ public class MemoryUtils {
                 return getTotalPhysicalMemoryUnix();
 
         } catch (IOException | InterruptedException e) {
-            Util.LOGGER.log(Level.WARNING, "Error getting total memory", e);
+            LOG.error("Error getting total memory %s").with(e);
         }
 
         return null;
@@ -38,7 +40,7 @@ public class MemoryUtils {
             Object attribute = mBeanServer.getAttribute(new ObjectName("java.lang", "type", "OperatingSystem"), "TotalPhysicalMemorySize");
             return attribute != null ? attribute.toString() : null;
         } catch (JMException e) {
-            Util.LOGGER.log(Level.WARNING, "Error getting total memory: ", e);
+            LOG.error("Error getting total memory %s").with(e);
         }
 
         return null;
@@ -101,7 +103,7 @@ public class MemoryUtils {
                 for (String commandPart : pb.command()) {
                     executedCommand += commandPart + " ";
                 }
-                Util.LOGGER.log(Level.SEVERE, String.format("Error while command '%s' was executed:\n%s", executedCommand, output));
+                LOG.error("Error while command '%s' was executed:\n%s").with(executedCommand).with(output);
             }
 
             closeProcess(proc);
@@ -111,7 +113,7 @@ public class MemoryUtils {
             for (String commandPart : pb.command()) {
                 executedCommand += commandPart + " ";
             }
-            Util.LOGGER.log(Level.SEVERE, String.format("Error while command '%s' was executed", executedCommand));
+            LOG.error("Error while command '%s' was executed").with(executedCommand);
         }
         return null;
     }
@@ -123,8 +125,8 @@ public class MemoryUtils {
             Util.close(process.getOutputStream());
             Util.close(process.getErrorStream());
         } catch (Throwable e) {
-            Util.LOGGER.log(Level.SEVERE, String.format("Close process excpetion: %s", e.getMessage()));
-        }
+            LOG.error("Close process exception: %s").with(e.getMessage());
+       }
     }
 
     public static void main(String[] args) throws Throwable {

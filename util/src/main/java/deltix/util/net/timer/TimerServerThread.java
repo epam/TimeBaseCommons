@@ -3,7 +3,6 @@ package deltix.util.net.timer;
 import deltix.util.lang.*;
 import java.io.*;
 import java.net.*;
-import java.util.logging.*;
 
 /**
  *
@@ -30,7 +29,7 @@ public class TimerServerThread extends Thread {
                 new TimerConnectionThread (s).start ();        
             }
         } catch (Throwable x) {
-            Util.LOGGER.log (Level.WARNING, null, x);
+            Util.handleException (x);
         } finally {
             Util.close (ss);
         }        

@@ -18,7 +18,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
 
 @Depends("deltix/util/currency/CurrencyCodes.xml")
 @ThreadSafe
@@ -41,7 +40,7 @@ public class CurrencyCodeList {
                 is = new FileInputStream(alternativeLocation);
             read(is);
         } catch (final Throwable x) {
-            Util.LOGGER.log (Level.SEVERE, "Can not create currency code list", x);
+            Util.logException("Can not create currency code list", x);
         } finally {
             Util.close (is);
         }

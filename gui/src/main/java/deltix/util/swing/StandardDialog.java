@@ -1,12 +1,12 @@
 package deltix.util.swing;
 
-import deltix.util.lang.Util;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import deltix.gflog.Log;
+import deltix.gflog.LogLevel;
+
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 /**
  *  Dialog with a number of named buttons at the bottom. Non-modal by default,
@@ -105,21 +105,21 @@ public class StandardDialog extends JDialog {
     }
     
     public void		        handle (Throwable x) {
-        handle (x, Level.SEVERE);
+        handle (x, LogLevel.ERROR);
     }
     
     public void		        handle (
         Throwable                   x,
-        Level                       logLevel        
+        LogLevel                       logLevel
     ) 
     {
-        handle (x, Util.LOGGER, logLevel);
+        handle (x, SwingUtil.LOGGER, logLevel);
     }
     
     public void		        handle (
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log logger,
+        LogLevel logLevel
     ) 
     {
         SwingUtil.staticHandle (this, x, logger, logLevel);

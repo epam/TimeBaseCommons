@@ -1,5 +1,8 @@
 package deltix.util.repository;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,12 +10,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public abstract class AbstractRepository<T> implements Repository<T> {
         
     @SuppressWarnings("NonConstantLogger")
-    protected final Logger                          logger = Logger.getLogger(getClass().getName());
+    protected final Log logger = LogFactory.getLog(getClass().getName());
     protected final Object                          lock;
     
     private final List<RepositoryEventHandler<T>>   handlers = new ArrayList<>();

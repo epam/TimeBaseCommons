@@ -1,13 +1,16 @@
 package deltix.util.collections;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.lang.Util;
 import java.io.IOException;
-import java.util.logging.*;
+
 
 /**
  *
  */
 public class PrintVisitor implements Visitor <Object> {
+    private static final Log LOG = LogFactory.getLog(PrintVisitor.class);
     private final Appendable            out;
     private final String                prefix;
     private final String                postfix;
@@ -30,7 +33,7 @@ public class PrintVisitor implements Visitor <Object> {
             out.append (postfix);
             return (true);
         } catch (IOException iox) {
-            Util.LOGGER.log (Level.SEVERE, null, iox);
+            LOG.error ("Error printing %s").with(iox);
             return (false);
         }
     }        

@@ -1,11 +1,11 @@
 package deltix.util.log.gf;
 
-import deltix.util.log.gf.impl.GFLoggerFactory;
-import deltix.util.log.gf.jul.JULLoggerFactory;
+import deltix.gflog.dcl.DclBridgeFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public abstract class LoggerFactory {
 
     private static final LoggerFactory INSTANCE = createInstance();
@@ -41,18 +41,7 @@ public abstract class LoggerFactory {
     }
 
     private static LoggerFactory createInstance() {
-        String loggerFactory = System.getProperty(LoggerConstants.LOGGER_FACTORY_KEY);
-        if (loggerFactory != null) {
-            try {
-                return (LoggerFactory) Class.forName(loggerFactory).newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        String useGFLoggerProperty = System.getProperty(LoggerConstants.USE_GF_LOGGER_PROPERTY_KEY, "true").trim();
-        boolean useGFLogger = Boolean.parseBoolean(useGFLoggerProperty);
-        return useGFLogger ? new GFLoggerFactory() : new JULLoggerFactory();
+        return new DclBridgeFactory();
     }
 
 }

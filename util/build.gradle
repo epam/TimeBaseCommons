@@ -4,6 +4,10 @@ dependencies {
     compile project(':lang'),
             project(':collections')
 
+    compile 'deltix:deltix-gflog-api'
+    compile ('deltix:deltix-gflog-dcl') { transitive = false }
+    runtime 'deltix:deltix-gflog-core'
+
     compile 'deltix:deltix-thread-affinity'
 
     compile 'commons-lang:commons-lang',

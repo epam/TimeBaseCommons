@@ -1,5 +1,7 @@
 package deltix.util.swing;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogLevel;
 import deltix.util.io.IOUtil;
 import deltix.util.lang.Util;
 
@@ -8,8 +10,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SwingAbstractApp
     extends JFrame
@@ -70,42 +70,42 @@ public class SwingAbstractApp
     }
     
     public void		        handle (Throwable x) {
-        handle (x, Level.SEVERE);
+        handle (x, LogLevel.ERROR);
     }
     
     public void		        handle (
         Throwable                   x,
-        Level                       logLevel        
+        LogLevel                       logLevel
     ) 
     {
-        handle (x, Util.LOGGER, logLevel);
+        handle (x, SwingUtil.LOGGER, logLevel);
     }
     
     public void		        handle (
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log logger,
+        LogLevel                       logLevel
     ) 
     {
         SwingUtil.staticHandle (this, x, logger, logLevel);
     }
     
     public void		        asyncHandle (Throwable x) {
-        asyncHandle (x, Level.SEVERE);
+        asyncHandle (x, LogLevel.ERROR);
     }
     
     public void		        asyncHandle (
         Throwable                   x,
-        Level                       logLevel        
+        LogLevel                       logLevel
     ) 
     {
-        asyncHandle (x, Util.LOGGER, logLevel);
+        asyncHandle (x, SwingUtil.LOGGER, logLevel);
     }
     
     public void                 asyncHandle (
         Throwable                   x,
-        Logger                      logger,
-        Level                       logLevel
+        Log                      logger,
+        LogLevel                       logLevel
     ) 
     {
         SwingUtil.asyncHandle (this, x, logger, logLevel);

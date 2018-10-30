@@ -1,10 +1,11 @@
 package deltix.util.os;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
 
 import java.io.*;
-import java.util.logging.Logger;
 
 /**
  * Date: May 28, 2010
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class Executor {
     
-    public static final Logger LOG = Logger.getLogger("deltix.util.os");
+    public static final Log LOG = LogFactory.getLog("deltix.util.os");
 
     static class StreamGrabber extends Thread {
         private InputStream is;

@@ -1,8 +1,9 @@
 package deltix.util.concurrent;
 
 import deltix.util.lang.Util;
-import java.util.*;
-import java.util.logging.Level;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *  Limits the frequency of an action by delaying it by a specified period.
@@ -22,7 +23,7 @@ public abstract class FrequencyLimiter {
      *  @param x    The exception thrown.
      */
     protected void                      onError (Throwable x) {
-        Util.LOGGER.log (Level.SEVERE, this + " failed", x);
+        Util.logException(this + " failed", x);
     }
 
     /**

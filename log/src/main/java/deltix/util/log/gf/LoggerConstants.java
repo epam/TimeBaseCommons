@@ -1,5 +1,6 @@
 package deltix.util.log.gf;
 
+@Deprecated
 public final class LoggerConstants {
 
     public static final String LOGGER_FACTORY_KEY = "deltix.util.log.gf.LoggerFactory";

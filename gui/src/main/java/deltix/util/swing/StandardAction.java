@@ -1,10 +1,10 @@
 package deltix.util.swing;
 
-import deltix.util.io.UncheckedIOException;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
 import deltix.util.lang.SafeResourceBundle;
 import javax.swing.*;
 import java.util.*;
-import java.util.logging.Level;
 
 import deltix.util.lang.Util;
 
@@ -23,6 +23,7 @@ import deltix.util.lang.Util;
  */
 public abstract class StandardAction extends AbstractAction {
 
+    private static final Log LOG  = LogFactory.getLog(StandardAction.class);
     public static final String IMAGE_FOLDER = "images";
 
     /**
@@ -79,11 +80,7 @@ public abstract class StandardAction extends AbstractAction {
         try {
             action.putValue (SHORT_DESCRIPTION, rb.getString (nameKey + ".tt"));
         } catch (MissingResourceException mrx) {
-            Util.LOGGER.log (
-                Level.WARNING,
-                "Missing tooltip for action " + nameKey,
-                mrx
-            );
+            LOG.warn ("Missing tooltip for action %s: %s").with(nameKey).with(mrx);
         }
 
         Icon            icon = null;

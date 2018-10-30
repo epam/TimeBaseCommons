@@ -1,8 +1,8 @@
 package deltix.util.time;
 
-import deltix.util.lang.Util;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+import deltix.gflog.LogLevel;
 
 /**
  *  Logs a message if an activity takes longer than specified time.
@@ -23,15 +23,15 @@ dr.out ();
 public final class DelayTracker {
     private final long          delayThreshold;
     private final String        activityName;
-    private final Logger        logger;
-    private final Level         level;
+    private final Log logger;
+    private final LogLevel level;
     private long                timeIn = 0;
 
     public DelayTracker (long delayThreshold, String activityName) {
-        this (delayThreshold, activityName, Util.LOGGER, Level.INFO);
+        this (delayThreshold, activityName, LogFactory.getLog(DelayTracker.class), LogLevel.INFO);
     }
 
-    public DelayTracker (long delayThreshold, String activityName, Logger logger, Level level) {
+    public DelayTracker (long delayThreshold, String activityName, Log logger, LogLevel level) {
         this.delayThreshold = delayThreshold;
         this.activityName = activityName;
         this.logger = logger;
@@ -44,14 +44,14 @@ public final class DelayTracker {
 
     public void                 out () {
         if (timeIn == 0) {
-            logger.warning ("Out of sequence call: out () not called after in ()");
+            logger.warn().append("Out of sequence call: out () not called after in ()").commit();
             return;
         }
 
         long    delay = System.nanoTime () - timeIn;
 
-        if (delay >= delayThreshold && logger.isLoggable (level))
-            logger.log (level, activityName + " took " + delay * 1E-9 + "s");
+        if (delay >= delayThreshold && logger.isEnabled (level))
+            logger.log (level).append(activityName).append(" took ").append(delay * 1E-9).append(" s").commit();
 
         timeIn = 0;
     }

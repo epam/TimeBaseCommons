@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 /**
  * Logger uses lazy initialization on first log() in background thread.
  */
-@Deprecated
+@Deprecated // (Alex K will remove usages from TB client)
 public class LazyLogger {
 
     private final ArrayDeque<LogRecord> buffer = new ArrayDeque<LogRecord>(20);

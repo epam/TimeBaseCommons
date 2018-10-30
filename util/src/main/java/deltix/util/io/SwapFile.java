@@ -1,17 +1,16 @@
 package deltix.util.io;
 
+import deltix.gflog.Log;
+import deltix.gflog.LogFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- */
 public class SwapFile {
 
-    public static final Logger LOGGER = Logger.getLogger("deltix.util.io.SwapFile");
+    public static final Log LOGGER = LogFactory.getLog("deltix.util.io.SwapFile");
 
     private final File swapFile;
     protected final RandomAccessFile file;
@@ -24,8 +23,8 @@ public class SwapFile {
         try {
             String filename = "swap_" + System.identityHashCode(this) + "_" + System.currentTimeMillis();
             swapFile = new File(directory, filename);
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Creating swap file " + swapFile.getPath());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug().append("Creating swap file ").append(swapFile.getPath()).commit();
             }
             boolean fileExists = swapFile.exists();
             swapFile.deleteOnExit();
@@ -35,8 +34,8 @@ public class SwapFile {
             freeBlocks = new LongQueue(minGrowCount);
             if (fileExists) {
                 file.setLength(0);
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "Swap file " + swapFile.getPath() + " exists, truncating");
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Swap file %s exists, truncating").with(swapFile.getPath());
                 }
             }
         } catch (FileNotFoundException e) {
@@ -95,16 +94,16 @@ public class SwapFile {
     public void dispose() {
         synchronized (this) {
             if (swapFile.exists()) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "Disposing swap file " + swapFile.getPath());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug().append("Disposing swap file ").append(swapFile.getPath()).commit();
                 }
                 try {
                     file.close();
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Not able to close swap file " + swapFile.getPath());
+                    LOGGER.warn().append("Not able to close swap file ").append(swapFile.getPath()).commit();
                 }
                 if (!swapFile.delete()) {
-                    LOGGER.log(Level.WARNING, "Not able to delete swap file " + swapFile.getPath());
+                    LOGGER.warn().append("Not able to delete swap file ").append(swapFile.getPath()).commit();
                 }
             }
         }
@@ -123,8 +122,9 @@ public class SwapFile {
             }
             long length = file.length();
             long newLength = length + growCount * blockSize;
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Growing swap file " + swapFile.getPath() + " with " + growCount + " blocks x " + blockSize + " bytes to size " + newLength);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Growing swap file %s with %s blocks x %s bytes to size %s")
+                        .with(swapFile.getPath()).with(growCount).with(blockSize).with(newLength);
             }
             file.setLength(newLength);
             for (int i = 0; i < growCount; ++i) {

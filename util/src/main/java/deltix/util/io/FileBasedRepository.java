@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     private static final int                        TEMP_FILE_LIFE_TIME = 10 * 60 * 1000;
@@ -41,7 +40,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
         final String watchFsProperty = System.getProperty(WATCH_FS_PROPERTY);        
         if (watchFsProperty != null && watchFsProperty.equalsIgnoreCase("false")) {
             this.watchFs = false;
-            logger.log(Level.INFO, "File system monitoring has beed disabled for {0} by the system property {1}.", new Object[]{getClass().getSimpleName(), WATCH_FS_PROPERTY});
+            logger.info("File system monitoring has beed disabled for %s by the system property %s.").with(getClass().getSimpleName()).with(WATCH_FS_PROPERTY);
         } else {        
             this.watchFs = watchFs;
         }
@@ -89,7 +88,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                 
             });
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Cannot clean-up the folder " + root + " from the temporary files.", e);
+            logger.warn().append("Cannot clean-up the folder ").append(root).append(" from the temporary files.").append(e).commit();
         }
     }
     
@@ -136,8 +135,8 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
 
         final Path path = file.toPath();
 
-        if (logger.isLoggable(Level.FINE))
-            logger.log(Level.FINE, "[{0}] {1} > {2}", new Object[]{getClass().getSimpleName(), event, path});
+        if (logger.isDebugEnabled())
+            logger.debug("[%s] %s > %s").with(getClass().getSimpleName()).with(event).with(path);
 
         if (event == EventType.DELETED) { // a file or folder is deleted                    
 
@@ -178,7 +177,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                             try {
                                 FileSystemWatcher.getInstance().subscribe(fsEventHandler, file, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
                             } catch (IOException e) {
-                                logger.log(Level.WARNING, "An error while subscription to " + file, e);
+                                logger.warn().append("An error while subscription to ").append(file).append(e).commit();
                             }
                         }
                     }
@@ -209,7 +208,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                 handler.onEvent(fItem.item, e);
                             }
                         } catch (Throwable t) {
-                            logger.log(Level.WARNING, "An error while preparing item for " + path, t);
+                            logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                         }
                     }
                     break;
@@ -233,7 +232,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                         handler.onEvent(fItem.item, SCMDRepositoryEvent.CREATED);
                                     }
                                 } catch (Throwable t) {
-                                    logger.log(Level.WARNING, "An error while preparing item for " + path, t);
+                                    logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                                 }
                             }
                         }
@@ -247,7 +246,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                     handler.onEvent(fItem.item, SCMDRepositoryEvent.DELETED);
                                 }
                             } catch (Throwable t) {
-                                logger.log(Level.WARNING, "An error while preparing item for " + path, t);
+                                logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                             }
                         } else if (lastModified != fItem.lastModified) {
                             // modified
@@ -261,7 +260,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                         handler.onEvent(fItem.item, SCMDRepositoryEvent.MODIFIED);
                                     }
                                 } catch (Throwable t) {
-                                    logger.log(Level.WARNING, "An error while preparing item for " + path, t);
+                                    logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                                 }
                             }
                         }

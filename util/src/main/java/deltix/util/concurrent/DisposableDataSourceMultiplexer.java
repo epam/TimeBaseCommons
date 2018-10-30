@@ -2,9 +2,6 @@ package deltix.util.concurrent;
 
 import deltix.util.lang.Util;
 import deltix.util.lang.Disposable;
-import java.util.logging.Level;
-
-import deltix.util.*;
 
 /**
  *
@@ -15,14 +12,14 @@ public class DisposableDataSourceMultiplexer <T extends AsynchronousDisposableDa
 {
     /**
      *  Closes all registered disposable data sources. All exceptions are logged 
-     *  to {@link Util#LOGGER} and ignored.
+     *  to {@link Util#logException(String, Throwable)} and ignored.
      */
     public void         close () {
         for (T ds : dataSources ())
             try {
                 ds.close ();
             } catch (Throwable x) {
-                Util.LOGGER.log (Level.SEVERE, "close () threw a " + x, x);
+                Util.logException ("close () threw exception", x);
             }
     }
 }

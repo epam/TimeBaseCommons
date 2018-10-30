@@ -3,7 +3,6 @@ package deltix.util.xml;
 import deltix.util.lang.Util;
 import java.util.*;
 import java.io.*;
-import java.util.logging.Level;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.transform.*;
@@ -25,7 +24,7 @@ public class HTML {
         try {
             context = JAXBContext.newInstance (HTML.class);
         } catch (JAXBException x) {
-            Util.LOGGER.log (Level.SEVERE, "Failed to init JAXB for HTML", x);
+            Util.logException("Failed to init JAXB for HTML", x);
         }
     }
     
@@ -45,7 +44,7 @@ public class HTML {
                 m.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
                 m.marshal (this, swr);
             } catch (JAXBException x) {
-                Util.LOGGER.log (Level.SEVERE, "Failed to marshal HTML", x);
+                Util.logException("Failed to marshal HTML", x);
             }
         }
         
