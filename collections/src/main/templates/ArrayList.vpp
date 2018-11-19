@@ -91,17 +91,32 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		this(10);
     }
 
+#if($name == "Long" || $name == "Integer" || $name == "Short" || $name == "Byte" || $name == "Character" || $name == "Boolean")
+     /**
+     * Constructs a list containing the elements of the specified
+     * list, in the order they are returned by the collection's
+     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * the same size of the specified collection.
+     *
+     * @param list the list whose elements are to be placed into this list.
+     */
+    public ${name}ArrayList(${name}List list) {
+        elementData = list.to${name_abbr}Array();
+        size = elementData.length;
+    }
+#end
+
     /**
      * Constructs a list containing the elements of the specified
      * collection, in the order they are returned by the collection's
      * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
-     * 110% the size of the specified collection.
+     * the same size of the specified collection.
      *
      * @param c the collection whose elements are to be placed into this list.
      */
     public ${name}ArrayList(Collection<? extends ${type_Object}> c) {
         size = c.size ();
-		elementData = new ${actualType} [(size * 110) / 100];  // allow 10% room for growth
+		elementData = new ${actualType} [size];
 
 		Iterator<? extends ${type_Object}> iter = c.iterator ();
         int			idx = 0;
@@ -113,18 +128,18 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     public ${name}ArrayList (${type} [] arr) {
     	size = arr.length;
 #if($name == "Object")
-    	elementData = Arrays.copyOf(arr, (size * 110) / 100, Object[].class); // intrinsic doesn't zero memory
+    	elementData = Arrays.copyOf(arr, size, Object[].class); // intrinsic doesn't zero memory
 #else
-        elementData = Arrays.copyOf(arr, (size * 110) / 100); // intrinsic doesn't zero memory
+        elementData = Arrays.copyOf(arr, size); // intrinsic doesn't zero memory
 #end
     }
 
     public ${name}ArrayList (${type} [] arr, int offset, int length) {
         size = length;
 #if($name == "Object")
-        elementData = Arrays.copyOfRange(arr, offset, offset + ((length * 110) / 100), Object[].class); // intrinsic doesn't zero memory
+        elementData = Arrays.copyOfRange(arr, offset, offset + length, Object[].class); // intrinsic doesn't zero memory
 #else
-        elementData = Arrays.copyOfRange(arr, offset, offset + ((length * 110) / 100)); // intrinsic doesn't zero memory
+        elementData = Arrays.copyOfRange(arr, offset, offset + length); // intrinsic doesn't zero memory
 #end
     }
 
