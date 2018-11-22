@@ -92,6 +92,19 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
 #if($name == "Long" || $name == "Integer" || $name == "Short" || $name == "Byte" || $name == "Character" || $name == "Boolean")
+    /**
+     * Constructs a list containing the elements of the specified
+     * list, in the order they are returned by the collection's
+     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * the same size of the specified collection.
+     *
+     * @param list the list whose elements are to be placed into this list.
+     */
+    public ${name}ArrayList(${name}ArrayList list) {
+        elementData = list.to${name_abbr}Array();
+        size = elementData.length;
+    }
+
      /**
      * Constructs a list containing the elements of the specified
      * list, in the order they are returned by the collection's
