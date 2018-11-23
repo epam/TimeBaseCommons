@@ -189,6 +189,32 @@ public class JavaCompilerHelper {
         public ClassLoader getClassLoader(Location location) {
             return xcl;
         }
+
+        @Override
+        public String inferBinaryName(Location location, JavaFileObject file) {
+            if (file instanceof JarEntryObject) {
+                return ((JarEntryObject) file).binaryName();
+            } else {
+                return fileManager.inferBinaryName(location, file);
+            }
+        }
+
+        @Override
+        public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
+            if (location == StandardLocation.PLATFORM_CLASS_PATH) {
+                return fileManager.list(location, packageName, kinds, recurse);
+            } else if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) {
+                Iterable<JavaFileObject> list = fileManager.list(location, packageName, kinds, recurse);
+
+                List<JavaFileObject> objects = JarScanner.list(xcl, packageName);
+                for (JavaFileObject object : list)
+                    objects.add(object);
+
+                return objects;
+            }
+
+            return super.list(location, packageName, kinds, recurse);
+        }
     }
 
 
