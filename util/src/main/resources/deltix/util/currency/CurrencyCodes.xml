@@ -1580,7 +1580,19 @@
       <Name>Verge</Name>
       <AlphabeticCode>XVG</AlphabeticCode>
       <Sign>XVG</Sign>
-    </Currency>	 
+    </Currency>
+    <Currency>
+      <NumericCode>902</NumericCode>
+      <Name>USD Coin</Name>
+      <AlphabeticCode>USDC</AlphabeticCode>
+      <Sign>USDC</Sign>
+    </Currency>
+    <Currency>
+      <NumericCode>903</NumericCode>
+      <Name>Paxos</Name>
+      <AlphabeticCode>PAX</AlphabeticCode>
+      <Sign>PAX</Sign>
+    </Currency>
 	  
   </Currencies>
 </CurrencyManager>
