@@ -1,4 +1,4 @@
-package deltix;
+package deltix.util.collections;
 
 import deltix.util.collections.generated.ObjectList;
 
