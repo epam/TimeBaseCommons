@@ -285,6 +285,10 @@ public final class MemoryDataOutput {
         mPos += 8;
     }
 
+    public void           writeLong (Decimal64 v) {
+        writeDecimal64(v);
+    }
+
     public void           writeLongInverted (long v) {
         makeRoom (8);
         DataExchangeUtils.writeLongInvertBytes (mBuffer, mPos, v);
