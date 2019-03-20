@@ -8,7 +8,9 @@ import deltix.util.lang.Util;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 public class CollectionUtil {
 
@@ -98,6 +100,20 @@ public class CollectionUtil {
     }
 
     // region hashCode
+
+    public static <T> int hashCode(final ObjectList<T> list,
+                                   final ToIntFunction<? super T> elementHashFunction) {
+        int hash = 0;
+
+        if (list != null) {
+            for (int i = 0, size = list.size(); i < size; i++) {
+                final T object = list.getObjectNoRangeCheck(i);
+                hash = 31 * hash + elementHashFunction.applyAsInt(object);
+            }
+        }
+
+        return hash;
+    }
 
     public static int hashCode(final ObjectList<?> list) {
         int hash = 0;
@@ -193,6 +209,31 @@ public class CollectionUtil {
     // endregion
 
     // region equals
+
+    public static <T> boolean equals(final ObjectList<T> lhs,
+                                     final ObjectList<T> rhs,
+                                     final BiPredicate<? super T, ? super T> elementEqualsFunction) {
+        if (lhs == rhs) {
+            return true;
+        }
+
+        if (lhs == null || rhs == null) {
+            return false;
+        }
+
+        final int size = lhs.size();
+        if (size != rhs.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (!elementEqualsFunction.test(lhs.getObjectNoRangeCheck(i), rhs.getObjectNoRangeCheck(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public static <T> boolean equals(final ObjectList<T> lhs, final ObjectList<T> rhs) {
         if (lhs == rhs) {
