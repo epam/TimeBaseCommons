@@ -10,17 +10,15 @@ dependencies {
 
     compile 'deltix:deltix-thread-affinity'
 
-    compile 'commons-lang:commons-lang',
-            'org.apache.commons:commons-compress:1.7',
-            'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'commons-lang:commons-lang'
+    compile 'org.apache.commons:commons-compress:1.7'
+            //compile 'javax.servlet:javax.servlet-api:3.1.0'
 
     compileOnly 'com.google.code.findbugs:jsr305'
 
-
 //    compile('com.sun.xml.bind:jaxb-xjc:2.2.11')  // 2.2.11 has only bug fixes compared 2.2.8-b130911.1802 (which used by Java 8)
-    compile('org.glassfish.jaxb:jaxb-runtime:2.2.11')  // Glassfish replaces JAXB RI
+    compile 'org.glassfish.jaxb:jaxb-runtime:2.2.11'  // Glassfish replaces JAXB RI
     //compile('javax.xml:jsr173:1.0'){ transitive = false }
-
 
     compile('net.java.dev.jna:jna:3.4.0'){ transitive = false }
     compile('net.java.dev.jna:platform:3.4.0'){ transitive = false }
