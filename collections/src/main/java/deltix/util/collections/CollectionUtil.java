@@ -412,7 +412,7 @@ public class CollectionUtil {
 
         for (int i = 0; i < size; i++) {
             final T element = list.getObjectNoRangeCheck(i);
-            final T elementCopy = elementCopyFunction.apply(element);
+            final T elementCopy = (element == null) ? null : elementCopyFunction.apply(element);
 
             copy.add(elementCopy);
         }
