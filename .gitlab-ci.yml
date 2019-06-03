@@ -58,9 +58,9 @@ cache:
         - git config user.name "Robot"
         - git config user.email "<internal@rtmath.net>"
         - git remote set-url --push origin "${CI_PUSH_REPO}"
-        - git checkout pipeline-$CI_PIPELINE_ID~1
+        - git checkout origin/pipeline-$CI_PIPELINE_ID~1
         - ./gradlew pushVersion --no-daemon
-        - git checkout pipeline-$CI_PIPELINE_ID
+        - git checkout origin/pipeline-$CI_PIPELINE_ID
         - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_BUILD_REF_NAME}
     tags:
         - Linux
