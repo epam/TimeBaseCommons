@@ -40,49 +40,53 @@ ext {
     types.Object =  [ name : 'Object', 'name_abbr' : 'Object', type : 'Object', 'type_Object' : 'ObjectType', size : 'SIZE_OF_POINTER' ]
 
     types.Decimal =  [ name : 'Decimal', 'name_abbr' : 'Decimal', type : 'Decimal64', 'type_Object' : 'Decimal64', size : 'SIZE_OF_POINTER' ]
+
+    types.HdDateTime =  [ name : 'HdDateTime', 'name_abbr' : 'HdDateTime', type : 'HdDateTime', 'type_Object' : 'HdDateTime', size : 'SIZE_OF_POINTER' ]
+
+    types.HdTimeSpan =  [ name : 'HdTimeSpan', 'name_abbr' : 'HdTimeSpan', type : 'HdTimeSpan', 'type_Object' : 'HdTimeSpan', size : 'SIZE_OF_POINTER' ]
 }
 
 velocity {
     entry {
         from = "$srcDir/PrimitiveEntry.vpp"
         to = "$dstDir/@{name}Entry.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
     enumeration {
         from = "$srcDir/PrimitiveEnumeration.vpp"
         to = "$dstDir/@{name}Enumeration.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
     list {
         from = "$srcDir/List.vpp"
         to = "$dstDir/@{name}List.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
     arrayList {
         from = "$srcDir/ArrayList.vpp"
         to = "$dstDir/@{name}ArrayList.java"
-        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal ]
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
     comparator {
         from = "$srcDir/PrimitiveComparator.vpp"
         to = "$dstDir/@{name}Comparator.java"
-        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Decimal ]
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
     hashSet {
         from = "$srcDir/PrimitiveHashSet.vpp"
         to = "$dstDir/@{name}HashSet.java"
-        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal ]
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
     hashMapBase {
         from = "$srcDir/PrimitiveHashMapBase.vpp"
         to = "$dstDir/@{name}HashMapBase.java"
-        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal ]
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 }
 

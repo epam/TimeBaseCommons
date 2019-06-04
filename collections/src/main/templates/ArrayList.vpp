@@ -8,7 +8,7 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.Arrays;
 import java.lang.reflect.Array;
-#if($name == "Object" || $name == "Decimal")
+#if($name == "Object" || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
 import deltix.util.lang.Util;
 import java.util.Enumeration;
 import java.util.Comparator;
@@ -22,6 +22,10 @@ import deltix.util.collections.ICapacity;
 
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 
 #if( $name == "Object" )
@@ -240,7 +244,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return indexOf (elem) >= 0;
     }
 
-#if( $name == "Object" || $name == "Decimal")
+#if( $name == "Object" || $name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
     /**
      * <p>Returns an array containing all of the elements in this list in the
      * correct order.  The runtime type of the returned array is that of the
@@ -263,7 +267,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      @SuppressWarnings("unchecked")
      public <T> T[] toArray(T[] a) {
         if (a.length < size) {
-#if($name == "Decimal")
+#if($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
             return (T[]) Arrays.copyOf(elementData, size);
 #else
             return (T[]) Arrays.copyOf(elementData, size, a.getClass());
@@ -417,7 +421,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 #end
 
-#if ($name == "Decimal")
+#if ($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
     /**
      * Returns <tt>true</tt> if this list contains the specified element.
      *
@@ -446,6 +450,16 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 	    for (int i = 0; i < size; i++)
 			if (Util.xequals (elem, elementData[i]))
 		    	return i;
+#elseif ($name == "HdDateTime")
+    public int indexOf (HdDateTime elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
+#elseif ($name == "HdTimeSpan")
+    public int indexOf (HdTimeSpan elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
 #else
     public int indexOf (${type} elem) {
 	    for (int i = 0; i < size; i++)
@@ -470,6 +484,16 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		    	return i;
 #elseif ($name == "Decimal")
     public int lastIndexOf (Decimal64 elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#elseif ($name == "HdDateTime")
+    public int lastIndexOf (HdDateTime elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#elseif ($name == "HdTimeSpan")
+    public int lastIndexOf (HdTimeSpan elem) {
 	    for (int i = size-1; i >= 0; i--)
 			if (Util.xequals (elem, elementData [i]))
 		    	return i;
@@ -671,7 +695,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
         Iterator<? extends ${type_Object}> iter = c.iterator ();
 		for (int i=0; i<numNew; i++)
 	    	elementData[size++] =
-#if( $name == "Object"  || $name == "Decimal")
+#if( $name == "Object"  || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
                 iter.next ();
 #else
                 (iter.next ()).${type}Value ();
@@ -681,7 +705,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return numNew != 0;
     }
 
-    #if($name != "Object" || $name == "Decimal")
+    #if($name != "Object" || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
 
      /**
      * Appends all of the elements in the specified array to the end of
@@ -845,7 +869,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		// Write out all elements in the proper order.
 		for (int i=0; i<size; i++)
 #if( $name == "Decimal")
-        	s.writeLong (elementData[i].toLong());
+        	s.writeLong (Decimal64.toUnderlying(elementData[i]));
+#elseif ( $name == 'HdDateTime' )
+        	s.writeLong (HdDateTime.toUnderlying(elementData[i]));
+#elseif ( $name == 'HdTimeSpan')
+        	s.writeLong (HdTimeSpan.toUnderlying(elementData[i]));
 #else
         	s.write${name_abbr} (elementData[i]);
 #end
@@ -866,7 +894,11 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		// Read in all elements in the proper order.
 		for (int i=0; i<size; i++)
 #if( $name == "Decimal")
-        	elementData [i] = Decimal64.fromLong(s.readLong ());
+        	elementData [i] = Decimal64.fromUnderlying(s.readLong ());
+#elseif ( $name == "HdDateTime")
+        	elementData [i] = HdDateTime.fromUnderlying(s.readLong ());
+#elseif ( $name == "HdTimeSpan")
+        	elementData [i] = HdTimeSpan.fromUnderlying(s.readLong ());
 #else
         	elementData [i] = s.read${name_abbr} ();
 #end
@@ -971,7 +1003,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return (buf.toString ());
     }
 
-#if( $name == "Object" || $name == "Decimal" )
+#if( $name == "Object" || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
 	private class ElemEnumeration implements Enumeration<$type> {
     	private int	mIndex = 0;
 

@@ -12,6 +12,10 @@ package deltix.util.collections.generated;
 
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 
 /**

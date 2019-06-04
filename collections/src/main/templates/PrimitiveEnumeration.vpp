@@ -3,6 +3,10 @@ package deltix.util.collections.generated;
 import deltix.util.collections.ElementsEnumeration;
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 
 public interface ${name}Enumeration extends ElementsEnumeration<$type_Object> {
