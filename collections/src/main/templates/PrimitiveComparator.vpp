@@ -5,6 +5,10 @@ import deltix.util.collections.*;
 
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 
 /**
@@ -27,6 +31,14 @@ public final class ${name}Comparator implements ByteArrayComparator {
         if (f1.isEqual(f2))
             return (0);
         else if (f1.isGreater(f2))
+            return (mOrder);
+        else
+            return (-mOrder);
+#elseif( $name == "HdDateTime" || $name == "HdTimeSpan")
+        int c = ${name_abbr}.compare(f1, f2);
+        if (c == 0)
+            return (0);
+        else if (c > 0)
             return (mOrder);
         else
             return (-mOrder);

@@ -2,6 +2,8 @@ package deltix.util.memory;
 
 
 import deltix.dfp.Decimal64;
+import deltix.hddatetime.HdDateTime;
+import deltix.hddatetime.HdTimeSpan;
 
 /**
  *  Reads/writes primitive values from/to an array of bytes,
@@ -370,6 +372,14 @@ public class DataExchangeUtils {
     }
 
     public static Decimal64 readDecimal (byte [] bytes, int offset) {
-        return Decimal64.fromLong(readLong(bytes, offset));
+        return Decimal64.fromUnderlying(readLong(bytes, offset));
+    }
+
+    public static HdDateTime readHdDateTime (byte [] bytes, int offset) {
+        return HdDateTime.fromUnderlying(readLong(bytes, offset));
+    }
+
+    public static HdTimeSpan readHdTimeSpan (byte [] bytes, int offset) {
+        return HdTimeSpan.fromUnderlying(readLong(bytes, offset));
     }
 }
