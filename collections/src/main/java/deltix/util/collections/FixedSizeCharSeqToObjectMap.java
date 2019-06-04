@@ -1,7 +1,5 @@
 package deltix.util.collections;
 
-import deltix.util.collections.generated.CharacterHashMapBase;
-
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -26,7 +24,11 @@ public class FixedSizeCharSeqToObjectMap<V> {
         return map.get(key);
     }
 
-    public V putIfEmpty(CharSequence key, V value) {
+    public boolean putIfEmpty(CharSequence key, V value) {
+        return map.putIfEmpty(key, value);
+    }
+
+    public V putAndGetIfEmpty(CharSequence key, V value) {
         return map.putAndGetIfEmpty(key, value);
     }
 
@@ -41,7 +43,7 @@ public class FixedSizeCharSeqToObjectMap<V> {
 
 
     /// Hides access to Map itself to avoid accidental access to base class functionality like .remove().
-    private static class LimitedCharSeq2ObjectHashMap<V> extends CharSequenceToObjectMapQuick {
+    private static class LimitedCharSeq2ObjectHashMap<V> extends CharSequenceToObjectMapQuick<V> {
         private final OnDeleteCallback<V> itemDeleteCallback;
         private final CircularBufferOfInt insertionPoints;
         private Object [] values;
@@ -66,6 +68,7 @@ public class FixedSizeCharSeqToObjectMap<V> {
          *  @param value     The value
          *  @return  Element that remains in the map. Never null.
          */
+        @Override
         @SuppressWarnings("unchecked")
         public V              putAndGetIfEmpty (CharSequence key, V value) {
             int         hidx = hashIndex (key);
@@ -87,6 +90,29 @@ public class FixedSizeCharSeqToObjectMap<V> {
             keys [idx] = key;
             insertionPoints.add(idx);
             return value;
+        }
+
+        @Override
+        public boolean putIfEmpty(final CharSequence key, final V value) {
+            int         hidx = hashIndex (key);
+            int         idx = find (hidx, key);
+
+            if (idx != NULL) {
+                return false;
+            }
+
+            if (freeHead == NULL) {
+                idx = insertionPoints.tail();  // no more free capacity => evict the oldest entry
+                assert idx != CircularBufferOfInt.EMPTY;
+                free (idx);
+            }
+
+            idx = allocEntry (hidx);
+
+            values [idx] = value;
+            keys [idx] = key;
+            insertionPoints.add(idx);
+            return true;
         }
 
         @SuppressWarnings("unchecked")

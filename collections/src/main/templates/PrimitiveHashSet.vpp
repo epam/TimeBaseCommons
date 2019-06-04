@@ -13,6 +13,10 @@ import java.io.*;
 import java.util.*;
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 
 @SuppressWarnings ("unchecked")
@@ -127,7 +131,11 @@ public class ${name}HashSet$!{key_param} extends ${name}HashMapBase$!{key_param}
             if (isFilled (ii)) {
                 numWritten++;
 #if( $name == "Decimal")
- 				out.writeLong (keys [ii].toLong());
+ 				out.writeLong (Decimal64.toUnderlying(keys [ii]));
+#elseif( $name == "HdDateTime")
+ 				out.writeLong (HdDateTime.toUnderlying(keys [ii]));
+#elseif( $name == "HdTimeSpan")
+ 				out.writeLong (HdTimeSpan.toUnderlying(keys [ii]));
 #else
  				out.write${name_abbr} (keys [ii]);
 #end
@@ -152,7 +160,11 @@ public class ${name}HashSet$!{key_param} extends ${name}HashMapBase$!{key_param}
 
         for (int ii = 0; ii < inCount; ii++) {
 #if( $name == "Decimal")
-            ${key_type}       key = Decimal64.fromLong(in.readLong ());
+            ${key_type}       key = Decimal64.fromUnderlying(in.readLong ());
+#elseif( $name == "HdDateTime")
+            ${key_type}       key = HdDateTime.fromUnderlying(in.readLong ());
+#elseif( $name == "HdTimeSpan")
+            ${key_type}       key = HdTimeSpan.fromUnderlying(in.readLong ());
 #else
             ${key_type}       key = $!{key_cast}in.read${name_abbr} ();
 #end

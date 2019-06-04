@@ -20,6 +20,10 @@ import java.io.*;
 import java.util.*;
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 #if( $second_name == "Object" )
 import java.util.function.Consumer;

@@ -12,6 +12,10 @@ import deltix.util.collections.hash.*;
 import java.util.*;
 #if( $name == "Decimal" )
 import deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import deltix.hddatetime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import deltix.hddatetime.HdTimeSpan;
 #end
 /**
  *  Base class for ${name} to anything hash maps.
@@ -194,7 +198,7 @@ protected final class KeyEnumeration implements ${name}Enumeration {
     		return (ret);
     	}
 
-#if($name == "Decimal")
+#if($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
         @Override
     	public ${type}            nextElement () {
             return (next${name_abbr}Element ());

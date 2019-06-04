@@ -53,7 +53,7 @@ public class Test_FixedSizeCharSeqToOrderHashMap {
     public void testPutIfEmpty() {
         map.putIfEmpty("1", 11L);
         assertEquals(new Long(11), get(1));
-        Long result = map.putIfEmpty("1", 111L); // shouldn't affect map
+        Long result = map.putAndGetIfEmpty("1", 111L); // shouldn't affect map
         assertEquals(new Long(11), result);
         assertEquals(new Long(11), get(1));
 
@@ -163,13 +163,13 @@ public class Test_FixedSizeCharSeqToOrderHashMap {
     }
 
     private void insert(CharSequence key, Long value) {
-        Long newItem = map.putIfEmpty(key, value);
+        Long newItem = map.putAndGetIfEmpty(key, value);
         assertSame(newItem, value);
     }
 
 
     private void override(CharSequence key, Long value) {
-        Long newItem = map.putIfEmpty(key, value);
+        Long newItem = map.putAndGetIfEmpty(key, value);
         assertNotSame(newItem, value);
     }
 

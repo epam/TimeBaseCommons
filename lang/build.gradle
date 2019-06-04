@@ -5,7 +5,8 @@ plugins {
 description = 'QuantServer commons-lang set of utilities'
 
 dependencies {
-    compile group: 'deltix', name: 'deltix-dfp', version: '0.6.7'
+    compile group: 'deltix', name: 'deltix-dfp', version: dfpVersion
+    compile group: 'deltix', name: 'hd-date-time', version: hdTimeVersion
     compile 'deltix:deltix-gflog-api'
 }
 
