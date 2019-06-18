@@ -24,3 +24,10 @@ dependencies {
     compile('net.java.dev.jna:platform:3.4.0'){ transitive = false }
     compile('org.apache.bcel:bcel:6.0'){ transitive = false }
 }
+
+task downloadCodes(type: Download) {
+    src 'http://sm.deltixuat.com:5552/api/v1/currencyinfo/xml'
+    dest new File(buildDir, 'resources/main/deltix/util/currency/CurrencyCodes.xml')
+}
+
+build.dependsOn(downloadCodes)
