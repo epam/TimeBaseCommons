@@ -3,6 +3,7 @@ plugins {
     // Helps to avoid re-declaring dependency version in each subproject.
     // See https://github.com/spring-gradle-plugins/dependency-management-plugin
     id "io.spring.dependency-management" version "1.0.5.RELEASE"
+    id "de.undercouch.download" version "3.4.3"
 }
 
 // To update Gradle wrapper use:
@@ -230,11 +231,8 @@ configure(leafProjects) {
 
 def testTasks = ext.leafProjects*.test
 
-
-
 task generateTestReport(type: TestReport) {
     group 'verification'
     reportOn testTasks
     destinationDir = file("$rootDir/build/reports/junit/html/all_reports_merged") // TODO: Pick better name for merged report
 }
-task allJunitTests(dependsOn: generateTestReport)
