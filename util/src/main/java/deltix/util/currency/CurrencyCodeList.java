@@ -61,6 +61,7 @@ public class CurrencyCodeList {
             if (node.getNodeType () == Node.ELEMENT_NODE) {
                 final Element element = (Element) node;
 
+                String legacyNumericCode = getText (element, "LegacyNumericCode");
                 final CurrencyInfo info = new CurrencyInfo(getText (element,
                                                                      "AlphabeticCode"),
                                                             CharSequenceParser.parseShort (getText (element,
@@ -68,8 +69,18 @@ public class CurrencyCodeList {
                                                             getText (element,
                                                                      "Name"),
                                                             getText (element,
-                                                                     "Country"));
+                                                                     "Country"),
+                                                            legacyNumericCode == null ? Short.MIN_VALUE:
+                                                                    CharSequenceParser.parseShort (legacyNumericCode));
                 numericIndex[info.numericCode] = info;
+                if (info.legacyNumericCode != Short.MIN_VALUE) {
+                    if (numericIndex[info.legacyNumericCode] != null) {
+                        System.out.printf("ERROR while loading CurrencyCodes.xml. Codes are equal in currencies %s and %s\n",
+                                numericIndex[info.legacyNumericCode], info);
+                        System.out.printf("Writing currency %s\n", info);
+                    }
+                    numericIndex[info.legacyNumericCode] = info;
+                }
                 symbolicIndex.put (info.symbolicCode, info);
             }
 
@@ -143,16 +154,19 @@ public class CurrencyCodeList {
         public final short  numericCode;
         public final String description;
         public final String location;
+        public final short legacyNumericCode;
 
         private CurrencyInfo (final String code,
                               final short numeric,
                               final String currency,
-                              final String location) {
+                              final String location,
+                              final short legacyNumericCode) {
             super ();
             this.symbolicCode = code;
             this.numericCode = numeric;
             this.description = currency;
             this.location = location;
+            this.legacyNumericCode = legacyNumericCode;
         }
 
         @Override
