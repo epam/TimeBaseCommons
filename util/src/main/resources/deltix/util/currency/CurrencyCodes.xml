@@ -6,222 +6,259 @@
             <Name>Ripple</Name>
             <AlphabeticCode>XRP</AlphabeticCode>
             <Sign>XRP</Sign>
+            <LegacyNumericCode>301</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1302</NumericCode>
             <Name>Metaverse ETP</Name>
             <AlphabeticCode>ETP</AlphabeticCode>
             <Sign>ETP</Sign>
+            <LegacyNumericCode>302</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1303</NumericCode>
             <Name>Bitcoin Cash</Name>
             <AlphabeticCode>BCH</AlphabeticCode>
             <Sign>BCH</Sign>
+            <LegacyNumericCode>303</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1304</NumericCode>
             <Name>OmiseGO</Name>
             <AlphabeticCode>OMG</AlphabeticCode>
             <Sign>OMG</Sign>
+            <LegacyNumericCode>304</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1305</NumericCode>
             <Name>Neo</Name>
             <AlphabeticCode>NEO</AlphabeticCode>
             <Sign>NEO</Sign>
+            <LegacyNumericCode>305</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1306</NumericCode>
             <Name>Iota</Name>
             <AlphabeticCode>MIOTA</AlphabeticCode>
             <Sign>IOT</Sign>
+            <LegacyNumericCode>306</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1307</NumericCode>
             <Name>DigitalCash</Name>
             <AlphabeticCode>DASH</AlphabeticCode>
             <Sign>DSH</Sign>
+            <LegacyNumericCode>307</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1308</NumericCode>
             <Name>Zcash</Name>
             <AlphabeticCode>ZEC</AlphabeticCode>
             <Sign>ZEC</Sign>
+            <LegacyNumericCode>308</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1309</NumericCode>
             <Name>Monero</Name>
             <AlphabeticCode>XMR</AlphabeticCode>
             <Sign>XMR</Sign>
+            <LegacyNumericCode>309</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1310</NumericCode>
             <Name>Ethereum Classic</Name>
             <AlphabeticCode>ETC</AlphabeticCode>
             <Sign>ETC</Sign>
+            <LegacyNumericCode>310</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1311</NumericCode>
             <Name>EOS</Name>
             <AlphabeticCode>EOS</AlphabeticCode>
             <Sign>EOS</Sign>
+            <LegacyNumericCode>311</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1312</NumericCode>
             <Name>Aventus</Name>
             <AlphabeticCode>AVT</AlphabeticCode>
             <Sign>AVT</Sign>
+            <LegacyNumericCode>312</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1313</NumericCode>
             <Name>Qtum</Name>
             <AlphabeticCode>QTUM</AlphabeticCode>
             <Sign>QTM</Sign>
+            <LegacyNumericCode>313</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1314</NumericCode>
             <Name>Santiment</Name>
             <AlphabeticCode>SAN</AlphabeticCode>
             <Sign>SAN</Sign>
+            <LegacyNumericCode>314</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1315</NumericCode>
             <Name>Eidoo</Name>
             <AlphabeticCode>EDO</AlphabeticCode>
             <Sign>EDO</Sign>
+            <LegacyNumericCode>315</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1316</NumericCode>
             <Name>Bitcoin Gold</Name>
             <AlphabeticCode>BTG</AlphabeticCode>
             <Sign>BTG</Sign>
+            <LegacyNumericCode>316</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1317</NumericCode>
             <Name>Streamr</Name>
             <AlphabeticCode>DATA</AlphabeticCode>
             <Sign>DAT</Sign>
+            <LegacyNumericCode>317</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1318</NumericCode>
             <Name>QASH</Name>
             <AlphabeticCode>QASH</AlphabeticCode>
             <Sign>QSH</Sign>
+            <LegacyNumericCode>318</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1319</NumericCode>
             <Name>YOYOW</Name>
             <AlphabeticCode>YOYOW</AlphabeticCode>
             <Sign>YYW</Sign>
+            <LegacyNumericCode>319</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1321</NumericCode>
             <Name>Tether</Name>
             <AlphabeticCode>USDT</AlphabeticCode>
             <Sign>THR</Sign>
+            <LegacyNumericCode>321</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1322</NumericCode>
             <Name>Cardano</Name>
             <AlphabeticCode>ADA</AlphabeticCode>
             <Sign>ADA</Sign>
+            <LegacyNumericCode>322</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1323</NumericCode>
             <Name>Binance Coin</Name>
             <AlphabeticCode>BNB</AlphabeticCode>
             <Sign>BNB</Sign>
+            <LegacyNumericCode>323</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1325</NumericCode>
             <Name>Bread</Name>
             <AlphabeticCode>BRD</AlphabeticCode>
             <Sign>BRD</Sign>
+            <LegacyNumericCode>325</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1326</NumericCode>
             <Name>Gifto</Name>
             <AlphabeticCode>GTO</AlphabeticCode>
             <Sign>GTO</Sign>
+            <LegacyNumericCode>326</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1327</NumericCode>
             <Name>Iconomi</Name>
             <AlphabeticCode>ICN</AlphabeticCode>
             <Sign>ICN</Sign>
+            <LegacyNumericCode>327</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1329</NumericCode>
             <Name>Icon</Name>
             <AlphabeticCode>ICX</AlphabeticCode>
             <Sign>ICX</Sign>
+            <LegacyNumericCode>329</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1330</NumericCode>
             <Name>Lisk</Name>
             <AlphabeticCode>LSK</AlphabeticCode>
             <Sign>LSK</Sign>
+            <LegacyNumericCode>330</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1331</NumericCode>
             <Name>Nano</Name>
             <AlphabeticCode>NANO</AlphabeticCode>
             <Sign>NAN</Sign>
+            <LegacyNumericCode>331</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1333</NumericCode>
             <Name>Salt</Name>
             <AlphabeticCode>SALT</AlphabeticCode>
             <Sign>SLT</Sign>
+            <LegacyNumericCode>333</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1334</NumericCode>
             <Name>Stratis</Name>
             <AlphabeticCode>STRAT</AlphabeticCode>
             <Sign>STR</Sign>
+            <LegacyNumericCode>334</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1335</NumericCode>
             <Name>Tron</Name>
             <AlphabeticCode>TRX</AlphabeticCode>
             <Sign>TRX</Sign>
+            <LegacyNumericCode>335</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1336</NumericCode>
             <Name>Wings</Name>
             <AlphabeticCode>WINGS</AlphabeticCode>
             <Sign>WNG</Sign>
+            <LegacyNumericCode>336</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1337</NumericCode>
             <Name>Stellar Lumens</Name>
             <AlphabeticCode>XLM</AlphabeticCode>
             <Sign>XLM</Sign>
+            <LegacyNumericCode>337</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1338</NumericCode>
             <Name>Verge</Name>
             <AlphabeticCode>XVG</AlphabeticCode>
             <Sign>XVG</Sign>
+            <LegacyNumericCode>338</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1641</NumericCode>
             <Name>Litecoin</Name>
             <AlphabeticCode>LTC</AlphabeticCode>
             <Sign>LTC</Sign>
+            <LegacyNumericCode>641</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1741</NumericCode>
             <Name>Bitcoin</Name>
             <AlphabeticCode>BTC</AlphabeticCode>
             <Sign>XBT</Sign>
+            <LegacyNumericCode>741</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>1841</NumericCode>
             <Name>Ethereum</Name>
             <AlphabeticCode>ETH</AlphabeticCode>
             <Sign>ETH</Sign>
+            <LegacyNumericCode>841</LegacyNumericCode>
         </Currency>
         <Currency>
             <NumericCode>8</NumericCode>
@@ -2607,7 +2644,7 @@
         </Currency>
         <Currency>
             <NumericCode>1082</NumericCode>
-            <Name>AGI</Name>
+            <Name>SingularityNET</Name>
             <AlphabeticCode>AGI</AlphabeticCode>
             <Sign>AGI</Sign>
         </Currency>
@@ -5610,6 +5647,336 @@
             <Name>ThunderCore</Name>
             <AlphabeticCode>TT</AlphabeticCode>
             <Sign>TT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1945</NumericCode>
+            <Name>OKB</Name>
+            <AlphabeticCode>OKB</AlphabeticCode>
+            <Sign>OKB</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1954</NumericCode>
+            <Name>YOU COIN</Name>
+            <AlphabeticCode>YOU</AlphabeticCode>
+            <Sign>YOU</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1965</NumericCode>
+            <Name>Asch</Name>
+            <AlphabeticCode>XAS</AlphabeticCode>
+            <Sign>XAS</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1966</NumericCode>
+            <Name>Egretia</Name>
+            <AlphabeticCode>EGT</AlphabeticCode>
+            <Sign>EGT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1967</NumericCode>
+            <Name>High Performance Blockchain</Name>
+            <AlphabeticCode>HPB</AlphabeticCode>
+            <Sign>HPB</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1982</NumericCode>
+            <Name>Measurable Data Token</Name>
+            <AlphabeticCode>MDT</AlphabeticCode>
+            <Sign>MDT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1983</NumericCode>
+            <Name>ugChain</Name>
+            <AlphabeticCode>UGC</AlphabeticCode>
+            <Sign>UGC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1987</NumericCode>
+            <Name>Delphy</Name>
+            <AlphabeticCode>DPY</AlphabeticCode>
+            <Sign>DPY</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1988</NumericCode>
+            <Name>SelfSell</Name>
+            <AlphabeticCode>SSC</AlphabeticCode>
+            <Sign>SSC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1989</NumericCode>
+            <Name>Primas</Name>
+            <AlphabeticCode>PST</AlphabeticCode>
+            <Sign>PST</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1991</NumericCode>
+            <Name>Zipper</Name>
+            <AlphabeticCode>ZIP</AlphabeticCode>
+            <Sign>ZIP</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1992</NumericCode>
+            <Name>CIChain</Name>
+            <AlphabeticCode>CIC</AlphabeticCode>
+            <Sign>CIC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1993</NumericCode>
+            <Name>Chronologic</Name>
+            <AlphabeticCode>DAY</AlphabeticCode>
+            <Sign>DAY</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1994</NumericCode>
+            <Name>Daneel</Name>
+            <AlphabeticCode>DAN</AlphabeticCode>
+            <Sign>DAN</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1995</NumericCode>
+            <Name>DomRaider Token</Name>
+            <AlphabeticCode>DRT</AlphabeticCode>
+            <Sign>DRT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1996</NumericCode>
+            <Name>Indorse Token</Name>
+            <AlphabeticCode>IND</AlphabeticCode>
+            <Sign>IND</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2074</NumericCode>
+            <Name>Helbiz Token</Name>
+            <AlphabeticCode>HBZ</AlphabeticCode>
+            <Sign>HBZ</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2075</NumericCode>
+            <Name>Morpheus Network</Name>
+            <AlphabeticCode>MORPH</AlphabeticCode>
+            <Sign>MORPH</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2076</NumericCode>
+            <Name>Synthetix</Name>
+            <AlphabeticCode>SNX</AlphabeticCode>
+            <Sign>SNX</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2077</NumericCode>
+            <Name>Synthetix sUSD</Name>
+            <AlphabeticCode>SUSD</AlphabeticCode>
+            <Sign>SUSD</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2078</NumericCode>
+            <Name>LEO Token</Name>
+            <AlphabeticCode>LEO</AlphabeticCode>
+            <Sign>LEO</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2079</NumericCode>
+            <Name>Vodi X</Name>
+            <AlphabeticCode>VDX</AlphabeticCode>
+            <Sign>VDX</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>2080</NumericCode>
+            <Name>Reserve Rights Token</Name>
+            <AlphabeticCode>RSR</AlphabeticCode>
+            <Sign>RSR</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1100</NumericCode>
+            <Name>Red Pulse Phoenix Binance</Name>
+            <AlphabeticCode>PHB</AlphabeticCode>
+            <Sign>PHB</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1101</NumericCode>
+            <Name>Theta Fuel</Name>
+            <AlphabeticCode>TFUEL</AlphabeticCode>
+            <Sign>TFUEL</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1102</NumericCode>
+            <Name>ZBToken</Name>
+            <AlphabeticCode>ZB</AlphabeticCode>
+            <Sign>ZB</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1103</NumericCode>
+            <Name>Upfiring</Name>
+            <AlphabeticCode>UFR</AlphabeticCode>
+            <Sign>UFR</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1129</NumericCode>
+            <Name>Cai Token</Name>
+            <AlphabeticCode>CAI</AlphabeticCode>
+            <Sign>CAI</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1105</NumericCode>
+            <Name>WinToken</Name>
+            <AlphabeticCode>WINT</AlphabeticCode>
+            <Sign>WINT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1106</NumericCode>
+            <Name>Origin Sport</Name>
+            <AlphabeticCode>ORS</AlphabeticCode>
+            <Sign>ORS</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1107</NumericCode>
+            <Name>HYCON</Name>
+            <AlphabeticCode>HYC</AlphabeticCode>
+            <Sign>HYC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1130</NumericCode>
+            <Name>Airbloc</Name>
+            <AlphabeticCode>ABL</AlphabeticCode>
+            <Sign>ABL</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1109</NumericCode>
+            <Name>Blockcloud</Name>
+            <AlphabeticCode>BLOC</AlphabeticCode>
+            <Sign>BLOC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1110</NumericCode>
+            <Name>ACE (TokenStars)</Name>
+            <AlphabeticCode>ACE</AlphabeticCode>
+            <Sign>ACE</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1111</NumericCode>
+            <Name>Molecular Future</Name>
+            <AlphabeticCode>MOF</AlphabeticCode>
+            <Sign>MOF</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1112</NumericCode>
+            <Name>TokenClub</Name>
+            <AlphabeticCode>TCT</AlphabeticCode>
+            <Sign>TCT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1113</NumericCode>
+            <Name>StarChain</Name>
+            <AlphabeticCode>STC</AlphabeticCode>
+            <Sign>STC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1114</NumericCode>
+            <Name>LightChain</Name>
+            <AlphabeticCode>LIGHT</AlphabeticCode>
+            <Sign>LIGHT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1115</NumericCode>
+            <Name>OFCOIN</Name>
+            <AlphabeticCode>OF</AlphabeticCode>
+            <Sign>OF</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1131</NumericCode>
+            <Name>Hi Mutual Society</Name>
+            <AlphabeticCode>HMC</AlphabeticCode>
+            <Sign>HMC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1117</NumericCode>
+            <Name>Beauty Chain</Name>
+            <AlphabeticCode>BEC</AlphabeticCode>
+            <Sign>BEC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1118</NumericCode>
+            <Name>Merculet</Name>
+            <AlphabeticCode>MVP</AlphabeticCode>
+            <Sign>MVP</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1119</NumericCode>
+            <Name>SDChain</Name>
+            <AlphabeticCode>SDA</AlphabeticCode>
+            <Sign>SDA</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1120</NumericCode>
+            <Name>ProChain</Name>
+            <AlphabeticCode>PRA</AlphabeticCode>
+            <Sign>PRA</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1121</NumericCode>
+            <Name>OneRoot Network</Name>
+            <AlphabeticCode>RNT</AlphabeticCode>
+            <Sign>RNT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1122</NumericCode>
+            <Name>RealChain</Name>
+            <AlphabeticCode>RCT</AlphabeticCode>
+            <Sign>RCT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1123</NumericCode>
+            <Name>RefToken</Name>
+            <AlphabeticCode>REF</AlphabeticCode>
+            <Sign>REF</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1133</NumericCode>
+            <Name>Ubique Chain Of Things</Name>
+            <AlphabeticCode>UCT</AlphabeticCode>
+            <Sign>UCT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1125</NumericCode>
+            <Name>United Bitcoin</Name>
+            <AlphabeticCode>UBTC</AlphabeticCode>
+            <Sign>UBTC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1126</NumericCode>
+            <Name>Show</Name>
+            <AlphabeticCode>SHOW</AlphabeticCode>
+            <Sign>SHOW</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1127</NumericCode>
+            <Name>Olympus Labs</Name>
+            <AlphabeticCode>MOT</AlphabeticCode>
+            <Sign>MOT</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1128</NumericCode>
+            <Name>IPChain</Name>
+            <AlphabeticCode>IPC</AlphabeticCode>
+            <Sign>IPC</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1134</NumericCode>
+            <Name>Origo</Name>
+            <AlphabeticCode>OGO</AlphabeticCode>
+            <Sign>OGO</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1135</NumericCode>
+            <Name>Harmony</Name>
+            <AlphabeticCode>ONE</AlphabeticCode>
+            <Sign>ONE</Sign>
+        </Currency>
+        <Currency>
+            <NumericCode>1137</NumericCode>
+            <Name>USDK</Name>
+            <AlphabeticCode>USDK</AlphabeticCode>
+            <Sign>USDK</Sign>
         </Currency>
     </Currencies>
 </CurrencyManager>
