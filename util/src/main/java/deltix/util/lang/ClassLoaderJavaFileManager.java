@@ -27,23 +27,27 @@ public class ClassLoaderJavaFileManager extends ForwardingJavaFileManager<JavaFi
     )
         throws IOException 
     {
+        ArrayList <JavaFileObject>    ret = new ArrayList <JavaFileObject> ();
+
         // first of all try listClasses
         Collection <Class <?>> clist = listClasses.listClassesForPackage (packageName);
 
         if (clist == null || clist.isEmpty()) {
             // try one-level recursion here
             final ClassLoader parent = ((ClassLoader) listClasses).getParent();
-            if (parent != null && parent instanceof ClassDirectory)
+            if (parent instanceof ClassDirectory) {
                 clist = ((ClassDirectory) parent).listClassesForPackage(packageName);
-
-            if (clist == null || clist.isEmpty())
-                return super.list(location, packageName, kinds, recurse);
+            }
         }
 
-        ArrayList <JavaFileObject>    ret = new ArrayList <JavaFileObject> ();
-        
-        for (Class <?> cls : clist)        
-             ret.add (new ClassBasedJavaFileObject (cls));
+        if (clist != null) {
+            for (Class<?> cls : clist)
+                ret.add(new ClassBasedJavaFileObject(cls));
+        }
+
+        Iterable<JavaFileObject> list = super.list(location, packageName, kinds, recurse);
+        for (JavaFileObject javaFileObject : list)
+            ret.add (javaFileObject);
             
         return (ret);
     }
