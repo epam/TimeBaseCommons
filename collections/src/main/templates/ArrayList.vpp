@@ -589,7 +589,6 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		rangeCheck(index);
 		${type} oldValue = (${type}) elementData[index];
 		elementData[index] = element;
-		modCount++;
 		return oldValue;
     }
 
