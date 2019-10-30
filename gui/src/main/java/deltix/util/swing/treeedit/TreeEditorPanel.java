@@ -338,7 +338,7 @@ public class TreeEditorPanel extends JSplitPane {
 
     //////////////////HELPER CLASSES///////////////////////////
 
-    protected class TreeEditorTransferHandler extends TransferHandler {
+    protected static class TreeEditorTransferHandler extends TransferHandler {
 
         public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
             return false;

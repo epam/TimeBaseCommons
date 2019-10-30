@@ -167,7 +167,7 @@ public class AlignedNoWhitespacesTable implements Table {
         };
     }
             
-    private class ANWColumn implements Column {
+    private static class ANWColumn implements Column {
         private final int       index;
         private final String    name;
         private final int       nameStart;

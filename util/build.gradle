@@ -12,21 +12,24 @@ dependencies {
 
     compile 'commons-lang:commons-lang'
     compile 'org.apache.commons:commons-compress:1.7'
-            //compile 'javax.servlet:javax.servlet-api:3.1.0'
 
     compileOnly 'com.google.code.findbugs:jsr305'
 
+    compile 'javax.xml.bind:jaxb-api:2.2.8'
+    compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    compile 'com.sun.xml.bind:jaxb-core:2.3.0'
+
 //    compile('com.sun.xml.bind:jaxb-xjc:2.2.11')  // 2.2.11 has only bug fixes compared 2.2.8-b130911.1802 (which used by Java 8)
-    compile 'org.glassfish.jaxb:jaxb-runtime:2.2.11'  // Glassfish replaces JAXB RI
+    //compile 'org.glassfish.jaxb:jaxb-runtime:2.2.11'  // Glassfish replaces JAXB RI
     //compile('javax.xml:jsr173:1.0'){ transitive = false }
 
-//    compile('net.java.dev.jna:jna:4.2.1'){ transitive = false }
-//    compile('net.java.dev.jna:jna-platform:4.2.1'){ transitive = false }
+    compile('net.java.dev.jna:jna:5.4.0'){ transitive = false }
+    compile('net.java.dev.jna:jna-platform:5.4.0'){ transitive = false }
     compile('org.apache.bcel:bcel:6.0'){ transitive = false }
 }
 
 task downloadCodes(type: Download) {
-    src 'http://sm.deltixuat.com:5552/api/v1/currencyinfo/xml'
+    src 'https://smi.deltixhub.com/api/v1/currencyinfo/xml'
     dest new File(projectDir, 'src/main/resources/deltix/util/currency/CurrencyCodes.xml')
 }
 

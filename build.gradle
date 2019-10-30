@@ -35,8 +35,13 @@ configure(leafProjects) {
     apply plugin: 'io.spring.dependency-management'
 
     compileJava.options.encoding = 'UTF-8'
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio.ch=ALL-UNNAMED'
+    compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio=ALL-UNNAMED'
+
+    //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
     // Defines versions of dependencies to be used by subprojects
     // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl

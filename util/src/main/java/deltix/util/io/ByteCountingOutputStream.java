@@ -1,41 +1,42 @@
 package deltix.util.io;
 
 import java.io.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *  Counts bytes that pass through.
  */
 public class ByteCountingOutputStream extends FilterOutputStream {
-    private volatile long                    mNumBytesWritten = 0;
+    private final AtomicLong    mNumBytesWritten = new AtomicLong();
     
     public ByteCountingOutputStream (OutputStream os) {
         super (os);
     }
     
     public void             reset () {
-        mNumBytesWritten = 0;
+        mNumBytesWritten.set(0);
     }
     
     public void             setNumBytesWritten (long n) {
-        mNumBytesWritten = n;
+        mNumBytesWritten.set(n);
     }
     
     public long             getNumBytesWritten () {
-        return (mNumBytesWritten);
+        return (mNumBytesWritten.longValue());
     }
     
     public void             write (byte [] b) throws IOException {
         out.write (b);
-        mNumBytesWritten += b.length;
+        mNumBytesWritten.addAndGet(b.length);
     } 
     
     public void             write (byte [] b, int off, int len) throws IOException {
         out.write (b, off, len);
-        mNumBytesWritten += len;
+        mNumBytesWritten.addAndGet(len);
     } 
     
     public void             write (int b) throws IOException {
-        mNumBytesWritten++;
         out.write (b);
+        mNumBytesWritten.incrementAndGet();
     } 
 }

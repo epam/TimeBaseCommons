@@ -68,6 +68,11 @@ public abstract class AbstractShell extends DefaultApplication {
             return (true);
         }
 
+        if (key.equalsIgnoreCase ("quit")) {
+            System.exit(errorCode);
+            return (true);
+        }
+
         if (key.equalsIgnoreCase ("set")) {
             if (args == null)
                 doSet ();

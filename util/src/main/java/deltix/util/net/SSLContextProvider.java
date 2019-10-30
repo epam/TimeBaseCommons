@@ -79,7 +79,10 @@ public class SSLContextProvider {
 
         if (!trustAll) {
             KeyStore keystore = KeyStore.getInstance(KEYSTORE_FORMAT);
-            keystore.load(new FileInputStream(keystoreFile), keystorePass != null ? keystorePass.toCharArray() : null);
+            try (FileInputStream stream = new FileInputStream(keystoreFile)) {
+                keystore.load(stream, keystorePass != null ? keystorePass.toCharArray() : null);
+            }
+
             //create and init trust manager factory
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keystore);

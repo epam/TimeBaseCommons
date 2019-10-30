@@ -10,7 +10,8 @@ import java.util.prefs.*;
  * @see java.util.prefs.Preferences
  */
 public final class MemoryPreferences extends AbstractPreferences {
-    public final class Factory implements PreferencesFactory {
+
+    public static class Factory implements PreferencesFactory {
         private MemoryPreferences   sys = new MemoryPreferences (false);
         private MemoryPreferences   user = new MemoryPreferences (true);
 

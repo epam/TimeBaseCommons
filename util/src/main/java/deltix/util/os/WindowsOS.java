@@ -4,7 +4,6 @@ import deltix.util.io.ProcessHelper;
 import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
 
-import com.sun.jna.*;
 import com.sun.jna.platform.win32.*;
 
 import java.io.*;

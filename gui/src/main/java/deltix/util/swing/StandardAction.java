@@ -51,7 +51,7 @@ public abstract class StandardAction extends AbstractAction {
         setUpAction (this, forClass, nameKey);
     }
 
-    public static final String []   IMAGE_EXTENSIONS = { "gif", "jpg", "png" };
+    static final String []   IMAGE_EXTENSIONS = { "gif", "jpg", "png" };
 
     private final String    key;
 

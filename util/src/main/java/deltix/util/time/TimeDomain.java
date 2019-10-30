@@ -237,9 +237,6 @@ public class TimeDomain {
 
         if (t < 0)
             return (openTimes.getLong (0) + t);
-        
-        if (n == 0)
-            return (NOT_FOUND);
 
         int     pos = Arrays.binarySearch (cumTimes.getInternalBuffer (), 0, n, t + 1);
 
