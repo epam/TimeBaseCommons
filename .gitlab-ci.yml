@@ -39,7 +39,7 @@ cache:
 
 "Build: Java 8":
     stage: build
-    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
+    image: packages.deltixhub.com/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
         - ./gradlew build test --no-daemon
@@ -72,7 +72,7 @@ cache:
 
 "Publish: Java 8":
     stage: publish
-    image: packages.deltixhub.com:443/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
+    image: packages.deltixhub.com/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1
         - ./gradlew publish
