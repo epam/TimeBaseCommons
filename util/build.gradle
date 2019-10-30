@@ -23,8 +23,8 @@ dependencies {
     //compile 'org.glassfish.jaxb:jaxb-runtime:2.2.11'  // Glassfish replaces JAXB RI
     //compile('javax.xml:jsr173:1.0'){ transitive = false }
 
-    compile('net.java.dev.jna:jna:5.4.0'){ transitive = false }
-    compile('net.java.dev.jna:jna-platform:5.4.0'){ transitive = false }
+    compile('net.java.dev.jna:jna:4.2.1'){ transitive = false }
+    compile('net.java.dev.jna:jna-platform:4.2.1'){ transitive = false }
     compile('org.apache.bcel:bcel:6.0'){ transitive = false }
 }
 
