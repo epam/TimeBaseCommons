@@ -1,6 +1,7 @@
 stages:
   - prepare
   - build
+  - test
   - release
   - publish
   - clean-up 
@@ -50,6 +51,41 @@ cache:
         - DockerExecutor
     except:
         - tags
+
+#"Test":
+#  image: packages.deltixhub.com/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
+#  stage: test
+#  script:
+#    - ./gradlew check --parallel
+#  cache:
+#    key: "$CACHE_KEY"
+#    paths:
+#      - .gradle/wrapper
+#      - .gradle/caches
+#      - ember/monitor/frontend/node_modules
+#      - ember/monitor/frontend/.gradle
+#    policy: pull-push
+#  except:
+#    - /^release-.*$/
+#  tags:
+#    - Linux
+#    - DockerExecutor
+#    - Natick
+
+
+dependency-check:
+  stage: test
+  image: packages.deltixhub.com/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
+  only:
+    - schedules
+  script:
+    - ./gradlew :dependencyCheckAggregate
+  artifacts:
+    name: "${CI_JOB_ID}_${CI_JOB_NAME}"
+    when: always
+    expire_in: 30 day
+    paths:
+      - build/reports/dependency-check-report.html
 
 "Release":
     stage: release

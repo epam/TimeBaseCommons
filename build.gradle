@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:5.2.2'
+    }
+}
+
 plugins {
     // Supports functionality similar to Maven BOM.
     // Helps to avoid re-declaring dependency version in each subproject.
@@ -225,6 +234,18 @@ configure(leafProjects) {
     test {
         useJUnit {
             setIncludeCategories categories.split(',').collect { "deltix.util.CommonsJUnitCategories\$${it}".toString() } as Set
+        }
+    }
+
+    // See http://jeremylong.github.io/DependencyCheck/dependency-check-gradle
+    apply plugin: 'org.owasp.dependencycheck'
+
+    dependencyCheck {
+        // skipProjects = nonJavaProjects
+        failBuildOnCVSS = 7
+        suppressionFile = file("$rootDir/dependency-check-suppression-file.xml")
+        analyzers {
+            assemblyEnabled = false
         }
     }
 }
