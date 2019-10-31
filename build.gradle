@@ -237,6 +237,9 @@ configure(leafProjects) {
         }
     }
 
+}
+
+allProjects {
     // See http://jeremylong.github.io/DependencyCheck/dependency-check-gradle
     apply plugin: 'org.owasp.dependencycheck'
 
