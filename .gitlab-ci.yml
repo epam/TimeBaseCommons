@@ -52,27 +52,6 @@ cache:
     except:
         - tags
 
-#"Test":
-#  image: packages.deltixhub.com/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
-#  stage: test
-#  script:
-#    - ./gradlew check --parallel
-#  cache:
-#    key: "$CACHE_KEY"
-#    paths:
-#      - .gradle/wrapper
-#      - .gradle/caches
-#      - ember/monitor/frontend/node_modules
-#      - ember/monitor/frontend/.gradle
-#    policy: pull-push
-#  except:
-#    - /^release-.*$/
-#  tags:
-#    - Linux
-#    - DockerExecutor
-#    - Natick
-
-
 dependency-check:
   stage: test
   image: packages.deltixhub.com/gitlabci.docker/oracle-jdk-8-gradle-4.10.1:latest
