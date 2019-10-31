@@ -1,7 +1,9 @@
 
 package java_cup;
 
-/** This class represents a reduce action within the parse table. 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+/** This class represents a reduce action within the parse table.
  *  The action simply stores the production that it reduces with and 
  *  responds to queries about its type.
  *
@@ -55,6 +57,7 @@ public class reduce_action extends parse_action {
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Generic equality test. */
+  @SuppressFBWarnings(value = "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", justification = "Not touching Java_cup - third-party source")
   public boolean equals(Object other)
     {
       if (other instanceof reduce_action)

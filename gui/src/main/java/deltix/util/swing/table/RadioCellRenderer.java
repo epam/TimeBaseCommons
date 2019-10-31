@@ -53,11 +53,7 @@ public class RadioCellRenderer extends JRadioButton implements TableCellRenderer
 			this.setBackground ( background );
 		}
 
-		if (value == null) {
-			this.setSelected ( false );
-		}
-		Boolean ValueAsBoolean = (Boolean) value;
-		this.setSelected ( ValueAsBoolean.booleanValue ( ) );
+		this.setSelected(value != null && (Boolean) value);
 		this.setHorizontalAlignment ( SwingConstants.CENTER );
 
 		return this;

@@ -1,6 +1,7 @@
 package deltix.util.log.gf;
 
 import deltix.gflog.dcl.DclBridgeFactory;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +16,8 @@ public abstract class LoggerFactory {
     protected LoggerFactory() {
     }
 
+
+    @SuppressFBWarnings(value = "JLM_JSR166_UTILCONCURRENT_MONITORENTER", justification = "OK here")
     private Logger getLog(String name) {
         Logger logger = loggers.get(name);
 

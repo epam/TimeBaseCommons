@@ -521,30 +521,36 @@ public class Util {
 
     public static Runnable  methodRunnable (final Object obj, String methodName) {                
         Method      m = null;
-        
-        for (Class <?> cls = obj.getClass (); cls != null; cls = cls.getSuperclass ()) {
+
+        Class <?> cls = obj.getClass ();
+        while (true)  {
             try {
                 m = cls.getDeclaredMethod (methodName);            
                 break;
             } catch (NoSuchMethodException x) {
+                cls = cls.getSuperclass ();
+                if (cls == null)
+                    throw new RuntimeException(x);
                 // continue
             }
         }
-        
-        m.setAccessible (true);
-        
-        final Method      fm = m;
-        
+
+        assert m != null;
+
+        m.setAccessible(true);
+
+        final Method fm = m;
+
         return (
-            new Runnable () {
-                public void run () {
-                    try {
-                        fm.invoke (obj);
-                    } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException x) {
-                        throw new RuntimeException (x);
+                new Runnable() {
+                    public void run() {
+                        try {
+                            fm.invoke(obj);
+                        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException x) {
+                            throw new RuntimeException(x);
+                        }
                     }
-                }                
-            }
+                }
         );
     }
 

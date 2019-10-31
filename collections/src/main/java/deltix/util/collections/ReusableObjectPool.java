@@ -88,7 +88,7 @@ public abstract class ReusableObjectPool<T> implements Disposable {
 
         @Override
         protected T createItem() {
-            return pool.createItem();
+            return pool.createItem(); //TODO: NPE?
         }
     }
 }
