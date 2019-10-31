@@ -1569,20 +1569,21 @@ public abstract class BasicIOUtil {
      *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
+    @Deprecated // buggy
     public final static void readUTF(DataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
 
         if (utflen == 0)
             return;
 
-        int c = -2;
+        int c;
         int char2, char3;
         int count = 0;
 
         for (;;) {
-            c = in.readByte ();
-            if (c > 127)
-                break;
+            c = in.readByte (); //NB: result in range [-128, 127] -- Andy
+            //if (c > 127)
+            //    break;
 
             count++;
             sb.append ((char) c);
@@ -1590,77 +1591,79 @@ public abstract class BasicIOUtil {
             if (count >= utflen)
                 return;
         }
-        //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.
-        for (;;) {
-            switch (c >> 4) {
-                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-                    /* 0xxxxxxx*/
-                    count++;
-                    sb.append ((char)c);
-                    break;
-
-                case 12: case 13:
-                    /* 110x xxxx   10xx xxxx*/
-                    count += 2;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.readByte ();
-                    if ((char2 & 0xC0) != 0x80)
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + count);
-                    sb.append ((char)(((c & 0x1F) << 6) |
-                                                    (char2 & 0x3F)));
-                    break;
-
-                case 14:
-                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
-                    count += 3;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.readByte ();
-                    char3 = in.readByte ();
-                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + (count-1));
-                    sb.append ((char)(((c & 0x0F) << 12) |
-                                                    ((char2 & 0x3F) << 6)  |
-                                                    ((char3 & 0x3F) << 0)));
-                    break;
-
-                default:
-                    /* 10xx xxxx,  1111 xxxx */
-                    throw new UTFDataFormatException(
-                        "malformed input around byte " + count);
-            }
-
-            if (count >= utflen)
-                break;
-
-            c = in.readByte ();
-        }
+// de-facto unreachable -- Andy
+//        //  If we are here, we have broken out of the previous loop and there is an
+//        //  unhandled escape character in variable c.
+//        for (;;) {
+//            switch (c >> 4) {
+//                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+//                    /* 0xxxxxxx*/
+//                    count++;
+//                    sb.append ((char)c);
+//                    break;
+//
+//                case 12: case 13:
+//                    /* 110x xxxx   10xx xxxx*/
+//                    count += 2;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.readByte ();
+//                    if ((char2 & 0xC0) != 0x80)
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + count);
+//                    sb.append ((char)(((c & 0x1F) << 6) |
+//                                                    (char2 & 0x3F)));
+//                    break;
+//
+//                case 14:
+//                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+//                    count += 3;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.readByte ();
+//                    char3 = in.readByte ();
+//                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + (count-1));
+//                    sb.append ((char)(((c & 0x0F) << 12) |
+//                                                    ((char2 & 0x3F) << 6)  |
+//                                                    ((char3 & 0x3F) << 0)));
+//                    break;
+//
+//                default:
+//                    /* 10xx xxxx,  1111 xxxx */
+//                    throw new UTFDataFormatException(
+//                        "malformed input around byte " + count);
+//            }
+//
+//            if (count >= utflen)
+//                break;
+//
+//            c = in.readByte ();
+//        }
     }
 
     /**
      *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
+    @Deprecated // buggy
     public final static void readUTF(ByteBuffer in, Appendable sb) throws BufferUnderflowException, IOException {
         int utflen = 0xFFFF & in.getShort();
 
         if (utflen == 0)
             return;
 
-        int c = -2;
+        int c;
         int char2, char3;
         int count = 0;
 
         for (;;) {
-            c = in.get ();
-            if (c > 127)
-                break;
+            c = in.get (); //NB: result in range [-128, 127] -- Andy
+//            if (c > 127)
+//                break;
 
             count++;
             sb.append ((char) c);
@@ -1668,57 +1671,58 @@ public abstract class BasicIOUtil {
             if (count >= utflen)
                 return;
         }
-        //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.
-        for (;;) {
-            switch (c >> 4) {
-                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-                    /* 0xxxxxxx*/
-                    count++;
-                    sb.append ((char)c);
-                    break;
-
-                case 12: case 13:
-                    /* 110x xxxx   10xx xxxx*/
-                    count += 2;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.get ();
-                    if ((char2 & 0xC0) != 0x80)
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + count);
-                    sb.append ((char)(((c & 0x1F) << 6) |
-                                                    (char2 & 0x3F)));
-                    break;
-
-                case 14:
-                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
-                    count += 3;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.get ();
-                    char3 = in.get ();
-                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + (count-1));
-                    sb.append ((char)(((c & 0x0F) << 12) |
-                                                    ((char2 & 0x3F) << 6)  |
-                                                    ((char3 & 0x3F) << 0)));
-                    break;
-
-                default:
-                    /* 10xx xxxx,  1111 xxxx */
-                    throw new UTFDataFormatException(
-                        "malformed input around byte " + count);
-            }
-
-            if (count >= utflen)
-                break;
-
-            c = in.get ();
-        }
+// de-facto unreachable -- Andy
+//        //  If we are here, we have broken out of the previous loop and there is an
+//        //  unhandled escape character in variable c.
+//        for (;;) {
+//            switch (c >> 4) {
+//                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+//                    /* 0xxxxxxx*/
+//                    count++;
+//                    sb.append ((char)c);
+//                    break;
+//
+//                case 12: case 13:
+//                    /* 110x xxxx   10xx xxxx*/
+//                    count += 2;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.get ();
+//                    if ((char2 & 0xC0) != 0x80)
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + count);
+//                    sb.append ((char)(((c & 0x1F) << 6) |
+//                                                    (char2 & 0x3F)));
+//                    break;
+//
+//                case 14:
+//                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+//                    count += 3;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.get ();
+//                    char3 = in.get ();
+//                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + (count-1));
+//                    sb.append ((char)(((c & 0x0F) << 12) |
+//                                                    ((char2 & 0x3F) << 6)  |
+//                                                    ((char3 & 0x3F) << 0)));
+//                    break;
+//
+//                default:
+//                    /* 10xx xxxx,  1111 xxxx */
+//                    throw new UTFDataFormatException(
+//                        "malformed input around byte " + count);
+//            }
+//
+//            if (count >= utflen)
+//                break;
+//
+//            c = in.get ();
+//        }
     }
 
     public static long      addFileToZip (File f, ZipOutputStream zos, String path)
