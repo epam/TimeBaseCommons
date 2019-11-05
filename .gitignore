@@ -1,4 +1,12 @@
 .idea/
 .gradle/
 *.iml
+*.iws
+*.ipr
 build
+
+# compiled output
+/dist
+/tmp
+/**/out
+/**/build
