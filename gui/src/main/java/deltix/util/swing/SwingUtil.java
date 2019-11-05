@@ -261,11 +261,21 @@ public abstract class SwingUtil {
             );
     }
 
+    @Deprecated
     public static void          setWindowsLookAndFeel () {
         try {
             UIManager.setLookAndFeel ("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (ClassNotFoundException exc) {
+            setSystemLookAndFeel();
         } catch (Throwable e) {
-        } 
+        }
+    }
+
+    public static void          setSystemLookAndFeel () {
+        try {
+            UIManager.setLookAndFeel (UIManager.getSystemLookAndFeelClassName());
+        } catch (Throwable ignored) {
+        }
     }
             
     public static JButton       newZeroMarginButton (Action action) {
