@@ -1,6 +1,8 @@
 package deltix.util.net;
 
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -89,21 +91,27 @@ public class SSLContextProvider {
         } else {
             //trust all connections
             trustManagers = new TrustManager[] {
-                new X509TrustManager() {
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {  }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {  }
-                }
+                    new TrustAllX509TrustManager()
             };
         }
 
 
         return trustManagers;
+    }
+
+    /**
+     * This trust manager accepts all certificates as valid.
+     */
+    @SuppressFBWarnings(value = "WEAK_TRUST_MANAGER", justification = "Intended behavior")
+    private static class TrustAllX509TrustManager implements X509TrustManager {
+        public X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+
+        @Override
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {  }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {  }
     }
 }

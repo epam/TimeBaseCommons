@@ -1,0 +1,23 @@
+Usage: csv <option> ...
+
+Options:
+
+-in <file>          Input file. If omitted, read from std input.
+-out <file>         Output file. If omitted, write to std output.
+-d <c>              Delimiter char. Defaults to , (comma).
+-nh                 No headers in input file.
+-trim               Trim all cells
+-c <column>         Optional, can be multiple. If specified at least once,
+                    then the specified columns will be filtered out of the
+                    original file. If the input file has headers, then the -c
+                    option must be folloowed by a header. Otherwise, it must
+                    be followed by a zero-based index of the column.
+-u                  Only output unique lines.
+-first <n>          Stop after the first <n> lines.
+
+Example:
+
+csv -in trades-08-07.csv -c Underlier -u
+    Prints to the standard output the set of unique values found in the 
+    column under the header "Underlier" in file trades-08-07.csv
+

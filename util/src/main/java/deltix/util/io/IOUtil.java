@@ -8,6 +8,8 @@ import java.io.*;
 
 import deltix.util.lang.Util;
 import deltix.util.memory.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
@@ -171,7 +173,9 @@ public class IOUtil extends BasicIOUtil {
 //
 //            c = in.readByte ();
 //        }
-    }   
+    }
+
+    // TODO: Move ecnryption-related code to a separate class
     
     private static final byte []         header = {
         (byte) 0xcc, (byte) 0xdd, (byte) 0x21, (byte) 0x3c,
@@ -181,6 +185,7 @@ public class IOUtil extends BasicIOUtil {
     private static final PBEParameterSpec pars = 
         new PBEParameterSpec (header, header.length);
     private static final String           csname = "UTF-8";
+    // TODO: Switch to a better cipher (with HMAC)
     private static final String           algon = "PBEWithMD5AndDES";
     private static final SecretKeyFactory skf;
     
@@ -192,6 +197,7 @@ public class IOUtil extends BasicIOUtil {
         }
     }
     
+    @SuppressFBWarnings(value = "CIPHER_INTEGRITY", justification = "Legacy method, can't change")
     public static String       concat (String a, String b) {
         if (a == null)
             a = "";
@@ -223,7 +229,8 @@ public class IOUtil extends BasicIOUtil {
         
         return (HexBinCharEncoder.encode (ciphertext, false, false, 0));
     }
-    
+
+    @SuppressFBWarnings(value = "CIPHER_INTEGRITY", justification = "Legacy method, can't change")
     public static String       split (String c, String b) {
         if (c == null)
             return (null);

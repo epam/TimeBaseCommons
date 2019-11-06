@@ -7,6 +7,7 @@ import java.util.List;
 import deltix.util.lang.Disposable;
 import deltix.util.lang.Factory;
 import deltix.util.lang.Util;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Reusable object pool.
@@ -86,9 +87,10 @@ public abstract class ReusableObjectPool<T> implements Disposable {
             pool.close();
         }
 
+        @SuppressFBWarnings(value = "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", justification = "Nick will take a look, can't cleanup here - will break legacy trading connectors")
         @Override
         protected T createItem() {
-            return pool.createItem(); //TODO: NPE?
+            return pool.createItem(); //TODO: NPE? Owner: Nick and legacy trading connectors
         }
     }
 }
