@@ -88,7 +88,7 @@ public abstract class ReusableObjectPool<T> implements Disposable {
 
         @Override
         protected T createItem() {
-            return pool.createItem(); //TODO: NPE?
+            return pool.createItem(); //TODO: NPE? Owner: Nick and legacy trading connectors
         }
     }
 }
