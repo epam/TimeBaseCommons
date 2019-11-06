@@ -1185,52 +1185,6 @@ public abstract class BasicIOUtil {
     }
 
     /**
-     *	Read a serializable object from file.
-     *
-     *	@param in_is		InputStream to read from.
-     *	@param compress		Whether to treat the file is zipped.
-     */
-    public static Serializable	readSerializable (InputStream in_is, boolean compress)
-        throws IOException, ClassNotFoundException
-    {
-        InputStream			is = openMaybeZip (in_is, compress);
-        ObjectInputStream	ois = new ObjectInputStream (is);
-        Serializable		ret = (Serializable) ois.readObject ();
-
-        return (ret);
-    }
-
-    /**
-     *	Read a serializable object from file.
-     *
-     *	@param f			File to read from.
-     *	@param compress		Whether to treat the file is zipped.
-     */
-    public static Serializable	readSerializable (File f, boolean compress)
-        throws IOException, ClassNotFoundException
-    {
-        FileInputStream		fis = new FileInputStream (f);
-
-        try {
-            return (readSerializable (fis, compress));
-        } finally {
-            Util.close (fis);
-        }
-    }
-
-    /**
-     *	Read a serializable object from file. If the file has the ".zip" extension,
-     *	it is treated as compressed.
-     *
-     *	@param f			File to read from.
-     */
-    public static Serializable	readSerializable (File f)
-        throws IOException, ClassNotFoundException
-    {
-        return (readSerializable (f, looksLikeZip (f)));
-    }
-
-    /**
      *	Write a serializable object to file.
      *
      *	@param f			File to write to.
