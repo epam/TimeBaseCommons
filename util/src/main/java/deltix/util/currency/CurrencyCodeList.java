@@ -5,6 +5,7 @@ import deltix.util.lang.Depends;
 import deltix.util.lang.StringUtils;
 import deltix.util.lang.Util;
 import deltix.util.text.CharSequenceParser;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,6 +32,7 @@ public class CurrencyCodeList {
         read ();
     }
 
+    @SuppressFBWarnings(value="PATH_TRAVERSAL_IN", justification = "Parsing XML of certain predetermined format")
     private static void read () {
         InputStream is = null;
         try {
