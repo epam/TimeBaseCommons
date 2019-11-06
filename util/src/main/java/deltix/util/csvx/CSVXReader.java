@@ -315,17 +315,5 @@ public class CSVXReader extends TextReader {
         this.mDelimiter = delimiter;
     }
 
-    public static void                  main (String [] args) throws IOException {
-        CSVXReader   csvp = new CSVXReader (new File (args [0]));
-        while (csvp.nextLine ()) {
-            System.out.println ("Line " + csvp.getLineNumber () + " @" + csvp.getLineOffset ());
-            
-            int     num = csvp.getNumCells ();
-            
-            for (int ii = 0; ii < num; ii++)
-                System.out.println ("Cell #" + ii + ": >>" + csvp.getCell (ii, false) + "<<");
-        }
-        
-        csvp.close ();
-    }
+
 }
