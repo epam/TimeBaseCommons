@@ -8,6 +8,8 @@ import java.io.*;
 
 import deltix.util.lang.Util;
 import deltix.util.memory.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
@@ -195,6 +197,7 @@ public class IOUtil extends BasicIOUtil {
         }
     }
     
+    @SuppressFBWarnings(value = "CIPHER_INTEGRITY", justification = "Legacy method, can't change")
     public static String       concat (String a, String b) {
         if (a == null)
             a = "";
@@ -226,7 +229,8 @@ public class IOUtil extends BasicIOUtil {
         
         return (HexBinCharEncoder.encode (ciphertext, false, false, 0));
     }
-    
+
+    @SuppressFBWarnings(value = "CIPHER_INTEGRITY", justification = "Legacy method, can't change")
     public static String       split (String c, String b) {
         if (c == null)
             return (null);
