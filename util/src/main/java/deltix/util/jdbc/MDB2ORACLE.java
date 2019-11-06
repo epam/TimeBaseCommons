@@ -124,7 +124,7 @@ public class MDB2ORACLE {
             } catch (SQLException x) {
                 // ignore
             }
-            
+
             JDBCUtils.exec (mOutputConnection, createSqlStr);
 
             System.out.println (insertSql.toString ());

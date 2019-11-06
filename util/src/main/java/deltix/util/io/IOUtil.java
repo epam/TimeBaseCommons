@@ -171,7 +171,9 @@ public class IOUtil extends BasicIOUtil {
 //
 //            c = in.readByte ();
 //        }
-    }   
+    }
+
+    // TODO: Move ecnryption-related code to a separate class
     
     private static final byte []         header = {
         (byte) 0xcc, (byte) 0xdd, (byte) 0x21, (byte) 0x3c,
@@ -181,6 +183,7 @@ public class IOUtil extends BasicIOUtil {
     private static final PBEParameterSpec pars = 
         new PBEParameterSpec (header, header.length);
     private static final String           csname = "UTF-8";
+    // TODO: Switch to a better cipher (with HMAC)
     private static final String           algon = "PBEWithMD5AndDES";
     private static final SecretKeyFactory skf;
     

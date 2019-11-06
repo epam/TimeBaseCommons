@@ -10,6 +10,8 @@ import java.util.zip.*;
 import deltix.util.lang.Util;
 
 import deltix.util.text.ShellPatternCSMatcher;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -258,6 +260,7 @@ public abstract class BasicIOUtil {
      *
      * @throws CloneNotSupportedException - thrown when the afore-mentioned cloning algorithm fails
      */
+    @SuppressFBWarnings("OBJECT_DESERIALIZATION")
     public static Object clone(Serializable object)
         throws CloneNotSupportedException
     {

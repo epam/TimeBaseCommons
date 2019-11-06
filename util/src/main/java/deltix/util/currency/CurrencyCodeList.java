@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,6 +49,7 @@ public class CurrencyCodeList {
 
     private static void read(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance ();
+        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final DocumentBuilder db = dbf.newDocumentBuilder ();
         final Document doc = db.parse (is);
         doc.getDocumentElement ().normalize ();

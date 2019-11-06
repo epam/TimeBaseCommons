@@ -4,6 +4,7 @@ import deltix.gflog.Log;
 import deltix.gflog.LogFactory;
 import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.*;
 
@@ -25,6 +26,7 @@ public class Executor {
             this.out = out;
         }
 
+        @SuppressFBWarnings("DM_DEFAULT_ENCODING") // This code reads data from command line that usually uses system wide default charset
         public void run() {
             BufferedReader reader = null;
             try {

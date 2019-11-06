@@ -4,8 +4,8 @@ import deltix.util.io.ProcessHelper;
 import deltix.util.lang.Util;
 import deltix.util.lang.StringUtils;
 
-import com.sun.jna.*;
 import com.sun.jna.platform.win32.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -157,6 +157,7 @@ public final class WindowsOS {
         createShortcut (target, location.getAbsolutePath (), icon.getAbsolutePath ());
     }
 
+    @SuppressFBWarnings("COMMAND_INJECTION")
     public static void              createShortcut (
             File target,
             String location,
@@ -191,9 +192,9 @@ public final class WindowsOS {
                                                  + "For Each objItem in colItems\n"
                                                  + "    Wscript.Echo objItem.Caption & \":\" & objItem.InterfaceType & \":\" & objItem.SerialNumber\n"
                                                  + "Next\n";
-
+    @SuppressFBWarnings("COMMAND_INJECTION")
     public static String            getHardDiskSerial () {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         try {
             File file = File.createTempFile ("getHardDiskSerial",
                                              ".vbs");
@@ -207,13 +208,13 @@ public final class WindowsOS {
             BufferedReader input = new BufferedReader (new InputStreamReader (p.getInputStream ()));
             String line;
             while ((line = input.readLine ()) != null) {
-                result += "%" + line;
+                result.append("%").append(line);
             }
             input.close ();
         } catch (Exception e) {
             e.printStackTrace ();
         }
-        return result.trim ();
+        return result.toString().trim ();
     }
 
 //    static String GET_SERIAL_NUMBERS = "Set fso = CreateObject(\"Scripting.FileSystemObject\")\n"
@@ -256,6 +257,7 @@ public final class WindowsOS {
         return number;
     }
 
+    @SuppressFBWarnings("COMMAND_INJECTION")
     public static String            getDiskSerialNumber (String drive) {
         String result = "";
         try {
@@ -284,6 +286,7 @@ public final class WindowsOS {
         return result.length() > 0 ? String.format ("%08X",  Integer.valueOf (result)) : result;
     }
 
+    @SuppressFBWarnings("COMMAND_INJECTION")
     public static String            getMBSerialNumber() {
         String result = "";
         try {
@@ -316,6 +319,7 @@ public final class WindowsOS {
         return result.trim ();
     }
 
+    @SuppressFBWarnings("COMMAND_INJECTION")
     public static String            getSystemUUID() {
         String result = "";
         try {
