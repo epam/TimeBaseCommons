@@ -66,6 +66,12 @@ configure(leafProjects) {
                 entry 'deltix-gflog-dcl'
                 entry 'deltix-gflog-slf4j'
             }
+
+            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+                entry 'jmh-core'
+                entry 'jmh-generator-annprocess'
+            }
+
         }
     }
 
