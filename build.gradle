@@ -13,6 +13,7 @@ plugins {
     // See https://github.com/spring-gradle-plugins/dependency-management-plugin
     id "io.spring.dependency-management" version "1.0.5.RELEASE"
     id "de.undercouch.download" version "3.4.3"
+    id "com.github.spotbugs" version "2.0.0" apply false
 }
 
 // To update Gradle wrapper use:
@@ -23,6 +24,13 @@ group 'deltix.qsrv'
 // To enable JavaDoc generation add Gradle property to command line:
 // -PincludeJavaDocs
 def includeJavaDocs = hasProperty("includeJavaDocs")
+
+// Spotbugs
+def enableSpotbugs = hasProperty("spotbugs") || Boolean.getBoolean("spotbugs") || Boolean.parseBoolean(System.getenv('SPOTBUGS'))
+if (enableSpotbugs) {
+    println("Spotbugs is ENABLED")
+}
+
 
 
 // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
@@ -41,6 +49,7 @@ configure(leafProjects) {
     apply from: "$rootDir/gradle/Deltix.gradle"
     apply plugin: 'java'
     apply plugin: 'maven-publish'
+    apply plugin: "com.github.spotbugs" // Static analysis
     apply plugin: 'io.spring.dependency-management'
 
     compileJava.options.encoding = 'UTF-8'
@@ -66,6 +75,12 @@ configure(leafProjects) {
                 entry 'deltix-gflog-dcl'
                 entry 'deltix-gflog-slf4j'
             }
+
+            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+                entry 'jmh-core'
+                entry 'jmh-generator-annprocess'
+            }
+
         }
     }
 
@@ -92,6 +107,8 @@ configure(leafProjects) {
 
         testCompile 'junit:junit:4.12'
                 //'org.mockito:mockito-core:1.10.19'
+
+        spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
     }
 
     buildscript {
@@ -105,6 +122,22 @@ configure(leafProjects) {
         }
     }
 
+    spotbugs {
+        toolVersion = "3.1.12"
+        effort = "max"
+        reportLevel = "medium"
+        sourceSets = [sourceSets.main] // exclude tests
+        excludeFilter = rootProject.file('spotbugs-excludes.xml')
+    }
+
+    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+        enabled = enableSpotbugs
+
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
 
 //    javadoc {
 //        // Suppress javadoc warnings about unsafe code
