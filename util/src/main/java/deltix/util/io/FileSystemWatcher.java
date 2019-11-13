@@ -235,7 +235,7 @@ public class FileSystemWatcher {
                         continue;
                     }
                     for (Map.Entry<WatchKey, Path> kv2 : keyMap.entrySet()) {
-                        if (!kv2.getValue().toAbsolutePath().toString().equals(kv.getKey())) {
+                        if (!kv2.getValue().toAbsolutePath().equals(kv.getKey())) {
                             continue;
                         }
                         paths.add(kv2.getValue());
