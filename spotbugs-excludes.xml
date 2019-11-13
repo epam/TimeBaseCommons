@@ -8,6 +8,12 @@
         <Bug pattern="PATH_TRAVERSAL_IN"/>
     </Match>
 
+    <!-- We are not fixing bugs in java_cup parser -->
+    <Match>
+        <Package name="java_cup.*"/>
+    </Match>
+
+
     <!-- exclude code generator (not a part of runtime)
     <Match>
         <Package name="deltix.codegen.*"/>
