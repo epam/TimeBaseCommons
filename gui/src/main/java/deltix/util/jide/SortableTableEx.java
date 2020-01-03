@@ -50,11 +50,10 @@ public class SortableTableEx extends HierarchicalTable {
 
     }
 
-    public SortableTableEx (final Vector<?> rowData,
+    public SortableTableEx (final Vector<Vector<?>> rowData,
                              final Vector<?> columnNames) {
         super (rowData,
                columnNames);
-
     }
 
     @SuppressWarnings("deprecation")
