@@ -3,12 +3,12 @@ dependencies {
     compile project(':util')
 
     // company repository
-    compile 'com.jidesoft:deltix-jide-components:3.3.3',
-            'com.jidesoft:deltix-jide-dialogs:3.3.3',
-            'com.jidesoft:deltix-jide-action:3.3.3'
-            'com.jidesoft:deltix-jide-dock:3.3.3'
+    compile 'com.jidesoft:deltix-jide-components',
+            'com.jidesoft:deltix-jide-dialogs',
+            'com.jidesoft:deltix-jide-action',
+            'com.jidesoft:deltix-jide-dock'
 
-    compile ('com.jidesoft:deltix-jide-grids:3.3.3') {
+    compile ('com.jidesoft:deltix-jide-grids') {
         exclude module: 'log4j'
         exclude module: 'commons-logging'
     }

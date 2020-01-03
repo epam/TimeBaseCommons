@@ -61,6 +61,14 @@ configure(leafProjects) {
                 entry 'deltix-gflog-dcl'
                 entry 'deltix-gflog-slf4j'
             }
+
+            dependencySet(group: 'com.jidesoft', version: '3.7.8') {
+                entry 'deltix-jide-components'
+                entry 'deltix-jide-dialogs'
+                entry 'deltix-jide-action'
+                entry 'deltix-jide-dock'
+                entry 'deltix-jide-grids'
+            }
         }
     }
 

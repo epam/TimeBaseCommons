@@ -42,7 +42,7 @@ public class TreeTableEx extends TreeTable {
         super (dm);
     }
 
-    public TreeTableEx (Vector<?> rowData,
+    public TreeTableEx (Vector<Vector<?>> rowData,
                         Vector<?> columnNames) {
         super (rowData,
                columnNames);
