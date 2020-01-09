@@ -76,7 +76,7 @@ public class JavaCompilerHelper {
                 sb.append(s).append(Util.NATIVE_LINE_BREAK);
             }
             if (ok)
-                LOG.log(LogLevel.WARN).append(sb.toString()).commit();
+                LOG.log(LogLevel.DEBUG).append(sb.toString()).commit();
         }
 
         if (ok) {
@@ -117,7 +117,7 @@ public class JavaCompilerHelper {
                 sb.append(s).append(Util.NATIVE_LINE_BREAK);
             }
             if (ok)
-                LOG.log(LogLevel.WARN).append(sb.toString()).commit();
+                LOG.log(LogLevel.DEBUG).append(sb.toString()).commit();
         }
 
         if (ok) {
