@@ -34,7 +34,9 @@ public class BasicTimeSource implements TimeSource {
                 return prevVal;
             }
             // currentTime > prevVal
-            lastTime.compareAndSet(prevVal, currentTime);
+            if (lastTime.compareAndSet(prevVal, currentTime)) {
+                return currentTime;
+            }
         }
     }
 
