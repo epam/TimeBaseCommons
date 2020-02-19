@@ -15,6 +15,7 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
+# Prepares release (remove "snapshot" from version, commit, bump version push and add "snapshot", commit, push to a dedicated branch)
 "Prepare":
     stage: prepare
     script:
@@ -37,7 +38,9 @@ cache:
         - /^release-.*$/
     except:
         - tags
+        - schedules
 
+# Builds and tests release
 "Build: Java 8":
     stage: build
     image: packages.deltixhub.com/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
@@ -51,7 +54,9 @@ cache:
         - DockerExecutor
     except:
         - tags
+        - schedules
 
+# Tests code (for scheduled checks)
 "Test":
   stage: test
   image: packages.deltixhub.com/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
@@ -68,7 +73,7 @@ cache:
   tags:
     - DockerExecutor
 
-
+# Checks dependencies (for scheduled checks)
 dependency-check:
   stage: test
   image: packages.deltixhub.com/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
@@ -83,6 +88,7 @@ dependency-check:
     paths:
       - build/reports/dependency-check-report.html
 
+# Executes release (creates tag)
 "Release":
     stage: release
     script:
@@ -101,7 +107,9 @@ dependency-check:
         - /^release-.*$/
     except:
         - tags
+        - schedules
 
+# Published built release artifacts
 "Publish: Java 8":
     stage: publish
     image: packages.deltixhub.com/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
@@ -116,7 +124,9 @@ dependency-check:
         - DockerExecutor
     except:
         - tags
+        - schedules
 
+# Clean up after release
 "Clean Up":
     stage: clean-up
     script:
@@ -133,3 +143,4 @@ dependency-check:
         - ShellExecutor
     except:
         - tags
+        - schedules
