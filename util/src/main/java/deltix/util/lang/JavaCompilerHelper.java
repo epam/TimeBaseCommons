@@ -43,7 +43,8 @@ public class JavaCompilerHelper {
     private static JavaCompiler getJavaCompilerInstance() {
         JavaCompiler compiler;
         try {
-            Class<? extends JavaCompiler> c = Thread.currentThread().getContextClassLoader().loadClass(toolsJarClassLoader).asSubclass(JavaCompiler.class);
+            Class<? extends JavaCompiler> c = Class.forName(toolsJarClassLoader, false,
+                    Thread.currentThread().getContextClassLoader()).asSubclass(JavaCompiler.class);
             compiler = c.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             compiler = ToolProvider.getSystemJavaCompiler();
