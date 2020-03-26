@@ -65,5 +65,4 @@
     <Match>
         <Rank value="20"/>
     </Match>
-
 </FindBugsFilter>
