@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.jar.JarEntry;
 
 class JarScanner {
+
     private static final String CLASS_FILE_EXTENSION = ".class";
 
     public static List<JavaFileObject> list(ClassLoader loader, String packageName) throws IOException {
@@ -30,7 +31,7 @@ class JarScanner {
         String protocol = packageFolderURL.getProtocol();
 
         if ("jar".equals(protocol)) {
-            return processJar(packageFolderURL);
+            return processJar(packageName, packageFolderURL);
         }
 //        else if ("file".equals(protocol)) {
 //            File file = new File(packageFolderURL.getFile());
@@ -41,28 +42,49 @@ class JarScanner {
         return Collections.emptyList();
     }
 
-    private static List<JavaFileObject> processJar(URL packageFolderURL) {
+    private static List<JavaFileObject> processJar(String packageName, URL packageFolderURL) {
         List<JavaFileObject> result = new ArrayList<JavaFileObject>();
         try {
             String[] uris = packageFolderURL.toExternalForm().split("!");
             String jarUri = uris[0];
             String secondUri = uris[1];
-            JarURLConnection jarConn = (JarURLConnection) packageFolderURL.openConnection();
-            String rootEntryName = jarConn.getEntryName();
-            int rootEnd = rootEntryName.length()+1;
+            /*
+             *  Spring Boot BootJar contains classes of current projects in BOOT-INF/classes,
+             *  so we need to look into it.
+             */
+            if (secondUri.endsWith("classes")) {
+                JarURLConnection connection = (JarURLConnection) packageFolderURL.openConnection();
+                Enumeration<JarEntry> entryEnum = connection.getJarFile().entries();
+                while (entryEnum.hasMoreElements()) {
+                    JarEntry jarEntry = entryEnum.nextElement();
+                    String name = jarEntry.getName();
+                    if (name.endsWith(CLASS_FILE_EXTENSION)) {
+                        URI uri = URI.create(jarUri + "!" + secondUri + "/" + name);
+                        String binaryName = name.replaceAll("/", ".");
+                        binaryName = binaryName.replaceAll(CLASS_FILE_EXTENSION + "$", "");
+                        int ind = binaryName.lastIndexOf('.');
+                        String currentPackage = binaryName.substring(0, ind);
+                        if (currentPackage.equals(packageName))
+                            result.add(new JarEntryObject(binaryName, uri));
+                    }
+                }
+            } else if (secondUri.endsWith(".jar")) {
+                JarURLConnection jarConn = (JarURLConnection) packageFolderURL.openConnection();
+                String rootEntryName = jarConn.getEntryName();
+                int rootEnd = rootEntryName.length() + 1;
+                if (!secondUri.endsWith("jar"))
+                    return result;
 
-            if (!secondUri.endsWith("jar"))
-                return result;
-
-            Enumeration<JarEntry> entryEnum = jarConn.getJarFile().entries();
-            while (entryEnum.hasMoreElements()) {
-                JarEntry jarEntry = entryEnum.nextElement();
-                String name = jarEntry.getName();
-                if (name.startsWith(rootEntryName) && name.indexOf('/', rootEnd) == -1 && name.endsWith(CLASS_FILE_EXTENSION)) {
-                    URI uri = URI.create(jarUri + "!" + secondUri + "!/" + name);
-                    String binaryName = name.replaceAll("/", ".");
-                    binaryName = binaryName.replaceAll(CLASS_FILE_EXTENSION + "$", "");
-                    result.add(new JarEntryObject(binaryName, uri));
+                Enumeration<JarEntry> entryEnum = jarConn.getJarFile().entries();
+                while (entryEnum.hasMoreElements()) {
+                    JarEntry jarEntry = entryEnum.nextElement();
+                    String name = jarEntry.getName();
+                    if (name.startsWith(rootEntryName) && name.indexOf('/', rootEnd) == -1 && name.endsWith(CLASS_FILE_EXTENSION)) {
+                        URI uri = URI.create(jarUri + "!" + secondUri + "!/" + name);
+                        String binaryName = name.replaceAll("/", ".");
+                        binaryName = binaryName.replaceAll(CLASS_FILE_EXTENSION + "$", "");
+                        result.add(new JarEntryObject(binaryName, uri));
+                    }
                 }
             }
         } catch (Exception e) {
