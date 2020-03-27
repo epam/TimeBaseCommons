@@ -8,8 +8,8 @@ dependencies {
     compile group: 'deltix', name: 'deltix-dfp', version: dfpVersion
     compile group: 'deltix', name: 'hd-date-time', version: hdTimeVersion
     compile 'deltix:deltix-gflog-api'
-}
 
-//jmh {
-//    jmhVersion = '1.19'
-//}
+    testCompile 'org.openjdk.jmh:jmh-core'
+    testCompile 'org.openjdk.jmh:jmh-generator-annprocess'
+
+}

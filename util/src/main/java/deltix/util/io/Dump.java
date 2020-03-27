@@ -34,13 +34,4 @@ public class Dump {
         System.out.println ();
     }    
     
-    public static void main (String [] args) throws IOException {
-        RandomAccessFile    f = new RandomAccessFile (args [0], "r");
-        long                base = Long.parseLong (args [1]);
-        f.seek (base);
-        byte []             buffer = new byte [Integer.parseInt (args [2])];
-        int                 num = f.read (buffer);
-        
-        dump (base, buffer, 0, num);
-    }
 }

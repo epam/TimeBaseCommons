@@ -42,12 +42,7 @@ public final class MemoryDataInput {
     }
     
     public void       setBytes (byte [] buffer, int offset, int length) {
-        assert 
-            (buffer == null ?
-                length == 0 :
-                offset + length <= buffer.length) :
-            "Insufficient buffer length " + buffer.length + "; offset: " +
-            offset + "; length: " + length;
+        assert (buffer == null ? length == 0 : offset + length <= buffer.length) : "Insufficient buffer length offset: " + offset + "; length: " + length;
         
         mBuffer = buffer;
         mLimit = offset + length;
@@ -391,6 +386,7 @@ public final class MemoryDataInput {
     /**
      *  Returns false if the string value is null. 
      */
+    @Deprecated // buggy
     public StringBuilder    appendToStringBuilder (StringBuilder sb) {
         int         utflen = readUnsignedShort ();
         
@@ -400,13 +396,13 @@ public final class MemoryDataInput {
         if (utflen == 0)
             return (sb);
         
-        int c = -2;
+        int c;
         int char2, char3;
         int count = 0;        
         
         for (;;) {
             c = readByte ();
-            if (c > 127 || c < 0) 
+            if (c < 0) //WAS: if (c > 127 || c < 0)
                 break;
             
             count++;

@@ -3,6 +3,8 @@ package deltix.util.net.timer;
 import deltix.util.io.*;
 import deltix.util.lang.*;
 import deltix.util.memory.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.io.*;
 import java.net.*;
 
@@ -36,7 +38,8 @@ public class TimerClient extends Thread {
     public long                         nanoTime () {
         return (System.nanoTime () + correction);
     }
-    
+
+    @SuppressFBWarnings("UNENCRYPTED_SOCKET")
     @Override
     public void                         run () {
         try {

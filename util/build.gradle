@@ -13,8 +13,6 @@ dependencies {
     compile 'commons-lang:commons-lang'
     compile 'org.apache.commons:commons-compress:1.7'
 
-    compileOnly 'com.google.code.findbugs:jsr305'
-
     compile 'javax.xml.bind:jaxb-api:2.2.8'
     compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
     compile 'com.sun.xml.bind:jaxb-core:2.3.0'

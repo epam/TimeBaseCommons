@@ -10,6 +10,7 @@ import javax.swing.tree.*;
 import com.jidesoft.plaf.basic.*;
 import com.jidesoft.swing.*;
 import com.jidesoft.tree.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
 
@@ -242,6 +243,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         }
     }
 
+    @SuppressFBWarnings(value="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", justification = "Legacy code. Developer stored pairs Class,InstanceOfClass in listeners array")
     protected void fireTreeStructureChanged (final AbstractTreeModel source,
                                              final TreePath path) {
         // Guaranteed to return a non-null array
@@ -260,6 +262,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
         }
     }
 
+    @SuppressFBWarnings(value="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", justification = "Legacy code. Developer stored pairs Class,InstanceOfClass in listeners array")
     protected void fireTreeStructureChanged (final DefaultTreeModel source,
                                              final TreePath path) {
         // Guaranteed to return a non-null array

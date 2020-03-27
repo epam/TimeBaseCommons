@@ -1,6 +1,7 @@
 stages:
   - prepare
   - build
+  - test
   - release
   - publish
   - clean-up 
@@ -14,6 +15,7 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
+# Prepares release (remove "snapshot" from version, commit, bump version push and add "snapshot", commit, push to a dedicated branch)
 "Prepare":
     stage: prepare
     script:
@@ -36,7 +38,9 @@ cache:
         - /^release-.*$/
     except:
         - tags
+        - schedules
 
+# Builds and tests release
 "Build: Java 8":
     stage: build
     image: packages.deltixhub.com:443/gitlabci.docker/openjdk-11-gradle-5.2.1:latest
@@ -50,7 +54,41 @@ cache:
         - DockerExecutor
     except:
         - tags
+        - schedules
 
+# Tests code (for scheduled checks)
+"Test":
+  stage: test
+  image: packages.deltixhub.com/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
+  only:
+    - schedules
+  script:
+    - ./gradlew check --parallel
+  artifacts:
+    name: "${CI_JOB_ID}_${CI_JOB_NAME}"
+    when: always
+    expire_in: 30 day
+    paths:
+      - build/reports/spotbugs/main.html
+  tags:
+    - DockerExecutor
+
+# Checks dependencies (for scheduled checks)
+dependency-check:
+  stage: test
+  image: packages.deltixhub.com/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
+  only:
+    - schedules
+  script:
+    - ./gradlew :dependencyCheckAggregate
+  artifacts:
+    name: "${CI_JOB_ID}_${CI_JOB_NAME}"
+    when: always
+    expire_in: 30 day
+    paths:
+      - build/reports/dependency-check-report.html
+
+# Executes release (creates tag)
 "Release":
     stage: release
     script:
@@ -69,7 +107,9 @@ cache:
         - /^release-.*$/
     except:
         - tags
+        - schedules
 
+# Published built release artifacts
 "Publish: Java 8":
     stage: publish
     image: packages.deltixhub.com:443/gitlabci.docker/openjdk-11-gradle-5.2.1:latest
@@ -84,7 +124,9 @@ cache:
         - DockerExecutor
     except:
         - tags
+        - schedules
 
+# Clean up after release
 "Clean Up":
     stage: clean-up
     script:
@@ -101,3 +143,4 @@ cache:
         - ShellExecutor
     except:
         - tags
+        - schedules

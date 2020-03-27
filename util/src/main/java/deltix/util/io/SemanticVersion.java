@@ -174,6 +174,8 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
                     case 'm':
                         value = "milestone";
                         break;
+                    default:
+                        // ignore
                 }
             }
             this.value = ALIASES.getProperty(value, value);

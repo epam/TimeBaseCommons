@@ -1,5 +1,7 @@
 package java_cup;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.Stack;
 import java.util.Enumeration;
 
@@ -275,6 +277,7 @@ public class lalr_item extends lr_item_core {
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Generic equality comparison. */
+  @SuppressFBWarnings(value = "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", justification = "Not touching Java_cup - third-party source")
   public boolean equals(Object other)
     {
       if (!(other instanceof lalr_item)) 

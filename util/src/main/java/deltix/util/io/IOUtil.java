@@ -8,6 +8,8 @@ import java.io.*;
 
 import deltix.util.lang.Util;
 import deltix.util.memory.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
@@ -97,20 +99,21 @@ public class IOUtil extends BasicIOUtil {
      *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
+    @Deprecated // buggy
     public final static void readUTF(MemoryDataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
 
         if (utflen == 0)
             return;
 
-        int c = -2;
+        int c;
         int char2, char3;
         int count = 0;
 
         for (;;) {
-            c = in.readByte ();
-            if (c > 127)
-                break;
+            c = in.readByte (); //NB: result in range [-128, 127] -- Andy
+//            if (c > 127)
+//                break;
 
             count++;
             sb.append ((char) c);
@@ -118,58 +121,61 @@ public class IOUtil extends BasicIOUtil {
             if (count >= utflen)
                 return;
         }
-        //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.
-        for (;;) {
-            switch (c >> 4) {
-                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-                    /* 0xxxxxxx*/
-                    count++;
-                    sb.append ((char)c);
-                    break;
+// de-facto unreachable -- Andy
+//        //  If we are here, we have broken out of the previous loop and there is an
+//        //  unhandled escape character in variable c.
+//        for (;;) {
+//            switch (c >> 4) {
+//                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+//                    /* 0xxxxxxx*/
+//                    count++;
+//                    sb.append ((char)c);
+//                    break;
+//
+//                case 12: case 13:
+//                    /* 110x xxxx   10xx xxxx*/
+//                    count += 2;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.readByte ();
+//                    if ((char2 & 0xC0) != 0x80)
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + count);
+//                    sb.append ((char)(((c & 0x1F) << 6) |
+//                                                    (char2 & 0x3F)));
+//                    break;
+//
+//                case 14:
+//                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+//                    count += 3;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.readByte ();
+//                    char3 = in.readByte ();
+//                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + (count-1));
+//                    sb.append ((char)(((c & 0x0F) << 12) |
+//                                                    ((char2 & 0x3F) << 6)  |
+//                                                    ((char3 & 0x3F) << 0)));
+//                    break;
+//
+//                default:
+//                    /* 10xx xxxx,  1111 xxxx */
+//                    throw new UTFDataFormatException(
+//                        "malformed input around byte " + count);
+//            }
+//
+//            if (count >= utflen)
+//                break;
+//
+//            c = in.readByte ();
+//        }
+    }
 
-                case 12: case 13:
-                    /* 110x xxxx   10xx xxxx*/
-                    count += 2;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.readByte ();
-                    if ((char2 & 0xC0) != 0x80)
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + count);
-                    sb.append ((char)(((c & 0x1F) << 6) |
-                                                    (char2 & 0x3F)));
-                    break;
-
-                case 14:
-                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
-                    count += 3;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.readByte ();
-                    char3 = in.readByte ();
-                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + (count-1));
-                    sb.append ((char)(((c & 0x0F) << 12) |
-                                                    ((char2 & 0x3F) << 6)  |
-                                                    ((char3 & 0x3F) << 0)));
-                    break;
-
-                default:
-                    /* 10xx xxxx,  1111 xxxx */
-                    throw new UTFDataFormatException(
-                        "malformed input around byte " + count);
-            }
-
-            if (count >= utflen)
-                break;
-
-            c = in.readByte ();
-        }
-    }   
+    // TODO: Move ecnryption-related code to a separate class
     
     private static final byte []         header = {
         (byte) 0xcc, (byte) 0xdd, (byte) 0x21, (byte) 0x3c,
@@ -179,6 +185,7 @@ public class IOUtil extends BasicIOUtil {
     private static final PBEParameterSpec pars = 
         new PBEParameterSpec (header, header.length);
     private static final String           csname = "UTF-8";
+    // TODO: Switch to a better cipher (with HMAC)
     private static final String           algon = "PBEWithMD5AndDES";
     private static final SecretKeyFactory skf;
     
@@ -190,6 +197,7 @@ public class IOUtil extends BasicIOUtil {
         }
     }
     
+    @SuppressFBWarnings(value = "CIPHER_INTEGRITY", justification = "Legacy method, can't change")
     public static String       concat (String a, String b) {
         if (a == null)
             a = "";
@@ -221,7 +229,8 @@ public class IOUtil extends BasicIOUtil {
         
         return (HexBinCharEncoder.encode (ciphertext, false, false, 0));
     }
-    
+
+    @SuppressFBWarnings(value = "CIPHER_INTEGRITY", justification = "Legacy method, can't change")
     public static String       split (String c, String b) {
         if (c == null)
             return (null);

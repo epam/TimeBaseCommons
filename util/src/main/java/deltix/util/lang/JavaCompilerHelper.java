@@ -5,11 +5,11 @@ import deltix.gflog.LogFactory;
 import deltix.gflog.LogLevel;
 import deltix.util.io.ByteArrayInputStreamEx;
 import deltix.util.io.ByteArrayOutputStreamEx;
-import javax.tools.*;
 
-import java.util.*;
+import javax.tools.*;
 import java.io.*;
 import java.net.URI;
+import java.util.*;
 
 /**
  * Provides helper methods to compile one or several classes on-the-fly.
@@ -19,8 +19,10 @@ public class JavaCompilerHelper {
     private static final JavaCompiler           JAVA_COMPILER_INSTANCE;
     private static final JavaFileManager        JAVA_FILEMGR_INSTANCE;
 
+    private static final String toolsJarClassLoader = "com.sun.tools.javac.api.JavacTool";
+
     static {
-        JAVA_COMPILER_INSTANCE = ToolProvider.getSystemJavaCompiler();
+        JAVA_COMPILER_INSTANCE = getJavaCompilerInstance();
         if (JAVA_COMPILER_INSTANCE == null)
             throw new ExceptionInInitializerError("Cannot instantiate Java Compiler using ToolProvider");
         JAVA_FILEMGR_INSTANCE = JAVA_COMPILER_INSTANCE.getStandardFileManager(null, null, null);
@@ -36,6 +38,18 @@ public class JavaCompilerHelper {
             cl = new SpecialClassLoader(loader);
             fileManager = new SpecialJavaFileManager (JAVA_FILEMGR_INSTANCE, cl);
         }
+    }
+
+    private static JavaCompiler getJavaCompilerInstance() {
+        JavaCompiler compiler;
+        try {
+            Class<? extends JavaCompiler> c = Class.forName(toolsJarClassLoader, false,
+                    Thread.currentThread().getContextClassLoader()).asSubclass(JavaCompiler.class);
+            compiler = c.newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            compiler = ToolProvider.getSystemJavaCompiler();
+        }
+        return compiler;
     }
     
     public JavaCompilerHelper (ClassLoader loader, ClassDirectory classDir) {
@@ -76,7 +90,7 @@ public class JavaCompilerHelper {
                 sb.append(s).append(Util.NATIVE_LINE_BREAK);
             }
             if (ok)
-                LOG.log(LogLevel.WARN).append(sb.toString()).commit();
+                LOG.log(LogLevel.DEBUG).append(sb.toString()).commit();
         }
 
         if (ok) {
@@ -117,7 +131,7 @@ public class JavaCompilerHelper {
                 sb.append(s).append(Util.NATIVE_LINE_BREAK);
             }
             if (ok)
-                LOG.log(LogLevel.WARN).append(sb.toString()).commit();
+                LOG.log(LogLevel.DEBUG).append(sb.toString()).commit();
         }
 
         if (ok) {

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.text.DecimalFormat;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class StringUtils {
     public static final String REGEXP_WHITESPACE       = "[ \\t\\n\\r]+";
 
@@ -163,6 +164,7 @@ public class StringUtils {
         replace (where, what, with, out, true);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static boolean	replace (
         String					where,
         String []				what,
@@ -317,7 +319,8 @@ public class StringUtils {
     }
     
     public static String        escapeCStringLiteral (CharSequence str) {
-        StringBuilder   sb = new StringBuilder ('\"');
+        StringBuilder   sb = new StringBuilder ();
+        sb.append ('\"');
         escapeJavaString (str, sb);
         sb.append ('\"');
         return (sb.toString ());
@@ -642,7 +645,7 @@ public class StringUtils {
         boolean     frac = false;
         double      m = 0.1;
 
-        while (len > 0 && !frac) {
+        while (len > 0) {
             byte    b = bytes [offset];
 
             len--;
@@ -752,16 +755,16 @@ public class StringUtils {
             return (null);
 
         StringBuilder    buf = new StringBuilder();
-        if (strs != null)
-            for (int i = 0; i < strs.length; i++) {
-                if (i > 0)
-                    buf.append (", ");
-                buf.append (strs [i]);
-            }
+        for (int i = 0; i < strs.length; i++) {
+            if (i > 0)
+                buf.append (", ");
+            buf.append (strs [i]);
+        }
         return (buf.toString());
     }
 
     // adapted from String.indexOf(char[] ...)
+    @SuppressWarnings("StatementWithEmptyBody")
     public static int           indexOf (final CharSequence s1, final CharSequence s2) {
         final int sourceCount = s1.length();
         final int targetCount = s2.length();
@@ -816,6 +819,7 @@ public class StringUtils {
         return (true);
     }
 
+    @SuppressWarnings("StringEquality")
     public static boolean equals (String one, String two) {
 		if (one == null)
 			return two == null;
@@ -856,18 +860,19 @@ public class StringUtils {
             }
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public static String[] split(String message, String regex,
                                  boolean trimToNull, boolean discardNullOrEmpty) {
         String[] splitted = message.split(regex);
         if (discardNullOrEmpty) {
-            List<String> result = new ArrayList<String>(splitted.length);
+            List<String> result = new ArrayList<>(splitted.length);
             for (int i = 0; i < splitted.length; i++) {
                 String value = trimToNull ? trim(splitted[i]) : splitted[i];
                 if (value == null || value.length() <= 0)
                     continue;
                 result.add(value);
             }
-            return result.toArray(new String[result.size()]);
+            return result.toArray(new String[0]);
         } else {
             if (trimToNull) {
                 for (int i = 0; i < splitted.length; i++)
@@ -939,7 +944,7 @@ public class StringUtils {
     public static void replace(Properties target, Properties replacements,
                                String placeholderPrefix, String placeholderSuffix) {
         Set<String> replacementKeys = replacements.stringPropertyNames();
-        Map<String, String> replaceMap = new HashMap<String, String>(replacementKeys.size());
+        Map<String, String> replaceMap = new HashMap<>(replacementKeys.size());
         for (String key : replacementKeys)
             replaceMap.put(placeholderPrefix + key + placeholderSuffix, replacements.getProperty(key));
 
@@ -948,7 +953,9 @@ public class StringUtils {
             String value = target.getProperty(key);
             // replace placeholders
             String newKey = replace(key, replaceMap);
-            String newValue = value != null ? replace(value, replaceMap) : value;
+            if (value == null)
+                throw new NullPointerException("Value is NULL for " + newKey);
+            String newValue = replace(value, replaceMap);
             // remove old entry and put the new one
             target.remove(key);
             target.put(newKey, newValue);
@@ -980,10 +987,12 @@ public class StringUtils {
     public static String addLeadingZeros(String value, int count){
         if (value==null || value.length()>=count)
             return value;
-        while (value.length()<count){
-            value = "0" + value;
+
+        StringBuilder valueBuilder = new StringBuilder(value);
+        while (valueBuilder.length()<count){
+            valueBuilder.insert(0, "0");
         }
-        return value;
+        return valueBuilder.toString();
     }
 
     public static String    trimTrailingWhitespace (String s) {
@@ -1158,6 +1167,7 @@ public class StringUtils {
         return expression.matches(pattern);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static String escapeSpecialCharacters(String expression, String specialSymbols) {
         if (expression == null)
             return null;
@@ -1237,7 +1247,7 @@ public class StringUtils {
     private static boolean isCharactersEqual(char c1, char c2, boolean caseSensitive) {
         char cc1 = caseSensitive ? c1 : Character.toUpperCase(c1);
         char cc2 = caseSensitive ? c2 : Character.toUpperCase(c2);
-        return Character.compare(cc1, cc2) == 0;
+        return cc1 == cc2;
     }
 
     private static boolean isWildcardQuoted(CharSequence expression, int pos) {

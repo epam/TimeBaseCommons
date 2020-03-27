@@ -20,9 +20,9 @@ public class MessageDigestOutputStream extends OutputStream {
     
     public MessageDigestOutputStream () {
         try {
-            this.md = MessageDigest.getInstance ("MD5");
+            this.md = MessageDigest.getInstance ("SHA-256");
         } catch (NoSuchAlgorithmException x) {
-            throw new RuntimeException ("No MD5??", x);
+            throw new RuntimeException ("No SHA-256??", x);
         }
     }
     

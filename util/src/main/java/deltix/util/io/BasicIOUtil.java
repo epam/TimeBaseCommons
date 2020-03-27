@@ -10,6 +10,8 @@ import java.util.zip.*;
 import deltix.util.lang.Util;
 
 import deltix.util.text.ShellPatternCSMatcher;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -258,6 +260,7 @@ public abstract class BasicIOUtil {
      *
      * @throws CloneNotSupportedException - thrown when the afore-mentioned cloning algorithm fails
      */
+    @SuppressFBWarnings("OBJECT_DESERIALIZATION")
     public static Object clone(Serializable object)
         throws CloneNotSupportedException
     {
@@ -970,79 +973,6 @@ public abstract class BasicIOUtil {
         }
     }
 
-    public static ZipEntry [] listZipEntries (File f, String regex)
-        throws IOException, InterruptedException
-    {
-        FileInputStream         fis = new FileInputStream (f);
-        ArrayList <ZipEntry>    ret = new ArrayList <ZipEntry> ();
-        Matcher                 m = null;
-
-        if (regex != null) {
-            Pattern                 pat = Pattern.compile (regex);
-            m = pat.matcher ("");
-        }
-
-        try {
-            ZipInputStream      zis = new ZipInputStream (fis);
-
-            for (;;) {
-                ZipEntry        zentry = zis.getNextEntry ();
-
-                if (zentry == null)
-                    break;
-
-                if (m != null) {
-                    m.reset (zentry.getName ());
-
-                    if (!m.matches ())
-                        continue;
-                }
-
-                ret.add (zentry);
-            }
-        } finally {
-            Util.close (fis);
-        }
-
-        return (ret.toArray (new ZipEntry [ret.size ()]));
-    }
-
-    public static void          extractZipFile (File zip, File destDir)
-        throws IOException, InterruptedException
-    {
-        InputStream         is = new FileInputStream (zip);
-        
-        try {
-            extractZipStream (is, destDir);
-        } finally {
-            Util.close (is);
-        }
-    }
-    
-    public static void          extractZipStream (InputStream is, File destDir)
-        throws IOException, InterruptedException
-    {
-        ZipInputStream      zis = new ZipInputStream (is);
-        byte []             buffer = new byte [4096];
-        
-        for (;;) {
-            ZipEntry        zentry = zis.getNextEntry ();
-
-            if (zentry == null)
-                break;
-
-            String          name = zentry.getName ();
-            File            destFile = new File (destDir, name);
-
-            if (name.endsWith ("/")) 
-                mkDirIfNeeded (destFile);
-            else {
-                mkParentDirIfNeeded (destFile);
-
-                copyToFile (zis, destFile, zentry.getSize (), buffer);
-            }
-        }
-    }
 
     public static void  copyToFile (InputStream is, File destFile)
         throws IOException, InterruptedException
@@ -1179,52 +1109,6 @@ public abstract class BasicIOUtil {
         }
         else
             os.close ();
-    }
-
-    /**
-     *	Read a serializable object from file.
-     *
-     *	@param in_is		InputStream to read from.
-     *	@param compress		Whether to treat the file is zipped.
-     */
-    public static Serializable	readSerializable (InputStream in_is, boolean compress)
-        throws IOException, ClassNotFoundException
-    {
-        InputStream			is = openMaybeZip (in_is, compress);
-        ObjectInputStream	ois = new ObjectInputStream (is);
-        Serializable		ret = (Serializable) ois.readObject ();
-
-        return (ret);
-    }
-
-    /**
-     *	Read a serializable object from file.
-     *
-     *	@param f			File to read from.
-     *	@param compress		Whether to treat the file is zipped.
-     */
-    public static Serializable	readSerializable (File f, boolean compress)
-        throws IOException, ClassNotFoundException
-    {
-        FileInputStream		fis = new FileInputStream (f);
-
-        try {
-            return (readSerializable (fis, compress));
-        } finally {
-            Util.close (fis);
-        }
-    }
-
-    /**
-     *	Read a serializable object from file. If the file has the ".zip" extension,
-     *	it is treated as compressed.
-     *
-     *	@param f			File to read from.
-     */
-    public static Serializable	readSerializable (File f)
-        throws IOException, ClassNotFoundException
-    {
-        return (readSerializable (f, looksLikeZip (f)));
     }
 
     /**
@@ -1569,20 +1453,21 @@ public abstract class BasicIOUtil {
      *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
+    @Deprecated // buggy
     public final static void readUTF(DataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
 
         if (utflen == 0)
             return;
 
-        int c = -2;
+        int c;
         int char2, char3;
         int count = 0;
 
         for (;;) {
-            c = in.readByte ();
-            if (c > 127)
-                break;
+            c = in.readByte (); //NB: result in range [-128, 127] -- Andy
+            //if (c > 127)
+            //    break;
 
             count++;
             sb.append ((char) c);
@@ -1590,77 +1475,79 @@ public abstract class BasicIOUtil {
             if (count >= utflen)
                 return;
         }
-        //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.
-        for (;;) {
-            switch (c >> 4) {
-                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-                    /* 0xxxxxxx*/
-                    count++;
-                    sb.append ((char)c);
-                    break;
-
-                case 12: case 13:
-                    /* 110x xxxx   10xx xxxx*/
-                    count += 2;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.readByte ();
-                    if ((char2 & 0xC0) != 0x80)
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + count);
-                    sb.append ((char)(((c & 0x1F) << 6) |
-                                                    (char2 & 0x3F)));
-                    break;
-
-                case 14:
-                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
-                    count += 3;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.readByte ();
-                    char3 = in.readByte ();
-                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + (count-1));
-                    sb.append ((char)(((c & 0x0F) << 12) |
-                                                    ((char2 & 0x3F) << 6)  |
-                                                    ((char3 & 0x3F) << 0)));
-                    break;
-
-                default:
-                    /* 10xx xxxx,  1111 xxxx */
-                    throw new UTFDataFormatException(
-                        "malformed input around byte " + count);
-            }
-
-            if (count >= utflen)
-                break;
-
-            c = in.readByte ();
-        }
+// de-facto unreachable -- Andy
+//        //  If we are here, we have broken out of the previous loop and there is an
+//        //  unhandled escape character in variable c.
+//        for (;;) {
+//            switch (c >> 4) {
+//                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+//                    /* 0xxxxxxx*/
+//                    count++;
+//                    sb.append ((char)c);
+//                    break;
+//
+//                case 12: case 13:
+//                    /* 110x xxxx   10xx xxxx*/
+//                    count += 2;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.readByte ();
+//                    if ((char2 & 0xC0) != 0x80)
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + count);
+//                    sb.append ((char)(((c & 0x1F) << 6) |
+//                                                    (char2 & 0x3F)));
+//                    break;
+//
+//                case 14:
+//                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+//                    count += 3;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.readByte ();
+//                    char3 = in.readByte ();
+//                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + (count-1));
+//                    sb.append ((char)(((c & 0x0F) << 12) |
+//                                                    ((char2 & 0x3F) << 6)  |
+//                                                    ((char3 & 0x3F) << 0)));
+//                    break;
+//
+//                default:
+//                    /* 10xx xxxx,  1111 xxxx */
+//                    throw new UTFDataFormatException(
+//                        "malformed input around byte " + count);
+//            }
+//
+//            if (count >= utflen)
+//                break;
+//
+//            c = in.readByte ();
+//        }
     }
 
     /**
      *  Reads (appends) a UTF string to an Appendable (such as StringBuidler),
      *  without clearing it first.
      */
+    @Deprecated // buggy
     public final static void readUTF(ByteBuffer in, Appendable sb) throws BufferUnderflowException, IOException {
         int utflen = 0xFFFF & in.getShort();
 
         if (utflen == 0)
             return;
 
-        int c = -2;
+        int c;
         int char2, char3;
         int count = 0;
 
         for (;;) {
-            c = in.get ();
-            if (c > 127)
-                break;
+            c = in.get (); //NB: result in range [-128, 127] -- Andy
+//            if (c > 127)
+//                break;
 
             count++;
             sb.append ((char) c);
@@ -1668,57 +1555,58 @@ public abstract class BasicIOUtil {
             if (count >= utflen)
                 return;
         }
-        //  If we are here, we have broken out of the previous loop and there is an
-        //  unhandled escape character in variable c.
-        for (;;) {
-            switch (c >> 4) {
-                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-                    /* 0xxxxxxx*/
-                    count++;
-                    sb.append ((char)c);
-                    break;
-
-                case 12: case 13:
-                    /* 110x xxxx   10xx xxxx*/
-                    count += 2;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.get ();
-                    if ((char2 & 0xC0) != 0x80)
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + count);
-                    sb.append ((char)(((c & 0x1F) << 6) |
-                                                    (char2 & 0x3F)));
-                    break;
-
-                case 14:
-                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
-                    count += 3;
-                    if (count > utflen)
-                        throw new UTFDataFormatException(
-                            "malformed input: partial character at end");
-                    char2 = in.get ();
-                    char3 = in.get ();
-                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-                        throw new UTFDataFormatException(
-                            "malformed input around byte " + (count-1));
-                    sb.append ((char)(((c & 0x0F) << 12) |
-                                                    ((char2 & 0x3F) << 6)  |
-                                                    ((char3 & 0x3F) << 0)));
-                    break;
-
-                default:
-                    /* 10xx xxxx,  1111 xxxx */
-                    throw new UTFDataFormatException(
-                        "malformed input around byte " + count);
-            }
-
-            if (count >= utflen)
-                break;
-
-            c = in.get ();
-        }
+// de-facto unreachable -- Andy
+//        //  If we are here, we have broken out of the previous loop and there is an
+//        //  unhandled escape character in variable c.
+//        for (;;) {
+//            switch (c >> 4) {
+//                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+//                    /* 0xxxxxxx*/
+//                    count++;
+//                    sb.append ((char)c);
+//                    break;
+//
+//                case 12: case 13:
+//                    /* 110x xxxx   10xx xxxx*/
+//                    count += 2;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.get ();
+//                    if ((char2 & 0xC0) != 0x80)
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + count);
+//                    sb.append ((char)(((c & 0x1F) << 6) |
+//                                                    (char2 & 0x3F)));
+//                    break;
+//
+//                case 14:
+//                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+//                    count += 3;
+//                    if (count > utflen)
+//                        throw new UTFDataFormatException(
+//                            "malformed input: partial character at end");
+//                    char2 = in.get ();
+//                    char3 = in.get ();
+//                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
+//                        throw new UTFDataFormatException(
+//                            "malformed input around byte " + (count-1));
+//                    sb.append ((char)(((c & 0x0F) << 12) |
+//                                                    ((char2 & 0x3F) << 6)  |
+//                                                    ((char3 & 0x3F) << 0)));
+//                    break;
+//
+//                default:
+//                    /* 10xx xxxx,  1111 xxxx */
+//                    throw new UTFDataFormatException(
+//                        "malformed input around byte " + count);
+//            }
+//
+//            if (count >= utflen)
+//                break;
+//
+//            c = in.get ();
+//        }
     }
 
     public static long      addFileToZip (File f, ZipOutputStream zos, String path)

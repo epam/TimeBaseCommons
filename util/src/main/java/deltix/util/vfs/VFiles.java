@@ -10,16 +10,16 @@ import java.net.URL;
 
 public class VFiles {
  
-    public static long copyFile(VFile from, VFile to) throws IOException, InterruptedException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            return StreamPump.pump(in, out);
-        } finally {
-            Util.close(in);
-            Util.close(out);
-        }
-    }
+//    public static long copyFile(VFile from, VFile to) throws IOException, InterruptedException {
+//        InputStream in = null;
+//        OutputStream out = null;
+//        try {
+//            return StreamPump.pump(in, out);
+//        } finally {
+//            Util.close(in);
+//            Util.close(out);
+//        }
+//    }
         
     public static URL appendRelativePath(URL root, String relativePath) throws MalformedURLException {
         relativePath = relativePath.trim();
