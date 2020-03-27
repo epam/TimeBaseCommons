@@ -31,8 +31,6 @@ if (enableSpotbugs) {
     println("Spotbugs is ENABLED")
 }
 
-
-
 // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
 // So we create a list of leaf projects and apply all java-related plugins on them only.
 def leafProjects = subprojects.findAll { subproject ->
@@ -53,13 +51,17 @@ configure(leafProjects) {
     apply plugin: 'io.spring.dependency-management'
 
     compileJava.options.encoding = 'UTF-8'
-    compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio.ch=ALL-UNNAMED'
-    compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio=ALL-UNNAMED'
+
+    // --- JAVA 11 version ---
+    // sourceCompatibility = 11
+    // targetCompatibility = 11
+    //compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio.ch=ALL-UNNAMED'
+    //compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio=ALL-UNNAMED'
 
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
     sourceCompatibility = 1.8
-    targetCompatibility = 11
+    targetCompatibility = 1.8
 
     // Defines versions of dependencies to be used by subprojects
     // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
@@ -87,6 +89,12 @@ configure(leafProjects) {
                 entry 'deltix-jide-action'
                 entry 'deltix-jide-dock'
                 entry 'deltix-jide-grids'
+            }
+
+            // JMH
+            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+                entry 'jmh-core'
+                entry 'jmh-generator-annprocess'
             }
         }
     }

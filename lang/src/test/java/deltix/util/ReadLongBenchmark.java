@@ -1,4 +1,4 @@
-package deltix.util.memory.deu;
+package deltix.util;
 
 import deltix.util.memory.DataExchangeUtils;
 import org.openjdk.jmh.annotations.*;

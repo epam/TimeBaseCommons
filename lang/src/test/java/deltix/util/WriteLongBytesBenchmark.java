@@ -1,4 +1,4 @@
-package deltix.util.memory.mdo;
+package deltix.util;
 
 import deltix.util.memory.MemoryDataOutput;
 import org.openjdk.jmh.annotations.*;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Warmup(iterations = 5, time = 3)
 @Measurement(iterations = 10, time = 3)
-public class WrtieLongBytesBenchmark {
+public class WriteLongBytesBenchmark {
     MemoryDataOutput out = new MemoryDataOutput();
     long value = 0;
 
