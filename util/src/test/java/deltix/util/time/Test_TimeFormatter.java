@@ -8,6 +8,8 @@ import java.util.StringTokenizer;
 import deltix.util.CommonsJUnitCategories.Utils;
 import org.junit.experimental.categories.Category;
 
+import static org.junit.Assert.assertEquals;
+
 @Category(Utils.class)
 public class Test_TimeFormatter {
 
@@ -24,6 +26,11 @@ public class Test_TimeFormatter {
 		assertFormat(3601 * 1000, "01:00:01");
 		
         assertFormat(MILLIS_PER_DAY - 1, "23:59:59");
+	}
+
+	@Test
+	public void specialFormat() {
+		assertEquals(28800000000000L, TimeFormatter.parseTimeOfDay("08:00:00", 1_000_000_000));
 	}
 
 	@Test
@@ -49,12 +56,12 @@ public class Test_TimeFormatter {
 
 	private static void assertFormat(long time, String expected) {
 		String actual = TimeFormatter.formatTimeOfDay(time);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	private static void assertFormatMS(long time, String expected) {
 		String actual = TimeFormatter.formatDurationWithMilliseconds(time);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}	
 	@Test
 	public void testBadCasesTime() {
@@ -263,7 +270,7 @@ public class Test_TimeFormatter {
 		try {
 			int actualNumberOfSeconds = TimeFormatter
 					.parseDurationInSeconds(input);
-			Assert.assertEquals("Number of seconds in '" + input + '\'',
+			assertEquals("Number of seconds in '" + input + '\'',
 					expectedNumberOfSeconds, actualNumberOfSeconds);
 		} catch (NumberFormatException ex) {
 			Assert.fail("Parsing of '" + input + "' failed with message ["
@@ -372,7 +379,7 @@ public class Test_TimeFormatter {
 
 					int actual = TimeFormatter.parseDurationInSeconds(text);
 					int expected = hoursInSec + minInSec + sec;
-					Assert.assertEquals(actual, expected);
+					assertEquals(actual, expected);
 				}
 			}
 		}
@@ -456,7 +463,7 @@ public class Test_TimeFormatter {
 	private static void assertTimeParsed(String input, int expectedSeconds) {
 		try {
 			int actualSeconds = TimeFormatter.parseTimeOfDay(input);
-			Assert.assertEquals("Number of seconds in '" + input + '\'',
+			assertEquals("Number of seconds in '" + input + '\'',
 					expectedSeconds, actualSeconds);
 		} catch (NumberFormatException ex) {
 			Assert.fail("Parsing of '" + input + "' failed with message ["
