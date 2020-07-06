@@ -581,7 +581,7 @@ public final class TimeFormatter {
         int                 pos = 0;
         int                 n = 0;
         int                 part = 0;
-        int                 seconds = 0;
+        long                seconds = 0;
         int                 fs = scale;
         
         for (; pos < length; pos++) {
