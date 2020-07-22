@@ -38,6 +38,7 @@ public class VFileSystemFactory {
             case "jar":
                 return new ZipFileSystem(new File(path), props);
             case "http":
+            case "https":
                 return new HttpFileSystem(url);
         }
         
