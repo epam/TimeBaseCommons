@@ -18,10 +18,11 @@ public abstract class Resource {
         return (new NetResource (url));
     }
 
+    /** Used by plugins */
     public static Resource          create2 (String url)
             throws IOException
     {
-        if (url.startsWith("http:"))
+        if (url.startsWith("http:") || url.startsWith("https:"))
             return new NetResource(url);
 
         final File f = new File(url);
