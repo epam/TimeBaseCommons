@@ -9,12 +9,16 @@ class SchemaFieldChangeAction {
 
     /// Previous data field state.
     [SchemaElement]
-    [SchemaType(IsNullable=true)]
+    [SchemaType(IsNullable=true, NestedTypes = {
+        typeof(DataField)
+    })]
     DataField? PreviousState;
 
     /// New descriptor state.
     [SchemaElement]
-    [SchemaType(IsNullable=true)]
+    [SchemaType(IsNullable=true, NestedTypes = {
+        typeof(DataField)
+    })]
     DataField? NewState;
 
     /// Bitmask that defines the changes that were applied to the field.
@@ -24,6 +28,8 @@ class SchemaFieldChangeAction {
 
     /// Defines the data transformation that was applied to the field.
     [SchemaElement]
-    [SchemaType(IsNullable=true)]
+    [SchemaType(IsNullable=true, NestedTypes = {
+        typeof(SchemaFieldDataTransformation)
+    })]
     SchemaFieldDataTransformation? DataTransformation;
 }

@@ -10,7 +10,19 @@ class DataField : NamedDescriptor {
 
     /// Data type of a field.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
+    [SchemaType(IsNullable=false, NestedTypes = {
+        typeof(ArrayDataType),
+        typeof(BinaryDataType),
+        typeof(BooleanDataType),
+        typeof(CharDataType),
+        typeof(ClassDataType),
+        typeof(DateDataType),
+        typeof(EnumDataType),
+        typeof(FloatDataType),
+        typeof(IntegerDataType),
+        typeof(TimeOfDayDataType),
+        typeof(VarcharDataType)
+    })]
     DataType DataType;
 }
 

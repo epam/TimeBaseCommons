@@ -43,7 +43,19 @@ class ArrayDataType : DataType {
 
     /// Array element data type.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
+    [SchemaType(IsNullable=false, NestedTypes = {
+        typeof(ArrayDataType),
+        typeof(BinaryDataType),
+        typeof(BooleanDataType),
+        typeof(CharDataType),
+        typeof(ClassDataType),
+        typeof(DateDataType),
+        typeof(EnumDataType),
+        typeof(FloatDataType),
+        typeof(IntegerDataType),
+        typeof(TimeOfDayDataType),
+        typeof(VarcharDataType)
+    })]
     DataType ElementType;
 }
 
@@ -82,7 +94,8 @@ class ClassDataType : DataType {
 
     /// Definitions for nested schema classes.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(RecordClassDescriptor) })]
     List<RecordClassDescriptor> TypeDescriptors;
 }
 
@@ -99,7 +112,9 @@ class EnumDataType : DataType {
 
     /// Definition for enumeration class.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
+    [SchemaType(IsNullable=false, NestedTypes = {
+        typeof(EnumClassDescriptor)
+    })]
     EnumClassDescriptor TypeDescriptor;
 }
 
