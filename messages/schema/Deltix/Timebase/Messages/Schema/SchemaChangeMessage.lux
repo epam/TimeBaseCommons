@@ -20,5 +20,7 @@ class SchemaChangeMessage : InstrumentMessage {
     /// New schema state.
     [SchemaElement]
     [SchemaType(IsNullable=false)]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(SchemaDescriptorChangeAction) })]
     List<SchemaDescriptorChangeAction> DescriptorChangeActions;
 }

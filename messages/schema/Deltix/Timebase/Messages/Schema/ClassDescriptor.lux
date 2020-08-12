@@ -7,9 +7,4 @@ import Deltix.Timebase.Messages.*;
 [SchemaElement(Name = "deltix.timebase.api.messages.schema.ClassDescriptor", Title = "ClassDescriptor")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class ClassDescriptor : NamedDescriptor {
-
-    /// Identifier of a node.
-    [SchemaElement]
-    [SchemaType(IsNullable=true)]
-    Text? Guid;
 }
