@@ -9,21 +9,18 @@ class SchemaChangeMessage : InstrumentMessage {
 
     /// Previous schema state.
     [SchemaElement]
-    [SchemaType(IsNullable=true)]
     [SchemaArrayType(IsNullable = true, IsElementNullable = false,
         ElementTypes = { typeof(RecordClassDescriptor) })]
     List<RecordClassDescriptor>? PreviousState;
 
     /// New schema state.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
         ElementTypes = { typeof(RecordClassDescriptor) })]
     List<RecordClassDescriptor> NewState;
 
     /// New schema state.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
         ElementTypes = { typeof(SchemaDescriptorChangeAction) })]
     List<SchemaDescriptorChangeAction> DescriptorChangeActions;

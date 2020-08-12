@@ -9,7 +9,6 @@ class RecordClassDescriptor : ClassDescriptor {
 
     /// List of fields of a class.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
         ElementTypes = { typeof(DataField) })]
     List<DataField> DataFields;

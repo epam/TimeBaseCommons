@@ -25,7 +25,6 @@ class SchemaDescriptorChangeAction {
     /// A list of change actions to data fields.
     /// Populated only if ChangeTypes conatins ALTER flag
     [SchemaElement]
-    [SchemaType(IsNullable=true)]
     [SchemaArrayType(IsNullable = true, IsElementNullable = false,
         ElementTypes = { typeof(SchemaFieldChangeAction) })]
     List<SchemaFieldChangeAction>? FieldChangeActions;

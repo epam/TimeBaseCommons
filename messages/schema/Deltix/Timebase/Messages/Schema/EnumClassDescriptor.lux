@@ -9,7 +9,6 @@ class EnumClassDescriptor : ClassDescriptor {
 
     /// List of values of enumeration.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
         ElementTypes = { typeof(EnumValue) })]
     List<EnumValue> Values;
