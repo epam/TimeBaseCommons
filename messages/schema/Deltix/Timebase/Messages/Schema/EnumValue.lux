@@ -1,0 +1,19 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+/// Schema definition for a single enumeration value.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.EnumValue", Title = "EnumValue")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class EnumValue {
+
+    /// Enumeration symbol.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text Symbol;
+
+    /// Enumeration value.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Int16 Value;
+}

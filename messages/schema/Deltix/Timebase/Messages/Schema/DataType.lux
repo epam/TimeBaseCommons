@@ -1,0 +1,149 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+/// This is a base class for schema data types.
+[Abstract]
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.DataType", Title = "DataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class DataType {
+
+    /// Binary representation (encoding) of a field in database and protocol.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? Encoding;
+
+    /// True, if schema design allows the field to be nullable.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Boolean IsNullable;
+}
+
+/// This is a base class for numeric data types.
+[Abstract]
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.IntegralDataType", Title = "IntegralDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class IntegralDataType : DataType {
+
+    /// String definition for minimum constraint.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? MinValue;
+
+    /// String definition for maximum constraint.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? MaxValue;
+}
+
+/// Schema definition of array data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.ArrayDataType", Title = "ArrayDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class ArrayDataType : DataType {
+
+    /// Array element data type.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    DataType ElementType;
+}
+
+/// Schema definition of binary data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.BinaryDataType", Title = "BinaryDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class BinaryDataType : DataType {
+
+    /// Maximum field length in bytes.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt32? MaxSize;
+
+    /// Compression level for binary data.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, Minimum="0", Maximum="9")]
+    UInt16? CompressionLevel;
+}
+
+/// Schema definition of boolean data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.BooleanDataType", Title = "BooleanDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class BooleanDataType : DataType {
+}
+
+/// Schema definition of char data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.CharDataType", Title = "CharDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class CharDataType : DataType {
+}
+
+/// Schema definition of class data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.ClassDataType", Title = "ClassDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class ClassDataType : DataType {
+
+    /// Definitions for nested schema classes.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    List<RecordClassDescriptor> TypeDescriptors;
+}
+
+/// Schema definition of date data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.DateDataType", Title = "DateDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class DateDataType : DataType {
+}
+
+/// Schema definition of enum data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.EnumDataType", Title = "EnumDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class EnumDataType : DataType {
+
+    /// Definition for enumeration class.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    EnumClassDescriptor TypeDescriptor;
+}
+
+/// Schema definition of float data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.FloatDataType", Title = "FloatDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class FloatDataType : IntegralDataType {
+
+    /// Scale.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt16? Scale;
+}
+
+/// Schema definition of integer data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.IntegerDataType", Title = "IntegerDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class IntegerDataType : IntegralDataType {
+}
+
+/// Schema definition of time-of-day data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.TimeOfDayDataType", Title = "TimeOfDayDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class TimeOfDayDataType : DataType {
+}
+
+/// Schema definition of varchar data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.VarcharDataType", Title = "VarcharDataType")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class VarcharDataType : DataType {
+
+    /// True, if field allows line breaks.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Boolean IsMultiline;
+
+    /// Encoding type.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt16? EncodingType;
+
+    /// Length.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt16? Length;
+}
+

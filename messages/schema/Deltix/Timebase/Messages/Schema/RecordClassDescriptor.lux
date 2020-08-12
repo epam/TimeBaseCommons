@@ -1,0 +1,14 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+/// Schema definition for a class.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.RecordClassDescriptor", Title = "RecordClassDescriptor")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class RecordClassDescriptor : ClassDescriptor {
+
+    /// List of fields of a class.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    List<DataField> DataFields;
+}

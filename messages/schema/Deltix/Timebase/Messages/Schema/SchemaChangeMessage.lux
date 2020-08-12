@@ -1,0 +1,24 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+/// Message tha defines a change in stream schema.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.SchemaChangeMessage", Title = "SchemaChangeMessage")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaChangeMessage : InstrumentMessage {
+
+    /// Previous schema state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    List<RecordClassDescriptor>? PreviousState;
+
+    /// New schema state.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    List<RecordClassDescriptor> NewState;
+
+    /// New schema state.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    List<SchemaDescriptorChangeAction> DescriptorChangeActions;
+}

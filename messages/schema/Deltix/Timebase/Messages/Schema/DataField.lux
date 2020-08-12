@@ -1,0 +1,16 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+/// This is a base class for schema data field.
+[Abstract]
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.DataField", Title = "DataField")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class DataField : NamedDescriptor {
+
+    /// Data type of a field.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    DataType DataType;
+}
+

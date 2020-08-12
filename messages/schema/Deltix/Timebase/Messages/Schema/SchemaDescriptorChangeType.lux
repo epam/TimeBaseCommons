@@ -1,0 +1,22 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+
+/// Type of descriptor change.
+[Bitmask]
+[SchemaElement(Name = "deltix.timebase.api.messages.SchemaDescriptorChangeType", Title = "SchemaDescriptorChangeType")]
+enum SchemaDescriptorChangeType {
+    /// Add operation.
+    [SchemaElement(Name = "ADD")]
+    ADD = 0x01;
+    /// Delete operation.
+    [SchemaElement(Name = "DELETE")]
+    DELETE = 0x02;
+    /// Rename operation.
+    [SchemaElement(Name = "RENAME")]
+    RENAME = 0x04;
+    /// Alter operation.
+    [SchemaElement(Name = "ALTER")]
+    ALTER = 0x08;
+}

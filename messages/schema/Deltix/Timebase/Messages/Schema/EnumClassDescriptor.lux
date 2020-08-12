@@ -1,0 +1,19 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Messages.*;
+
+/// Schema definition for enumeration class.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.EnumClassDescriptor", Title = "EnumClassDescriptor")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class EnumClassDescriptor : ClassDescriptor {
+
+    /// List of values of enumeration.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    List<EnumValue> Values;
+
+    /// True, if enumeration represents a bitmask.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Boolean IsBitmask;
+}
