@@ -43,7 +43,7 @@ class ArrayDataType : DataType {
 
     /// Array element data type.
     [SchemaElement]
-    [SchemaType(IsNullable=false, NestedTypes = {
+    [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
         typeof(ArrayDataType),
         typeof(BinaryDataType),
         typeof(BooleanDataType),
@@ -112,7 +112,7 @@ class EnumDataType : DataType {
 
     /// Definition for enumeration class.
     [SchemaElement]
-    [SchemaType(IsNullable=false, NestedTypes = {
+    [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
         typeof(EnumClassDescriptor)
     })]
     EnumClassDescriptor TypeDescriptor;
