@@ -95,8 +95,8 @@ class ClassDataType : DataType {
     /// Definitions for nested schema classes.
     [SchemaElement]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
-        ElementTypes = { typeof(RecordClassDescriptor) })]
-    List<RecordClassDescriptor> TypeDescriptors;
+        ElementTypes = { typeof(ClassDescriptorRef) })]
+    List<ClassDescriptorRef> TypeDescriptors;
 }
 
 /// Schema definition of date-time data type.
@@ -113,9 +113,9 @@ class EnumDataType : DataType {
     /// Definition for enumeration class.
     [SchemaElement]
     [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(EnumClassDescriptor)
+        typeof(ClassDescriptorRef)
     })]
-    EnumClassDescriptor TypeDescriptor;
+    ClassDescriptorRef TypeDescriptor;
 }
 
 /// Schema definition of float data type.
