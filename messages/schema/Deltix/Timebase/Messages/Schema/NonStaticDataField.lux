@@ -3,7 +3,6 @@ namespace Deltix.Timebase.Messages.Schema;
 import Deltix.Timebase.Messages.*;
 
 /// Schema definition for non-static data field.
-[Abstract]
 [SchemaElement(Name = "deltix.timebase.api.messages.schema.NonStaticDataField", Title = "NonStaticDataField")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class NonStaticDataField : DataField {
