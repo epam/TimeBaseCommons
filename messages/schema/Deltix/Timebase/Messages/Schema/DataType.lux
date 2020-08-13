@@ -99,10 +99,10 @@ class ClassDataType : DataType {
     List<RecordClassDescriptor> TypeDescriptors;
 }
 
-/// Schema definition of date data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.DateDataType", Title = "DateDataType")]
+/// Schema definition of date-time data type.
+[SchemaElement(Name = "deltix.timebase.api.messages.schema.DateTimeDataType", Title = "DateTimeDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
-class DateDataType : DataType {
+class DateTimeDataType : DataType {
 }
 
 /// Schema definition of enum data type.
@@ -154,11 +154,11 @@ class VarcharDataType : DataType {
     /// Encoding type.
     [SchemaElement]
     [SchemaType(IsNullable=true)]
-    UInt16? EncodingType;
+    UInt32? EncodingType;
 
     /// Length.
     [SchemaElement]
     [SchemaType(IsNullable=true)]
-    UInt16? Length;
+    UInt32? Length;
 }
 
