@@ -49,7 +49,7 @@ class ArrayDataType : DataType {
         typeof(BooleanDataType),
         typeof(CharDataType),
         typeof(ClassDataType),
-        typeof(DateDataType),
+        typeof(DateTimeDataType),
         typeof(EnumDataType),
         typeof(FloatDataType),
         typeof(IntegerDataType),
