@@ -44,7 +44,7 @@ class ArrayDataType : DataType {
     /// Array element data type.
     [SchemaElement]
     [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(ArrayDataType),
+        //typeof(ArrayDataType),
         typeof(BinaryDataType),
         typeof(BooleanDataType),
         typeof(CharDataType),
