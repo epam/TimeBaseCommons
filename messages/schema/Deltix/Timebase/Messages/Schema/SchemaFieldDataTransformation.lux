@@ -3,7 +3,7 @@ namespace Deltix.Timebase.Messages.Schema;
 import Deltix.Timebase.Messages.*;
 
 /// Class which defines a transformation that is applied to a data field.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.SchemaFieldDataTransformation", Title = "SchemaFieldDataTransformation")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaFieldDataTransformation", Title = "SchemaFieldDataTransformation")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class SchemaFieldDataTransformation {
 

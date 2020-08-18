@@ -4,7 +4,7 @@ import Deltix.Timebase.Messages.*;
 
 /// This is a base class for schema data types.
 [Abstract]
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.DataType", Title = "DataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.DataType", Title = "DataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class DataType {
 
@@ -21,7 +21,7 @@ class DataType {
 
 /// This is a base class for numeric data types.
 [Abstract]
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.IntegralDataType", Title = "IntegralDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.IntegralDataType", Title = "IntegralDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class IntegralDataType : DataType {
 
@@ -37,7 +37,7 @@ class IntegralDataType : DataType {
 }
 
 /// Schema definition of array data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.ArrayDataType", Title = "ArrayDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.ArrayDataType", Title = "ArrayDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class ArrayDataType : DataType {
 
@@ -60,7 +60,7 @@ class ArrayDataType : DataType {
 }
 
 /// Schema definition of binary data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.BinaryDataType", Title = "BinaryDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.BinaryDataType", Title = "BinaryDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class BinaryDataType : DataType {
 
@@ -76,19 +76,19 @@ class BinaryDataType : DataType {
 }
 
 /// Schema definition of boolean data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.BooleanDataType", Title = "BooleanDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.BooleanDataType", Title = "BooleanDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class BooleanDataType : DataType {
 }
 
 /// Schema definition of char data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.CharDataType", Title = "CharDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.CharDataType", Title = "CharDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class CharDataType : DataType {
 }
 
 /// Schema definition of class data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.ClassDataType", Title = "ClassDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.ClassDataType", Title = "ClassDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class ClassDataType : DataType {
 
@@ -100,13 +100,13 @@ class ClassDataType : DataType {
 }
 
 /// Schema definition of date-time data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.DateTimeDataType", Title = "DateTimeDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.DateTimeDataType", Title = "DateTimeDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class DateTimeDataType : DataType {
 }
 
 /// Schema definition of enum data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.EnumDataType", Title = "EnumDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.EnumDataType", Title = "EnumDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class EnumDataType : DataType {
 
@@ -119,7 +119,7 @@ class EnumDataType : DataType {
 }
 
 /// Schema definition of float data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.FloatDataType", Title = "FloatDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.FloatDataType", Title = "FloatDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class FloatDataType : IntegralDataType {
 
@@ -130,19 +130,19 @@ class FloatDataType : IntegralDataType {
 }
 
 /// Schema definition of integer data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.IntegerDataType", Title = "IntegerDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.IntegerDataType", Title = "IntegerDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class IntegerDataType : IntegralDataType {
 }
 
 /// Schema definition of time-of-day data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.TimeOfDayDataType", Title = "TimeOfDayDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.TimeOfDayDataType", Title = "TimeOfDayDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class TimeOfDayDataType : DataType {
 }
 
 /// Schema definition of varchar data type.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.VarcharDataType", Title = "VarcharDataType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.VarcharDataType", Title = "VarcharDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class VarcharDataType : DataType {
 

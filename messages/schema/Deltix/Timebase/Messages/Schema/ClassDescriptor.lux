@@ -4,7 +4,7 @@ import Deltix.Timebase.Messages.*;
 
 /// Schema definition for a schema node.
 [Abstract]
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.ClassDescriptor", Title = "ClassDescriptor")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.ClassDescriptor", Title = "ClassDescriptor")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class ClassDescriptor : NamedDescriptor {
 }

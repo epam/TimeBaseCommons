@@ -3,7 +3,7 @@ namespace Deltix.Timebase.Messages.Schema;
 import Deltix.Timebase.Messages.*;
 
 /// Schema definition for a reference to class descriptor.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.ClassDescriptorRef", Title = "ClassDescriptorRef")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.ClassDescriptorRef", Title = "ClassDescriptorRef")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class ClassDescriptorRef {
     /// Node name.

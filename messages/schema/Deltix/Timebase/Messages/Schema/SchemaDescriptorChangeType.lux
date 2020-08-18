@@ -5,7 +5,7 @@ import Deltix.Timebase.Messages.*;
 
 /// Type of descriptor change.
 [Bitmask]
-[SchemaElement(Name = "deltix.timebase.api.messages.SchemaDescriptorChangeType", Title = "SchemaDescriptorChangeType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaDescriptorChangeType", Title = "SchemaDescriptorChangeType")]
 enum SchemaDescriptorChangeType {
     /// Add operation.
     [SchemaElement(Name = "ADD")]

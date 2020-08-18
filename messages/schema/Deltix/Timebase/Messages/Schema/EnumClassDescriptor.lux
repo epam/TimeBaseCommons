@@ -3,7 +3,7 @@ namespace Deltix.Timebase.Messages.Schema;
 import Deltix.Timebase.Messages.*;
 
 /// Schema definition for enumeration class.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.EnumClassDescriptor", Title = "EnumClassDescriptor")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.EnumClassDescriptor", Title = "EnumClassDescriptor")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class EnumClassDescriptor : ClassDescriptor {
 

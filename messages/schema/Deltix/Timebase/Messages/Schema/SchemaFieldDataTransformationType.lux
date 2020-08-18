@@ -4,7 +4,7 @@ import Deltix.Timebase.Messages.*;
 
 
 /// Type of transformation applied to data field.
-[SchemaElement(Name = "deltix.timebase.api.messages.SchemaFieldDataTransformationType", Title = "SchemaFieldDataTransformationType")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaFieldDataTransformationType", Title = "SchemaFieldDataTransformationType")]
 enum SchemaFieldDataTransformationType {
     /// Convert data operation.
     [SchemaElement(Name = "CONVERT_DATA")]

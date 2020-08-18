@@ -3,7 +3,7 @@ namespace Deltix.Timebase.Messages.Schema;
 import Deltix.Timebase.Messages.*;
 
 /// Message tha defines a change in stream schema.
-[SchemaElement(Name = "deltix.timebase.api.messages.schema.SchemaChangeMessage", Title = "SchemaChangeMessage")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaChangeMessage", Title = "SchemaChangeMessage")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class SchemaChangeMessage : InstrumentMessage {
 
