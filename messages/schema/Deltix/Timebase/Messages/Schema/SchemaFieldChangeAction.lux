@@ -10,14 +10,14 @@ class SchemaFieldChangeAction {
     /// Previous data field state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(DataField)
+        typeof(StaticDataField), typeof(NonStaticDataField)
     })]
     DataField? PreviousState;
 
     /// New descriptor state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(DataField)
+        typeof(StaticDataField), typeof(NonStaticDataField)
     })]
     DataField? NewState;
 

@@ -10,6 +10,6 @@ class RecordClassDescriptor : ClassDescriptor {
     /// List of fields of a class.
     [SchemaElement]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
-        ElementTypes = { typeof(DataField) })]
+        ElementTypes = { typeof(StaticDataField), typeof(NonStaticDataField) })]
     List<DataField> DataFields;
 }
