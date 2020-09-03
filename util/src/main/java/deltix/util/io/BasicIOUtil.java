@@ -1888,8 +1888,10 @@ public abstract class BasicIOUtil {
     {
         String []           dirs = path.replace ('\\', '/').split ("/");
         ArrayList <File>    files = new ArrayList <> ();
-        
-        expandChildPath (new File (dirs [0]), dirs, 1, files, assertRootExists, comparator);
+
+        File root = new File(dirs[0].endsWith(":") ? dirs[0] + "\\" : dirs[0]);
+
+        expandChildPath (root, dirs, 1, files, assertRootExists, comparator);
         return (files);
     }    
     
