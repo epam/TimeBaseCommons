@@ -12,5 +12,6 @@
   "GENERATE_ANNOTATIONS" : true,
   "USE_HDDATETIME" : false,
   "RECORD_INFO" : "deltix.qsrv.hf.pub.RecordInfo",
-  "RECORD_INTERFACE" : "deltix.qsrv.hf.pub.RecordInterface"
+  "RECORD_INTERFACE" : "deltix.qsrv.hf.pub.RecordInterface",
+  "TYPE_CONSTANTS": "deltix.timebase.api.TypeConstants"
 }

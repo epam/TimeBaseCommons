@@ -1,6 +1,6 @@
 namespace Deltix.Timebase.Messages.Schema;
 
-import Deltix.Timebase.Messages.*;
+import Deltix.Timebase.Api.*;
 
 /// Class which defines a change to schema field.
 [SchemaElement(Name = "deltix.timebase.messages.schema.SchemaFieldChangeAction", Title = "SchemaFieldChangeAction")]

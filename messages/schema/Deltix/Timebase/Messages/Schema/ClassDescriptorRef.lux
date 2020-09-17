@@ -1,6 +1,6 @@
 namespace Deltix.Timebase.Messages.Schema;
 
-import Deltix.Timebase.Messages.*;
+import Deltix.Timebase.Api.*;
 
 /// Schema definition for a reference to class descriptor.
 [SchemaElement(Name = "deltix.timebase.messages.schema.ClassDescriptorRef", Title = "ClassDescriptorRef")]

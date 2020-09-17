@@ -1,5 +1,0 @@
-namespace Deltix.Timebase.Messages;
-
-[Ignore]
-class InstrumentMessage {
-}

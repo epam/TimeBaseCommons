@@ -3,5 +3,8 @@
     {
       "Directory": "."
     }
+  ],
+  "References": [
+    "DeltixTimebaseApiMessages.json"
   ]
 }

@@ -1,6 +1,8 @@
 namespace Deltix.Timebase.Messages.Schema;
 
-import Deltix.Timebase.Messages.*;
+import Deltix.Timebase.Api.*;
+import Deltix.Timebase.Api.Messages.*;
+///import Deltix.Qsrv.Hf.Pub.*;
 
 /// Message tha defines a change in stream schema.
 [SchemaElement(Name = "deltix.timebase.messages.schema.SchemaChangeMessage", Title = "SchemaChangeMessage")]

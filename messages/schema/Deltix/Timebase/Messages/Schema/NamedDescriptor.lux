@@ -1,6 +1,6 @@
 namespace Deltix.Timebase.Messages.Schema;
 
-import Deltix.Timebase.Messages.*;
+import Deltix.Timebase.Api.*;
 
 /// This is a base class for schema nodes.
 [Abstract]
