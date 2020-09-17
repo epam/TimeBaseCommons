@@ -1,0 +1,35 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Api.*;
+
+/// Class which defines a change to schema descriptor.
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaDescriptorChangeAction", Title = "SchemaDescriptorChangeAction")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaDescriptorChangeAction {
+
+    /// Previous descriptor state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(RecordClassDescriptor)
+    })]
+    RecordClassDescriptor? PreviousState;
+
+    /// New descriptor state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(RecordClassDescriptor)
+    })]
+    RecordClassDescriptor? NewState;
+
+    /// Bitmask that defines the changes that were applied to the descriptor.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    SchemaDescriptorChangeType ChangeTypes;
+
+    /// A list of change actions to data fields.
+    /// Populated only if ChangeTypes conatins ALTER flag
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = true, IsElementNullable = false,
+        ElementTypes = { typeof(SchemaFieldChangeAction) })]
+    List<SchemaFieldChangeAction>? FieldChangeActions;
+}

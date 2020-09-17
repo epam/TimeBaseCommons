@@ -1,0 +1,19 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Api.*;
+
+/// Class which defines a transformation that is applied to a data field.
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaFieldDataTransformation", Title = "SchemaFieldDataTransformation")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaFieldDataTransformation {
+
+    /// Defines the transformation that was applied to the field.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    SchemaFieldDataTransformationType TransformationType;
+
+    /// Defines the deafult value if TransformationType equals SET_DEFAULT.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? DefaultValue;
+}

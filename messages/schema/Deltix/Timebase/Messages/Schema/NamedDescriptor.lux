@@ -1,0 +1,25 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Api.*;
+
+/// This is a base class for schema nodes.
+[Abstract]
+[SchemaElement(Name = "deltix.timebase.messages.schema.NamedDescriptor", Title = "NamedDescriptor")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class NamedDescriptor {
+
+    /// Node name.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text Name;
+
+    /// Node title.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? Title;
+
+    /// Node description.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? Description;
+}

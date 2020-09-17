@@ -1,0 +1,17 @@
+{
+  "VERBOSE_OUTPUT" : true,
+  "USE_DECIMAL" : false,
+  "USE_ARRAY_LIST" : false,
+  "GENERATE_PROMPTS" : true,
+  "GENERATE_INTERFACES" : true,
+  "GENERATE_POOLABLE_INTERFACES" : false,
+  "GENERATE_READONLY_INTERFACES" : true,
+  "GENERATE_READWRITE_INTERFACES" : true,
+  "GENERATE_CLASSES" : true,
+  "GENERATE_ENUMS" : true,
+  "GENERATE_ANNOTATIONS" : true,
+  "USE_HDDATETIME" : false,
+  "RECORD_INFO" : "deltix.qsrv.hf.pub.RecordInfo",
+  "RECORD_INTERFACE" : "deltix.qsrv.hf.pub.RecordInterface",
+  "TYPE_CONSTANTS": "deltix.timebase.api.TypeConstants"
+}
