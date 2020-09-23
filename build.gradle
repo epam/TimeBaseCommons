@@ -120,12 +120,6 @@ configure(leafProjects) {
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
     }
 
-    buildscript {
-        repositories {
-            mavenDeltixProxy("DevMain")
-        }
-    }
-
     spotbugs {
         toolVersion = "3.1.12"
         effort = "max"
