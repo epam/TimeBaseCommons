@@ -1,32 +1,24 @@
 // Developers: please put credentials into ~/.gradle/gradle.properties
 // CI Build robots get these credentials from CI Environment Variables
+def repoUser = findProperty('NEXUS_USER') ?: System.getenv('NEXUS_USER') ?: System.getenv('DELTIX_PROGET_USER') ?:"FakeNexusUser"
+def repoPassword = findProperty('NEXUS_PASSWORD') ?: System.getenv('NEXUS_PASSWORD') ?: System.getenv('DELTIX_PROGET_PASS') ?: "FakeNexusPass"
+def proxyRepository = findProperty('DELTIX_PROXY_REPOSITORY') ?: System.getenv('DELTIX_PROXY_REPOSITORY') ?: "https://nexus.deltixhub.com/repository/"
+
 gradle.beforeProject {
-    if (findProperty('DELTIX_PROGET_USER') == null && System.getenv('DELTIX_PROGET_USER') == null)
-        ant.fail('ERROR: Credentials to access packages.deltixhub.com repo are NOT defined!\nSee https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/wikis/ProGetCredentials')
+    if (repoUser == null)
+        ant.fail('ERROR: Credentials to access nexus.deltixhub.com repo are NOT defined!\nSee https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/wikis/ProGetCredentials')
 }
 
-repositories.ext.mavenDeltix = { name ->
+repositories.ext.mavenDeltixProxy = { name ->
     repositories.maven {
         credentials {
-            username findProperty('DELTIX_PROGET_USER') ?:  System.getenv('DELTIX_PROGET_USER') ?: "FakeProGetUser"
-            password findProperty('DELTIX_PROGET_PASS') ?:  System.getenv('DELTIX_PROGET_PASS') ?: "FakeProGetPass"
+            username repoUser
+            password repoPassword
         }
         authentication {
             digest(BasicAuthentication)
         }
-        url "https://packages.deltixhub.com/maven2/" + name
+        url proxyRepository + name + "/"
     }
 }
 
-project.buildscript.repositories.ext.mavenDeltix = { name ->
-    project.buildscript.repositories.maven {
-        credentials {
-            username findProperty('DELTIX_PROGET_USER') ?:  System.getenv('DELTIX_PROGET_USER') ?: "FakeProGetUser"
-            password findProperty('DELTIX_PROGET_PASS') ?:  System.getenv('DELTIX_PROGET_PASS') ?: "FakeProGetPass"
-        }
-        authentication {
-            digest(BasicAuthentication)
-        }
-        url "https://packages.deltixhub.com/maven2/" + name
-    }
-}

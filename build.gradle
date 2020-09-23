@@ -107,13 +107,7 @@ configure(leafProjects) {
     archivesBaseName = 'deltix-commons' + project.path.replaceAll(':', '-')
 
     repositories {
-        mavenCentral()
-        mavenLocal()
-        mavenDeltix("RTMath.Java")
-        mavenDeltix("Deltix.Java")
-        mavenDeltix("QuantServer.Java")
-        mavenDeltix("ThirdParty.Java")
-        mavenDeltix("Test.Java") // gflog only
+        mavenDeltixProxy("DevMain")
     }
 
     dependencies {
@@ -128,12 +122,7 @@ configure(leafProjects) {
 
     buildscript {
         repositories {
-            mavenCentral()
-            mavenLocal()
-            mavenDeltix("RTMath.Java")
-            mavenDeltix("Deltix.Java")
-            mavenDeltix("QuantServer.Java")
-            mavenDeltix("ThirdParty.Java")
+            mavenDeltixProxy("DevMain")
         }
     }
 
@@ -258,10 +247,10 @@ configure(leafProjects) {
     publishing {
         repositories {
             maven {
-                url deltixFeedUrl
+                url "${System.getenv('ARTIFACTORY_URL')}/EPM-RTC-java"
                 credentials {
-                    username findProperty('PUBLISHER_USERNAME') ?: ''
-                    password findProperty('PUBLISHER_PASSWORD') ?: ''
+                    username System.getenv('ARTIFACTORY_USER') ?: ''
+                    password System.getenv('ARTIFACTORY_PASS') ?: ''
                 }
             }
         }
