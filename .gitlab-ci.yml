@@ -43,7 +43,7 @@ cache:
 # Builds and tests release
 "Build: Java 8":
     stage: build
-    image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.2.1:latest
+    image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
         - ./gradlew build test --no-daemon
@@ -112,7 +112,7 @@ dependency-check:
 # Published built release artifacts
 "Publish: Java 8":
     stage: publish
-    image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.2.1:latest
+    image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
     script:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1
         - ./gradlew publish

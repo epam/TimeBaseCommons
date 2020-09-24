@@ -9,6 +9,11 @@ gradle.beforeProject {
         ant.fail('ERROR: Credentials to access nexus.deltixhub.com repo are NOT defined!\nSee https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/wikis/ProGetCredentials')
 }
 
+// need this for plugin repos in collections\build.gradle
+rootProject.ext.repoUser = repoUser
+rootProject.ext.repoPassword = repoPassword
+rootProject.ext.proxyRepository = proxyRepository
+
 repositories.ext.mavenDeltixProxy = { name ->
     repositories.maven {
         credentials {
