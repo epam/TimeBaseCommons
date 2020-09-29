@@ -1,6 +1,6 @@
 package deltix.util.time;
 
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
