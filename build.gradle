@@ -43,6 +43,13 @@ ext.categories = 'Unit'
 
 apply from: "$rootDir/gradle/Release.gradle"
 
+ext {
+    publisherUser = findProperty('ARTIFACTORY_USER') ?: System.getenv('ARTIFACTORY_USER') ?: "FakeUser"
+    publisherPassword = findProperty('ARTIFACTORY_PASS') ?: System.getenv('ARTIFACTORY_PASS') ?: "FakePassword"
+}
+
+apply from: 'promotion.gradle'
+
 configure(leafProjects) {
     apply from: "$rootDir/gradle/Deltix.gradle"
     apply plugin: 'java'
@@ -241,10 +248,10 @@ configure(leafProjects) {
     publishing {
         repositories {
             maven {
-                url "${System.getenv('ARTIFACTORY_URL')}/EPM-RTC-java"
+                url javaPublicationUrl
                 credentials {
-                    username System.getenv('ARTIFACTORY_USER') ?: ''
-                    password System.getenv('ARTIFACTORY_PASS') ?: ''
+                    username publisherUser
+                    password publisherPassword
                 }
             }
         }
