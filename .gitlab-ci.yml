@@ -4,7 +4,9 @@ stages:
   - test
   - release
   - publish
-  - clean-up 
+  - clean-up
+  - promote
+
 # Overwrite Gradle cache directory.
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -144,3 +146,19 @@ dependency-check:
     except:
         - tags
         - schedules
+
+"Promote to public":
+  stage: promote
+  cache: {} # Disable cache for this job because this job does not uses any data from the cache
+  script:
+  - ./gradlew promoteToPublic
+  only:
+  - /^release-.*$/
+  except:
+  - tags
+  - schedules
+  dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
+  tags:
+  - Linux
+  - ShellExecutor
+  when: manual
