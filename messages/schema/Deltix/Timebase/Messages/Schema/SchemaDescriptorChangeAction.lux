@@ -10,14 +10,14 @@ class SchemaDescriptorChangeAction {
     /// Previous descriptor state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(RecordClassDescriptor)
+        typeof(RecordClassDescriptor), typeof(EnumClassDescriptor)
     })]
     ClassDescriptor? PreviousState;
 
     /// New descriptor state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(RecordClassDescriptor)
+        typeof(RecordClassDescriptor), typeof(EnumClassDescriptor)
     })]
     ClassDescriptor? NewState;
 

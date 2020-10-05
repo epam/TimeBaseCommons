@@ -12,13 +12,13 @@ class SchemaChangeMessage : InstrumentMessage {
     /// Previous schema state.
     [SchemaElement]
     [SchemaArrayType(IsNullable = true, IsElementNullable = false,
-        ElementTypes = { typeof(RecordClassDescriptor) })]
+        ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) })]
     List<ClassDescriptor>? PreviousState;
 
     /// New schema state.
     [SchemaElement]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
-        ElementTypes = { typeof(RecordClassDescriptor) })]
+        ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) })]
     List<ClassDescriptor> NewState;
 
     /// New schema state.
