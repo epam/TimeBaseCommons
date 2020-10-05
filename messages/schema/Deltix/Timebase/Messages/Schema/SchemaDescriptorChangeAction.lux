@@ -12,14 +12,14 @@ class SchemaDescriptorChangeAction {
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
         typeof(RecordClassDescriptor)
     })]
-    RecordClassDescriptor? PreviousState;
+    ClassDescriptor? PreviousState;
 
     /// New descriptor state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
         typeof(RecordClassDescriptor)
     })]
-    RecordClassDescriptor? NewState;
+    ClassDescriptor? NewState;
 
     /// Bitmask that defines the changes that were applied to the descriptor.
     [SchemaElement]
