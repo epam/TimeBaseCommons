@@ -397,7 +397,7 @@ public final class MemoryDataInput {
             return (sb);
         
         int c;
-        int char2, char3;
+        int char2, char3, char4;
         int count = 0;        
         
         for (;;) {
@@ -456,12 +456,19 @@ public final class MemoryDataInput {
                                                     ((char2 & 0x3F) << 6)  |
                                                      (char3 & 0x3F)));
                     break;
-                    
-                default:
+
+                default: // support for .NET
                     /* 10xx xxxx,  1111 xxxx */
-                    throw new UncheckedIOException (
-                        "malformed input around byte " + count
-                    );
+                    count += 4;
+                    char2 = readByte ();
+                    char3 = readByte ();
+                    char4 = readByte ();
+                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80) || ((char4 & 0xC0) != 0x80))
+                        throw new UncheckedIOException(
+                                "malformed input around byte " + (count-1));
+
+                    sb.append ((char) (((c & 0xF7) << 18) | ((char2 & 0x3F) << 12)  | ((char3 & 0x3F) << 6) | (char4 & 0x3F)));
+                    break;
             }
                         
             if (count >= utflen)
