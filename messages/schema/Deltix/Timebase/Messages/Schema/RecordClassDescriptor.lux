@@ -7,6 +7,17 @@ import Deltix.Timebase.Api.*;
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class RecordClassDescriptor : ClassDescriptor {
 
+    /// Defines parent RecordClassDescriptor if exist.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+            typeof(RecordClassDescriptor)
+    })]
+    RecordClassDescriptor? Parent;
+
+    /// Defines if current RecordClassDescriptor abstract.
+    [SchemaElement]
+    Boolean IsAbstract;
+
     /// List of fields of a class.
     [SchemaElement]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,

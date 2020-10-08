@@ -26,4 +26,8 @@ class SchemaChangeMessage : InstrumentMessage {
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
         ElementTypes = { typeof(SchemaDescriptorChangeAction) })]
     List<SchemaDescriptorChangeAction> DescriptorChangeActions;
+
+    /// Message version
+    [SchemaElement]
+    UInt64 Version;
 }
