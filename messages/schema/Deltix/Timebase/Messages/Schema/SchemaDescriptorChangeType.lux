@@ -16,7 +16,10 @@ enum SchemaDescriptorChangeType {
     /// Rename operation.
     [SchemaElement(Name = "RENAME")]
     RENAME = 0x04;
-    /// Alter operation.
-    [SchemaElement(Name = "ALTER")]
-    ALTER = 0x08;
+    /// Fields change operation.
+    [SchemaElement(Name = "FIELDS_CHANGE")]
+    FIELDS_CHANGE = 0x08;
+    /// Content type change operation.
+    [SchemaElement(Name = "CONTENT_TYPE_CHANGE")]
+    CONTENT_TYPE_CHANGE = 0x10;
 }
