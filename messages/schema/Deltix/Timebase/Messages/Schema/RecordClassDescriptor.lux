@@ -14,9 +14,13 @@ class RecordClassDescriptor : ClassDescriptor {
     })]
     RecordClassDescriptor? Parent;
 
-    /// Defines if current RecordClassDescriptor abstract.
+    /// Defines if current RecordClassDescriptor is abstract.
     [SchemaElement]
     Boolean IsAbstract;
+
+    /// Defines if current RecordClassDescriptor is content class.
+    [SchemaElement]
+    Boolean IsContentClass;
 
     /// List of fields of a class.
     [SchemaElement]

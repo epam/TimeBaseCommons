@@ -19,4 +19,7 @@ enum SchemaDescriptorChangeType {
     /// Alter operation.
     [SchemaElement(Name = "ALTER")]
     ALTER = 0x08;
+    /// Disable content class operation.
+    [SchemaElement(Name = "DROP_RECORDS")]
+    DROP_RECORDS = 0x10;
 }
