@@ -75,7 +75,7 @@ configure(leafProjects) {
     dependencyManagement {
         dependencies {
             dependency 'deltix:deltix-thread-affinity:1.0.2'
-            dependency 'commons-lang:commons-lang:2.6'
+            dependency 'org.apache.commons:commons-lang3:3.4'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'

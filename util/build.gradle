@@ -10,7 +10,7 @@ dependencies {
 
     compile 'deltix:deltix-thread-affinity'
 
-    compile 'commons-lang:commons-lang'
+    implementation 'org.apache.commons:commons-lang3'
     compile 'org.apache.commons:commons-compress:1.7'
 
     compile 'javax.xml.bind:jaxb-api:2.2.8'

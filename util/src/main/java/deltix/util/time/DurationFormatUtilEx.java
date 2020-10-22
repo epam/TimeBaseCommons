@@ -1,8 +1,9 @@
 package deltix.util.time;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.*;
 
-import org.apache.commons.lang.*;
 
 public class DurationFormatUtilEx {
 
