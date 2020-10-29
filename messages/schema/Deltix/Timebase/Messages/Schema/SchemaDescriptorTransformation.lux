@@ -1,6 +1,6 @@
 namespace Deltix.Timebase.Messages.Schema;
 
-import Deltix.Timebase.Messages.*;
+import Deltix.Timebase.Api.*;
 
 /// Class which defines a transformation that is applied to the descriptor.
 [SchemaElement(Name = "deltix.timebase.messages.schema.SchemaDescriptorTransformation", Title = "SchemaDescriptorTransformation")]
