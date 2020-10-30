@@ -1,0 +1,12 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Api.*;
+
+
+/// Type of transformation applied to the descriptor.
+[SchemaElement(Name = "deltix.timebase.messages.schema.SchemaDescriptorTransformationType", Title = "SchemaDescriptorTransformationType")]
+enum SchemaDescriptorTransformationType {
+    /// Drop record operation.
+    [SchemaElement(Name = "DROP_RECORD")]
+    DROP_RECORD = 0;
+}
