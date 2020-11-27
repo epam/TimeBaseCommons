@@ -16,10 +16,12 @@ class RecordClassDescriptor : ClassDescriptor {
 
     /// Defines if current RecordClassDescriptor is abstract.
     [SchemaElement]
+    [SchemaType(IsNullable=false)]
     Boolean IsAbstract;
 
     /// Defines if current RecordClassDescriptor is content class.
     [SchemaElement]
+    [SchemaType(IsNullable=false)]
     Boolean IsContentClass;
 
     /// List of fields of a class.
