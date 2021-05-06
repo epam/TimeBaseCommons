@@ -1,0 +1,21 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Schema definition for enumeration class.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.EnumClassDescriptor", Title = "EnumClassDescriptor")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class EnumClassDescriptor : ClassDescriptor {
+
+    /// List of values of enumeration.
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(EnumValue) })]
+    List<EnumValue> Values;
+
+    /// True, if enumeration represents a bitmask.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Boolean IsBitmask;
+}

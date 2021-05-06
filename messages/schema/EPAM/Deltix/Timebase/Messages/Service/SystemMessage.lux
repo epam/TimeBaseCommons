@@ -1,0 +1,10 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Base timebase system message.
+[OldElementName("deltix.qsrv.hf.pub.SystemMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.SystemMessage", Title = "System Message")]
+class SystemMessage : InstrumentMessage {
+}

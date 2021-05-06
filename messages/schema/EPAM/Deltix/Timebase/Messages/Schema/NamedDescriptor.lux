@@ -1,0 +1,26 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// This is a base class for schema nodes.
+[Abstract]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.NamedDescriptor", Title = "NamedDescriptor")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class NamedDescriptor {
+
+    /// Node name.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text Name;
+
+    /// Node title.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? Title;
+
+    /// Node description.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? Description;
+}

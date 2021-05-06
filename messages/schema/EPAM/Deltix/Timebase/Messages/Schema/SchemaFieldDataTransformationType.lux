@@ -1,0 +1,18 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Type of transformation applied to data field.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaFieldDataTransformationType", Title = "SchemaFieldDataTransformationType")]
+enum SchemaFieldDataTransformationType {
+    /// Convert data operation.
+    [SchemaElement(Name = "CONVERT_DATA")]
+    CONVERT_DATA = 0;
+    /// Apply default value operation.
+    [SchemaElement(Name = "SET_DEFAULT")]
+    SET_DEFAULT = 1;
+    /// Drop record operation.
+    [SchemaElement(Name = "DROP_RECORD")]
+    DROP_RECORD = 2;
+}

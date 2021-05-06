@@ -1,0 +1,23 @@
+package com.epam.deltix.util.collections.generated;
+
+import com.epam.deltix.util.collections.KeyEntry;
+
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+public interface ${name}Entry extends KeyEntry<${type}> {
+
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+public interface ${name}Entry extends KeyEntry<${type}> {
+
+
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+public interface ${name}Entry extends KeyEntry<${type}> {
+
+#else
+public interface ${name}Entry extends KeyEntry<${name}> {
+#end
+
+    public ${type} key${name}();
+}

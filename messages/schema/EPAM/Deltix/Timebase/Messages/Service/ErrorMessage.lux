@@ -1,0 +1,22 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+[OldElementName("deltix.qsrv.hf.pub.ErrorMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.ErrorMessage", Title = "Error Message")]
+[SchemaGuid(ErrorMessage.DESCRIPTOR_GUID)]
+class ErrorMessage : InstrumentMessage {
+    const Text         DESCRIPTOR_GUID = "SYS:ErrorMessage:2";
+
+    [SchemaElement(Name = "errorType", Title = "ErrorType")]
+    Text?       ErrorType;
+    [SchemaElement(Name = "seqNum", Title = "Sequence Number")]
+    Int64       SeqNum = 0;
+    [SchemaElement(Name = "level", Title = "Error Level")]
+    ErrorLevel  Level;
+    [SchemaElement(Name = "messageText", Title = "Text")]
+    Text?       MessageText;
+    [SchemaElement(Name = "details", Title = "Details")]
+    Text?       Details;
+}

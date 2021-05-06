@@ -1,0 +1,70 @@
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+/// Element name before.
+[PersistentDecorator]
+//[Obsolete]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY, DecoratorTarget.ENUMERATION_MEMBER, DecoratorTarget.INTERFACE, DecoratorTarget.CLASS, DecoratorTarget.ENUMERATION }, Repeatable = false)]
+decorator OldElementName {
+    Text Value;
+}
+
+/// Decorator that defines that MessageInfo interface should be generated for class.
+decorator GenerateReadOnlyInterface {
+    /// In case of null default name will be used.
+    Text? Value = null;
+}
+
+/// Decorator that defines that MessageInterface interface should be generated for class.
+decorator GenerateReadWriteInterface {
+    /// In case of null default name will be used.
+    Text? Value = null;
+}
+
+decorator SkipImplementation { 
+}
+
+decorator Ignore { 
+}
+
+/// Decorator to emphasize that decorator should be transferred to generated code.
+decorator PersistentDecorator {
+}
+
+/// Defines that class or field is obsolete.
+/// Should be emitted to C# code as [Obsolete]
+/// Should be emitted to Java code as @Deprecated
+decorator Obsolete {
+}
+
+/// Decorator that marks other decorators as timebase schema. Such decorators should be emitted as attibutes or annotations.
+decorator TimebaseSchemaAttribute {
+    Boolean DefaultConstructor = true;
+}
+
+/// Decorator that marks fields as constructor parameter.
+decorator ConstructorParameter {
+}
+
+/// Defines that a timestamp is delivered with nanoseconds precision.
+decorator HdTime {
+    /// This field defines the name for millisecond component in case if HD time should be split into separate millisecond and nanosecond fileds.
+    /// Default would be PropertyName + "Milliseconds".
+    Text? MillisecondFieldName = null;
+    /// This field defines the name for nanosecond component in case if HD time should be split into separate millisecond and nanosecond fileds.
+    /// Default would be PropertyName + "Nanoseconds".
+    Text? NanosecondFieldName = null;
+}
+
+// Instruct generators do not interpret class as a record (transmission unit).
+decorator NotARecord {
+}
+
+// Instruct .NET generators to insert Serializable attribute on class.
+decorator Serializable {
+}
+
+// Marks an abstract class (this allows to tag intermediate classes in hierarchy and for instance skip class factory generation)
+decorator Abstract {
+}
+

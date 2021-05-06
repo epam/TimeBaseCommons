@@ -1,0 +1,21 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Schema definition for non-static data field.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.NonStaticDataField", Title = "NonStaticDataField")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class NonStaticDataField : DataField {
+
+    /// True, if field is defined as a primary key.
+    /// The propery is applicable for unique streams only.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Boolean? IsPrimaryKey;
+
+    /// If specified, the field value will be encoded as a difference with a field defined in a RelativeTo property.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? RelativeTo;
+}

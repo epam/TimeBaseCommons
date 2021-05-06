@@ -1,0 +1,14 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Special transient message that is inserted into MessageSource to signal transition from historic to real-time data.
+/// Message indicates that RealTimeMessageSource message source switched to read-time mode.
+/// Can be received only when see "SelectionOptions.RealTimeNotification" = true.
+[OldElementName("deltix.qsrv.hf.pub.RealTimeStartMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.RealTimeStartMessage", Title = "Real Time Start Message")]
+[SchemaGuid(RealTimeStartMessage.DESCRIPTOR_GUID)]
+class RealTimeStartMessage : SystemMessage {
+        const Text         DESCRIPTOR_GUID = "SYS:RealTimeStartMessage:1";
+}

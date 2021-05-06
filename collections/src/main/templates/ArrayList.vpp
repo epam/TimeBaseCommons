@@ -1,0 +1,1063 @@
+#if( $name == "Object" )
+#set( $type = "ObjectType" )
+#end
+package com.epam.deltix.util.collections.generated;
+
+
+import java.util.AbstractList;
+import java.util.Collection;
+import java.util.Arrays;
+import java.lang.reflect.Array;
+#if($name == "Object" || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
+import com.epam.deltix.util.lang.Util;
+import java.util.Enumeration;
+import java.util.Comparator;
+#end
+import java.util.Iterator;
+import java.util.List;
+
+import com.epam.deltix.util.collections.SafeArrays;
+import com.epam.deltix.util.memory.*;
+import com.epam.deltix.util.collections.ICapacity;
+
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+
+#if( $name == "Object" )
+#set($actualType = "Object")
+#else
+#set($actualType = $type)
+#end
+
+
+/**
+ * Resizable array of primitive ${type}s. Much more efficient than
+ *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
+ */
+
+#if($name == "Object")
+public final class ${name}ArrayList<${type}> extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List<${type}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
+#else
+public final class ${name}ArrayList extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
+#end
+
+    static final long  serialVersionUID = 1L;
+
+    /**
+     * Maximum length to which the underlying array can grow. Some VMs reserve some header words in an array.
+     */
+    private static final int MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
+
+    /**
+     * The array buffer into which the elements of the ArrayList are stored.
+     * The capacity of the ArrayList is the length of this array buffer.
+     *
+     * @serial
+     */
+#if($name == "Object")
+    private Object elementData[];
+#else
+    private ${type} elementData[];
+#end
+
+    /**
+     * The size of the ArrayList (the number of elements it contains).
+     *
+     * @serial
+     */
+    private int size;
+
+    public long              getSizeInMemory () {
+        return (OBJECT_OVERHEAD + SIZE_OF_INT + SIZE_OF_POINTER + EstimatorUtils.getSizeInMemory(elementData));
+    }
+
+    /**
+     * Constructs an empty list with the specified initial capacity.
+     *
+     * @param   initialCapacity   the initial capacity of the list.
+     * @exception IllegalArgumentException if the specified initial capacity
+     *            is negative
+     */
+    public ${name}ArrayList(int initialCapacity) {
+		super();
+        elementData = new $actualType [initialCapacity];
+    }
+
+    /**
+     * Constructs an empty list.
+     */
+    public ${name}ArrayList() {
+		this(10);
+    }
+
+#if($name == "Long" || $name == "Integer" || $name == "Short" || $name == "Byte" || $name == "Character" || $name == "Boolean")
+    /**
+     * Constructs a list containing the elements of the specified
+     * list, in the order they are returned by the collection's
+     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * the same size of the specified collection.
+     *
+     * @param list the list whose elements are to be placed into this list.
+     */
+    public ${name}ArrayList(${name}ArrayList list) {
+        elementData = list.to${name_abbr}Array();
+        size = elementData.length;
+    }
+
+     /**
+     * Constructs a list containing the elements of the specified
+     * list, in the order they are returned by the collection's
+     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * the same size of the specified collection.
+     *
+     * @param list the list whose elements are to be placed into this list.
+     */
+    public ${name}ArrayList(${name}List list) {
+        elementData = list.to${name_abbr}Array();
+        size = elementData.length;
+    }
+#end
+
+    /**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection's
+     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * the same size of the specified collection.
+     *
+     * @param c the collection whose elements are to be placed into this list.
+     */
+    public ${name}ArrayList(Collection<? extends ${type_Object}> c) {
+        size = c.size ();
+		elementData = new ${actualType} [size];
+
+		Iterator<? extends ${type_Object}> iter = c.iterator ();
+        int			idx = 0;
+
+        while (iter.hasNext ())
+        	elementData [idx++] = iter.next ();
+    }
+
+    public ${name}ArrayList (${type} [] arr) {
+    	size = arr.length;
+#if($name == "Object")
+    	elementData = Arrays.copyOf(arr, size, Object[].class); // intrinsic doesn't zero memory
+#else
+        elementData = Arrays.copyOf(arr, size); // intrinsic doesn't zero memory
+#end
+    }
+
+    public ${name}ArrayList (${type} [] arr, int offset, int length) {
+        size = length;
+#if($name == "Object")
+        elementData = Arrays.copyOfRange(arr, offset, offset + length, Object[].class); // intrinsic doesn't zero memory
+#else
+        elementData = Arrays.copyOfRange(arr, offset, offset + length); // intrinsic doesn't zero memory
+#end
+    }
+
+    /**
+     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
+     * list's current size.  An application can use this operation to minimize
+     * the storage of an <tt>ArrayList</tt> instance.
+     */
+    public void trimToSize() {
+		if (size < elementData.length) {
+     		elementData = Arrays.copyOf(elementData, size); // intrinsic doesn't zero memory
+     		modCount++;
+		}
+    }
+
+    /**
+     * Increases the capacity of this <tt>ArrayList</tt> instance, if
+     * necessary, to ensure  that it can hold at least the number of elements
+     * specified by the minimum capacity argument.
+     *
+     * @param   minCapacity   the desired minimum capacity.
+     */
+    public void ensureCapacity(int minCapacity) {
+		if (minCapacity > elementData.length) {
+            grow(minCapacity);
+        }
+    }
+
+    public void ensureCapacityUnsafe(int minCapacity) {
+		ensureCapacity(minCapacity); // the same cost
+    }
+
+    private void ensureFreeSpace(int required) {
+        long requiredCapacity = (long) size + required;
+
+        if (requiredCapacity > elementData.length) {
+            grow(requiredCapacity);
+        }
+    }
+
+    private void grow(long requiredCapacity) {
+        if (requiredCapacity > MAX_ARRAY_LENGTH) {
+            throw new OutOfMemoryError("required capacity=" + requiredCapacity + " exceeds max");
+        }
+
+        int newCapacity = (int) Math.min(MAX_ARRAY_LENGTH,  requiredCapacity  + (requiredCapacity >>> 1)); // 50% for growth
+        elementData = Arrays.copyOf(elementData, newCapacity);
+        modCount++;
+    }
+
+	/**
+    * Returns the capacity of this list.
+    *
+    * @return the capacity of this list.
+    */
+    public int capacity() {
+		return elementData.length;
+    }
+
+    /**
+     * Returns the number of elements in this list.
+     *
+     * @return  the number of elements in this list.
+     */
+    public int size () {
+		return size;
+    }
+
+    /**
+     * Tests if this list has no elements.
+     *
+     * @return  <tt>true</tt> if this list has no elements;
+     *          <tt>false</tt> otherwise.
+     */
+    public boolean isEmpty() {
+		return size == 0;
+    }
+
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element.
+     *
+     * @param elem element whose presence in this List is to be tested.
+     */
+    public boolean contains (Object elem) {
+		return indexOf (elem) >= 0;
+    }
+
+#if( $name == "Object" || $name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
+    /**
+     * <p>Returns an array containing all of the elements in this list in the
+     * correct order.  The runtime type of the returned array is that of the
+     * specified array.  If the list fits in the specified array, it is
+     * returned therein.  Otherwise, a new array is allocated with the runtime
+     * type of the specified array and the size of this list.</p>
+     *
+     * <p>If the list fits in the specified array with room to spare (i.e., the
+     * array has more elements than the list), the element in the array
+     * immediately following the end of the collection is set to
+     * <tt>null</tt>.</p>
+     *
+     * @param a the array into which the elements of the list are to
+     *		be stored, if it is big enough; otherwise, a new array of the
+     * 		same runtime type is allocated for this purpose.
+     * @return an array containing the elements of the list.
+     * @throws ArrayStoreException if the runtime type of a is not a supertype
+     *         of <code>${type_Object}</code>.
+     */
+     @SuppressWarnings("unchecked")
+     public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+#if($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
+            return (T[]) Arrays.copyOf(elementData, size);
+#else
+            return (T[]) Arrays.copyOf(elementData, size, a.getClass());
+#end
+        }
+
+        SafeArrays.safeArrayCopy (elementData, 0, a, 0, size);
+
+        if (a.length > size) {
+            a[size] = null;
+        }
+
+        return a;
+    }
+
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+    public ${type} get (int index) {
+		return (get${name} (index));
+    }
+
+#else
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+    public ${type_Object} get (int index) {
+		return get${name} (index);
+    }
+
+    /**
+     * <p>Returns an array containing all of the elements in this list in the
+     * correct order.  The runtime type of the returned array is that of the
+     * specified array.  If the list fits in the specified array, it is
+     * returned therein.  Otherwise, a new array is allocated with the runtime
+     * type of the specified array and the size of this list.</p>
+     *
+     * <p>If the list fits in the specified array with room to spare (i.e., the
+     * array has more elements than the list), the element in the array
+     * immediately following the end of the collection is set to
+     * <tt>null</tt>.</p>
+     *
+     * @param a the array into which the elements of the list are to
+     *		be stored, if it is big enough; otherwise, a new array of the
+     * 		same runtime type is allocated for this purpose.
+     * @return an array containing the elements of the list.
+     * @throws ArrayStoreException if the runtime type of a is not a supertype
+     *         of <code>${type_Object}</code>.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        if (a.length < size) {
+			a = Arrays.copyOf(a, size);
+        }
+
+        for (int i = 0; i < size; i++)
+        {
+#if($name == "Boolean")
+            a[i] = (T) Boolean.valueOf(elementData[i]);
+#else
+            a[i] = (T) new ${type_Object}(elementData[i]);
+#end
+        }
+
+        if (a.length > size) {
+            a[size] = null;
+        }
+
+        return a;
+    }
+
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element.
+     *
+     * @param elem element whose presence in this List is to be tested.
+     */
+    public boolean contains (${type} elem) {
+		return indexOf (elem) >= 0;
+    }
+
+    /**
+     * Searches for the first occurrence of the given argument, testing
+     * for equality.
+     *
+     * @param   elem   an object.
+     * @return  the index of the first occurrence of the argument in this
+     *          list; returns <tt>-1</tt> if the object is not found.
+     */
+    public int indexOf(Object elem) {
+    	return (indexOf (((${type_Object}) elem).${type}Value ()));
+    }
+
+    /**
+     * Returns the index of the last occurrence of the specified ${type} in
+     * this list.
+     *
+     * @param   elem   the desired element.
+     * @return  the index of the last occurrence of the specified ${type} in
+     *          this list; returns -1 if the object is not found.
+     */
+    public int lastIndexOf (Object elem) {
+    	return (lastIndexOf (((${type_Object}) elem).${type}Value ()));
+    }
+
+    /**
+     * Replaces the element at the specified position in this list with
+     * the specified element.
+     *
+     * @param index index of element to replace.
+     * @param element element to be stored at the specified position.
+     * @return the element previously at the specified position.
+     * @throws    IndexOutOfBoundsException if index out of range
+     *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
+     */
+    public ${type_Object} set (int index, ${type_Object} element) {
+		return set(index, element.${type}Value());
+    }
+
+    /**
+     * Appends the specified element to the end of this list.
+     *
+     * @param o element to be appended to this list.
+     * @return <tt>true</tt> (as per the general contract of Collection.add).
+     */
+    public boolean add (${type_Object} o) {
+    	return (add (o.${type}Value ()));
+    }
+
+    /**
+     * Inserts the specified element at the specified position in this
+     * list. Shifts the element currently at that position (if any) and
+     * any subsequent elements to the right (adds one to their indices).
+     *
+     * @param index index at which the specified element is to be inserted.
+     * @param element element to be inserted.
+     * @throws    IndexOutOfBoundsException if index is out of range
+     *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
+     */
+    public void add (int index, ${type_Object} element) {
+    	add (index, element.${type}Value ());
+    }
+#end
+
+#if ($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element.
+     *
+     * @param elem element whose presence in this List is to be tested.
+     */
+    public boolean contains (${type} elem) {
+		return indexOf (elem) >= 0;
+    }
+#end
+
+    /**
+     * Searches for the first occurrence of the given argument, testing
+     * for equality.
+     *
+     * @param   elem   an object.
+     * @return  the index of the first occurrence of the argument in this
+     *          list; returns <tt>-1</tt> if the object is not found.
+     */
+#if ($name == "Object")
+    public int indexOf (Object elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
+#elseif ($name == "Decimal")
+    public int indexOf (Decimal64 elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
+#elseif ($name == "HdDateTime")
+    public int indexOf (HdDateTime elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
+#elseif ($name == "HdTimeSpan")
+    public int indexOf (HdTimeSpan elem) {
+	    for (int i = 0; i < size; i++)
+			if (Util.xequals (elem, elementData[i]))
+		    	return i;
+#else
+    public int indexOf (${type} elem) {
+	    for (int i = 0; i < size; i++)
+			if (elem == elementData[i])
+		    	return i;
+#end
+		return -1;
+    }
+
+    /**
+     * Returns the index of the last occurrence of the specified ${type} in
+     * this list.
+     *
+     * @param   elem   the desired element.
+     * @return  the index of the last occurrence of the specified ${type} in
+     *          this list; returns -1 if the object is not found.
+     */
+#if ($name == "Object")
+    public int lastIndexOf (Object elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#elseif ($name == "Decimal")
+    public int lastIndexOf (Decimal64 elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#elseif ($name == "HdDateTime")
+    public int lastIndexOf (HdDateTime elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#elseif ($name == "HdTimeSpan")
+    public int lastIndexOf (HdTimeSpan elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (Util.xequals (elem, elementData [i]))
+		    	return i;
+#else
+    public int lastIndexOf (${type} elem) {
+	    for (int i = size-1; i >= 0; i--)
+			if (elem == elementData [i])
+		    	return i;
+#end
+		return -1;
+    }
+
+    /**
+     * Returns a copy of this <tt>${name}ArrayList</tt> instance.
+     *
+     * @return  a clone of this <tt>${name}ArrayList</tt> instance.
+     */
+    public Object clone () {
+#if($name == "Object")
+    	return new ${name}ArrayList<>(elementData, 0, size);
+#else
+        return new ${name}ArrayList(elementData, 0, size);
+#end
+    }
+
+    /**
+     * Returns an Object array containing all of the elements in this list
+     * in the correct order.
+     *
+     * @return an array containing all of the elements in this list
+     * 	       in the correct order.
+     */
+    public Object [] toArray() {
+		Object [] result = new Object[size];
+		return toArray (result);
+    }
+
+    /**
+     * Returns a ${type} array containing all of the elements in this list
+     * in the correct order.
+     *
+     * @return an array containing all of the elements in this list
+     * 	       in the correct order.
+     */
+#if($name == "Object")
+    public Object [] to${name_abbr}Array () {
+#else
+    public ${type} [] to${name_abbr}Array () {
+#end
+ 		return Arrays.copyOf(elementData, size);
+    }
+
+
+    // Positional Access Operations
+
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+     @SuppressWarnings("unchecked")
+    public ${type} get${name} (int index) {
+		rangeCheck(index);
+		return (${type}) elementData[index];
+    }
+
+    /**
+     *  Returns the element at the specified position in this list, bypassing
+     *      the range check.
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     */
+    @SuppressWarnings("unchecked")
+    public ${type} get${name}NoRangeCheck (int index) {
+		return (${type}) elementData [index];
+    }
+
+    /**
+     * Replaces the element at the specified position in this list with
+     * the specified element.
+     *
+     * @param index index of element to replace.
+     * @param element element to be stored at the specified position.
+     * @return the element previously at the specified position.
+     * @throws    IndexOutOfBoundsException if index out of range
+     *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
+     */
+     @SuppressWarnings("unchecked")
+    public ${type} set (int index, ${type} element) {
+		rangeCheck(index);
+		${type} oldValue = (${type}) elementData[index];
+		elementData[index] = element;
+		return oldValue;
+    }
+
+    /**
+     * Appends the specified element to the end of this list.
+     *
+     * @param d element to be appended to this list.
+     * @return <tt>true</tt> (as per the general contract of Collection.add).
+     */
+    public boolean add (${type} d) {
+		ensureFreeSpace(1);
+		elementData[size++] = d;
+		modCount++;
+        return true;
+    }
+
+    /**
+     * Inserts the specified element at the specified position in this
+     * list. Shifts the element currently at that position (if any) and
+     * any subsequent elements to the right (adds one to their indices).
+     *
+     * @param index index at which the specified element is to be inserted.
+     * @param element element to be inserted.
+     * @throws    IndexOutOfBoundsException if index is out of range
+     *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
+     */
+    public void add (int index, ${type} element) {
+        rangeCheck(index, 0);
+    	ensureFreeSpace (1);
+		SafeArrays.safeArrayCopy(elementData, index, elementData, index + 1, size - index);
+		elementData[index] = element;
+		size++;
+		modCount++;
+    }
+
+    /**
+     * Removes the element at the specified position in this list.
+     * Shifts any subsequent elements to the left (subtracts one from their
+     * indices).
+     *
+     * @param index the index of the element to removed.
+     * @return the element that was removed from the list.
+     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+    public ${type_Object} remove (int index) {
+        return (remove${name} (index));
+    }
+
+    /**
+     * Removes the element at the specified position in this list.
+     * Shifts any subsequent elements to the left (subtracts one from their
+     * indices).
+     *
+     * @param index the index of the element to removed.
+     * @return the element that was removed from the list.
+     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+     @SuppressWarnings("unchecked")
+    public ${type} remove${name} (int index) {
+		rangeCheck(index);
+
+		${type} oldValue = (${type}) elementData[index];
+		int numMoved = size - index - 1;
+
+		if (numMoved > 0) {
+	    	SafeArrays.safeArrayCopy(elementData, index+1, elementData, index, numMoved);
+	    }
+
+		size--;
+		modCount++;
+
+		return oldValue;
+    }
+
+    /**
+     * Removes all of the elements from this list.  The list will
+     * be empty after this call returns.
+     */
+    public void clear() {
+		modCount++;
+		size = 0;
+    }
+
+    /**
+     * Appends all of the elements in the specified Collection to the end of
+     * this list, in the order that they are returned by the
+     * specified Collection's Iterator.  The behavior of this operation is
+     * undefined if the specified Collection is modified while the operation
+     * is in progress.  (This implies that the behavior of this call is
+     * undefined if the specified Collection is this list, and this
+     * list is nonempty.)
+     *
+     * @param c the elements to be inserted into this list.
+     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
+     *		  &lt; 0 || index &gt; size())</tt>.
+     */
+    public boolean addAll (Collection<? extends ${type_Object}> c) {
+		int numNew = c.size();
+		ensureFreeSpace(numNew);
+
+        Iterator<? extends ${type_Object}> iter = c.iterator ();
+		for (int i=0; i<numNew; i++)
+	    	elementData[size++] =
+#if( $name == "Object"  || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
+                iter.next ();
+#else
+                (iter.next ()).${type}Value ();
+#end
+
+        modCount++;
+		return numNew != 0;
+    }
+
+    #if($name != "Object" || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
+
+     /**
+     * Appends all of the elements in the specified array to the end of
+     * this list.
+     *
+     * @param c         the array to be inserted into this list.
+     * @param offset    starting position in the array.
+     * @param length    the number of array elements to be inserted.
+     * @throws    IndexOutOfBoundsException if offset out of range <tt>(index
+     *		  &lt; 0 || index &gt; size())</tt>.
+     */
+    public boolean addAll (${type} c[], int offset, int length) {
+        ensureFreeSpace(length);
+    	SafeArrays.safeArrayCopy(c, offset, elementData, size, length);
+
+    	size += length;
+    	modCount++;
+
+    	return length != 0;
+    }
+
+    /** Method copies content of this list into the list provided as argument. NOTE: destination list is not cleaned. */
+    public void copyTo (${name}ArrayList list) {
+        list.setSize(size);
+
+        SafeArrays.safeArrayCopy(elementData, 0, list.elementData, 0, size);
+    }
+    #end
+
+    /**
+     * Inserts all of the elements in the specified Collection into this
+     * list, starting at the specified position.  Shifts the element
+     * currently at that position (if any) and any subsequent elements to
+     * the right (increases their indices).  The new elements will appear
+     * in the list in the order that they are returned by the
+     * specified Collection's iterator.
+     *
+     * @param index index at which to insert first element
+     *		    from the specified collection.
+     * @param c elements to be inserted into this list.
+     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
+     *		  &lt; 0 || index &gt; size())</tt>.
+     */
+    public boolean addAll (Collection<? extends ${type_Object}> c, int index) {
+		rangeCheck(index, 0);
+
+		int numNew = c.size();
+		ensureFreeSpace(numNew);
+
+		int numMoved = size - index;
+		if (numMoved > 0) {
+	    	SafeArrays.safeArrayCopy(elementData, index, elementData, index + numNew, numMoved);
+	    }
+
+        Iterator<? extends ${type_Object}> iter = c.iterator ();
+		for (int i = 0; i < numNew; i++) {
+	    	elementData[index++] = iter.next ();
+	    }
+
+		size += numNew;
+		modCount++;
+		return numNew != 0;
+    }
+
+    /**
+     * Removes from this List all of the elements whose index is between
+     * fromIndex, inclusive and toIndex, exclusive.  Shifts any succeeding
+     * elements to the left (reduces their index).
+     * This call shortens the list by <tt>(toIndex - fromIndex)</tt> elements.
+     * (If <tt>toIndex==fromIndex</tt>, this operation has no effect.)
+     *
+     * @param fromIndex index of first element to be removed.
+     * @param toIndex index after last element to be removed.
+     */
+    public void removeRange (int fromIndex, int toIndex) {
+		rangeCheck(fromIndex, toIndex - fromIndex);
+		final int numMoved = size - toIndex;
+        SafeArrays.safeArrayCopy(elementData, toIndex, elementData, fromIndex, numMoved);
+        size -= (toIndex - fromIndex);
+        modCount++;
+    }
+
+    /**
+     * Inserts an uninitialized area at <tt>atIndex</tt>. Shifts any succeeding
+     * elements to the right by <tt>offset</tt> (increases their index).
+     * This call lengthens the list by <tt>offset</tt> elements.
+     * (If <tt>offset==0</tt>, this operation has no effect.)
+     *
+     * @param atIndex   index of first element to be shifted.
+     * @param offset    offset to shift by.
+     */
+    public void insertUnsafe (int atIndex, int offset) {
+        final int   newSize = size + offset;
+		ensureCapacity (newSize);
+
+		SafeArrays.safeArrayCopy(elementData, atIndex, elementData, atIndex + offset, size - atIndex);
+        size = newSize;
+        modCount++;
+    }
+
+    /**
+     * Inserts and fills an area at <tt>atIndex</tt>. Shifts any succeeding
+     * elements to the right by <tt>offset</tt> (increases their index).
+     * This call lengthens the list by <tt>offset</tt> elements.
+     * (If <tt>offset==0</tt>, this operation has no effect.)
+     *
+     * @param atIndex   index of first element to be shifted.
+     * @param offset    offset to shift by.
+     * @param filler    value to initialize new elements
+     */
+    public void insert (int atIndex, int offset, ${type} filler) {
+        final int   newSize = size + offset;
+        final int   end = atIndex + offset;
+
+		ensureCapacity (newSize);
+
+		SafeArrays.safeArrayCopy (
+        	elementData, atIndex, elementData, end, size - atIndex
+        );
+
+        for (int ii = atIndex; ii < end; ii++)
+            elementData [ii] = filler;
+
+        size = newSize;
+    }
+
+    /**
+     * Check if the given index is in range.  If not, throw an appropriate
+     * runtime exception.
+     */
+    private void rangeCheck(int index) {
+	    if (Integer.toUnsignedLong(index) >= size) { // 1 conditional branch instead of 2
+	        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+	    }
+    }
+
+    /**
+     * Check if the given range is in range.  If not, throw an appropriate
+     * runtime exception.
+     */
+    private void rangeCheck(int offset, int length) {
+        if (Integer.toUnsignedLong(offset) + Integer.toUnsignedLong(length) > size) { // 1 conditional branch instead of 4
+            throw new IndexOutOfBoundsException("Offset: " + offset + ", Length: " + length + ", Size: " + size);
+        }
+    }
+
+    /**
+     * Save the state of the <tt>ArrayList</tt> instance to a stream (that
+     * is, serialize it).
+     *
+     * @serialData The length of the array backing the <tt>ArrayList</tt>
+     *             instance is emitted (int), followed by all of its elements
+     *             (each an <tt>Object</tt>) in the proper order.
+     */
+    private synchronized void writeObject(java.io.ObjectOutputStream s)
+        throws java.io.IOException
+    {
+        // Write out array length
+        s.writeInt(size);
+
+		// Write out all elements in the proper order.
+		for (int i=0; i<size; i++)
+#if( $name == "Decimal")
+        	s.writeLong (Decimal64.toUnderlying(elementData[i]));
+#elseif ( $name == 'HdDateTime' )
+        	s.writeLong (HdDateTime.toUnderlying(elementData[i]));
+#elseif ( $name == 'HdTimeSpan')
+        	s.writeLong (HdTimeSpan.toUnderlying(elementData[i]));
+#else
+        	s.write${name_abbr} (elementData[i]);
+#end
+    }
+
+    /**
+     * Reconstitute the <tt>ArrayList</tt> instance from a stream (that is,
+     * deserialize it).
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized void readObject (java.io.ObjectInputStream s)
+        throws java.io.IOException, ClassNotFoundException
+    {
+        // Read in array length and allocate array
+        size = s.readInt();
+        elementData = new ${actualType} [size];
+
+		// Read in all elements in the proper order.
+		for (int i=0; i<size; i++)
+#if( $name == "Decimal")
+        	elementData [i] = Decimal64.fromUnderlying(s.readLong ());
+#elseif ( $name == "HdDateTime")
+        	elementData [i] = HdDateTime.fromUnderlying(s.readLong ());
+#elseif ( $name == "HdTimeSpan")
+        	elementData [i] = HdTimeSpan.fromUnderlying(s.readLong ());
+#else
+        	elementData [i] = s.read${name_abbr} ();
+#end
+    }
+
+    public boolean		equals (Object otherObj) {
+    	if (otherObj == null)
+    		return (size <= 0);
+
+    	if (! (otherObj instanceof ${name}ArrayList))
+    		return (false);
+
+    	return (java.util.Arrays.equals (
+    					to${name_abbr}Array (),
+((${name}ArrayList#if( $name == "Object")<?>#end) otherObj).to${name_abbr}Array ()
+    			)
+
+    	);
+    }
+
+	@SuppressWarnings("unchecked")
+    public void		swap (int idx1, int idx2) {
+		rangeCheck (idx1);
+		rangeCheck (idx2);
+    	${type}		buf = (${type}) elementData [idx1];
+    	elementData [idx1] = elementData [idx2];
+    	elementData [idx2] = buf;
+    }
+
+
+	/** Reverses order of elements */
+	@SuppressWarnings("unchecked")
+    public void     reverse () {
+        final int length = size();
+        for (int i = 0, j = length - 1; i < j; i++, j--) {
+            final ${type} tmp = (${type}) elementData[i];
+            elementData[i] = elementData[j];
+            elementData[j] = tmp;
+        }
+    }
+
+#if( $type != "boolean" )
+    public void		sort () {
+    	Arrays.sort(elementData, 0, size);
+    }
+
+    public void		sort (int offset, int length) {
+        rangeCheck(offset, length);
+    	Arrays.sort(elementData, offset, length);
+    }
+#end
+
+#if( $name == "Object")
+    @Override
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super ObjectType> comparator) {
+        Arrays.sort((ObjectType[]) elementData, 0, size, comparator); // allocation free sort
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super ObjectType> comparator, int offset, int length) {
+        rangeCheck(offset, length);
+        Arrays.sort((ObjectType[]) elementData, offset, length, comparator); // allocation free sort
+    }
+#end
+
+    public ${actualType} []	getInternalBuffer () {
+    	return (elementData);
+    }
+
+
+    /**
+     *	Sets the size of this array to the supplied value.
+     *	If the array is extended by this call, the content of new elements
+     *	is undefined.
+     */
+    public void		setSize (int newSize) {
+    	ensureCapacity (newSize);
+    	size = newSize;
+    }
+
+    /**
+     *	Sets the size of this array to the supplied value, without
+     *  preserving the original data. After this call, the content of
+     *  the array is undefined!
+     */
+    public void		setSizeUnsafe (int newSize) {
+    	ensureCapacityUnsafe (newSize);
+    	size = newSize;
+    }
+
+    public String	toString () {
+		StringBuffer	buf = new StringBuffer ("{");
+		for (int idx = 0; idx < size; idx ++) {
+			buf.append ("" + elementData[idx]);
+			if (idx < size - 1)
+				buf.append (", ");
+			else
+				buf.append ("}");
+		}
+
+		return (buf.toString ());
+    }
+
+#if( $name == "Object" || $name == "Decimal" || $name == 'HdDateTime' || $name == 'HdTimeSpan')
+	private class ElemEnumeration implements Enumeration<$type> {
+    	private int	mIndex = 0;
+
+    	public ElemEnumeration () {
+    	}
+
+    	public boolean hasMoreElements () {
+    		return (mIndex < size);
+    	}
+
+		@SuppressWarnings("unchecked")
+    	public ${type} nextElement () {
+    		return (${type}) elementData [mIndex++];
+    	}
+    }
+
+    public Enumeration<$type> elements () {
+    	return (new ElemEnumeration ());
+    }
+#else
+	private class ElemEnumeration implements ${name}Enumeration {
+    	private int mIndex = 0;
+
+    	public ElemEnumeration () {
+    	}
+
+    	public boolean hasMoreElements () {
+    		return (mIndex < size);
+    	}
+
+    	public ${type_Object} nextElement () {
+#if($name == "Boolean")
+    		return Boolean.valueOf(nextBooleanElement());
+#else
+    		return (new ${type_Object} (next${name_abbr}Element ()));
+#end
+
+    	}
+
+    	public ${type} next${name_abbr}Element () {
+    		return elementData [mIndex++];
+    	}
+
+    	@Override
+        public void     reset() {
+            mIndex = 0;
+        }
+    }
+
+    public ${name}Enumeration ${type}Elements () {
+    	return (new ElemEnumeration ());
+    }
+#end
+}
+
+#if( $name == "Object")
+#set( $type = "Object" )
+#end

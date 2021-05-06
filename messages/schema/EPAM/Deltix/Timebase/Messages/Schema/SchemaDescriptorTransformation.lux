@@ -1,0 +1,15 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Class which defines a transformation that is applied to the descriptor.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorTransformation", Title = "SchemaDescriptorTransformation")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaDescriptorTransformation {
+
+    /// Defines the transformation type that was applied to the descriptor.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    SchemaDescriptorTransformationType TransformationType;
+}

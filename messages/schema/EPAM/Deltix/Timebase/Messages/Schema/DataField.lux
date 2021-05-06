@@ -1,0 +1,29 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// This is a base class for schema data field.
+[Abstract]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.DataField", Title = "DataField")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class DataField : NamedDescriptor {
+
+    /// Data type of a field.
+    [SchemaElement]
+    [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(ArrayDataType),
+        typeof(BinaryDataType),
+        typeof(BooleanDataType),
+        typeof(CharDataType),
+        typeof(ClassDataType),
+        typeof(DateTimeDataType),
+        typeof(EnumDataType),
+        typeof(FloatDataType),
+        typeof(IntegerDataType),
+        typeof(TimeOfDayDataType),
+        typeof(VarcharDataType)
+    })]
+    DataType DataType;
+}
+

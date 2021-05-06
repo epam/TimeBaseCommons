@@ -1,0 +1,25 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+///   Message class, which describes data loss for 'lossy' Transient streams. See see "BufferOptions.Lossless".
+///   Such message can be received from see "ITickCursor", when message loss is occurred.
+///   TickStream should have see "DataLossMessage" Class Descriptor defined in stream schema. See
+///   see "Descriptor" .
+[OldElementName("deltix.qsrv.hf.pub.DataLossMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.DataLossMessage", Title = "Data Loss Message")]
+[SchemaGuid(DataLossMessage.DESCRIPTOR_GUID)]
+class DataLossMessage : SystemMessage {
+	const Text DESCRIPTOR_GUID = "SYS:DataLossMessage:2";
+
+	///   Number of the lost bytes.
+	//[FieldName("bytes")]
+	[SchemaElement(Name = "bytes", Title = "Bytes")]
+	Int64 Bytes;
+
+	///   The last reported message time before byte loss occurs. Precision - milliseconds.
+	//[FieldName("fromTime")]
+	[SchemaElement(Name = "fromTime", Title = "From Time")]
+	Timestamp FromTime;
+}

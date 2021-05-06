@@ -1,0 +1,33 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Schema definition for a class.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.RecordClassDescriptor", Title = "RecordClassDescriptor")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class RecordClassDescriptor : ClassDescriptor {
+
+    /// Defines parent RecordClassDescriptor if exist.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+            typeof(RecordClassDescriptor)
+    })]
+    RecordClassDescriptor? Parent;
+
+    /// Defines if current RecordClassDescriptor is abstract.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Boolean IsAbstract;
+
+    /// Defines if current RecordClassDescriptor is content class.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Boolean IsContentClass;
+
+    /// List of fields of a class.
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(StaticDataField), typeof(NonStaticDataField) })]
+    List<DataField> DataFields;
+}

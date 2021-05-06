@@ -1,0 +1,15 @@
+plugins {
+    id 'me.champeau.gradle.jmh' version '0.4.5' apply false
+}
+
+description = 'QuantServer commons-lang set of utilities'
+
+dependencies {
+    implementation 'com.epam.deltix:dfp'
+    implementation 'com.epam.deltix:hd-date-time'
+    implementation 'com.epam.deltix:gflog-api'
+
+    // For JMH-based tests
+    testImplementation 'org.openjdk.jmh:jmh-core'
+    testImplementation 'org.openjdk.jmh:jmh-generator-annprocess'
+}

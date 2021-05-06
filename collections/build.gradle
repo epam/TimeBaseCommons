@@ -1,0 +1,133 @@
+description = 'QuantServer commons-collections set of utilities'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'com.epam.deltix', name: 'gradle-velocity-plugin', version: '1.2.2'
+    }
+}
+apply plugin: 'velocity'
+
+dependencies {
+    implementation 'com.epam.deltix:dfp'
+    implementation 'com.epam.deltix:hd-date-time'
+    implementation 'com.epam.deltix:gflog-api'
+
+    implementation project(':timebase-lang')
+
+    testImplementation 'commons-collections:commons-collections:3.2.1'
+}
+
+ext {
+    srcDir = "src/main/templates"
+    generatedSourcesDir = "${buildDir}/generated/main/java"
+    dstDir = "${generatedSourcesDir}/com/epam/deltix/util/collections/generated"
+
+    types = [:]
+
+    types.char =    [name : 'Character', 'name_abbr' : 'Char', type : 'char', 'type_Object' : 'Character', size : 'SIZE_OF_CHAR' ]
+
+    types.byte =    [ name : 'Byte', 'name_abbr' : 'Byte', type : 'byte', 'type_Object' : 'Byte', size : 'SIZE_OF_BYTE' ]
+
+    types.short =   [ name : 'Short', 'name_abbr' : 'Short', type : 'short', 'type_Object' : 'Short', size : 'SIZE_OF_SHORT' ]
+
+    types.int =     [ name : 'Integer', 'name_abbr' : 'Int', type : 'int', 'type_Object': 'Integer', size : 'SIZE_OF_INT' ]
+
+    types.long =    [ name : 'Long', 'name_abbr' : 'Long', type : 'long', 'type_Object' : 'Long', size : 'SIZE_OF_LONG' ]
+
+    types.float =   [ name : 'Float', 'name_abbr' : 'Float', type : 'float', 'type_Object' : 'Float', size : 'SIZE_OF_FLOAT' ]
+
+    types.double =  [ name : 'Double', 'name_abbr' : 'Double', type : 'double', 'type_Object' : 'Double', size : 'SIZE_OF_DOUBLE' ]
+
+    types.boolean = [ name : 'Boolean', 'name_abbr' : 'Boolean', type : 'boolean', 'type_Object' : 'Boolean', size : 'SIZE_OF_BOOLEAN' ]
+
+    types.Object =  [ name : 'Object', 'name_abbr' : 'Object', type : 'Object', 'type_Object' : 'ObjectType', size : 'SIZE_OF_POINTER' ]
+
+    types.Decimal =  [ name : 'Decimal', 'name_abbr' : 'Decimal', type : 'Decimal64', 'type_Object' : 'Decimal64', size : 'SIZE_OF_POINTER' ]
+
+    types.HdDateTime =  [ name : 'HdDateTime', 'name_abbr' : 'HdDateTime', type : 'HdDateTime', 'type_Object' : 'HdDateTime', size : 'SIZE_OF_POINTER' ]
+
+    types.HdTimeSpan =  [ name : 'HdTimeSpan', 'name_abbr' : 'HdTimeSpan', type : 'HdTimeSpan', 'type_Object' : 'HdTimeSpan', size : 'SIZE_OF_POINTER' ]
+}
+
+velocity {
+    entry {
+        from = "$srcDir/PrimitiveEntry.vpp"
+        to = "$dstDir/@{name}Entry.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+
+    enumeration {
+        from = "$srcDir/PrimitiveEnumeration.vpp"
+        to = "$dstDir/@{name}Enumeration.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+
+    list {
+        from = "$srcDir/List.vpp"
+        to = "$dstDir/@{name}List.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+
+    arrayList {
+        from = "$srcDir/ArrayList.vpp"
+        to = "$dstDir/@{name}ArrayList.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+
+    comparator {
+        from = "$srcDir/PrimitiveComparator.vpp"
+        to = "$dstDir/@{name}Comparator.java"
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+
+    hashSet {
+        from = "$srcDir/PrimitiveHashSet.vpp"
+        to = "$dstDir/@{name}HashSet.java"
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+
+    hashMapBase {
+        from = "$srcDir/PrimitiveHashMapBase.vpp"
+        to = "$dstDir/@{name}HashMapBase.java"
+        contexts = [ types.char, types.short, types.int, types.long, types.float, types.double, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
+    }
+}
+
+Map<String, Object> mapMerge(Map first, Map second) {
+    def newMap = [:]
+
+    for (Map.Entry<String, Object> e in first.entrySet())
+        newMap.put("first_" + e.key, e.value)
+
+    for (Map.Entry<String, Object> e in second.entrySet())
+        newMap.put("second_" + e.key, e.value)
+
+    return newMap
+}
+
+task vppHashMap(type: com.epam.deltix.gradle.plugins.velocity.VelocityTask) {
+    from = "$srcDir/PrimitiveToPrimitiveHashMap.vpp"
+    to = "$dstDir/@{first_name}To@{second_name}HashMap.java"
+
+    List<Map> srcMaps = [ types.byte, types.char, types.short, types.int, types.long, types.float, types.double, types.Object ]
+    List<Map> newMaps = []
+
+    for (Map first in srcMaps) {
+        if (first.get("name") == "Byte")
+            continue;
+        for (Map second in srcMaps)
+            newMaps.add mapMerge(first, second)
+    }
+
+    setContexts newMaps
+}
+project.tasks.getByName('compileJava').dependsOn(vppHashMap)
+
+clean.doFirst {
+    delete fileTree(dir: "$dstDir")
+}
+
+sourceSets.main.java.srcDirs += ext.generatedSourcesDir

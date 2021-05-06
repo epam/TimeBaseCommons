@@ -1,0 +1,110 @@
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+/// Defines a field type in Timebase schema.
+[TimebaseSchemaAttribute]
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY }, Repeatable = false)]
+decorator SchemaType {
+    /// Defines Timebase encoding for the field.
+    Text? Encoding = null;
+    /// Defines if field allows null value to be assigned to it.
+    Boolean IsNullable = true;
+    /// Defines schema data type of the field.
+    /// If not defined, default mapping is used.
+    SchemaDataType DataType = SchemaDataType.DEFAULT;
+    /// Defines minimum value of the field. (For numeric types only)
+    Text? Minimum = null;
+    /// Defines maximum value of the field. (For numeric types only)
+    Text? Maximum = null;
+    /// Defines a set of types that might reside in this field.
+    List<Type>? NestedTypes = { };
+}
+
+/// Defines a array field type in Timebase schema.
+[TimebaseSchemaAttribute]
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY }, Repeatable = false)]
+decorator SchemaArrayType {
+    /// Defines if field allows null value to be assigned to it.
+    Boolean IsNullable = true;
+    /// Defines if array element allows null values.
+    Boolean IsElementNullable = true;
+    /// Defines Timebase encoding for the array element.
+    Text? ElementEncoding = null;
+    /// Defines schema data type of the array element.
+    /// If not defined, default mapping is used.
+    SchemaDataType ElementDataType = SchemaDataType.DEFAULT;
+   /// Defines minimum value of array element. (For numeric types only)
+    Text? ElementMinimum = null;
+    /// Defines maximum value of array element. (For numeric types only)
+    Text? ElementMaximum = null;
+    /// Defines a set of types that might reside in this field.
+    List<Type>? ElementTypes = { };
+}
+
+/// Marks record field as hidden from UHF Serializer (excluded from channel transmission).
+/// Hidden fields are not available on the receiver (UHF Client) side.
+[TimebaseSchemaAttribute]
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY, DecoratorTarget.ENUMERATION_MEMBER, DecoratorTarget.CLASS }, Repeatable = false)]
+decorator SchemaIgnore {
+}
+
+/// Defines a static field.
+[TimebaseSchemaAttribute]
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY }, Repeatable = false)]
+decorator SchemaStaticType {
+    /// Defines a value for static field.
+    Text? Value;
+    /// Defines schema data type of the field.
+    /// If not defined, default mapping is used.
+    SchemaDataType DataType = SchemaDataType.DEFAULT;
+}
+
+/// Defines schema meta-information for the schema element.
+[TimebaseSchemaAttribute]
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY, DecoratorTarget.ENUMERATION_MEMBER, DecoratorTarget.INTERFACE, DecoratorTarget.CLASS, DecoratorTarget.ENUMERATION }, Repeatable = false)]
+decorator SchemaElement {
+    /// Defines a user-visible name for a schema element.
+    Text? Name = null;
+    /// Defines a user-visible title for a schema element.
+    Text? Title = null;
+    /// Defines a user-visible description for a schema element.
+    Text? Description = null;
+}
+
+/// Defines default GUID for schema element.
+[TimebaseSchemaAttribute]
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.CLASS, DecoratorTarget.ENUMERATION }, Repeatable = false)]
+decorator SchemaGuid {
+    /// Defines a default GUID for schema element.
+    Text Value;
+}
+
+
+///Defines a field as encoded relative to another field.
+[PersistentDecorator]
+[DecoratorUsage(Repeatable = false)]
+decorator RelativeTo {
+    Text Value;
+}
+
+/// Defines a field as primary key.
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.INTERFACE_PROPERTY, DecoratorTarget.CLASS_PROPERTY }, Repeatable = false)]
+decorator PrimaryKey {
+}
+
+/// Defines a field as bitmask.
+[PersistentDecorator]
+[DecoratorUsage(ValidOn = { DecoratorTarget.ENUMERATION }, Repeatable = false)]
+decorator Bitmask {
+}
+
+[PersistentDecorator]
+decorator Identifier { }
+

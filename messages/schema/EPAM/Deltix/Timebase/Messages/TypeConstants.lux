@@ -1,0 +1,42 @@
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+[NotARecord]
+class TypeConstants {
+    const Int8 BOOLEAN_NULL = -1i8;
+    const Int8 BOOLEAN_FALSE = 0i8;
+    const Int8 BOOLEAN_TRUE = 1i8;
+
+    const Int8 INT8_NULL = Int8.MIN_VALUE;
+    const Int16 INT16_NULL = Int16.MIN_VALUE;
+    const Int32 INT32_NULL = Int32.MIN_VALUE;
+    const Int64 INT48_NULL = -0x800000000000i64;
+    const Int64 INT64_NULL = Int64.MIN_VALUE;
+
+    //const Int32 PUINT30_NULL = Int32.MAX_VALUE;
+    //const Int64 PUINT61_NULL = Int64.MAX_VALUE;
+    const Int32 PINTERVAL_NULL = 0;
+
+    const Int64 EXCHANGE_NULL = INT64_NULL;
+    const Int64 EXCHANGE_MAX_LEN = 10;
+
+    const Float32 IEEE32_NULL = Float32.NaN;
+    const Float64 IEEE64_NULL = Float64.NaN;
+    const Decimal DECIMAL_NULL = Decimal.NULL;
+
+    const Int32 TIME_OF_DAY_NULL = -1i32; // Obsolete
+    const Duration DURATION_NULL = Duration.MIN_VALUE;
+    const Timestamp TIMESTAMP_UNKNOWN = Timestamp.MIN_VALUE;
+    const Timestamp TIMESTAMP_NULL = Timestamp.MIN_VALUE;
+
+    const Int32 TIMESTAMP_MAX_LEN = 10;
+
+    const Int32 BINARY_UNLIMITED_SIZE = Int32.MIN_VALUE;
+    const Int32 BINARY_MIN_COMPRESSION = 0;
+    const Int32 BINARY_MAX_COMPRESSION = 9;
+
+    const Int32 ENUM_NULL = -1i32;
+    const Int64 ENUM_NULL_CODE = -1i64;
+
+    const Int64 ALPHANUMERIC_NULL = Int64.MIN_VALUE;
+}

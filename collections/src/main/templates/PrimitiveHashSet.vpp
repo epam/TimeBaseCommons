@@ -1,0 +1,175 @@
+#if( $name == "Object" )
+#set( $key_type = "K" )
+#set( $key_param = "<K>" )
+#set( $key_cast = "(K)" )
+#else
+#set( $key_type = $type )
+#end
+package com.epam.deltix.util.collections.generated;
+
+import com.epam.deltix.util.collections.hash.*;
+import com.epam.deltix.util.collections.*;
+import java.io.*;
+import java.util.*;
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+
+@SuppressWarnings ("unchecked")
+public class ${name}HashSet$!{key_param} extends ${name}HashMapBase$!{key_param}#if($name == "Object") implements Iterable$!{key_param}
+#end
+{
+    public ${name}HashSet () {
+        super ();
+    }
+
+    public ${name}HashSet (int cap) {
+        super (cap);
+    }
+
+    public ${name}HashSet (HashCodeComputer hashCodeComputer) {
+        super (0, hashCodeComputer);
+    }
+
+    public ${name}HashSet (int cap, HashCodeComputer hashCodeComputer) {
+        super (cap, hashCodeComputer);
+    }
+
+    public ${name}HashSet (${key_type}[] values) {
+        super ();
+
+        for (int i = 0; values != null && i < values.length; i++)
+            add(values[i]);
+    }
+
+    protected void              resizeTable (int newSize) {
+        final int                   curLength = keys.length;
+        final ${type} []            saveKeys = keys;
+        final int []                savePrev = prev;
+
+        allocTable (newSize);
+
+        for (int ii = 0; ii < curLength; ii++)
+            if (savePrev [ii] != NULL)
+                putNewNoSpaceCheck ($!{key_cast}saveKeys [ii]);
+    }
+
+    private void                putNewNoSpaceCheck (${key_type} key) {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL)
+            throw new IllegalArgumentException (
+                "Key " + key + " already exists"
+            );
+
+        idx = allocEntry (hidx);
+
+        keys [idx] = key;
+    }
+
+    public final boolean        contains (${key_type} key) {
+    	return (containsKey (key));
+    }
+
+    public boolean              add (${key_type} key) {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL)
+            return (false);
+
+        if (freeHead == NULL) {
+            resizeTable (keys.length * 2);
+            hidx = hashIndex (key); // recompute!
+        }
+
+        idx = allocEntry (hidx);
+
+        putKey (idx, key);
+
+        return (true);
+    }
+
+    @Override
+    public final boolean        equals (Object o) {
+        throw new UnsupportedOperationException ();
+    }
+
+    @Override
+    public int                  hashCode () {
+        throw new UnsupportedOperationException ();
+    }
+
+    public final ${key_type} []       toArray (${key_type} [] reuse) {
+        return (keysToArray (reuse));
+    }
+
+#if( $name == "Object" )
+    @Override
+    public Iterator <K> iterator () {
+       return (keyIterator ());
+    }
+#end
+
+    static final long           serialVersionUID = 1L;
+
+    private void                writeObject (ObjectOutputStream out)
+        throws IOException
+    {
+        out.writeShort (1);
+        out.writeInt (size ());
+
+        final int       tabSize = keys.length;
+        int             numWritten = 0;
+
+        for (int ii = 0; ii < tabSize; ii++) {
+            if (isFilled (ii)) {
+                numWritten++;
+#if( $name == "Decimal")
+ 				out.writeLong (Decimal64.toUnderlying(keys [ii]));
+#elseif( $name == "HdDateTime")
+ 				out.writeLong (HdDateTime.toUnderlying(keys [ii]));
+#elseif( $name == "HdTimeSpan")
+ 				out.writeLong (HdTimeSpan.toUnderlying(keys [ii]));
+#else
+ 				out.write${name_abbr} (keys [ii]);
+#end
+            }
+        }
+
+        if (numWritten != size ())
+            throw new RuntimeException (
+                "Size mismatch: " + numWritten + " instead of " + size ()
+            );
+    }
+
+    private void                readObject (ObjectInputStream in)
+        throws IOException, ClassNotFoundException
+    {
+    	@SuppressWarnings("unused")
+        short           readSerialVersion = in.readShort();
+
+        int             inCount = in.readInt ();
+
+        allocTable (inCount);
+
+        for (int ii = 0; ii < inCount; ii++) {
+#if( $name == "Decimal")
+            ${key_type}       key = Decimal64.fromUnderlying(in.readLong ());
+#elseif( $name == "HdDateTime")
+            ${key_type}       key = HdDateTime.fromUnderlying(in.readLong ());
+#elseif( $name == "HdTimeSpan")
+            ${key_type}       key = HdTimeSpan.fromUnderlying(in.readLong ());
+#else
+            ${key_type}       key = $!{key_cast}in.read${name_abbr} ();
+#end
+
+            add (key);
+        }
+    }
+}

@@ -1,0 +1,35 @@
+plugins {
+    id 'me.champeau.gradle.jmh' version '0.4.5' apply false
+}
+
+configurations {
+    dojoGenerator
+}
+
+//def generatedDirectory = file('build/generated-src/main')
+//sourceSets.main.java.srcDirs generatedDirectory
+//
+//task generate(type: JavaExec) {
+//    main = "deltix.dojo.generator.Generator"
+//    classpath = configurations.dojoGenerator
+//    args = ["$projectDir/schema/DeltixTimebaseCommonMessages.json", "$projectDir/schema/JavaTimeBaseGenerator.json", generatedDirectory]
+//    //environment LUMINARY_SEARCH_PATH: luminarySearchPath
+//}
+//
+//compileJava.dependsOn generate
+
+description = 'QuantServer Messages Interfaces'
+
+dependencies {
+    //dojoGenerator group: 'deltix', name: 'dojo-generator', version: '3.0.10'
+
+    implementation project(":timebase-collections")
+    implementation project(":timebase-lang")
+
+    implementation 'com.epam.deltix:dfp'
+    implementation 'com.epam.deltix:hd-date-time'
+    implementation 'com.epam.deltix:gflog-api'
+
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'com.epam.deltix:containers:3.1.2'
+}

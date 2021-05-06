@@ -1,0 +1,14 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Schema definition for a reference to class descriptor.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.ClassDescriptorRef", Title = "ClassDescriptorRef")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class ClassDescriptorRef {
+    /// Node name.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text Name;
+}

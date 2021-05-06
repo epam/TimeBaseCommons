@@ -1,0 +1,43 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Class which defines a change to schema descriptor.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorChangeAction", Title = "SchemaDescriptorChangeAction")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaDescriptorChangeAction {
+
+    /// Previous descriptor state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(RecordClassDescriptor), typeof(EnumClassDescriptor)
+    })]
+    ClassDescriptor? PreviousState;
+
+    /// New descriptor state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(RecordClassDescriptor), typeof(EnumClassDescriptor)
+    })]
+    ClassDescriptor? NewState;
+
+    /// Bitmask that defines the changes that were applied to the descriptor.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    SchemaDescriptorChangeType ChangeTypes;
+
+    /// Defines the data transformation that was applied to the descriptor.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(SchemaDescriptorTransformation)
+    })]
+    SchemaDescriptorTransformation? DescriptorTransformation;
+
+    /// A list of change actions to data fields.
+    /// Populated only if ChangeTypes contains ALTER flag
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = true, IsElementNullable = false,
+        ElementTypes = { typeof(SchemaFieldChangeAction) })]
+    List<SchemaFieldChangeAction>? FieldChangeActions;
+}

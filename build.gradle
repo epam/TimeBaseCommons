@@ -1,0 +1,274 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:5.2.2'
+    }
+}
+
+plugins {
+    // Supports functionality similar to Maven BOM.
+    // Helps to avoid re-declaring dependency version in each subproject.
+    // See https://github.com/spring-gradle-plugins/dependency-management-plugin
+    id "io.spring.dependency-management" version "1.0.5.RELEASE"
+    id "de.undercouch.download" version "3.4.3"
+    id "com.github.spotbugs" version "2.0.0" apply false
+}
+
+// To update Gradle wrapper use:
+// gradlew wrapper --gradle-version 3.3 --distribution-type all
+
+// To enable JavaDoc generation add Gradle property to command line:
+// -PincludeJavaDocs
+def includeJavaDocs = hasProperty("includeJavaDocs")
+
+// Spotbugs
+def enableSpotbugs = hasProperty("spotbugs") || Boolean.getBoolean("spotbugs") || Boolean.parseBoolean(System.getenv('SPOTBUGS'))
+if (enableSpotbugs) {
+    println("Spotbugs is ENABLED")
+}
+
+// We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
+// So we create a list of leaf projects and apply all java-related plugins on them only.
+def leafProjects = subprojects.findAll { subproject ->
+    subproject.subprojects.empty
+}
+ext.leafProjects = leafProjects // Publish as external variable
+
+// Default test categories
+ext.categories = 'Unit'
+
+configure(leafProjects) {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: "com.github.spotbugs" // Static analysis
+    apply plugin: 'io.spring.dependency-management'
+
+    compileJava.options.encoding = 'UTF-8'
+
+    // --- JAVA 11 version ---
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio.ch=ALL-UNNAMED'
+    //compileJava.options.compilerArgs += '--add-exports java.base/jdk.internal.misc=ALL-UNNAMED'
+    compileJava.options.compilerArgs += '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
+    compileJava.options.compilerArgs += '--add-exports=java.desktop/sun.swing=ALL-UNNAMED'
+    compileJava.options.compilerArgs += '--add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED'
+    compileJava.options.compilerArgs += '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
+
+
+    //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
+
+    // Defines versions of dependencies to be used by subprojects
+    // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
+    dependencyManagement {
+        dependencies {
+            dependency ('com.epam.deltix:thread-affinity:1.0.4')
+
+            dependency group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
+            dependency group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
+
+            dependency 'org.apache.commons:commons-lang3:3.4'
+            dependency 'javax.mail:mail:1.4.7'
+            dependency 'com.google.code.findbugs:jsr305:3.0.2'
+            dependency 'com.google.code.findbugs:annotations:3.0.1'
+
+            // dependency 'org.mockito:mockito-core:1.10.19'
+
+            dependencySet (group: 'com.epam.deltix', version: '3.0.0') {
+                entry 'gflog-api'
+                entry 'gflog-core'
+                entry 'gflog-jul'
+                entry 'gflog-dcl'
+                entry 'gflog-slf4j'
+            }            
+
+            // JMH
+            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+                entry 'jmh-core'
+                entry 'jmh-generator-annprocess'
+            }
+        }
+    }
+
+    ext {
+        vendor = 'Deltix Inc.'
+    }
+
+    archivesBaseName = 'timebase-commons' + project.path.replaceAll(':', '-')
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compileOnly 'com.google.code.findbugs:jsr305'
+        compileOnly 'com.google.code.findbugs:annotations'
+
+        testCompile 'junit:junit:4.12'
+                //'org.mockito:mockito-core:1.10.19'
+
+        spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
+    }
+
+    spotbugs {
+        toolVersion = "3.1.12"
+        effort = "max"
+        reportLevel = "medium"
+        sourceSets = [sourceSets.main] // exclude tests
+        excludeFilter = rootProject.file('spotbugs-excludes.xml')
+    }
+
+    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+        enabled = enableSpotbugs
+
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+//    javadoc {
+//        // Suppress javadoc warnings about unsafe code
+//        options.addStringOption('XDignore.symbol.file', 'quiet')
+//    }
+
+    jar {
+        manifest {
+            baseName archivesBaseName
+            attributes 'Manifest-Version': "1.0",
+                    'Created-By': vendor,
+                    'Implementation-Title': project.name, // TODO: Fill it!
+                    'Implementation-Vendor': vendor,
+                    'Implementation-Version': version
+        }
+    }
+
+    processResources {
+        from sourceSets.main.java.srcDirs
+        exclude '**/*.java'
+        includeEmptyDirs = false
+    }
+
+    processTestResources {
+        from sourceSets.test.java.srcDirs
+        exclude '**/*.java'
+        includeEmptyDirs = false
+    }
+
+    afterEvaluate {
+        // populate project classpath after evaluating
+        jar.manifest.attributes 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
+    }
+
+    // Contains current project jar and all required dependencies for that project
+    def allJarsPath = 'build/alljars'
+
+    task gatherProjectDependencies(type: Sync) {
+        description 'Copies all project runtime dependencies to ' + allJarsPath
+        from project.configurations.runtime
+        into allJarsPath
+    }
+
+    task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
+        group "build"
+        description 'Copies all project JAR and all it\'s runtime dependencies to ' + allJarsPath
+        from jar // Main produced JAR of the subproject
+        into allJarsPath
+    }
+
+    def allTestJarsPath = 'build/alltestjars'
+
+    task gatherProjectTestDependencies(type: Sync) {
+        description 'Copies all project test dependencies to ' + allTestJarsPath
+        from project.configurations.testCompile
+        into allTestJarsPath
+    }
+
+    task generateTestJar(type: Jar) {
+        description 'Generates JAR with test classes'
+        classifier 'tests'
+        from sourceSets.test.output
+    }
+
+    task gatherAllTestJarsWithDependencies(type: Copy, dependsOn: ['jar', generateTestJar, gatherProjectTestDependencies]) {
+        group "build"
+        description 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
+        from jar // Main produced JAR of the subproject
+        from generateTestJar // JAR with test classes
+
+        into allTestJarsPath
+    }
+
+    /// Support for publishing -sources.jar and -javadoc.jar artifacts:
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        baseName = archivesBaseName
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        enabled = includeJavaDocs
+        classifier = 'javadoc'
+        baseName = archivesBaseName
+        from javadoc.destinationDir
+    }
+
+    task luminaryJar(type: Jar) {
+        classifier = 'luminary'
+        from("$projectDir/schema") {
+            include "*.json"
+            include "**/*.lux"
+        }
+    }
+
+    tasks.withType(Javadoc) {
+        // "Xdoclint:all,-reference" - disables fail on missing JavaDoc reference. TODO: Consider removing this.
+        // "-quiet" - skips warning messages (warnings still shown).
+        options.addStringOption('Xdoclint:all,-reference', '-quiet')
+    }
+
+    artifacts {
+        archives sourcesJar
+        if (includeJavaDocs) {
+            archives javadocJar
+        }
+    }
+
+    if (!includeJavaDocs) {
+        tasks.withType(Javadoc).all { enabled = false }
+    }
+
+//    //tasks.test { enabled = false }
+//    test {
+//        useJUnit {
+//            setIncludeCategories categories.split(',').collect { "deltix.util.CommonsJUnitCategories\$${it}".toString() } as Set
+//        }
+//    }
+
+}
+
+allprojects {
+    // See http://jeremylong.github.io/DependencyCheck/dependency-check-gradle
+    apply plugin: 'org.owasp.dependencycheck'
+
+    dependencyCheck {
+        // skipProjects = nonJavaProjects
+        failBuildOnCVSS = 7
+        suppressionFile = file("$rootDir/dependency-check-suppression-file.xml")
+        analyzers {
+            assemblyEnabled = false
+        }
+    }
+}
+
+//def testTasks = ext.leafProjects*.test
+//
+//task generateTestReport(type: TestReport) {
+//    group 'verification'
+//    reportOn testTasks
+//    destinationDir = file("$rootDir/build/reports/junit/html/all_reports_merged") // TODO: Pick better name for merged report
+//}

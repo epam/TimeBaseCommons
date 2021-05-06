@@ -1,0 +1,14 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+[OldElementName("deltix.qsrv.hf.pub.BinaryMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.BinaryMessage", Title = "Binary Message")]
+[SchemaGuid(BinaryMessage.DESCRIPTOR_GUID)]
+class BinaryMessage : InstrumentMessage {
+  const Text     DESCRIPTOR_GUID = "SYS:BinaryMessage:1";
+    [SchemaElement(Name = "data", Title = "Data buffer")]
+    [SchemaType(DataType = SchemaDataType.BINARY)]
+    Data           Data;
+}

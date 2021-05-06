@@ -1,0 +1,20 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Schema definition for a single enumeration value.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.EnumValue", Title = "EnumValue")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class EnumValue {
+
+    /// Enumeration symbol.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text Symbol;
+
+    /// Enumeration value.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Int16 Value;
+}

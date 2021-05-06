@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <Authors>Deltix Inc.</Authors>
+    <Company>Deltix Inc.</Company>
+    <Description>Standard message format for QuantServer/QuantOffice suite.</Description>
+    <Copyright>Copyright (C) EPAM Inc.</Copyright>
+    <PackageProjectUrl>https://gitlab.deltixhub.com/Deltix/Common/Deltix.Timebase.Api.Messages</PackageProjectUrl>
+    <RepositoryUrl>git@gitlab.deltixhub.com:Deltix/Common/Deltix.Timebase.Api.Messages.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>.NET Messages</PackageTags>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <FileVersion>0.0.0.0</FileVersion>
+    <Version>0.0.0</Version>
+    <NoWarn>108</NoWarn>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>Deltix.Timebase.Messages</RootNamespace>
+    <AssemblyName>Deltix.Timebase.Messages</AssemblyName>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Deltix.Timebase.Messages.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Deltix.Timebase.Messages.xml</DocumentationFile>
+  </PropertyGroup>  
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Deltix.DFP" Version="0.10.16" />
+    <PackageReference Include="Deltix.DOCOGenerator.BuildTasks" Version="0.2.52" PrivateAssets="All" />    
+    <PackageReference Include="com.epam.deltix.containers." Version="2.3.14" />
+  </ItemGroup> 
+  
+  <ItemGroup>
+    <DOCOGenerator Include="..\..\..\schema\DeltixTimebaseCommonMessages.json">
+      <Settings>..\..\..\schema\CSharpTimeBaseGenerator.config</Settings>
+      <Generator>MSBuild:Compile</Generator>
+    </DOCOGenerator>
+  </ItemGroup>
+        
+  <ItemGroup>  
+    <Content Include="..\..\..\schema\**\*" PackagePath="luminary" />
+	<Content Include="Deltix.Timebase.Messages.props" PackagePath="build" />
+  </ItemGroup>
+        
+  <ItemGroup>
+    <Compile Remove="IMessageInfo.cs" />
+  </ItemGroup> 
+
+</Project>

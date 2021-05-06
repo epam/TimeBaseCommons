@@ -1,0 +1,19 @@
+{
+    "VERBOSE_OUTPUT" : true,    
+    "USE_DECIMAL" : false,
+    "USE_ARRAY_LIST" : false,
+    "GENERATE_PROMPTS" : true,
+    "GENERATE_INTERFACES" : true,
+    "GENERATE_POOLABLE_INTERFACES" : false,
+    "GENERATE_READONLY_INTERFACES" : true,
+    "GENERATE_READWRITE_INTERFACES" : true,
+    "GENERATE_CLASSES" : true,
+    "GENERATE_ENUMS" : true,
+    "GENERATE_ANNOTATIONS" : true,
+    "USE_HDDATETIME" : false,
+    "RECORD_INFO" : "com.epam.deltix.timebase.messages.RecordInfo",
+    "RECORD_INTERFACE" : "com.epam.deltix.timebase.messages.RecordInterface",
+    "MARKET_MESSAGE_TYPE" : "com.epam.deltix.timebase.api.MarketMessageType",
+    "CONSTANT_CLASS_NAME": "com.epam.deltix.timebase.messages.TypeConstants",
+    "COLLECTIONS_PACKAGE_NAME":  "deltix.util.collections.generated"
+}

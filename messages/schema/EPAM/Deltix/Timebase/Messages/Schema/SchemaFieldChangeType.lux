@@ -1,0 +1,43 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Type of field change.
+[Bitmask]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaFieldChangeType", Title = "SchemaFieldChangeType")]
+enum SchemaFieldChangeType {
+    /// Add field or enumeration value operation.
+    [SchemaElement(Name = "ADD")]
+    ADD = 0x01;
+    /// Delete field or enumeration value operation.
+    [SchemaElement(Name = "DELETE")]
+    DELETE = 0x02;
+    /// Rename field or enumeration value operation.
+    [SchemaElement(Name = "RENAME")]
+    RENAME = 0x04;
+    /// Change field title operation.
+    [SchemaElement(Name = "TITLE_CHANGE")]
+    TITLE_CHANGE = 0x08;
+    /// Change field description operation.
+    [SchemaElement(Name = "DESCRIPTION_CHANGE")]
+    DESCRIPTION_CHANGE = 0x10;
+    /// Change field data type operation.
+    [SchemaElement(Name = "DATA_TYPE_CHANGE")]
+    DATA_TYPE_CHANGE = 0x20;
+    /// Change field ordinal operation.
+    [SchemaElement(Name = "ORDINAL_CHANGE")]
+    ORDINAL_CHANGE = 0x40;
+    /// Change field modifier (static and non-static) operation.
+    [SchemaElement(Name = "MODIFIER_CHANGE")]
+    MODIFIER_CHANGE = 0x80;
+    /// Change field static value operation.
+    [SchemaElement(Name = "STATIC_VALUE_CHANGE")]
+    STATIC_VALUE_CHANGE = 0x100;
+    /// Change fileld primary key attribute operation.
+    [SchemaElement(Name = "PRIMARY_KEY_CHANGE")]
+    PRIMARY_KEY_CHANGE = 0x200;
+    /// Change field relation attribute operation.
+    [SchemaElement(Name = "RELATION_CHANGE")]
+    RELATION_CHANGE = 0x400;
+}

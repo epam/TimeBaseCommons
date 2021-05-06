@@ -1,0 +1,16 @@
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+/// Interface for unique instrument key.
+[Ignore]
+interface IdentityKey {
+
+    /// Instrument name.
+    Text Symbol get;
+}
+
+interface IdentityKeyInterface : IdentityKey {
+
+    /// Instrument name.
+    override Text Symbol get set;
+}

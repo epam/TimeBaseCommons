@@ -1,0 +1,31 @@
+description = 'QuantServer general purpose utilities'
+
+dependencies {
+    implementation project(':timebase-lang')
+    implementation project(':timebase-collections')
+
+    implementation 'com.epam.deltix:gflog-api'
+    implementation 'com.epam.deltix:gflog-core'
+
+    implementation 'com.epam.deltix:dfp'
+    implementation 'com.epam.deltix:hd-date-time'
+
+    implementation 'com.epam.deltix:thread-affinity'
+
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-compress:1.7'
+
+    implementation 'javax.xml.bind:jaxb-api:2.2.8'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
+
+    implementation 'com.github.sarxos:windows-registry-util:0.3'
+
+//    compile('com.sun.xml.bind:jaxb-xjc:2.2.11')  // 2.2.11 has only bug fixes compared 2.2.8-b130911.1802 (which used by Java 8)
+    //compile 'org.glassfish.jaxb:jaxb-runtime:2.2.11'  // Glassfish replaces JAXB RI
+    //compile('javax.xml:jsr173:1.0'){ transitive = false }
+
+    compile('net.java.dev.jna:jna:4.2.1'){ transitive = false }
+    compile('net.java.dev.jna:jna-platform:4.2.1'){ transitive = false }
+    compile('org.apache.bcel:bcel:6.0'){ transitive = false }
+}

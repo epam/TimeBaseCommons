@@ -1,0 +1,12 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Type of transformation applied to the descriptor.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorTransformationType", Title = "SchemaDescriptorTransformationType")]
+enum SchemaDescriptorTransformationType {
+    /// Drop record operation.
+    [SchemaElement(Name = "DROP_RECORD")]
+    DROP_RECORD = 0;
+}

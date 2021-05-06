@@ -1,0 +1,76 @@
+package com.epam.deltix.util.parsers;
+
+/**
+ *
+ */
+public abstract class Location {
+    public static final int     NONE = 0xFFFF;
+    
+    public static int           getStartLine (long location) {
+        return ((int) (location >>> 48));
+    }
+
+    public static int           getEndLine (long location) {
+        return ((int) ((location >>> 16) & 0xFFFF));
+    }
+
+    public static int           getStartPosition (long location) {
+        return ((int) ((location >>> 32) & 0xFFFF));
+    }
+
+    public static int           getEndPosition (long location) {
+        return ((int) (location & 0xFFFF));
+    }
+
+    public static long          getStart (long location) {
+        return (location >>> 32);
+    }
+
+    public static long          getEnd (long location) {
+        return (location & 0xFFFFFFFFL);
+    }
+
+    public static long          combine (long fromPos, long toPos) {
+        return (fromPos << 32 | toPos);
+    }
+    
+    public static long          fromTo (long fromLocation, long toLocation) {
+        return ((fromLocation & 0xFFFFFFFF00000000L) | (toLocation & 0xFFFFFFFF));
+    }
+    
+    public static String        toString (long location) {
+        int     startLine = Location.getStartLine (location);
+        
+        if (startLine == Location.NONE)
+            return ("");
+        
+        StringBuilder   sb = new StringBuilder ();
+        
+        sb.append (startLine + 1);
+        
+        int     startPos = Location.getStartPosition (location);
+        
+        if (startPos != Location.NONE) {
+            sb.append (".");
+            sb.append (startPos + 1);
+        }
+                
+        int     endLine = Location.getEndLine (location);
+        int     endPos = Location.getEndPosition (location);
+        
+        if (endLine != startLine || endPos != startPos) {
+            sb.append ("..");
+            
+            if (endLine != startLine) {
+                sb.append (endLine + 1);                
+                sb.append (".");
+            }
+            
+            if (endPos != startPos || endLine != startLine)
+                sb.append (endPos + 1);
+        }
+        
+        sb.append (": ");
+        return (sb.toString ());
+    }    
+}

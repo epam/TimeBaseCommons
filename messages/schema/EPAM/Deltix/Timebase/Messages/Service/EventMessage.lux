@@ -1,0 +1,11 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+[OldElementName("deltix.qsrv.hf.pub.EventMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.EventMessage", Title = "Event Message")]
+class EventMessage : InstrumentMessage {
+    [SchemaElement(Name = "eventType", Title = "Event Type")]
+    EventMessageType EventType;
+}

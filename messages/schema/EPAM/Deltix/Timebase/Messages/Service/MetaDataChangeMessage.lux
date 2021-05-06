@@ -1,0 +1,20 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+///   Special transient message that signals active stream consumers that their stream metadata has been changed
+///   Used for advanced stream monitoring.
+///   see also "SelectionOptions.VersionTracking"
+[OldElementName("deltix.qsrv.hf.pub.MetaDataChangeMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.MetaDataChangeMessage", Title = "Meta Data Change Message")]
+class MetaDataChangeMessage : SystemMessage {
+    ///   Indicates, that stream data was converted.
+    //[FieldName("converted")]
+    [SchemaElement(Title = "Converted", Name = "converted")]
+    Boolean Converted;
+
+    //[FieldName("version")]
+    [SchemaElement(Title = "Version", Name = "version")]
+    Int64 Version;
+}

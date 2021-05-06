@@ -1,0 +1,58 @@
+package com.epam.deltix.util.collections.generated;
+
+import com.epam.deltix.util.memory.*;
+import com.epam.deltix.util.collections.*;
+
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+
+/**
+ *  Compares keys as ${type}s.
+ */
+public final class ${name}Comparator implements ByteArrayComparator {
+    private int     mOrder;
+    
+    private ${name}Comparator (int order) {
+        mOrder = order;
+    }
+    
+    public int      compare (byte [] key1, int offset1, byte [] key2, int offset2, int keySize) {
+        assert (keySize == MemorySizeEstimator.${size});
+        
+        ${type}           f1 = DataExchangeUtils.read${name_abbr} (key1, offset1);
+        ${type}           f2 = DataExchangeUtils.read${name_abbr} (key2, offset2);
+        
+#if( $name == "Decimal" )
+        if (f1.isEqual(f2))
+            return (0);
+        else if (f1.isGreater(f2))
+            return (mOrder);
+        else
+            return (-mOrder);
+#elseif( $name == "HdDateTime" || $name == "HdTimeSpan")
+        int c = ${name_abbr}.compare(f1, f2);
+        if (c == 0)
+            return (0);
+        else if (c > 0)
+            return (mOrder);
+        else
+            return (-mOrder);
+#else
+        if (f1 == f2)
+            return (0);
+        else if (f1 > f2)
+            return (mOrder);
+        else
+            return (-mOrder);
+#end
+    }
+    
+    public static final ${name}Comparator       ASCENDING = new ${name}Comparator (1);
+    
+    public static final ${name}Comparator       DESCENDING = new ${name}Comparator (-1);
+}

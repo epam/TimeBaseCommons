@@ -1,0 +1,23 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+///   Special transient message that signals active stream consumers that their stream has been truncated
+///   Used for advanced stream monitoring.
+///   see also "SelectionOptions.VersionTracking"
+[OldElementName("deltix.qsrv.hf.pub.StreamTruncatedMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.StreamTruncatedMessage", Title = "Stream Truncated Message")]
+class StreamTruncatedMessage : SystemMessage {
+    //[FieldName("instruments")]
+    [SchemaElement(Name = "instruments", Title = "Instruments")]
+    Text Instruments;
+
+    /// Time of truncation in nanoseconds
+    [SchemaElement(Name = "truncateTime", Title = "Truncated Time")]
+    Timestamp TruncateTime;
+
+    //[FieldName("version")]
+    [SchemaElement(Name = "version", Title = "Version")]
+    Int64 Version;
+}

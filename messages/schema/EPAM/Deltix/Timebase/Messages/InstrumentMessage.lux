@@ -1,0 +1,25 @@
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+/// Base class for all messages that could be written in Timebase.
+[Serializable]
+[OldElementName("deltix.qsrv.hf.pub.InstrumentMessage")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.InstrumentMessage", Title = "Instrument Message")]
+[GenerateReadOnlyInterface("MessageInfo")][GenerateReadWriteInterface("MessageInterface")]
+[Ignore]
+class InstrumentMessage : IdentityKeyInterface {
+
+    ///
+    /// Gets message time in milliseconds that passed since January 1, 1970, 00:00:00 GMT
+    ///
+    Timestamp TimeStampMs;
+
+    ///
+    /// Gets message time in nanoseconds that passed since January 1, 1970, 00:00:00 GMT
+    ///
+    [HdTime(MillisecondFieldName = "TimeStampMs", NanosecondFieldName = "NanoTime")]
+    Timestamp NanoTime;
+
+    /// Instrument name.
+    final Text Symbol = "";
+}

@@ -1,0 +1,14 @@
+package com.epam.deltix.util.collections.generated;
+
+import com.epam.deltix.util.collections.ElementsEnumeration;
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+
+public interface ${name}Enumeration extends ElementsEnumeration<$type_Object> {
+    public ${type} next${name_abbr}Element ();
+}

@@ -1,0 +1,27 @@
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+enum SchemaDataType {
+    [SchemaElement(Name = "DEFAULT")]
+    DEFAULT = 0;
+    [SchemaElement(Name = "CHAR")]
+    CHAR = 1;
+    [SchemaElement(Name = "VARCHAR")]
+    VARCHAR = 2;
+    [SchemaElement(Name = "BINARY")]
+    BINARY = 3;
+    [SchemaElement(Name = "BOOLEAN")]
+    BOOLEAN = 4;
+    [SchemaElement(Name = "INTEGER")]
+    INTEGER = 5;
+    [SchemaElement(Name = "FLOAT")]
+    FLOAT = 6;
+    [SchemaElement(Name = "TIMESTAMP")]
+    TIMESTAMP = 7;
+    [SchemaElement(Name = "TIME_OF_DAY")]
+    TIME_OF_DAY = 8;
+    [SchemaElement(Name = "OBJECT")]
+    OBJECT = 9;
+    [SchemaElement(Name = "ENUM")]
+    ENUM = 10;
+}

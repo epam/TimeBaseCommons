@@ -1,0 +1,185 @@
+#if( $name == "Object" )
+#set( $type = "ObjectType" )
+#end
+package com.epam.deltix.util.collections.generated;
+
+
+#if( $name == "Object" )
+#set($actualType = "Object")
+#else
+#set($actualType = $type)
+#end
+
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+
+/**
+ * Resizable array of primitive ${type}s. Much more efficient than
+ *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
+ */
+#if($name == "Object")
+public interface ${name}List<${type}> extends Cloneable {
+#else
+public interface ${name}List extends Cloneable {
+#end
+    /**
+     * Returns the number of elements in this list.
+     *
+     * @return  the number of elements in this list.
+     */
+    int size ();
+
+    /**
+     * Tests if this list has no elements.
+     *
+     * @return  <tt>true</tt> if this list has no elements;
+     *          <tt>false</tt> otherwise.
+     */
+    boolean isEmpty();
+
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+     @SuppressWarnings("unchecked")
+    ${type} get${name} (int index);
+
+    /**
+     *  Returns the element at the specified position in this list, bypassing
+     *      the range check.
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     */
+    @SuppressWarnings("unchecked")
+    ${type} get${name}NoRangeCheck (int index);
+
+#if( $name == "Object" )
+    /**
+     * <p>Returns an array containing all of the elements in this list in the
+     * correct order.  The runtime type of the returned array is that of the
+     * specified array.  If the list fits in the specified array, it is
+     * returned therein.  Otherwise, a new array is allocated with the runtime
+     * type of the specified array and the size of this list.</p>
+     *
+     * <p>If the list fits in the specified array with room to spare (i.e., the
+     * array has more elements than the list), the element in the array
+     * immediately following the end of the collection is set to
+     * <tt>null</tt>.</p>
+     *
+     * @param a the array into which the elements of the list are to
+     *		be stored, if it is big enough; otherwise, a new array of the
+     * 		same runtime type is allocated for this purpose.
+     * @return an array containing the elements of the list.
+     * @throws ArrayStoreException if the runtime type of a is not a supertype
+     *         of <code>${type_Object}</code>.
+     */
+     @SuppressWarnings("unchecked")
+     <T> T [] toArray(T a[]);
+
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+    ${type} get (int index);
+
+#else
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param  index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
+     */
+    ${type_Object} get (int index);
+
+    /**
+     * <p>Returns an array containing all of the elements in this list in the
+     * correct order.  The runtime type of the returned array is that of the
+     * specified array.  If the list fits in the specified array, it is
+     * returned therein.  Otherwise, a new array is allocated with the runtime
+     * type of the specified array and the size of this list.</p>
+     *
+     * <p>If the list fits in the specified array with room to spare (i.e., the
+     * array has more elements than the list), the element in the array
+     * immediately following the end of the collection is set to
+     * <tt>null</tt>.</p>
+     *
+     * @param a the array into which the elements of the list are to
+     *		be stored, if it is big enough; otherwise, a new array of the
+     * 		same runtime type is allocated for this purpose.
+     * @return an array containing the elements of the list.
+     * @throws ArrayStoreException if the runtime type of a is not a supertype
+     *         of <code>${type_Object}</code>.
+     */
+    @SuppressWarnings("unchecked")
+    <T> T [] toArray(T a[]);
+
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element.
+     *
+     * @param elem element whose presence in this List is to be tested.
+     */
+    boolean contains (${type} elem);
+
+#end
+
+    /**
+     * Searches for the first occurrence of the given argument, testing
+     * for equality.
+     *
+     * @param   elem   an object.
+     * @return  the index of the first occurrence of the argument in this
+     *          list; returns <tt>-1</tt> if the object is not found.
+     */
+#if ($name == "Object")
+    int indexOf (Object elem);
+#else
+    int indexOf (${type} elem);
+#end
+
+    /**
+     * Returns the index of the last occurrence of the specified ${type} in
+     * this list.
+     *
+     * @param   elem   the desired element.
+     * @return  the index of the last occurrence of the specified ${type} in
+     *          this list; returns -1 if the object is not found.
+     */
+#if ($name == "Object")
+    int lastIndexOf (Object elem);
+#else
+    int lastIndexOf (${type} elem);
+#end
+
+    /**
+     * Returns a ${type} array containing all of the elements in this list
+     * in the correct order.
+     *
+     * @return an array containing all of the elements in this list
+     * 	       in the correct order.
+     */
+#if($name == "Object")
+    Object [] to${name_abbr}Array ();
+#else
+    ${type} [] to${name_abbr}Array ();
+#end
+
+}
+
+#if( $name == "Object" )
+#set( $type = "Object" )
+#end

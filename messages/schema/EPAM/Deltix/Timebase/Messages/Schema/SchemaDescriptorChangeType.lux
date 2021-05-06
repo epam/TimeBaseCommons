@@ -1,0 +1,26 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+
+/// Type of descriptor change.
+[Bitmask]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorChangeType", Title = "SchemaDescriptorChangeType")]
+enum SchemaDescriptorChangeType {
+    /// Add operation.
+    [SchemaElement(Name = "ADD")]
+    ADD = 0x01;
+    /// Delete operation.
+    [SchemaElement(Name = "DELETE")]
+    DELETE = 0x02;
+    /// Rename operation.
+    [SchemaElement(Name = "RENAME")]
+    RENAME = 0x04;
+    /// Fields change operation.
+    [SchemaElement(Name = "FIELDS_CHANGE")]
+    FIELDS_CHANGE = 0x08;
+    /// Content type change operation.
+    [SchemaElement(Name = "CONTENT_TYPE_CHANGE")]
+    CONTENT_TYPE_CHANGE = 0x10;
+}

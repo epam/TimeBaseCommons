@@ -1,0 +1,278 @@
+#if( $name == "Object" )
+#set( $key_type = "K" )
+#set( $key_param = "<K>" )
+#set( $key_cast = "(K)" )
+#else
+#set( $key_type = $type )
+#end
+package com.epam.deltix.util.collections.generated;
+
+import com.epam.deltix.util.collections.*;
+import com.epam.deltix.util.collections.hash.*;
+import java.util.*;
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+/**
+ *  Base class for ${name} to anything hash maps.
+ */
+@SuppressWarnings ("unchecked")
+public abstract class ${name}HashMapBase$!{key_param} extends VLinkHashMapBase {
+
+    protected  ${type} []         keys;
+
+    public ${name}HashMapBase () {
+        super ();
+    }
+
+    public ${name}HashMapBase (int cap) {
+        super (cap);
+    }
+
+    public ${name}HashMapBase (int cap, HashCodeComputer hashCodeComputer) {
+        super (cap, hashCodeComputer);
+    }
+
+    protected void          putKey (int idx, ${key_type} key) {
+        keys [idx] = key;
+    }
+
+    @Override
+    public long             getSizeInMemory () {
+        return (
+            super.getSizeInMemory () + (SIZE_OF_POINTER + ARRAY_OVERHEAD) +
+            keys.length * ${size}
+        );
+    }
+
+#if($name == "Object")
+    protected boolean       keyEquals (K a, K b) {
+        return (Objects.equals (a, b));
+    }
+
+    @Override
+    public void             clear () {
+        super.clear ();
+        Arrays.fill (keys, null);
+    }
+
+    @Override
+    protected void          free (int idx) {
+        super.free (idx);
+        keys [idx] = null;
+    }
+
+    protected final class KeyIterator implements Iterator <K> {
+    	private int             pos = -1;
+
+    	public KeyIterator () {
+    		move ();
+    	}
+
+    	private void            move () {
+    		do {
+    			pos++;
+    		} while (pos < keys.length && isEmpty (pos));
+    	}
+
+        @Override
+    	public boolean          hasNext () {
+    		return (pos < keys.length);
+    	}
+
+        @Override
+    	public K                next () {
+    		K   ret = (K) keys [pos];
+    		move ();
+    		return (ret);
+    	}
+
+        @Override
+        public void             remove () {
+            throw new UnsupportedOperationException ();
+        }
+    }
+
+    public Iterator <K>         keyIterator () {
+    	return (new KeyIterator ());
+    }
+#end
+
+    @Override
+    protected void          allocTable (int cap) {
+        super.allocTable (cap);
+
+        keys = new ${type} [cap];
+    }
+
+    protected final int     hashIndex (${key_type} key) {
+        return (hashCodeComputer.modHashCode (key, hashIndex.length));
+    }
+
+    public boolean          remove (${key_type} key) {
+        int         idx = find (key);
+
+        if (idx == NULL)
+            return (false);
+
+        free (idx);
+        return (true);
+    }
+
+    protected int           find (${key_type} key) {
+        return (find (hashIndex (key), key));
+    }
+
+    protected int           find (int hidx, ${key_type} key) {
+        for (int chain = hashIndex [hidx]; chain != NULL; chain = next [chain]) {
+            assert hashIndex ($!{key_cast}keys [chain]) == hidx;
+
+#if($name == "Object")
+            if (keyEquals (key, (K)keys [chain]))
+#else
+            if (keys [chain] == key)
+#end
+                return (chain);
+        }
+
+        return (NULL);
+    }
+
+    /**
+     *	Quick test for the presence of the specified key.
+     *
+     *  @param key  The key to search.
+     */
+    public boolean          containsKey (${key_type} key) {
+        return (find (key) != NULL);
+    }
+
+    public final boolean    isEmpty () {
+        return (count == 0);
+    }
+
+#if($name == "Object")
+protected final class KeyEnumeration implements ElementsEnumeration {
+#else
+protected final class KeyEnumeration implements ${name}Enumeration {
+#end
+    	private int             pos = -1;
+
+    	public KeyEnumeration () {
+    		move ();
+    	}
+
+    	private void            move () {
+    		do {
+    			pos++;
+    		} while (pos < keys.length && isEmpty (pos));
+    	}
+
+        @Override
+    	public boolean          hasMoreElements () {
+    		return (pos < keys.length);
+    	}
+
+        @Override
+        public void             reset() {
+            pos = -1;
+            move();
+        }
+
+#if($name == "Object")
+        @Override
+    	public Object            nextElement () {
+    		K   ret = (K) keys [pos];
+    		move ();
+    		return (ret);
+    	}
+#else
+        @Override
+	    public ${type}            next${name_abbr}Element () {
+    		${type}   ret = keys [pos];
+    		move ();
+    		return (ret);
+    	}
+
+#if($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
+        @Override
+    	public ${type}            nextElement () {
+            return (next${name_abbr}Element ());
+        }
+#else
+        @Override
+    	public ${name}            nextElement () {
+            return (next${name_abbr}Element ());
+        }
+#end
+
+#end
+    }
+
+#if($name == "Object")
+    public ElementsEnumeration keys () {
+#else
+    public ${name}Enumeration keys () {
+#end
+    	return (new KeyEnumeration ());
+    }
+
+#if($name == "Object")
+    public final K []       keysToArray (K [] ret) {
+        if (ret.length < count)
+            ret =  (K [])
+                java.lang.reflect.Array.newInstance (
+                    ret.getClass().getComponentType(),
+                    count
+                );
+
+        int     retIdx = 0;
+
+        for (int ii = 0; ii < keys.length; ii++)
+            if (isFilled (ii))
+                ret [retIdx++] = (K) keys [ii];
+
+        assert retIdx == count;
+
+        if (ret.length > count)
+            ret [count] = null;
+
+        return (ret);
+    }
+#else
+    public final ${type} []   keysToArray (${type} [] ret) {
+        if (ret == null || ret.length < count)
+            ret = new ${type} [count];
+
+        int     retIdx = 0;
+
+        for (int ii = 0; ii < keys.length; ii++)
+            if (isFilled (ii))
+                ret [retIdx++] = keys [ii];
+
+        assert retIdx == count;
+
+        return (ret);
+    }
+#end
+
+    static final long       serialVersionUID = 1L;
+
+    private void            writeObject (java.io.ObjectOutputStream out)
+         throws java.io.IOException
+    {
+        out.writeShort (1);
+    }
+
+    private void            readObject (java.io.ObjectInputStream in)
+         throws java.io.IOException, ClassNotFoundException
+    {
+    	@SuppressWarnings("unused")
+        short           readSerialVersion = in.readShort();
+    }
+
+}

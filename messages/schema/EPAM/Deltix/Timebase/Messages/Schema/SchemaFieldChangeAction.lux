@@ -1,0 +1,36 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Class which defines a change to schema field.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaFieldChangeAction", Title = "SchemaFieldChangeAction")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaFieldChangeAction {
+
+    /// Previous data field state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(StaticDataField), typeof(NonStaticDataField)
+    })]
+    DataField? PreviousState;
+
+    /// New descriptor state.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(StaticDataField), typeof(NonStaticDataField)
+    })]
+    DataField? NewState;
+
+    /// Bitmask that defines the changes that were applied to the field.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    SchemaFieldChangeType ChangeTypes;
+
+    /// Defines the data transformation that was applied to the field.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(SchemaFieldDataTransformation)
+    })]
+    SchemaFieldDataTransformation? DataTransformation;
+}

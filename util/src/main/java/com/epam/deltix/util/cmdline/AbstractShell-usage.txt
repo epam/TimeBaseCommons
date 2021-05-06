@@ -1,0 +1,37 @@
+General Shell Commands:
+
+help                            Display help.
+
+showtime                        Display current time.
+
+version                         Dislpay product version.
+
+set                             Display a list of settings, commonly controlled 
+                                by the set ... command.
+
+exec <file>                     Execute a script read from the specified file.
+                                Empty lines and comments (lines starting with #) 
+                                are ignored. Exit from a script file will exit
+                                the entire shell session.
+
+exit                            Exit the currently executed script. 
+                                At top level, this command quits the shell.
+
+quit                            Quit the shell immediately.
+
+set exitOnError true|false      false by default. When set to true, the shell 
+                                will exit on first error. When set to false,
+                                execution of commands will continue; however,
+                                if any errors were generated, the shell will exit
+                                with a non-0 error code.
+
+set confirm true|false          When set to true, the shell will respond to
+                                commands with confirmation messages, especially
+                                to the "set" command. Default: true.
+
+Shell Command-Line Options:
+
+-<option> <value>               Execute the "set" command.
+-exec <command ...>             Execute the specified shell command.
+-exit                           Exit at this point.
+

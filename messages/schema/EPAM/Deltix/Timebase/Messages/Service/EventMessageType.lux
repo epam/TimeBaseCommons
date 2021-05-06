@@ -1,0 +1,21 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+[OldElementName("deltix.qsrv.hf.pub.EventMessage$EventType")]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.EventMessageType", Title = "Event Type")]
+enum EventMessageType {
+    [SchemaElement(Name = "STREAM_DELETED")]
+    STREAM_DELETED = 0;
+    [SchemaElement(Name = "STREAM_CREATED")]
+    STREAM_CREATED = 1;
+    [SchemaElement(Name = "READ_LOCK_ACQUIRED")]
+    READ_LOCK_ACQUIRED = 2;
+    [SchemaElement(Name = "READ_LOCK_RELEASED")]
+    READ_LOCK_RELEASED = 3;
+    [SchemaElement(Name = "WRITE_LOCK_ACQUIRED")]
+    WRITE_LOCK_ACQUIRED = 4;
+    [SchemaElement(Name = "WRITE_LOCK_RELEASED")]
+    WRITE_LOCK_RELEASED = 5;
+}

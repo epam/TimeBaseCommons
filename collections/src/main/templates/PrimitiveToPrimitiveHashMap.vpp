@@ -1,0 +1,497 @@
+#if( $first_name == "Object" )
+#set( $key_type = "K" )
+#set( $key_param = "<K>" )
+#set( $key_cast = "(K)" )
+#else
+#set( $key_type = $first_type )
+#end
+#if( $second_name == "Object" )
+#set( $value_type = "V" )
+#set( $value_param = "<V>" )
+#set( $value_cast = "(V)" )
+#else
+#set( $value_type = $second_type )
+#end
+package com.epam.deltix.util.collections.generated;
+
+import com.epam.deltix.util.collections.hash.*;
+import com.epam.deltix.util.collections.*;
+import java.io.*;
+import java.util.*;
+#if( $name == "Decimal" )
+import com.epam.deltix.dfp.Decimal64;
+#elseif( $name == "HdDateTime" )
+import com.epam.deltix.hdtime.HdDateTime;
+#elseif( $name == "HdTimeSpan" )
+import com.epam.deltix.hdtime.HdTimeSpan;
+#end
+#if( $second_name == "Object" )
+import java.util.function.Consumer;
+#end
+
+@SuppressWarnings ("unchecked")
+public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" && $second_name == "Object" )<K, V>#else$!{key_param}$!{value_param}
+#end
+    extends ${first_name}HashMapBase $!{key_param}
+#if( $second_name == "Object" )
+    implements Iterable ${value_param}
+#end
+{
+    protected ${second_type} [] values;
+
+    public ${first_name}To${second_name}HashMap () {
+        super ();
+    }
+
+    public ${first_name}To${second_name}HashMap (int cap) {
+        super (cap);
+    }
+
+    public ${first_name}To${second_name}HashMap (HashCodeComputer hashCodeComputer) {
+        super (0, hashCodeComputer);
+    }
+
+    public ${first_name}To${second_name}HashMap (int cap, HashCodeComputer hashCodeComputer) {
+        super (cap, hashCodeComputer);
+    }
+
+    @Override
+    protected void              allocTable (int cap) {
+        super.allocTable (cap);
+
+        values = new ${second_type} [cap];
+    }
+
+    @Override
+    public long                 getSizeInMemory () {
+        return (
+            super.getSizeInMemory () + (SIZE_OF_POINTER + ARRAY_OVERHEAD) +
+            values.length * ${second_size}
+        );
+    }
+
+#if( $second_name == "Object" )
+    @Override
+    public void             clear () {
+        super.clear ();
+        Arrays.fill (values, null);
+    }
+
+    @Override
+    protected void          free (int idx) {
+        super.free (idx);
+        values [idx] = null;
+    }
+
+    class ElementIterator implements Iterator <V> {
+        private int             pos = -1;
+
+    	public ElementIterator () {
+    		move ();
+    	}
+
+    	private void            move () {
+    		do {
+    			pos++;
+    		} while (pos < values.length && isEmpty (pos));
+    	}
+
+        @Override
+    	public boolean          hasNext () {
+    		return (pos < values.length);
+    	}
+
+        @Override
+    	public V                next () {
+    		V   ret = (V) values [pos];
+    		move ();
+    		return (ret);
+    	}
+
+        @Override
+        public void     remove () {
+            throw new UnsupportedOperationException ();
+        }
+    }
+
+    @Override
+    public Iterator <V>     iterator () {
+        return (new ElementIterator ());
+    }
+
+    @Override
+    public void forEach(Consumer<? super V> consumer) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                consumer.accept((V) values[i]);
+            }
+        }
+    }
+#end
+
+    protected void              resizeTable (int newSize) {
+        final int                   curLength = values.length;
+        final ${first_type} []            saveKeys = keys;
+        final ${second_type} []             saveValues = values;
+        final int []                savePrev = prev;
+
+        allocTable (newSize);
+
+        for (int ii = 0; ii < curLength; ii++)
+            if (savePrev [ii] != NULL)
+                putNewNoSpaceCheck ($!{key_cast}saveKeys [ii], $!{value_cast}saveValues [ii]);
+    }
+
+    public ${value_type}               get (${key_type} key, ${value_type} notFoundValue) {
+        int         pos = find (key);
+
+        return (pos == NULL ? notFoundValue : $!{value_cast}values [pos]);
+    }
+
+    /**
+     *  Remove a value, if existed.
+     *
+     *  @param key          The key
+     *  @param notFoundValue This will be returned if the key was not associated with a value.
+     *  @return The old value associated with the key, or <tt>notFoundValue</tt>.
+     */
+    public ${value_type}               remove (${key_type} key, ${value_type} notFoundValue) {
+        int         idx = find (key);
+
+        if (idx == NULL)
+            return (notFoundValue);
+
+        ${value_type}        value = $!{value_cast}values [idx];
+
+        free (idx);
+
+        return (value);
+    }
+
+    private void                putNewNoSpaceCheck (${key_type} key, ${value_type} value) {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL)
+            throw new IllegalArgumentException (
+                "Value for key " + key + " already exists = " + value
+            );
+
+        idx = allocEntry (hidx);
+
+        values [idx] = value;
+        putKey(idx, key);
+    }
+
+    /**
+     *  Put new element into the map
+     *
+     *  @param key       The key
+     *  @param value     The value
+     *  @return  true if the element is new, false if the key was found.
+     */
+    public boolean              put (${key_type} key, ${value_type} value) {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL) {
+            values [idx] = value;
+            return (false);
+        }
+
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+            hidx = hashIndex (key); // recompute!
+        }
+
+        idx = allocEntry (hidx);
+
+        values [idx] = value;
+        putKey (idx, key);
+
+        return (true);
+    }
+
+    /**
+     *  Replace a value and return the old one.
+     *  @param key          The key
+     *  @param value        The new value to put in table
+     *  @param notFoundValue This will be returned if the key was not associated with a value.
+     *  @return The old value associated with the key, or <tt>notFoundValue</tt>.
+     */
+    public ${value_type}               putAndGet (
+        ${key_type}                       key,
+        ${value_type}                     value,
+        ${value_type}                     notFoundValue
+    )
+    {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL) {
+            ${value_type}    old = $!{value_cast}values [idx];
+
+            values [idx] = value;
+
+            return (old);
+        }
+
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+            hidx = hashIndex (key); // recompute!
+        }
+
+        idx = allocEntry (hidx);
+
+        values [idx] = value;
+        putKey(idx, key);
+
+        return (notFoundValue);
+    }
+
+    /**
+     *  Put new value into the map only if there is no previously stored value under the same key.
+     *
+     *  @param key          The key
+     *  @param value        The new value to put in table (but only if the key is not occupied)
+     *  @return             Value that remains in the map.
+     */
+    public ${value_type}               putAndGetIfEmpty (
+        ${key_type}                   key,
+        ${value_type}                 value
+    )
+    {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL) {
+            return $!{value_cast} values [idx];
+        }
+
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+            hidx = hashIndex (key); // recompute!
+        }
+
+        idx = allocEntry (hidx);
+
+        values [idx] = value;
+        putKey(idx, key);
+
+        return value;
+    }
+
+    /**
+     *  Put new value into the map only if there is no previously stored value under the same key.
+     *
+     *  @param key          The key
+     *  @param value        The new value to put in table (but only if the key is not occupied)
+     *  @return             True if this map has changed as the result of this call.
+     */
+    public boolean               putIfEmpty (
+        ${key_type}                   key,
+        ${value_type}                 value
+    )
+    {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL) {
+            return false;
+        }
+
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+            hidx = hashIndex (key); // recompute!
+        }
+
+        idx = allocEntry (hidx);
+
+        values [idx] = value;
+        putKey(idx, key);
+
+        return true;
+    }
+
+
+    /**
+     *	Linearly searches for the specified value.
+     *
+     *  @param value    The value to search.
+     *  @return         Whether the specified value is found.
+     */
+    public final boolean        containsValue (${value_type} value) {
+    	int         tabSize = values.length;
+
+    	for (int ii = 0; ii < tabSize; ii++)
+    		if (isFilled (ii) && values [ii] == value)
+    			return (true);
+
+    	return (false);
+    }
+
+    public final ${second_type} []   valuesToArray (${second_type} [] ret) {
+        if (ret == null || ret.length < count)
+            ret = new ${second_type} [count];
+
+        final int       tabSize = values.length;
+        int             outIdx = 0;
+
+        for (int ii = 0; ii < tabSize; ii++)
+            if (isFilled (ii))
+                ret [outIdx++] = values [ii];
+
+        assert outIdx == count;
+
+        return ret;
+    }
+
+#if( $second_name == "Object" )
+    /** Method copies content of this map into the map provided as argument. NOTE: destination is not cleaned. */
+    public void copyTo (Collection<V> result) {
+        final int       tabSize = values.length;
+        for (int ii = 0; ii < tabSize; ii++)
+            if (isFilled (ii))
+                result.add((V)values [ii]);
+
+    }
+#end
+
+    protected final class ElementEnumeration
+#if( $first_name == "Object" && $second_name == "Object" )
+        implements ElementsEnumeration <V>, KeyEntry <K>
+#elseif( $second_name == "Object" )
+        implements ElementsEnumeration <V>, ${first_name}Entry
+#elseif( $first_name == "Object" )
+        implements ${second_name}Enumeration, KeyEntry <K>
+#else
+        implements ${second_name}Enumeration, ${first_name}Entry
+#end
+    {
+    	private int             pos = -1;
+
+    	public ElementEnumeration () {
+    		move ();
+    	}
+
+    	private void            move () {
+    		do {
+    			pos++;
+    		} while (pos < values.length && isEmpty (pos));
+    	}
+
+        @Override
+    	public boolean          hasMoreElements () {
+    		return (pos < values.length);
+    	}
+
+        @Override
+        public void             reset() {
+            pos = -1;
+            move();
+        }
+
+#if( $second_name == "Object" )
+        @Override
+    	public V                nextElement () {
+    		V   ret = (V) values [pos];
+    		move ();
+    		return (ret);
+    	}
+#else
+        @Override
+    	public ${second_name}           nextElement () {
+    		${second_type}   ret = values [pos];
+    		move ();
+    		return (ret);
+    	}
+
+        @Override
+	    public ${second_type}           next${second_name_abbr}Element () {
+    		${second_type}   ret = values [pos];
+    		move ();
+    		return (ret);
+    	}
+#end
+
+#if( $first_name == "Object" )
+        @Override
+	    public K                key () {
+           return (K) keys [pos];
+        }
+#else
+        @Override
+	    public ${first_name}            key () {
+           return keys [pos];
+        }
+
+        @Override
+	    public ${first_type}            key${first_name} () {
+           return (keys [pos]);
+        }
+#end
+    }
+
+#if( $second_name == "Object" )
+    public ElementsEnumeration <V>      elements () {
+    	return (new ElementEnumeration ());
+    }
+#else
+    public ${second_name}Enumeration    elements () {
+    	return (new ElementEnumeration ());
+    }
+#end
+
+    @Override
+    public final boolean        equals (Object o) {
+        throw new UnsupportedOperationException ();
+    }
+
+    @Override
+    public int                  hashCode () {
+        throw new UnsupportedOperationException ();
+    }
+
+    static final long           serialVersionUID = 1L;
+
+    private void                writeObject (ObjectOutputStream out)
+        throws IOException
+    {
+        out.writeShort (1);
+        out.writeInt (size ());
+
+        final int       tabSize = values.length;
+        int             numWritten = 0;
+
+        for (int ii = 0; ii < tabSize; ii++) {
+            if (isFilled (ii)) {
+                numWritten++;
+ 				out.write${first_name_abbr} (keys [ii]);
+                out.write${second_name_abbr} (values [ii]);
+            }
+        }
+
+        if (numWritten != size ())
+            throw new RuntimeException (
+                "Size mismatch: " + numWritten + " instead of " + size ()
+            );
+    }
+
+    private void                readObject (ObjectInputStream in)
+        throws IOException, ClassNotFoundException
+    {
+    	@SuppressWarnings("unused")
+        short           readSerialVersion = in.readShort();
+
+        int             inCount = in.readInt ();
+
+        allocTable (Math.max(inCount, MIN_CAPACITY)); // allocate not less than MIN_CAPACITY
+
+        for (int ii = 0; ii < inCount; ii++) {
+            ${key_type}       key = $!{key_cast}in.read${first_name_abbr} ();
+            ${value_type}     value = $!{value_cast}in.read${second_name_abbr} ();
+
+            put (key, value);
+        }
+    }
+}

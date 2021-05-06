@@ -1,0 +1,15 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Schema definition for static data field.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.StaticDataField", Title = "StaticDataField")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class StaticDataField : DataField {
+
+    /// Value constant for a field.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? StaticValue;
+}

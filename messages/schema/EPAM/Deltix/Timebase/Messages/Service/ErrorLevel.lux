@@ -1,0 +1,24 @@
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+enum ErrorLevel {
+    [SchemaElement(Name = "DEBUG")]
+    DEBUG = 0;
+    /// Maps to QuantOffice EventSeverity.Information
+    [SchemaElement(Name = "INFO")]
+    INFO =  1;
+    /// Maps to QuantOffice EventSeverity.Warning
+    [SchemaElement(Name = "ALERT")]
+    ALERT = 2;
+    /// Application/User code error
+    /// Maps to QuantOffice EventSeverity.Error, will be visible as Trading Console alert
+    [SchemaElement(Name = "USER_ERROR")]
+    USER_ERROR = 3;
+    /// System error (Error in UHF/QuantOffice runtime)
+    [SchemaElement(Name = "SYSTEM_ERROR")]
+    SYSTEM_ERROR = 4;
+    [SchemaElement(Name = "HEARTBEAT")]
+    HEARTBEAT = 5;
+}

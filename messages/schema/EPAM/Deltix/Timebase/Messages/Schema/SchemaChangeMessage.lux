@@ -1,0 +1,32 @@
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Message tha defines a change in stream schema.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaChangeMessage", Title = "SchemaChangeMessage")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class SchemaChangeMessage : InstrumentMessage {
+
+    /// Previous schema state.
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = true, IsElementNullable = false,
+        ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) })]
+    List<ClassDescriptor>? PreviousState;
+
+    /// New schema state.
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) })]
+    List<ClassDescriptor> NewState;
+
+    /// New schema state.
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(SchemaDescriptorChangeAction) })]
+    List<SchemaDescriptorChangeAction> DescriptorChangeActions;
+
+    /// Message version
+    [SchemaElement]
+    UInt64 Version;
+}
