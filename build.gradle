@@ -44,6 +44,7 @@ configure(leafProjects) {
     apply plugin: 'maven-publish'
     apply plugin: "com.github.spotbugs" // Static analysis
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'signing'
 
     compileJava.options.encoding = 'UTF-8'
 
@@ -57,7 +58,6 @@ configure(leafProjects) {
     compileJava.options.compilerArgs += '--add-exports=java.desktop/sun.swing=ALL-UNNAMED'
     compileJava.options.compilerArgs += '--add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED'
     compileJava.options.compilerArgs += '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
-
 
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
@@ -94,10 +94,11 @@ configure(leafProjects) {
     }
 
     ext {
-        vendor = 'Deltix Inc.'
+        vendor = 'EPAM'
+        isReleaseVersion = !version.endsWith("SNAPSHOT")
     }
 
-    archivesBaseName = 'timebase-commons' + project.path.replaceAll(':', '-')
+//    archivesBaseName = 'timebase-commons' + project.path.replaceAll(':', '-')
 
     repositories {
         mavenCentral()
@@ -130,21 +131,21 @@ configure(leafProjects) {
         }
     }
 
-//    javadoc {
-//        // Suppress javadoc warnings about unsafe code
-//        options.addStringOption('XDignore.symbol.file', 'quiet')
-//    }
-
-    jar {
-        manifest {
-            baseName archivesBaseName
-            attributes 'Manifest-Version': "1.0",
-                    'Created-By': vendor,
-                    'Implementation-Title': project.name, // TODO: Fill it!
-                    'Implementation-Vendor': vendor,
-                    'Implementation-Version': version
-        }
+    javadoc {
+        // Suppress javadoc warnings about unsafe code
+        options.addStringOption('XDignore.symbol.file', 'quiet')
     }
+
+//    jar {
+//        manifest {
+//            baseName archivesBaseName
+//            attributes 'Manifest-Version': "1.0",
+//                    'Created-By': vendor,
+//                    'Implementation-Title': project.name, // TODO: Fill it!
+//                    'Implementation-Vendor': vendor,
+//                    'Implementation-Version': version
+//        }
+//    }
 
     processResources {
         from sourceSets.main.java.srcDirs
@@ -204,18 +205,18 @@ configure(leafProjects) {
 
     /// Support for publishing -sources.jar and -javadoc.jar artifacts:
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        baseName = archivesBaseName
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        enabled = includeJavaDocs
-        classifier = 'javadoc'
-        baseName = archivesBaseName
-        from javadoc.destinationDir
-    }
+//    task sourcesJar(type: Jar, dependsOn: classes) {
+//        classifier = 'sources'
+//        baseName = archivesBaseName
+//        from sourceSets.main.allSource
+//    }
+//
+//    task javadocJar(type: Jar, dependsOn: javadoc) {
+//        enabled = includeJavaDocs
+//        classifier = 'javadoc'
+//        baseName = archivesBaseName
+//        from javadoc.destinationDir
+//    }
 
     task luminaryJar(type: Jar) {
         classifier = 'luminary'
@@ -231,15 +232,78 @@ configure(leafProjects) {
         options.addStringOption('Xdoclint:all,-reference', '-quiet')
     }
 
-    artifacts {
-        archives sourcesJar
-        if (includeJavaDocs) {
-            archives javadocJar
-        }
-    }
+//    artifacts {
+//        archives sourcesJar
+//        if (includeJavaDocs) {
+//            archives javadocJar
+//        }
+//    }
 
     if (!includeJavaDocs) {
         tasks.withType(Javadoc).all { enabled = false }
+    }
+
+    def rUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"
+    def rPass = findProperty('SONATYPE_NEXUS_PASSWORD') ?:  System.getenv('SONATYPE_NEXUS_PASSWORD') ?: "FakePass"
+
+    publishing {
+        repositories {
+            maven {
+                url = findProperty('SONATYPE_REPOSITORY') ?:  System.getenv('SONATYPE_REPOSITORY') ?: "FakeRepo"
+
+                credentials {
+                    username rUser
+                    password rPass
+                }
+            }
+        }
+
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                pom {
+                    name = 'thread.affinity'
+                    packaging = 'jar'
+                    description = 'A wrapper over net.openhft:affinity providing handy classes to create threads pinned to the specified CPUs.'
+                    url = 'https://github.com/epam/ThreadAffinity'
+
+                    scm {
+                        connection = 'scm:git:https://github.com/epam/ThreadAffinity.git'
+                        developerConnection = 'scm:git:https://github.com/epam/ThreadAffinity.git'
+                        url = 'https://github.com/epam/ThreadAffinity.git'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'alex-karpovich'
+                            name = 'Alexander Karpovich'
+                            email = 'aliaksandr_karpovich@epam.com'
+                            url = 'https://github.com/alex-karpovich'
+                            organization = 'EPAM Systems'
+                            organizationUrl = 'https://www.epam.com/'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        def signingKey = findProperty('SIGNING_PRIVATE_KEY') ?: System.getenv('SIGNING_PRIVATE_KEY') ?: "FakeUser"
+        def signingPassword = findProperty('SIGNING_PASSWORD') ?: System.getenv('SIGNING_PASSWORD') ?: "FakePass"
+
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.mavenJava
+
+        required { isReleaseVersion }
     }
 
 //    //tasks.test { enabled = false }
