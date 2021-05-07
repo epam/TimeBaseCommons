@@ -13,7 +13,7 @@ public class WordMatcherPerfTest {
     
     @Test
     public void      runTest () throws Exception {
-        words = IOUtil.readLinesFromClassPath ("deltix/util/text/tickers.txt");
+        words = IOUtil.readLinesFromClassPath ("com/epan/deltix/util/text/tickers.txt");
         
         WordMatcherBuilder      wm = new WordMatcherBuilder ();
         

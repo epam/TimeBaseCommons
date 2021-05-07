@@ -38,7 +38,7 @@ public class CurrencyCodeList {
         try {
             String alternativeLocation = System.getProperty("deltix.qsrv.currency.codes");
             if (StringUtils.isEmpty(alternativeLocation))
-                is = BasicIOUtil.openResourceAsStream ("deltix/util/currency/CurrencyCodes.xml");
+                is = BasicIOUtil.openResourceAsStream ("com/epam/deltix/util/currency/CurrencyCodes.xml");
             else
                 is = new FileInputStream(alternativeLocation);
             read(is);

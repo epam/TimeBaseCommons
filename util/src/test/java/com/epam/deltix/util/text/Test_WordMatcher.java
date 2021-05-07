@@ -15,7 +15,7 @@ public class Test_WordMatcher {
     public void     setUp () throws Exception {
         wm = new WordMatcherBuilder ();
         
-        words = IOUtil.readLinesFromClassPath ("deltix/util/text/tickers.txt");
+        words = IOUtil.readLinesFromClassPath ("com/epam/deltix/util/text/tickers.txt");
         
         for (String s : words) 
             wm.add (s);        
