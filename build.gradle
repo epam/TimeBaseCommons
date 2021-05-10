@@ -263,15 +263,15 @@ configure(leafProjects) {
                 from components.java
 
                 pom {
-                    name = 'thread.affinity'
+                    name = project.name
                     packaging = 'jar'
-                    description = 'A wrapper over net.openhft:affinity providing handy classes to create threads pinned to the specified CPUs.'
-                    url = 'https://github.com/epam/ThreadAffinity'
+                    description = 'Timebase Common utilities and collections.'
+                    url = 'https://github.com/epam/TimeBaseCommons.git'
 
                     scm {
-                        connection = 'scm:git:https://github.com/epam/ThreadAffinity.git'
-                        developerConnection = 'scm:git:https://github.com/epam/ThreadAffinity.git'
-                        url = 'https://github.com/epam/ThreadAffinity.git'
+                        connection = 'scm:git:https://github.com/epam/TimeBaseCommons.git'
+                        developerConnection = 'scm:git:https://github.com/epam/TimeBaseCommons.git'
+                        url = 'https://github.com/epam/TimeBaseCommons.git'
                     }
 
                     licenses {
