@@ -18,7 +18,7 @@ configurations {
 //
 //compileJava.dependsOn generate
 
-description = 'QuantServer Messages Interfaces'
+description = 'Timebase Messages Interfaces'
 
 dependencies {
     //dojoGenerator group: 'deltix', name: 'dojo-generator', version: '3.0.10'

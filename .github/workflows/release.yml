@@ -101,9 +101,9 @@ jobs:
       - name: Setup java
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11
       - name: Publish jars
-        run: ./gradlew publish
+        run: ./gradlew :timebase-collections:publish :timebase-lang:publish :timebase-messages:publish :timebase-util:publish
         env:
           SONATYPE_REPOSITORY:      ${{ secrets.SONATYPE_REPOSITORY }}
           SONATYPE_NEXUS_USERNAME:  ${{ secrets.SONATYPE_NEXUS_USERNAME }}

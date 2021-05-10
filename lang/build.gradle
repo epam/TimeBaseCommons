@@ -2,12 +2,16 @@ plugins {
     id 'me.champeau.gradle.jmh' version '0.4.5' apply false
 }
 
-description = 'QuantServer commons-lang set of utilities'
+description = 'Timebase commons-lang set of utilities'
 
 dependencies {
-    implementation 'com.epam.deltix:dfp'
-    implementation 'com.epam.deltix:hd-date-time'
+    //implementation 'com.epam.deltix:dfp'
+    //implementation 'com.epam.deltix:hd-date-time'
+    
+    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
+    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
     implementation 'com.epam.deltix:gflog-api'
+    implementation 'com.epam.deltix:gflog-core'
 
     // For JMH-based tests
     testImplementation 'org.openjdk.jmh:jmh-core'
