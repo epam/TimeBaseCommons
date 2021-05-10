@@ -98,6 +98,11 @@ configure(leafProjects) {
         isReleaseVersion = !version.endsWith("SNAPSHOT")
     }
 
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
 //    archivesBaseName = 'timebase-commons' + project.path.replaceAll(':', '-')
 
     repositories {
