@@ -72,10 +72,10 @@ public class InstrumentMessage
     }
 
     /**
-     * Indicated that this message has defined point in time.
+     * Indicated that this message has defined nanoseconds component of the time.
      */
     public boolean hasNanoTime() {
-        return timestamp != TIMESTAMP_UNKNOWN;
+        return nanoTime != 0;
     }
 
     /**
