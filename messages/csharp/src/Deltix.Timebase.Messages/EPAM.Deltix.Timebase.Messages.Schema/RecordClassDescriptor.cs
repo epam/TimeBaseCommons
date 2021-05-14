@@ -107,7 +107,7 @@ namespace EPAM.Deltix.Timebase.Messages.Schema
         /// Defines if current RecordClassDescriptor is content class.
         /// </summary>
         [SchemaElement(Name=null, Title=null, Description=null)]
-        [SchemaType(Encoding=null, IsNullable=false, DataType=SchemaDataType.Default, Minimum=null, Maximum=null, NestedTypes=new Type[0])]
+        [SchemaType(Encoding=null, IsNullable=true, DataType=SchemaDataType.Default, Minimum=null, Maximum=null, NestedTypes=new Type[0])]
         public virtual Boolean IsContentClass
         {
             get

@@ -123,7 +123,7 @@ public class RecordClassDescriptor extends ClassDescriptor implements RecordClas
    */
   @SchemaElement
   @SchemaType(
-      isNullable = false
+      isNullable = true
   )
   public boolean isContentClass() {
     return isContentClass == 1;
