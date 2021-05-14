@@ -108,8 +108,7 @@ configure(leafProjects) {
         compileOnly 'com.google.code.findbugs:jsr305'
         compileOnly 'com.google.code.findbugs:annotations'
 
-        testCompile 'junit:junit:4.12'
-                //'org.mockito:mockito-core:1.10.19'
+        testImplementation 'junit:junit:4.12'
 
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
     }
@@ -263,15 +262,15 @@ configure(leafProjects) {
                 from components.java
 
                 pom {
-                    name = 'thread.affinity'
+                    name = project.name
                     packaging = 'jar'
-                    description = 'A wrapper over net.openhft:affinity providing handy classes to create threads pinned to the specified CPUs.'
-                    url = 'https://github.com/epam/ThreadAffinity'
+                    description = 'Timebase Common utilities and collections.'
+                    url = 'https://github.com/epam/TimeBaseCommons.git'
 
                     scm {
-                        connection = 'scm:git:https://github.com/epam/ThreadAffinity.git'
-                        developerConnection = 'scm:git:https://github.com/epam/ThreadAffinity.git'
-                        url = 'https://github.com/epam/ThreadAffinity.git'
+                        connection = 'scm:git:https://github.com/epam/TimeBaseCommons.git'
+                        developerConnection = 'scm:git:https://github.com/epam/TimeBaseCommons.git'
+                        url = 'https://github.com/epam/TimeBaseCommons.git'
                     }
 
                     licenses {

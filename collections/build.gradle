@@ -1,4 +1,4 @@
-description = 'QuantServer commons-collections set of utilities'
+description = 'Timebase commons-collections set of utilities'
 
 buildscript {
     repositories {
