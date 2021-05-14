@@ -22,7 +22,7 @@ class RecordClassDescriptor : ClassDescriptor {
 
     /// Defines if current RecordClassDescriptor is content class.
     [SchemaElement]
-    [SchemaType(IsNullable=false)]
+    [SchemaType(IsNullable=true)]
     Boolean IsContentClass;
 
     /// List of fields of a class.
