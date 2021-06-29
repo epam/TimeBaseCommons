@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
-    <Authors>Deltix Inc.</Authors>
-    <Company>Deltix Inc.</Company>
+    <Authors>EPAM Systems Inc.</Authors>
+    <Company>EPAM Systems Inc.</Company>
     <Description>Standard message format for QuantServer/QuantOffice suite.</Description>
-    <Copyright>Copyright (C) EPAM Inc.</Copyright>
+    <Copyright>Copyright (C) EPAM Systems Inc.</Copyright>
     <PackageProjectUrl>https://gitlab.deltixhub.com/Deltix/Common/Deltix.Timebase.Api.Messages</PackageProjectUrl>
     <RepositoryUrl>git@gitlab.deltixhub.com:Deltix/Common/Deltix.Timebase.Api.Messages.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -14,8 +14,8 @@
     <Version>0.0.0</Version>
     <NoWarn>108</NoWarn>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <RootNamespace>Deltix.Timebase.Messages</RootNamespace>
-    <AssemblyName>Deltix.Timebase.Messages</AssemblyName>
+    <RootNamespace>EPAM.Deltix.Timebase.Messages</RootNamespace>
+    <AssemblyName>EPAM.Deltix.Timebase.Messages</AssemblyName>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>

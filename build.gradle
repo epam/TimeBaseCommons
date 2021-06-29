@@ -135,17 +135,6 @@ configure(leafProjects) {
         options.addStringOption('XDignore.symbol.file', 'quiet')
     }
 
-//    jar {
-//        manifest {
-//            baseName archivesBaseName
-//            attributes 'Manifest-Version': "1.0",
-//                    'Created-By': vendor,
-//                    'Implementation-Title': project.name, // TODO: Fill it!
-//                    'Implementation-Vendor': vendor,
-//                    'Implementation-Version': version
-//        }
-//    }
-
     processResources {
         from sourceSets.main.java.srcDirs
         exclude '**/*.java'
@@ -158,9 +147,18 @@ configure(leafProjects) {
         includeEmptyDirs = false
     }
 
+    jar {
+        manifest {
+            attributes 'Manifest-Version': "1.0",
+                    'Created-By': vendor,
+                    'Implementation-Vendor': vendor,
+                    'Implementation-Version': archiveVersion
+        }
+    }
+
     afterEvaluate {
         // populate project classpath after evaluating
-        jar.manifest.attributes 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
+        jar.manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
     }
 
     // Contains current project jar and all required dependencies for that project
@@ -202,20 +200,6 @@ configure(leafProjects) {
         into allTestJarsPath
     }
 
-    /// Support for publishing -sources.jar and -javadoc.jar artifacts:
-
-//    task sourcesJar(type: Jar, dependsOn: classes) {
-//        classifier = 'sources'
-//        baseName = archivesBaseName
-//        from sourceSets.main.allSource
-//    }
-//
-//    task javadocJar(type: Jar, dependsOn: javadoc) {
-//        enabled = includeJavaDocs
-//        classifier = 'javadoc'
-//        baseName = archivesBaseName
-//        from javadoc.destinationDir
-//    }
 
     task luminaryJar(type: Jar) {
         classifier = 'luminary'
@@ -230,13 +214,6 @@ configure(leafProjects) {
         // "-quiet" - skips warning messages (warnings still shown).
         options.addStringOption('Xdoclint:all,-reference', '-quiet')
     }
-
-//    artifacts {
-//        archives sourcesJar
-//        if (includeJavaDocs) {
-//            archives javadocJar
-//        }
-//    }
 
     if (!includeJavaDocs) {
         tasks.withType(Javadoc).all { enabled = false }
@@ -264,7 +241,7 @@ configure(leafProjects) {
                 pom {
                     name = project.name
                     packaging = 'jar'
-                    description = 'Timebase Common utilities and collections.'
+                    description = 'Timebase Common utilities and collections'
                     url = 'https://github.com/epam/TimeBaseCommons.git'
 
                     scm {
