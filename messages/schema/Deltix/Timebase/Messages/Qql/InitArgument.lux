@@ -11,7 +11,7 @@ class InitArgument: Argument {
 
     // Default value
     [SchemaElement()]
-    [SchemaType(IsNullable = false)]
-    Text DefaultValue;
+    [SchemaType()]
+    Text? DefaultValue;
 
 }
