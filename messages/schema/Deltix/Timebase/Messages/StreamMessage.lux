@@ -34,9 +34,4 @@ class StreamMessage : InstrumentMessage {
     [SchemaArrayType(ElementTypes = { typeof(ClassDescriptor) }, IsNullable = false, IsElementNullable = false)]
     List<ClassDescriptor> AllTypes;
 
-    /// Stream symbols
-    [SchemaElement()]
-    [SchemaArrayType(IsNullable = false, IsElementNullable = false)]
-    List<Text> Symbols;
-
 }
