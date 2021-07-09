@@ -1,11 +1,10 @@
-namespace Deltix.Timebase.Messages;
+namespace Deltix.Timebase.Messages.Schema;
 
 import Deltix.Timebase.Api.*;
 import Deltix.Timebase.Api.Messages.*;
-import Deltix.Timebase.Messages.Schema.*;
 
 /// Message that describes TimeBase stream
-[SchemaElement(Name = "deltix.timebase.messages.StreamMessage", Title = "StreamMessage")]
+[SchemaElement(Name = "deltix.timebase.messages.schema.StreamMessage", Title = "StreamMessage")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class StreamMessage : InstrumentMessage {
 
