@@ -17,6 +17,11 @@ class DataType {
     [SchemaElement]
     [SchemaType(IsNullable=false)]
     Boolean IsNullable;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text BaseName;
+
 }
 
 /// This is a base class for numeric data types.
@@ -57,6 +62,11 @@ class ArrayDataType : DataType {
         typeof(VarcharDataType)
     })]
     DataType ElementType;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "ARRAY";
+
 }
 
 /// Schema definition of binary data type.
@@ -73,18 +83,33 @@ class BinaryDataType : DataType {
     [SchemaElement]
     [SchemaType(IsNullable=true, Minimum="0", Maximum="9")]
     UInt16? CompressionLevel;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "BINARY";
+
 }
 
 /// Schema definition of boolean data type.
 [SchemaElement(Name = "deltix.timebase.messages.schema.BooleanDataType", Title = "BooleanDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class BooleanDataType : DataType {
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "BOOLEAN";
+
 }
 
 /// Schema definition of char data type.
 [SchemaElement(Name = "deltix.timebase.messages.schema.CharDataType", Title = "CharDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class CharDataType : DataType {
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "CHAR";
+
 }
 
 /// Schema definition of class data type.
@@ -97,12 +122,23 @@ class ClassDataType : DataType {
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
         ElementTypes = { typeof(ClassDescriptorRef) })]
     List<ClassDescriptorRef> TypeDescriptors;
+
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "OBJECT";
+
 }
 
 /// Schema definition of date-time data type.
 [SchemaElement(Name = "deltix.timebase.messages.schema.DateTimeDataType", Title = "DateTimeDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class DateTimeDataType : DataType {
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "TIMESTAMP";
+
 }
 
 /// Schema definition of enum data type.
@@ -116,6 +152,11 @@ class EnumDataType : DataType {
         typeof(ClassDescriptorRef)
     })]
     ClassDescriptorRef TypeDescriptor;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "ENUM";
+
 }
 
 /// Schema definition of float data type.
@@ -127,18 +168,33 @@ class FloatDataType : IntegralDataType {
     [SchemaElement]
     [SchemaType(IsNullable=true)]
     UInt16? Scale;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "FLOAT";
+
 }
 
 /// Schema definition of integer data type.
 [SchemaElement(Name = "deltix.timebase.messages.schema.IntegerDataType", Title = "IntegerDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class IntegerDataType : IntegralDataType {
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "INTEGER";
+
 }
 
 /// Schema definition of time-of-day data type.
 [SchemaElement(Name = "deltix.timebase.messages.schema.TimeOfDayDataType", Title = "TimeOfDayDataType")]
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class TimeOfDayDataType : DataType {
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "TIME_OF_DAY";
+
 }
 
 /// Schema definition of varchar data type.
@@ -160,5 +216,10 @@ class VarcharDataType : DataType {
     [SchemaElement]
     [SchemaType(IsNullable=true)]
     UInt32? Length;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    override Text BaseName = "VARCHAR";
+
 }
 
