@@ -1,0 +1,36 @@
+namespace Deltix.Timebase.Messages.Schema;
+
+import Deltix.Timebase.Api.*;
+import Deltix.Timebase.Api.Messages.*;
+
+/// Message that describes TimeBase stream
+[SchemaElement(Name = "deltix.timebase.messages.schema.StreamMessage", Title = "StreamMessage")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class StreamMessage : InstrumentMessage {
+
+    /// Stream key
+    [SchemaElement()]
+    [SchemaType(IsNullable = false)]
+    Text Key;
+
+    /// Stream name
+    [SchemaElement()]
+    [SchemaType(IsNullable = true)]
+    Text? Name;
+
+    /// Stream description
+    [SchemaElement()]
+    [SchemaType(IsNullable = true)]
+    Text? Description;
+
+    /// Top types in stream schema
+    [SchemaElement()]
+    [SchemaArrayType(ElementTypes = { typeof(RecordClassDescriptor) }, IsNullable = false, IsElementNullable = false)]
+    List<RecordClassDescriptor> TopTypes;
+
+    /// All types in stream schema
+    [SchemaElement()]
+    [SchemaArrayType(ElementTypes = { typeof(ClassDescriptor) }, IsNullable = false, IsElementNullable = false)]
+    List<ClassDescriptor> AllTypes;
+
+}

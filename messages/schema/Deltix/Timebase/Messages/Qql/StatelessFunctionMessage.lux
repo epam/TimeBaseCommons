@@ -1,0 +1,26 @@
+namespace Deltix.Timebase.Messages.Qql;
+
+import Deltix.Timebase.Api.*;
+import Deltix.Timebase.Api.Messages.*;
+import Deltix.Timebase.Messages.Schema.*;
+
+/// Message that describes QQL stateless function
+[SchemaElement(Name = "deltix.timebase.messages.qql.StatelessFunctionMessage", Title = "StatelessFunctionMessage")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class StatelessFunctionMessage : InstrumentMessage {
+
+    /// Function identifier
+    [SchemaElement()]
+    [SchemaType(IsNullable = false)]
+    Text Id;
+
+    // Function arguments
+    [SchemaElement()]
+    [SchemaArrayType(ElementTypes = { typeof(Argument) }, IsNullable = false, IsElementNullable = false)]
+    List<Argument> Arguments;
+
+    [SchemaElement()]
+    [SchemaType(DataType = SchemaDataType.OBJECT, NestedTypes = { typeof(DataType) }, IsNullable = false)]
+    DataType ReturnType;
+
+}
