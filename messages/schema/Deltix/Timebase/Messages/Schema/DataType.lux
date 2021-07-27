@@ -63,8 +63,6 @@ class ArrayDataType : DataType {
     })]
     DataType ElementType;
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "ARRAY";
 
 }
@@ -84,8 +82,6 @@ class BinaryDataType : DataType {
     [SchemaType(IsNullable=true, Minimum="0", Maximum="9")]
     UInt16? CompressionLevel;
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "BINARY";
 
 }
@@ -95,8 +91,6 @@ class BinaryDataType : DataType {
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class BooleanDataType : DataType {
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "BOOLEAN";
 
 }
@@ -106,8 +100,6 @@ class BooleanDataType : DataType {
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class CharDataType : DataType {
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "CHAR";
 
 }
@@ -123,9 +115,6 @@ class ClassDataType : DataType {
         ElementTypes = { typeof(ClassDescriptorRef) })]
     List<ClassDescriptorRef> TypeDescriptors;
 
-
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "OBJECT";
 
 }
@@ -135,8 +124,6 @@ class ClassDataType : DataType {
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class DateTimeDataType : DataType {
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "TIMESTAMP";
 
 }
@@ -153,8 +140,6 @@ class EnumDataType : DataType {
     })]
     ClassDescriptorRef TypeDescriptor;
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "ENUM";
 
 }
@@ -169,8 +154,6 @@ class FloatDataType : IntegralDataType {
     [SchemaType(IsNullable=true)]
     UInt16? Scale;
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "FLOAT";
 
 }
@@ -180,8 +163,6 @@ class FloatDataType : IntegralDataType {
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class IntegerDataType : IntegralDataType {
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "INTEGER";
 
 }
@@ -191,8 +172,6 @@ class IntegerDataType : IntegralDataType {
 [GenerateReadOnlyInterface][GenerateReadWriteInterface]
 class TimeOfDayDataType : DataType {
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "TIME_OF_DAY";
 
 }
@@ -217,8 +196,6 @@ class VarcharDataType : DataType {
     [SchemaType(IsNullable=true)]
     UInt32? Length;
 
-    [SchemaElement]
-    [SchemaType(IsNullable=false)]
     override Text BaseName = "VARCHAR";
 
 }

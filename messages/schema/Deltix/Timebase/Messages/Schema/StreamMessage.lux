@@ -30,7 +30,7 @@ class StreamMessage : InstrumentMessage {
 
     /// All types in stream schema
     [SchemaElement()]
-    [SchemaArrayType(ElementTypes = { typeof(ClassDescriptor) }, IsNullable = false, IsElementNullable = false)]
+    [SchemaArrayType(ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) }, IsNullable = false, IsElementNullable = false)]
     List<ClassDescriptor> AllTypes;
 
 }
