@@ -70,14 +70,16 @@ configure(leafProjects) {
             dependency group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
             dependency group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
 
-            dependency 'org.apache.commons:commons-lang3:3.4'
+            dependency 'org.apache.commons:commons-lang3:3.7'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'
 
+            dependency 'com.epam.deltix:containers:3.1.2'
+
             // dependency 'org.mockito:mockito-core:1.10.19'
 
-            dependencySet (group: 'com.epam.deltix', version: '3.0.0') {
+            dependencySet (group: 'com.epam.deltix', version: gflogVersion) {
                 entry 'gflog-api'
                 entry 'gflog-core'
                 entry 'gflog-jul'

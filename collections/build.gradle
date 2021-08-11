@@ -11,11 +11,11 @@ buildscript {
 apply plugin: 'velocity'
 
 dependencies {
-    implementation 'com.epam.deltix:dfp'
-    implementation 'com.epam.deltix:hd-date-time'
-    implementation 'com.epam.deltix:gflog-api'
+    api project(':timebase-lang')
 
-    implementation project(':timebase-lang')
+    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
+    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
+    implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
 
     testImplementation 'commons-collections:commons-collections:3.2.1'
 }

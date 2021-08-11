@@ -23,13 +23,13 @@ description = 'Timebase Messages Interfaces'
 dependencies {
     //dojoGenerator group: 'deltix', name: 'dojo-generator', version: '3.0.10'
 
-    implementation project(":timebase-collections")
-    implementation project(":timebase-lang")
+    api project(":timebase-collections")
+    api project(":timebase-lang")
 
-    implementation 'com.epam.deltix:dfp'
-    implementation 'com.epam.deltix:hd-date-time'
-    implementation 'com.epam.deltix:gflog-api'
+    implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
+    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
+    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
 
-    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.epam.deltix:containers:3.1.2'
 }
