@@ -4,7 +4,6 @@ import Deltix.Timebase.Api.*;
 
 
 /// Type of field change.
-[Bitmask]
 [SchemaElement(Name = "deltix.timebase.messages.schema.SchemaFieldChangeType", Title = "SchemaFieldChangeType")]
 enum SchemaFieldChangeType {
     /// Add field or enumeration value operation.
