@@ -939,14 +939,14 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
         }
     }
 
-#if( $type != "boolean" )
+#if($type != "boolean" )
     public void		sort () {
     	Arrays.sort(elementData, 0, size);
     }
 
     public void		sort (int offset, int length) {
         rangeCheck(offset, length);
-    	Arrays.sort(elementData, offset, length);
+    	Arrays.sort(elementData, offset, offset + length);
     }
 #end
 
@@ -960,7 +960,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     @SuppressWarnings("unchecked")
     public void sort(Comparator<? super ObjectType> comparator, int offset, int length) {
         rangeCheck(offset, length);
-        Arrays.sort((ObjectType[]) elementData, offset, length, comparator); // allocation free sort
+        Arrays.sort((ObjectType[]) elementData, offset, offset + length, comparator); // allocation free sort
     }
 #end
 
