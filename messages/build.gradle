@@ -16,7 +16,11 @@ dependencies {
     luminary "deltix.qsrv:deltix-timebase-api-messages:${apiMessagesVersion}:luminary@jar"
 
     compile project(":collections")
-    compile "deltix.qsrv:deltix-timebase-api-messages:${apiMessagesVersion}"
+    compile ("deltix.qsrv:deltix-timebase-api-messages:${apiMessagesVersion}") {
+        exclude group: 'deltix', module: 'deltix-dfp'
+        exclude group: 'deltix.qsrv', module: 'deltix-commons-lang'
+        exclude group: 'deltix.qsrv', module: 'deltix-commons-collections'
+    }
 }
 
 def luminarySearchPath = configurations.luminary.files.join(File.pathSeparator)

@@ -1,7 +1,7 @@
 package deltix.util.memory;
 
 
-import deltix.dfp.Decimal64;
+import com.epam.deltix.dfp.Decimal64;
 import deltix.hddatetime.HdDateTime;
 import deltix.hddatetime.HdTimeSpan;
 
