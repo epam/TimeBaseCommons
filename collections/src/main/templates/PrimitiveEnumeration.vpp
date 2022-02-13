@@ -2,7 +2,7 @@ package deltix.util.collections.generated;
 
 import deltix.util.collections.ElementsEnumeration;
 #if( $name == "Decimal" )
-import deltix.dfp.Decimal64;
+import com.epam.deltix.dfp.Decimal64;
 #elseif( $name == "HdDateTime" )
 import deltix.hddatetime.HdDateTime;
 #elseif( $name == "HdTimeSpan" )
