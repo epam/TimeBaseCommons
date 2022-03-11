@@ -1,3 +1,3 @@
 //rootProject.name = 'commons'
 
-include ':lang', ':collections', ':util', ':log', ':gui', ':tools', ':messages'
+include ':lang', ':collections', ':util', ':log', ':gui', ':tools'
