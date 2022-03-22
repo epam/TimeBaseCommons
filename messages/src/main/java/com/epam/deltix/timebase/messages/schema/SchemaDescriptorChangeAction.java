@@ -1,32 +1,7 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.schema;
 
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.RecordInterface;
-import com.epam.deltix.timebase.messages.SchemaArrayType;
-import com.epam.deltix.timebase.messages.SchemaDataType;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.SchemaType;
+import com.epam.deltix.timebase.messages.*;
 import com.epam.deltix.util.collections.generated.ObjectArrayList;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 
 /**
  * Class which defines a change to schema descriptor.
@@ -35,18 +10,18 @@ import java.lang.StringBuilder;
     name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorChangeAction",
     title = "SchemaDescriptorChangeAction"
 )
-public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActionInterface {
+public class SchemaDescriptorChangeAction implements RecordInterface {
   public static final String CLASS_NAME = SchemaDescriptorChangeAction.class.getName();
 
   /**
    * Previous descriptor state.
    */
-  protected ClassDescriptorInfo previousState = null;
+  protected UniqueDescriptor previousState = null;
 
   /**
    * New descriptor state.
    */
-  protected ClassDescriptorInfo newState = null;
+  protected UniqueDescriptor newState = null;
 
   /**
    * Bitmask that defines the changes that were applied to the descriptor.
@@ -56,13 +31,13 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
   /**
    * Defines the data transformation that was applied to the descriptor.
    */
-  protected SchemaDescriptorTransformationInfo descriptorTransformation = null;
+  protected SchemaDescriptorTransformation descriptorTransformation = null;
 
   /**
    * A list of change actions to data fields.
    * Populated only if ChangeTypes contains ALTER flag
    */
-  protected ObjectArrayList<SchemaFieldChangeActionInfo> fieldChangeActions = null;
+  protected ObjectArrayList<SchemaFieldChangeAction> fieldChangeActions = null;
 
   /**
    * Previous descriptor state.
@@ -73,10 +48,10 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
       isNullable = true,
       dataType = SchemaDataType.OBJECT,
       nestedTypes =  {
-            RecordClassDescriptor.class, EnumClassDescriptor.class}
+            TypeDescriptor.class, EnumDescriptor.class}
 
   )
-  public ClassDescriptorInfo getPreviousState() {
+  public UniqueDescriptor getPreviousState() {
     return previousState;
   }
 
@@ -84,7 +59,7 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
    * Previous descriptor state.
    * @param value - Previous State
    */
-  public void setPreviousState(ClassDescriptorInfo value) {
+  public void setPreviousState(UniqueDescriptor value) {
     this.previousState = value;
   }
 
@@ -112,10 +87,10 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
       isNullable = true,
       dataType = SchemaDataType.OBJECT,
       nestedTypes =  {
-            RecordClassDescriptor.class, EnumClassDescriptor.class}
+            TypeDescriptor.class, EnumDescriptor.class}
 
   )
-  public ClassDescriptorInfo getNewState() {
+  public UniqueDescriptor getNewState() {
     return newState;
   }
 
@@ -123,7 +98,7 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
    * New descriptor state.
    * @param value - New State
    */
-  public void setNewState(ClassDescriptorInfo value) {
+  public void setNewState(UniqueDescriptor value) {
     this.newState = value;
   }
 
@@ -189,7 +164,7 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
             SchemaDescriptorTransformation.class}
 
   )
-  public SchemaDescriptorTransformationInfo getDescriptorTransformation() {
+  public SchemaDescriptorTransformation getDescriptorTransformation() {
     return descriptorTransformation;
   }
 
@@ -197,7 +172,7 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
    * Defines the data transformation that was applied to the descriptor.
    * @param value - Descriptor Transformation
    */
-  public void setDescriptorTransformation(SchemaDescriptorTransformationInfo value) {
+  public void setDescriptorTransformation(SchemaDescriptorTransformation value) {
     this.descriptorTransformation = value;
   }
 
@@ -229,7 +204,7 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
             SchemaFieldChangeAction.class}
 
   )
-  public ObjectArrayList<SchemaFieldChangeActionInfo> getFieldChangeActions() {
+  public ObjectArrayList<SchemaFieldChangeAction> getFieldChangeActions() {
     return fieldChangeActions;
   }
 
@@ -238,7 +213,7 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
    * Populated only if ChangeTypes contains ALTER flag
    * @param value - Field Change Actions
    */
-  public void setFieldChangeActions(ObjectArrayList<SchemaFieldChangeActionInfo> value) {
+  public void setFieldChangeActions(ObjectArrayList<SchemaFieldChangeAction> value) {
     this.fieldChangeActions = value;
   }
 
@@ -306,8 +281,8 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof SchemaDescriptorChangeActionInfo)) return false;
-    SchemaDescriptorChangeActionInfo other =(SchemaDescriptorChangeActionInfo)obj;
+    if (!(obj instanceof SchemaDescriptorChangeAction)) return false;
+    SchemaDescriptorChangeAction other =(SchemaDescriptorChangeAction)obj;
     if (hasPreviousState() != other.hasPreviousState()) return false;
     if (hasPreviousState() && !(getPreviousState().equals(other.getPreviousState()))) return false;
     if (hasNewState() != other.hasNewState()) return false;
@@ -358,23 +333,15 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
    * @param template class instance that should be used as a copy source
    */
   public SchemaDescriptorChangeAction copyFrom(RecordInfo template) {
-    if (template instanceof SchemaDescriptorChangeActionInfo) {
-      SchemaDescriptorChangeActionInfo t = (SchemaDescriptorChangeActionInfo)template;
+    if (template instanceof SchemaDescriptorChangeAction) {
+      SchemaDescriptorChangeAction t = (SchemaDescriptorChangeAction)template;
       if (t.hasPreviousState()) {
-        if (hasPreviousState() && getPreviousState() instanceof RecordInterface) {
-          ((RecordInterface)getPreviousState()).copyFrom(t.getPreviousState());
-        } else {
-          setPreviousState((ClassDescriptorInfo)t.getPreviousState().clone());
-        }
+        t.setPreviousState((UniqueDescriptor) getPreviousState().clone());
       } else {
         nullifyPreviousState();
       }
       if (t.hasNewState()) {
-        if (hasNewState() && getNewState() instanceof RecordInterface) {
-          ((RecordInterface)getNewState()).copyFrom(t.getNewState());
-        } else {
-          setNewState((ClassDescriptorInfo)t.getNewState().clone());
-        }
+        t.setNewState((UniqueDescriptor) getNewState().clone());
       } else {
         nullifyNewState();
       }
@@ -384,21 +351,17 @@ public class SchemaDescriptorChangeAction implements SchemaDescriptorChangeActio
         nullifyChangeTypes();
       }
       if (t.hasDescriptorTransformation()) {
-        if (hasDescriptorTransformation() && getDescriptorTransformation() instanceof RecordInterface) {
-          ((RecordInterface)getDescriptorTransformation()).copyFrom(t.getDescriptorTransformation());
-        } else {
-          setDescriptorTransformation((SchemaDescriptorTransformationInfo)t.getDescriptorTransformation().clone());
-        }
+        t.setDescriptorTransformation((SchemaDescriptorTransformation) getDescriptorTransformation().clone());
       } else {
         nullifyDescriptorTransformation();
       }
       if (t.hasFieldChangeActions()) {
         if (!hasFieldChangeActions()) {
-          setFieldChangeActions(new ObjectArrayList<SchemaFieldChangeActionInfo>(t.getFieldChangeActions().size()));
+          setFieldChangeActions(new ObjectArrayList<SchemaFieldChangeAction>(t.getFieldChangeActions().size()));
         } else {
           getFieldChangeActions().clear();
         }
-        for (int i = 0; i < t.getFieldChangeActions().size(); ++i) ((ObjectArrayList<SchemaFieldChangeActionInfo>)getFieldChangeActions()).add((SchemaFieldChangeActionInfo)t.getFieldChangeActions().get(i).clone());
+        for (int i = 0; i < t.getFieldChangeActions().size(); ++i) ((ObjectArrayList<SchemaFieldChangeAction>)getFieldChangeActions()).add((SchemaFieldChangeAction)t.getFieldChangeActions().get(i).clone());
       } else {
         nullifyFieldChangeActions();
       }

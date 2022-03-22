@@ -1,31 +1,6 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.service;
 
-import com.epam.deltix.timebase.messages.OldElementName;
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.RecordInterface;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.SchemaGuid;
-import com.epam.deltix.timebase.messages.TypeConstants;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
+import com.epam.deltix.timebase.messages.*;
 
 /**
  * Message class, which describes data loss for 'lossy' Transient streams. See see "BufferOptions.Lossless".
@@ -81,14 +56,14 @@ public class DataLossMessage extends SystemMessage implements RecordInterface {
    * @return true if Bytes is not null
    */
   public boolean hasBytes() {
-    return bytes != com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    return bytes != TypeConstants.INT64_NULL;
   }
 
   /**
    * Number of the lost bytes.
    */
   public void nullifyBytes() {
-    this.bytes = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    this.bytes = TypeConstants.INT64_NULL;
   }
 
   /**
@@ -116,14 +91,14 @@ public class DataLossMessage extends SystemMessage implements RecordInterface {
    * @return true if From Time is not null
    */
   public boolean hasFromTime() {
-    return fromTime != com.epam.deltix.timebase.messages.TypeConstants.TIMESTAMP_UNKNOWN;
+    return fromTime != TypeConstants.TIMESTAMP_UNKNOWN;
   }
 
   /**
    * The last reported message time before byte loss occurs. Precision - milliseconds.
    */
   public void nullifyFromTime() {
-    this.fromTime = com.epam.deltix.timebase.messages.TypeConstants.TIMESTAMP_UNKNOWN;
+    this.fromTime = TypeConstants.TIMESTAMP_UNKNOWN;
   }
 
   /**
@@ -152,8 +127,8 @@ public class DataLossMessage extends SystemMessage implements RecordInterface {
   @Override
   public DataLossMessage reset() {
     super.reset();
-    bytes = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
-    fromTime = com.epam.deltix.timebase.messages.TypeConstants.TIMESTAMP_UNKNOWN;
+    bytes = TypeConstants.INT64_NULL;
+    fromTime = TypeConstants.TIMESTAMP_UNKNOWN;
     return this;
   }
 

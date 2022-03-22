@@ -20,7 +20,6 @@ option JavaPackage = "com.epam.deltix.timebase.messages.schema";
 import EPAM.Deltix.Timebase.Messages.*;
 
 /// Type of field change.
-[Bitmask]
 [SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaFieldChangeType", Title = "SchemaFieldChangeType")]
 enum SchemaFieldChangeType {
     /// Add field or enumeration value operation.

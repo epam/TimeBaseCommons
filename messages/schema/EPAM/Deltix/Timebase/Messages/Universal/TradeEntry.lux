@@ -1,0 +1,89 @@
+/*
+  Copyright 2021 EPAM Systems, Inc
+
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+*/
+namespace EPAM.Deltix.Timebase.Messages.Universal;
+option JavaPackage = "com.epam.deltix.timebase.messages.universal";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Basic information about a market trade.
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.universal.TradeEntry", Title = "Trade Entry")]
+class TradeEntry : BaseEntry {
+
+    /// Ask, Bid or Trade price.
+    [SchemaElement(Title = "Price")]
+    [SchemaType(DataType = SchemaDataType.FLOAT, Encoding = "DECIMAL64")]
+    Decimal? Price;
+
+    /// Ask, Bid or Trade quantity.
+    [SchemaElement(Title = "Size")]
+    [SchemaType(DataType = SchemaDataType.FLOAT, Encoding = "DECIMAL64")]
+    Decimal? Size;
+
+    /// Market specific trade condition.
+    [SchemaElement(Title = "Condition")]
+    [SchemaType(Encoding = "UTF8")]
+    Text? Condition;
+
+    /// Explains the meaning of the given price and/or size.
+    /// The value is null for regular trades.
+    [SchemaElement(Title = "Trade Type")]
+    TradeType? TradeType;
+
+    /// Seller number of orders involved in match.
+    [SchemaElement(Title = "Seller Number Of Orders")]
+    Int64? SellerNumberOfOrders;
+
+    /// Buyer number of orders involved in match.
+    [SchemaElement(Title = "Buyer Number Of Orders")]
+    Int64? BuyerNumberOfOrders;
+
+    /// ID of seller order.
+
+    [Identifier]
+    [SchemaElement(Title = "Seller Order ID")]
+    Text? SellerOrderId;
+
+    /// ID of buyer order.
+
+    [Identifier]
+    [SchemaElement(Title = "Buyer Order ID")]
+    Text? BuyerOrderId;
+
+    /// Seller participant ID (or broker ID) for trader that submit selling order.
+
+    [Identifier]
+    [SchemaElement(Title = "Seller Participant ID")]
+    Text? SellerParticipantId;
+
+    /// Buyer participant ID (or broker ID) for trader that submit buying order.
+
+    [Identifier]
+    [SchemaElement(Title = "Buyer Participant ID")]
+    Text? BuyerParticipantId;
+
+    /// Trade side. Sell or Buy.
+    /// For Trade it's aggressor side, i.e. side from where market order has came.
+    [SchemaElement(Title = "Side")]
+    AggressorSide? Side;
+
+    /// Id of particular execution event (ExecutionId, TradeId, MatchId)
+
+    [Identifier]
+    [SchemaElement(Title = "Match ID")]
+    Text? MatchId;
+}

@@ -2,9 +2,9 @@ plugins {
     id 'me.champeau.gradle.jmh' version '0.4.5' apply false
 }
 
-configurations {
-    dojoGenerator
-}
+//configurations {
+//    dojoGenerator
+//}
 
 //def generatedDirectory = file('build/generated-src/main')
 //sourceSets.main.java.srcDirs generatedDirectory
@@ -21,7 +21,7 @@ configurations {
 description = 'Timebase Messages Interfaces'
 
 dependencies {
-    //dojoGenerator group: 'deltix', name: 'dojo-generator', version: '3.0.10'
+    //dojoGenerator group: 'deltix', name: 'dojo-generator', version: '3.0.12'
 
     api project(":timebase-collections")
     api project(":timebase-lang")

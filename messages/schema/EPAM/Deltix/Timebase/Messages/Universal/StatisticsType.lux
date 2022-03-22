@@ -1,0 +1,77 @@
+/*
+  Copyright 2021 EPAM Systems, Inc
+
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+*/
+namespace EPAM.Deltix.Timebase.Messages.Universal;
+option JavaPackage = "com.epam.deltix.timebase.messages.universal";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Represents type of event and its value for StatisticsEntry.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.universal.StatisticsType", Title = "Statistics Type")]
+enum StatisticsType {
+
+    /// Custom.
+    [SchemaElement(Name = "CUSTOM")]
+    CUSTOM = 1;
+
+    /// Opening price.
+    [SchemaElement(Name = "OPENING_PRICE")]
+    OPENING_PRICE = 2;
+
+    /// Closing price.
+    [SchemaElement(Name = "CLOSING_PRICE")]
+    CLOSING_PRICE = 3;
+
+    /// Settlement price.
+    [SchemaElement(Name = "SETTLEMENT_PRICE")]
+    SETTLEMENT_PRICE = 4;
+
+    /// Trading session high price.
+    [SchemaElement(Name = "TRADING_SESSION_HIGH_PRICE")]
+    TRADING_SESSION_HIGH_PRICE = 5;
+
+    /// Trading session low price.
+    [SchemaElement(Name = "TRADING_SESSION_LOW_PRICE")]
+    TRADING_SESSION_LOW_PRICE = 6;
+
+    /// Trading session vwap price.
+    [SchemaElement(Name = "TRADING_SESSION_VWAP_PRICE")]
+    TRADING_SESSION_VWAP_PRICE = 7;
+
+    /// Trade volume.
+    [SchemaElement(Name = "TRADE_VOLUME")]
+    TRADE_VOLUME = 8;
+
+    /// Open interest.
+    [SchemaElement(Name = "OPEN_INTEREST")]
+    OPEN_INTEREST = 9;
+
+    /// Session high bid.
+    [SchemaElement(Name = "SESSION_HIGH_BID")]
+    SESSION_HIGH_BID = 10;
+
+    /// Session low offer.
+    [SchemaElement(Name = "SESSION_LOW_OFFER")]
+    SESSION_LOW_OFFER = 11;
+
+    /// Auction clearing price.
+    [SchemaElement(Name = "AUCTION_CLEARING_PRICE")]
+    AUCTION_CLEARING_PRICE = 12;
+
+    /// Fixing priceq.
+    [SchemaElement(Name = "FIXING_PRICE")]
+    FIXING_PRICE = 13;
+}

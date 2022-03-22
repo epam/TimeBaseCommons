@@ -1,34 +1,9 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.service;
 
-import com.epam.deltix.timebase.messages.OldElementName;
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.RecordInterface;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.TypeConstants;
-import java.lang.CharSequence;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 import com.epam.deltix.containers.BinaryAsciiString;
 import com.epam.deltix.containers.CharSequenceUtils;
 import com.epam.deltix.containers.MutableString;
+import com.epam.deltix.timebase.messages.*;
 
 /**
  * Special transient message that signals active stream consumers that their stream has been truncated
@@ -112,14 +87,14 @@ public class StreamTruncatedMessage extends SystemMessage implements RecordInter
    * @return true if Truncated Time is not null
    */
   public boolean hasTruncateTime() {
-    return truncateTime != com.epam.deltix.timebase.messages.TypeConstants.TIMESTAMP_UNKNOWN;
+    return truncateTime != TypeConstants.TIMESTAMP_UNKNOWN;
   }
 
   /**
    * Time of truncation in nanoseconds
    */
   public void nullifyTruncateTime() {
-    this.truncateTime = com.epam.deltix.timebase.messages.TypeConstants.TIMESTAMP_UNKNOWN;
+    this.truncateTime = TypeConstants.TIMESTAMP_UNKNOWN;
   }
 
   /**
@@ -144,13 +119,13 @@ public class StreamTruncatedMessage extends SystemMessage implements RecordInter
    * @return true if Version is not null
    */
   public boolean hasVersion() {
-    return version != com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    return version != TypeConstants.INT64_NULL;
   }
 
   /**
    */
   public void nullifyVersion() {
-    this.version = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    this.version = TypeConstants.INT64_NULL;
   }
 
   /**
@@ -181,8 +156,8 @@ public class StreamTruncatedMessage extends SystemMessage implements RecordInter
   public StreamTruncatedMessage reset() {
     super.reset();
     instruments = null;
-    truncateTime = com.epam.deltix.timebase.messages.TypeConstants.TIMESTAMP_UNKNOWN;
-    version = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    truncateTime = TypeConstants.TIMESTAMP_UNKNOWN;
+    version = TypeConstants.INT64_NULL;
     return this;
   }
 

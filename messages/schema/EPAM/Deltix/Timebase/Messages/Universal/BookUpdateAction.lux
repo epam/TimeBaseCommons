@@ -1,0 +1,41 @@
+/*
+  Copyright 2021 EPAM Systems, Inc
+
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+*/
+namespace EPAM.Deltix.Timebase.Messages.Universal;
+option JavaPackage = "com.epam.deltix.timebase.messages.universal";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Directs how to update an Order Book for L2 format.
+[SchemaElement(Name = "deltix.timebase.api.messages.BookUpdateAction", Title = "Book Update Action")]
+enum BookUpdateAction {
+
+    /// Quote is inserted (automatically shifts existing levels down). INSERT action is sent if there is a new price level.
+    /// Client systems should then shift price levels down, and delete any price levels past the defined depth of the book.
+    [SchemaElement(Name = "INSERT")]
+    INSERT = 0;
+
+    /// Update of an existing quote. The UPDATE action is sent to update characteristics of a price level without changing the price itself,
+    /// or impacting any other prices on the book. The change data block is sent to update the order count and / or quantity for a price level.
+    /// The UPDATE is not sent when the price changes at a given price level.
+    [SchemaElement(Name = "UPDATE")]
+    UPDATE = 1;
+
+    /// Quote at given price level is deleted. Client systems should shift prices below the data block up to the price level vacated by the deleted price level.
+    /// If available, an add data block will be sent to fill in the last price level.
+    [SchemaElement(Name = "DELETE")]
+    DELETE = 2;
+}

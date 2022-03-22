@@ -21,22 +21,22 @@ import EPAM.Deltix.Timebase.Messages.*;
 
 /// Class which defines a change to schema field.
 [SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaFieldChangeAction", Title = "SchemaFieldChangeAction")]
-[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+
 class SchemaFieldChangeAction {
 
     /// Previous data field state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(StaticDataField), typeof(NonStaticDataField)
+        typeof(StaticField), typeof(NonStaticField)
     })]
-    DataField? PreviousState;
+    Field? PreviousState;
 
     /// New descriptor state.
     [SchemaElement]
     [SchemaType(IsNullable=true, DataType = SchemaDataType.OBJECT, NestedTypes = {
-        typeof(StaticDataField), typeof(NonStaticDataField)
+        typeof(StaticField), typeof(NonStaticField)
     })]
-    DataField? NewState;
+    Field? NewState;
 
     /// Bitmask that defines the changes that were applied to the field.
     [SchemaElement]

@@ -1,31 +1,7 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.schema;
 
-import com.epam.deltix.timebase.messages.InstrumentMessage;
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.SchemaArrayType;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.TypeConstants;
+import com.epam.deltix.timebase.messages.*;
 import com.epam.deltix.util.collections.generated.ObjectArrayList;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 
 /**
  * Message tha defines a change in stream schema.
@@ -34,23 +10,23 @@ import java.lang.StringBuilder;
     name = "com.epam.deltix.timebase.messages.schema.SchemaChangeMessage",
     title = "SchemaChangeMessage"
 )
-public class SchemaChangeMessage extends InstrumentMessage implements SchemaChangeMessageInterface {
+public class SchemaChangeMessage extends InstrumentMessage implements RecordInterface {
   public static final String CLASS_NAME = SchemaChangeMessage.class.getName();
 
   /**
    * Previous schema state.
    */
-  protected ObjectArrayList<ClassDescriptorInfo> previousState = null;
+  protected ObjectArrayList<UniqueDescriptor> previousState = null;
 
   /**
    * New schema state.
    */
-  protected ObjectArrayList<ClassDescriptorInfo> newState = null;
+  protected ObjectArrayList<UniqueDescriptor> newState = null;
 
   /**
    * New schema state.
    */
-  protected ObjectArrayList<SchemaDescriptorChangeActionInfo> descriptorChangeActions = null;
+  protected ObjectArrayList<SchemaDescriptorChangeAction> descriptorChangeActions = null;
 
   /**
    * Message version
@@ -66,10 +42,10 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
       isNullable = true,
       isElementNullable = false,
       elementTypes =  {
-            RecordClassDescriptor.class, EnumClassDescriptor.class}
+            TypeDescriptor.class, EnumDescriptor.class}
 
   )
-  public ObjectArrayList<ClassDescriptorInfo> getPreviousState() {
+  public ObjectArrayList<UniqueDescriptor> getPreviousState() {
     return previousState;
   }
 
@@ -77,7 +53,7 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
    * Previous schema state.
    * @param value - Previous State
    */
-  public void setPreviousState(ObjectArrayList<ClassDescriptorInfo> value) {
+  public void setPreviousState(ObjectArrayList<UniqueDescriptor> value) {
     this.previousState = value;
   }
 
@@ -105,10 +81,10 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
       isNullable = false,
       isElementNullable = false,
       elementTypes =  {
-            RecordClassDescriptor.class, EnumClassDescriptor.class}
+            TypeDescriptor.class, EnumDescriptor.class}
 
   )
-  public ObjectArrayList<ClassDescriptorInfo> getNewState() {
+  public ObjectArrayList<UniqueDescriptor> getNewState() {
     return newState;
   }
 
@@ -116,7 +92,7 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
    * New schema state.
    * @param value - New State
    */
-  public void setNewState(ObjectArrayList<ClassDescriptorInfo> value) {
+  public void setNewState(ObjectArrayList<UniqueDescriptor> value) {
     this.newState = value;
   }
 
@@ -147,7 +123,7 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
             SchemaDescriptorChangeAction.class}
 
   )
-  public ObjectArrayList<SchemaDescriptorChangeActionInfo> getDescriptorChangeActions() {
+  public ObjectArrayList<SchemaDescriptorChangeAction> getDescriptorChangeActions() {
     return descriptorChangeActions;
   }
 
@@ -155,7 +131,7 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
    * New schema state.
    * @param value - Descriptor Change Actions
    */
-  public void setDescriptorChangeActions(ObjectArrayList<SchemaDescriptorChangeActionInfo> value) {
+  public void setDescriptorChangeActions(ObjectArrayList<SchemaDescriptorChangeAction> value) {
     this.descriptorChangeActions = value;
   }
 
@@ -196,14 +172,14 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
    * @return true if Version is not null
    */
   public boolean hasVersion() {
-    return version != com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    return version != TypeConstants.INT64_NULL;
   }
 
   /**
    * Message version
    */
   public void nullifyVersion() {
-    this.version = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    this.version = TypeConstants.INT64_NULL;
   }
 
   /**
@@ -237,7 +213,7 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
     previousState = null;
     newState = null;
     descriptorChangeActions = null;
-    version = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    version = TypeConstants.INT64_NULL;
     return this;
   }
 
@@ -259,8 +235,8 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
     if (this == obj) return true;
     boolean superEquals = super.equals(obj);
     if (!superEquals) return false;
-    if (!(obj instanceof SchemaChangeMessageInfo)) return false;
-    SchemaChangeMessageInfo other =(SchemaChangeMessageInfo)obj;
+    if (!(obj instanceof SchemaChangeMessage)) return false;
+    SchemaChangeMessage other =(SchemaChangeMessage)obj;
     if (hasPreviousState() != other.hasPreviousState()) return false;
     if (hasPreviousState()) {
       if (getPreviousState().size() != other.getPreviousState().size()) return false;
@@ -324,35 +300,35 @@ public class SchemaChangeMessage extends InstrumentMessage implements SchemaChan
   @Override
   public SchemaChangeMessage copyFrom(RecordInfo template) {
     super.copyFrom(template);
-    if (template instanceof SchemaChangeMessageInfo) {
-      SchemaChangeMessageInfo t = (SchemaChangeMessageInfo)template;
+    if (template instanceof SchemaChangeMessage) {
+      SchemaChangeMessage t = (SchemaChangeMessage)template;
       if (t.hasPreviousState()) {
         if (!hasPreviousState()) {
-          setPreviousState(new ObjectArrayList<ClassDescriptorInfo>(t.getPreviousState().size()));
+          setPreviousState(new ObjectArrayList<UniqueDescriptor>(t.getPreviousState().size()));
         } else {
           getPreviousState().clear();
         }
-        for (int i = 0; i < t.getPreviousState().size(); ++i) ((ObjectArrayList<ClassDescriptorInfo>)getPreviousState()).add((ClassDescriptorInfo)t.getPreviousState().get(i).clone());
+        for (int i = 0; i < t.getPreviousState().size(); ++i) ((ObjectArrayList<UniqueDescriptor>)getPreviousState()).add((UniqueDescriptor)t.getPreviousState().get(i).clone());
       } else {
         nullifyPreviousState();
       }
       if (t.hasNewState()) {
         if (!hasNewState()) {
-          setNewState(new ObjectArrayList<ClassDescriptorInfo>(t.getNewState().size()));
+          setNewState(new ObjectArrayList<UniqueDescriptor>(t.getNewState().size()));
         } else {
           getNewState().clear();
         }
-        for (int i = 0; i < t.getNewState().size(); ++i) ((ObjectArrayList<ClassDescriptorInfo>)getNewState()).add((ClassDescriptorInfo)t.getNewState().get(i).clone());
+        for (int i = 0; i < t.getNewState().size(); ++i) ((ObjectArrayList<UniqueDescriptor>)getNewState()).add((UniqueDescriptor)t.getNewState().get(i).clone());
       } else {
         nullifyNewState();
       }
       if (t.hasDescriptorChangeActions()) {
         if (!hasDescriptorChangeActions()) {
-          setDescriptorChangeActions(new ObjectArrayList<SchemaDescriptorChangeActionInfo>(t.getDescriptorChangeActions().size()));
+          setDescriptorChangeActions(new ObjectArrayList<SchemaDescriptorChangeAction>(t.getDescriptorChangeActions().size()));
         } else {
           getDescriptorChangeActions().clear();
         }
-        for (int i = 0; i < t.getDescriptorChangeActions().size(); ++i) ((ObjectArrayList<SchemaDescriptorChangeActionInfo>)getDescriptorChangeActions()).add((SchemaDescriptorChangeActionInfo)t.getDescriptorChangeActions().get(i).clone());
+        for (int i = 0; i < t.getDescriptorChangeActions().size(); ++i) ((ObjectArrayList<SchemaDescriptorChangeAction>)getDescriptorChangeActions()).add((SchemaDescriptorChangeAction)t.getDescriptorChangeActions().get(i).clone());
       } else {
         nullifyDescriptorChangeActions();
       }

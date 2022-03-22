@@ -19,9 +19,7 @@ option JavaPackage = "com.epam.deltix.timebase.messages.schema";
 
 import EPAM.Deltix.Timebase.Messages.*;
 
-
 /// Type of descriptor change.
-[Bitmask]
 [SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorChangeType", Title = "SchemaDescriptorChangeType")]
 enum SchemaDescriptorChangeType {
     /// Add operation.

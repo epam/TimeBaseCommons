@@ -21,20 +21,20 @@ import EPAM.Deltix.Timebase.Messages.*;
 
 /// Message tha defines a change in stream schema.
 [SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaChangeMessage", Title = "SchemaChangeMessage")]
-[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+
 class SchemaChangeMessage : InstrumentMessage {
 
     /// Previous schema state.
     [SchemaElement]
     [SchemaArrayType(IsNullable = true, IsElementNullable = false,
-        ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) })]
-    List<ClassDescriptor>? PreviousState;
+        ElementTypes = { typeof(TypeDescriptor), typeof(EnumDescriptor) })]
+    List<UniqueDescriptor>? PreviousState;
 
     /// New schema state.
     [SchemaElement]
     [SchemaArrayType(IsNullable = false, IsElementNullable = false,
-        ElementTypes = { typeof(RecordClassDescriptor), typeof(EnumClassDescriptor) })]
-    List<ClassDescriptor> NewState;
+        ElementTypes = { typeof(TypeDescriptor), typeof(EnumDescriptor) })]
+    List<UniqueDescriptor> NewState;
 
     /// New schema state.
     [SchemaElement]

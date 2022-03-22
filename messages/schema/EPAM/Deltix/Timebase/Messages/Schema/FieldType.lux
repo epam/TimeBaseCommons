@@ -1,0 +1,215 @@
+/*
+  Copyright 2021 EPAM Systems, Inc
+
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+ */
+namespace EPAM.Deltix.Timebase.Messages.Schema;
+option JavaPackage = "com.epam.deltix.timebase.messages.schema";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// This is a base class for schema data types.
+[Abstract]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.FieldType", Title = "FieldType")]
+class FieldType {
+
+    /// Binary representation (encoding) of a field in database and protocol.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? Encoding;
+
+    /// True, if schema design allows the field to be nullable.
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Boolean IsNullable;
+
+    [SchemaElement]
+    [SchemaType(IsNullable=false)]
+    Text BaseName;
+}
+
+/// This is a base class for numeric data types.
+[Abstract]
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.IntegralFieldType", Title = "IntegralFieldType")]
+
+class IntegralFieldType : FieldType {
+
+    /// String definition for minimum constraint.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? MinValue;
+
+    /// String definition for maximum constraint.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Text? MaxValue;
+}
+
+/// Schema definition of array data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.ArrayFieldType", Title = "ArrayFieldType")]
+
+class ArrayFieldType : FieldType {
+
+    /// Array element data type.
+    [SchemaElement]
+    [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        //typeof(ArrayFieldType),
+        typeof(BinaryFieldType),
+        typeof(BooleanFieldType),
+        typeof(CharFieldType),
+        typeof(ClassFieldType),
+        typeof(DateTimeFieldType),
+        typeof(EnumFieldType),
+        typeof(FloatFieldType),
+        typeof(IntegerFieldType),
+        typeof(TimeOfDayFieldType),
+        typeof(VarcharFieldType)
+    })]
+    FieldType ElementType;
+
+    override Text BaseName = "ARRAY";
+}
+
+/// Schema definition of binary data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.BinaryFieldType", Title = "BinaryFieldType")]
+
+class BinaryFieldType : FieldType {
+
+    /// Maximum field length in bytes.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt32? MaxSize;
+
+    /// Compression level for binary data.
+    [SchemaElement]
+    [SchemaType(IsNullable=true, Minimum="0", Maximum="9")]
+    UInt16? CompressionLevel;
+
+    override Text BaseName = "BINARY";
+}
+
+/// Schema definition of boolean data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.BooleanFieldType", Title = "BooleanFieldType")]
+
+class BooleanFieldType : FieldType {
+
+    override Text BaseName = "BOOLEAN";
+
+}
+
+/// Schema definition of char data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.CharFieldType", Title = "CharFieldType")]
+
+class CharFieldType : FieldType {
+
+    override Text BaseName = "CHAR";
+
+}
+
+/// Schema definition of class data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.ClassFieldType", Title = "ClassFieldType")]
+
+class ClassFieldType : FieldType {
+
+    /// Definitions for nested schema classes.
+    [SchemaElement]
+    [SchemaArrayType(IsNullable = false, IsElementNullable = false,
+        ElementTypes = { typeof(DescriptorRef) })]
+    List<DescriptorRef> TypeDescriptors;
+
+    override Text BaseName = "OBJECT";
+
+}
+
+/// Schema definition of date-time data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.DateTimeFieldType", Title = "DateTimeFieldType")]
+
+class DateTimeFieldType : FieldType {
+
+    override Text BaseName = "TIMESTAMP";
+
+}
+
+/// Schema definition of enum data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.EnumFieldType", Title = "EnumFieldType")]
+
+class EnumFieldType : FieldType {
+
+    /// Definition for enumeration class.
+    [SchemaElement]
+    [SchemaType(IsNullable=false, DataType = SchemaDataType.OBJECT, NestedTypes = {
+        typeof(DescriptorRef)
+    })]
+    DescriptorRef TypeDescriptor;
+
+    override Text BaseName = "ENUM";
+
+}
+
+/// Schema definition of float data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.FloatFieldType", Title = "FloatFieldType")]
+
+class FloatFieldType : IntegralFieldType {
+
+    /// Scale.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt16? Scale;
+
+    override Text BaseName = "FLOAT";
+
+}
+
+/// Schema definition of integer data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.IntegerFieldType", Title = "IntegerFieldType")]
+
+class IntegerFieldType : IntegralFieldType {
+
+    override Text BaseName = "INTEGER";
+
+}
+
+/// Schema definition of time-of-day data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.TimeOfDayFieldType", Title = "TimeOfDayFieldType")]
+
+class TimeOfDayFieldType : FieldType {
+
+    override Text BaseName = "TIME_OF_DAY";
+
+}
+
+/// Schema definition of varchar data type.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.VarcharFieldType", Title = "VarcharFieldType")]
+
+class VarcharFieldType : FieldType {
+
+    /// True, if field allows line breaks.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    Boolean IsMultiline;
+
+    /// Encoding type.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt32? EncodingType;
+
+    /// Length.
+    [SchemaElement]
+    [SchemaType(IsNullable=true)]
+    UInt32? Length;
+
+    override Text BaseName = "VARCHAR";
+
+}
+

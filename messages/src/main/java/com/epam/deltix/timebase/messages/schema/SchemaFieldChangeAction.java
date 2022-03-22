@@ -1,30 +1,6 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.schema;
 
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.RecordInterface;
-import com.epam.deltix.timebase.messages.SchemaDataType;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.SchemaType;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
+import com.epam.deltix.timebase.messages.*;
 
 /**
  * Class which defines a change to schema field.
@@ -33,18 +9,18 @@ import java.lang.StringBuilder;
     name = "com.epam.deltix.timebase.messages.schema.SchemaFieldChangeAction",
     title = "SchemaFieldChangeAction"
 )
-public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface {
+public class SchemaFieldChangeAction implements RecordInterface {
   public static final String CLASS_NAME = SchemaFieldChangeAction.class.getName();
 
   /**
    * Previous data field state.
    */
-  protected DataFieldInfo previousState = null;
+  protected Field previousState = null;
 
   /**
    * New descriptor state.
    */
-  protected DataFieldInfo newState = null;
+  protected Field newState = null;
 
   /**
    * Bitmask that defines the changes that were applied to the field.
@@ -54,7 +30,7 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
   /**
    * Defines the data transformation that was applied to the field.
    */
-  protected SchemaFieldDataTransformationInfo dataTransformation = null;
+  protected SchemaFieldDataTransformation dataTransformation = null;
 
   /**
    * Previous data field state.
@@ -65,10 +41,10 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
       isNullable = true,
       dataType = SchemaDataType.OBJECT,
       nestedTypes =  {
-            StaticDataField.class, NonStaticDataField.class}
+            StaticField.class, NonStaticField.class}
 
   )
-  public DataFieldInfo getPreviousState() {
+  public Field getPreviousState() {
     return previousState;
   }
 
@@ -76,7 +52,7 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
    * Previous data field state.
    * @param value - Previous State
    */
-  public void setPreviousState(DataFieldInfo value) {
+  public void setPreviousState(Field value) {
     this.previousState = value;
   }
 
@@ -104,10 +80,10 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
       isNullable = true,
       dataType = SchemaDataType.OBJECT,
       nestedTypes =  {
-            StaticDataField.class, NonStaticDataField.class}
+            StaticField.class, NonStaticField.class}
 
   )
-  public DataFieldInfo getNewState() {
+  public Field getNewState() {
     return newState;
   }
 
@@ -115,7 +91,7 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
    * New descriptor state.
    * @param value - New State
    */
-  public void setNewState(DataFieldInfo value) {
+  public void setNewState(Field value) {
     this.newState = value;
   }
 
@@ -181,7 +157,7 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
             SchemaFieldDataTransformation.class}
 
   )
-  public SchemaFieldDataTransformationInfo getDataTransformation() {
+  public SchemaFieldDataTransformation getDataTransformation() {
     return dataTransformation;
   }
 
@@ -189,7 +165,7 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
    * Defines the data transformation that was applied to the field.
    * @param value - Data Transformation
    */
-  public void setDataTransformation(SchemaFieldDataTransformationInfo value) {
+  public void setDataTransformation(SchemaFieldDataTransformation value) {
     this.dataTransformation = value;
   }
 
@@ -253,8 +229,8 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof SchemaFieldChangeActionInfo)) return false;
-    SchemaFieldChangeActionInfo other =(SchemaFieldChangeActionInfo)obj;
+    if (!(obj instanceof SchemaFieldChangeAction)) return false;
+    SchemaFieldChangeAction other =(SchemaFieldChangeAction)obj;
     if (hasPreviousState() != other.hasPreviousState()) return false;
     if (hasPreviousState() && !(getPreviousState().equals(other.getPreviousState()))) return false;
     if (hasNewState() != other.hasNewState()) return false;
@@ -292,23 +268,15 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
    * @param template class instance that should be used as a copy source
    */
   public SchemaFieldChangeAction copyFrom(RecordInfo template) {
-    if (template instanceof SchemaFieldChangeActionInfo) {
-      SchemaFieldChangeActionInfo t = (SchemaFieldChangeActionInfo)template;
+    if (template instanceof SchemaFieldChangeAction) {
+      SchemaFieldChangeAction t = (SchemaFieldChangeAction)template;
       if (t.hasPreviousState()) {
-        if (hasPreviousState() && getPreviousState() instanceof RecordInterface) {
-          ((RecordInterface)getPreviousState()).copyFrom(t.getPreviousState());
-        } else {
-          setPreviousState((DataFieldInfo)t.getPreviousState().clone());
-        }
+        t.setPreviousState((Field) getPreviousState().clone());
       } else {
         nullifyPreviousState();
       }
       if (t.hasNewState()) {
-        if (hasNewState() && getNewState() instanceof RecordInterface) {
-          ((RecordInterface)getNewState()).copyFrom(t.getNewState());
-        } else {
-          setNewState((DataFieldInfo)t.getNewState().clone());
-        }
+        t.setNewState((Field) getNewState().clone());
       } else {
         nullifyNewState();
       }
@@ -318,11 +286,7 @@ public class SchemaFieldChangeAction implements SchemaFieldChangeActionInterface
         nullifyChangeTypes();
       }
       if (t.hasDataTransformation()) {
-        if (hasDataTransformation() && getDataTransformation() instanceof RecordInterface) {
-          ((RecordInterface)getDataTransformation()).copyFrom(t.getDataTransformation());
-        } else {
-          setDataTransformation((SchemaFieldDataTransformationInfo)t.getDataTransformation().clone());
-        }
+        t.setDataTransformation((SchemaFieldDataTransformation) getDataTransformation().clone());
       } else {
         nullifyDataTransformation();
       }

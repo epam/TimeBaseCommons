@@ -1,32 +1,12 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.schema;
 
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.SchemaType;
-import java.lang.CharSequence;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 import com.epam.deltix.containers.BinaryAsciiString;
 import com.epam.deltix.containers.CharSequenceUtils;
 import com.epam.deltix.containers.MutableString;
+import com.epam.deltix.timebase.messages.RecordInfo;
+import com.epam.deltix.timebase.messages.RecordInterface;
+import com.epam.deltix.timebase.messages.SchemaElement;
+import com.epam.deltix.timebase.messages.SchemaType;
 
 /**
  * Class which defines a transformation that is applied to a data field.
@@ -35,7 +15,7 @@ import com.epam.deltix.containers.MutableString;
     name = "com.epam.deltix.timebase.messages.schema.SchemaFieldDataTransformation",
     title = "SchemaFieldDataTransformation"
 )
-public class SchemaFieldDataTransformation implements SchemaFieldDataTransformationInterface {
+public class SchemaFieldDataTransformation implements RecordInterface {
   public static final String CLASS_NAME = SchemaFieldDataTransformation.class.getName();
 
   /**
@@ -159,8 +139,8 @@ public class SchemaFieldDataTransformation implements SchemaFieldDataTransformat
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof SchemaFieldDataTransformationInfo)) return false;
-    SchemaFieldDataTransformationInfo other =(SchemaFieldDataTransformationInfo)obj;
+    if (!(obj instanceof SchemaFieldDataTransformation)) return false;
+    SchemaFieldDataTransformation other =(SchemaFieldDataTransformation)obj;
     if (hasTransformationType() != other.hasTransformationType()) return false;
     if (hasTransformationType() && getTransformationType() != other.getTransformationType()) return false;
     if (hasDefaultValue() != other.hasDefaultValue()) return false;
@@ -198,8 +178,8 @@ public class SchemaFieldDataTransformation implements SchemaFieldDataTransformat
    * @param template class instance that should be used as a copy source
    */
   public SchemaFieldDataTransformation copyFrom(RecordInfo template) {
-    if (template instanceof SchemaFieldDataTransformationInfo) {
-      SchemaFieldDataTransformationInfo t = (SchemaFieldDataTransformationInfo)template;
+    if (template instanceof SchemaFieldDataTransformation) {
+      SchemaFieldDataTransformation t = (SchemaFieldDataTransformation)template;
       if (t.hasTransformationType()) {
         setTransformationType(t.getTransformationType());
       } else {
