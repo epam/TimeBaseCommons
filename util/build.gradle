@@ -1,19 +1,19 @@
 description = 'Timebase general purpose utilities'
 
 dependencies {
-    implementation project(':timebase-lang')
-    implementation project(':timebase-collections')
+    api project(':timebase-lang')
+    api project(':timebase-collections')
 
-    implementation 'com.epam.deltix:gflog-api'
-    implementation 'com.epam.deltix:gflog-core'
+    implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
+    implementation group: 'com.epam.deltix', name: 'gflog-core', version: gflogVersion
 
-    implementation 'com.epam.deltix:dfp'
-    implementation 'com.epam.deltix:hd-date-time'
+    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
+    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
 
-    implementation 'com.epam.deltix:thread-affinity'
+    implementation 'com.epam.deltix:thread-affinity:1.0.4'
 
-    implementation 'org.apache.commons:commons-lang3'
-    implementation 'org.apache.commons:commons-compress:1.7'
+    implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'org.apache.commons:commons-compress:1.19'
 
     implementation 'javax.xml.bind:jaxb-api:2.2.8'
     implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'

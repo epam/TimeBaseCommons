@@ -1,0 +1,43 @@
+/*
+  Copyright 2021 EPAM Systems, Inc
+
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+*/
+namespace EPAM.Deltix.Timebase.Messages.Universal;
+option JavaPackage = "com.epam.deltix.timebase.messages.universal";
+
+import EPAM.Deltix.Timebase.Messages.*;
+
+/// Base class for market data entry to be included in package (PackageHeader).
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.universal.BaseEntry", Title = "Base Entry")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class BaseEntry {
+
+    /// Exchange code compressed to long using ALPHANUMERIC(10) encoding.
+    /// see #getExchange()
+    [SchemaElement(Title = "Exchange Code")]
+    [SchemaType(Encoding = "ALPHANUMERIC(10)", DataType = SchemaDataType.VARCHAR)]
+    Int64? ExchangeId;
+
+    /// True, if quote (or trade) comes from an implied Order book.
+    [SchemaElement(Title = "Is Implied")]
+    [SchemaType(DataType = SchemaDataType.BOOLEAN)]
+    Boolean? IsImplied;
+
+    /// Special field designed to store multiple derivative instruments' updates
+    /// into single package. Most of the time should be static null.
+    [SchemaElement(Title = "Contract ID")]
+    [SchemaType(Encoding = "ALPHANUMERIC(10)", DataType = SchemaDataType.VARCHAR)]
+    Int64? ContractId;
+}

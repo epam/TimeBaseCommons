@@ -1,28 +1,9 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.schema;
 
 import com.epam.deltix.timebase.messages.RecordInfo;
+import com.epam.deltix.timebase.messages.RecordInterface;
 import com.epam.deltix.timebase.messages.SchemaElement;
 import com.epam.deltix.timebase.messages.SchemaType;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 
 /**
  * Class which defines a transformation that is applied to the descriptor.
@@ -31,7 +12,7 @@ import java.lang.StringBuilder;
     name = "com.epam.deltix.timebase.messages.schema.SchemaDescriptorTransformation",
     title = "SchemaDescriptorTransformation"
 )
-public class SchemaDescriptorTransformation implements SchemaDescriptorTransformationInterface {
+public class SchemaDescriptorTransformation implements RecordInterface {
   public static final String CLASS_NAME = SchemaDescriptorTransformation.class.getName();
 
   /**
@@ -113,8 +94,8 @@ public class SchemaDescriptorTransformation implements SchemaDescriptorTransform
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof SchemaDescriptorTransformationInfo)) return false;
-    SchemaDescriptorTransformationInfo other =(SchemaDescriptorTransformationInfo)obj;
+    if (!(obj instanceof SchemaDescriptorTransformation)) return false;
+    SchemaDescriptorTransformation other =(SchemaDescriptorTransformation)obj;
     if (hasTransformationType() != other.hasTransformationType()) return false;
     if (hasTransformationType() && getTransformationType() != other.getTransformationType()) return false;
     return true;
@@ -137,8 +118,8 @@ public class SchemaDescriptorTransformation implements SchemaDescriptorTransform
    * @param template class instance that should be used as a copy source
    */
   public SchemaDescriptorTransformation copyFrom(RecordInfo template) {
-    if (template instanceof SchemaDescriptorTransformationInfo) {
-      SchemaDescriptorTransformationInfo t = (SchemaDescriptorTransformationInfo)template;
+    if (template instanceof SchemaDescriptorTransformation) {
+      SchemaDescriptorTransformation t = (SchemaDescriptorTransformation)template;
       if (t.hasTransformationType()) {
         setTransformationType(t.getTransformationType());
       } else {

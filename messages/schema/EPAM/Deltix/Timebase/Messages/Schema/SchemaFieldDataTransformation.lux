@@ -21,7 +21,7 @@ import EPAM.Deltix.Timebase.Messages.*;
 
 /// Class which defines a transformation that is applied to a data field.
 [SchemaElement(Name = "com.epam.deltix.timebase.messages.schema.SchemaFieldDataTransformation", Title = "SchemaFieldDataTransformation")]
-[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+
 class SchemaFieldDataTransformation {
 
     /// Defines the transformation that was applied to the field.

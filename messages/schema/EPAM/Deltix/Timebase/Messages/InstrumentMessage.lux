@@ -13,13 +13,12 @@
   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
   License for the specific language governing permissions and limitations under
   the License.
- */
+*/
 namespace EPAM.Deltix.Timebase.Messages;
 option JavaPackage = "com.epam.deltix.timebase.messages";
 
 /// Base class for all messages that could be written in Timebase.
 [Serializable]
-[OldElementName("deltix.qsrv.hf.pub.InstrumentMessage")]
 [SchemaElement(Name = "com.epam.deltix.timebase.messages.InstrumentMessage", Title = "Instrument Message")]
 [GenerateReadOnlyInterface("MessageInfo")][GenerateReadWriteInterface("MessageInterface")]
 [Ignore]

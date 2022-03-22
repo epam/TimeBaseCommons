@@ -1,30 +1,6 @@
-/*
- * Copyright 2021 EPAM Systems, Inc
- *
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. Licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.epam.deltix.timebase.messages.service;
 
-import com.epam.deltix.timebase.messages.OldElementName;
-import com.epam.deltix.timebase.messages.RecordInfo;
-import com.epam.deltix.timebase.messages.RecordInterface;
-import com.epam.deltix.timebase.messages.SchemaElement;
-import com.epam.deltix.timebase.messages.TypeConstants;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
+import com.epam.deltix.timebase.messages.*;
 
 /**
  * Special transient message that signals active stream consumers that their stream metadata has been changed
@@ -73,14 +49,14 @@ public class MetaDataChangeMessage extends SystemMessage implements RecordInterf
    * @return true if Converted is not null
    */
   public boolean hasConverted() {
-    return converted != com.epam.deltix.timebase.messages.TypeConstants.BOOLEAN_NULL;
+    return converted != TypeConstants.BOOLEAN_NULL;
   }
 
   /**
    * Indicates, that stream data was converted.
    */
   public void nullifyConverted() {
-    this.converted = com.epam.deltix.timebase.messages.TypeConstants.BOOLEAN_NULL;
+    this.converted = TypeConstants.BOOLEAN_NULL;
   }
 
   /**
@@ -105,13 +81,13 @@ public class MetaDataChangeMessage extends SystemMessage implements RecordInterf
    * @return true if Version is not null
    */
   public boolean hasVersion() {
-    return version != com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    return version != TypeConstants.INT64_NULL;
   }
 
   /**
    */
   public void nullifyVersion() {
-    this.version = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    this.version = TypeConstants.INT64_NULL;
   }
 
   /**
@@ -140,8 +116,8 @@ public class MetaDataChangeMessage extends SystemMessage implements RecordInterf
   @Override
   public MetaDataChangeMessage reset() {
     super.reset();
-    converted = com.epam.deltix.timebase.messages.TypeConstants.BOOLEAN_NULL;
-    version = com.epam.deltix.timebase.messages.TypeConstants.INT64_NULL;
+    converted = TypeConstants.BOOLEAN_NULL;
+    version = TypeConstants.INT64_NULL;
     return this;
   }
 
