@@ -14,19 +14,18 @@
   License for the specific language governing permissions and limitations under
   the License.
  */
-namespace EPAM.Deltix.Timebase.Messages.Qql;
-option JavaPackage = "com.epam.deltix.timebase.messages.qql";
+namespace EPAM.Deltix.Timebase.Messages.Service;
+option JavaPackage = "com.epam.deltix.timebase.messages.service";
 
 import EPAM.Deltix.Timebase.Messages.*;
-import EPAM.Deltix.Timebase.Messages.Schema.*;
 
-/// Describes QQL function init argument
-[SchemaElement(Name = "com.epam.deltix.timebase.messages.qql.InitArgument", Title = "InitArgument")]
-class InitArgument: Argument {
-
-    // Default value
-    [SchemaElement()]
-    [SchemaType()]
-    Text? DefaultValue;
-
+/// Security feed status.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.service.FeedStatus", Title = "Security Feed Status")]
+enum FeedStatus {
+    /// Feed for this security is available again.
+    [SchemaElement(Name = "AVAILABLE")]
+    AVAILABLE = 0;
+    /// Feed for this security and exchange code is no longer available.
+    [SchemaElement(Name = "NOT_AVAILABLE")]
+    NOT_AVAILABLE = 1;
 }

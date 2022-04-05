@@ -14,49 +14,37 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.timebase.messages.universal;
+package com.epam.deltix.timebase.messages.service;
 
 import com.epam.deltix.timebase.messages.SchemaElement;
 
 /**
- * Level of data model.
+ * Security feed status.
  */
-public enum DataModelType {
+@SchemaElement(
+    name = "com.epam.deltix.timebase.messages.service.FeedStatus",
+    title = "Security Feed Status"
+)
+public enum FeedStatus {
   /**
-   * Level One (best bid and best offer)
+   * Feed for this security is available again.
    */
   @SchemaElement(
-      name = "LEVEL_ONE"
+      name = "AVAILABLE"
   )
-  LEVEL_ONE(0),
+  AVAILABLE(0),
 
   /**
-   * Level Two. Market by level. More details than LEVEL_ONE.
+   * Feed for this security and exchange code is no longer available.
    */
   @SchemaElement(
-      name = "LEVEL_TWO"
+      name = "NOT_AVAILABLE"
   )
-  LEVEL_TWO(1),
-
-  /**
-   * Level Three. Market by Order. The most detailed view of the market.
-   */
-  @SchemaElement(
-      name = "LEVEL_THREE"
-  )
-  LEVEL_THREE(2),
-
-  /**
-   * Maximal level of details availabe in input market data.
-   */
-  @SchemaElement(
-      name = "MAX"
-  )
-  MAX(3);
+  NOT_AVAILABLE(1);
 
   private final int value;
 
-  DataModelType(int value) {
+  FeedStatus(int value) {
     this.value = value;
   }
 
@@ -64,20 +52,18 @@ public enum DataModelType {
     return this.value;
   }
 
-  public static DataModelType valueOf(int number) {
+  public static FeedStatus valueOf(int number) {
     switch (number) {
-      case 0: return LEVEL_ONE;
-      case 1: return LEVEL_TWO;
-      case 2: return LEVEL_THREE;
-      case 3: return MAX;
+      case 0: return AVAILABLE;
+      case 1: return NOT_AVAILABLE;
       default: return null;
     }
   }
 
-  public static DataModelType strictValueOf(int number) {
-    final DataModelType value = valueOf(number);
+  public static FeedStatus strictValueOf(int number) {
+    final FeedStatus value = valueOf(number);
     if (value == null) {
-      throw new IllegalArgumentException("Enumeration 'DataModelType' does not have value corresponding to '" + number + "'.");
+      throw new IllegalArgumentException("Enumeration 'FeedStatus' does not have value corresponding to '" + number + "'.");
     }
     return value;
   }

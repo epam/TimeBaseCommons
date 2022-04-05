@@ -14,7 +14,6 @@
   License for the specific language governing permissions and limitations under
   the License.
  */
-
 namespace EPAM.Deltix.Timebase.Messages.Schema;
 option JavaPackage = "com.epam.deltix.timebase.messages.schema";
 

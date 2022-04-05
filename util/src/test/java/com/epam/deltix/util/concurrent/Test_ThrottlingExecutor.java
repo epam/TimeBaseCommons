@@ -54,8 +54,8 @@ public class Test_ThrottlingExecutor {
         }
     }
 
-    @Ignore
-    //@Test(timeout = 90000)
+
+    @Test(timeout = 90000)
     public void             go () throws InterruptedException {
 
         boolean cruiseControlMode = Boolean.getBoolean("deltix.test.mode");
