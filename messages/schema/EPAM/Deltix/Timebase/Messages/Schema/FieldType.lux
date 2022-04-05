@@ -212,4 +212,3 @@ class VarcharFieldType : FieldType {
     override Text BaseName = "VARCHAR";
 
 }
-
