@@ -204,7 +204,7 @@ public class Test_HashMaps {
         Random              rnd = new Random (2009);
         LongToLongHashMap   map = new LongToLongHashMap ();
         
-        map.setShrinkFactor (shrinkFactor);
+        //map.setShrinkFactor (shrinkFactor);
         
         long []             check = new long [ALL_NUM_KEYS]; 
         int                 n = 0;
@@ -238,7 +238,7 @@ public class Test_HashMaps {
         Random                  rnd = new Random (2009);
         IntegerToIntegerHashMap map = new IntegerToIntegerHashMap ();
         
-        map.setShrinkFactor (shrinkFactor);
+        //map.setShrinkFactor (shrinkFactor);
         
         HashMap <Integer, Integer> check = new HashMap <Integer, Integer> ();
                       
