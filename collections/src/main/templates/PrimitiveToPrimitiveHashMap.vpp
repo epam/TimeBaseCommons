@@ -132,34 +132,36 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
 
     /**
      * Remove first entry that matches with given filter
-     * @return true if remove was successful
+     * @return remove element or null if none found
      */
-    public boolean remove(Predicate<? super V> filter) {
+    public V remove(Predicate<? super V> filter) {
         for (int i = 0; i < values.length; i++) {
             if (isFilled (i)) {
-                if (filter.test((V) values[i])) {
+                V value = (V) values[i];
+                if (filter.test(value)) {
                     free (i);
-                    return true;
+                    return value;
                 }
             }
         }
-        return false;
+        return null; // not found
     }
 
     /**
      * Remove first entry that matches with given filter
-     * @return true if remove was successful
+     * @return remove element or null if none found
      */
-    public <Cookie> boolean remove(BiPredicate<? super V,Cookie> filter, Cookie cookie) {
+    public <Cookie> V remove(BiPredicate<? super V,Cookie> filter, Cookie cookie) {
         for (int i = 0; i < values.length; i++) {
             if (isFilled (i)) {
-                if (filter.test((V) values[i], cookie)) {
+                V value = (V) values[i];
+                if (filter.test( value, cookie)) {
                     free (i);
-                    return true;
+                    return value;
                 }
             }
         }
-        return false;
+        return null; // not found
     }
 
     /**

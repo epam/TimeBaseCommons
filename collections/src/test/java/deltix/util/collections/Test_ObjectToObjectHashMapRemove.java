@@ -10,8 +10,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiPredicate;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class Test_ObjectToObjectHashMapRemove {
     private final ObjectToObjectHashMap<String,String> map = new ObjectToObjectHashMap<>();
@@ -39,22 +38,22 @@ public class Test_ObjectToObjectHashMapRemove {
         map.put("2", "two");
         map.put("3", "three");
 
-        assertFalse(map.remove((value) -> value.equals("unknown"))); // no such value
+        assertNull(map.remove((value) -> value.equals("unknown"))); // no such value
         assertContent("one, two, three");
 
-        assertTrue(map.remove((value) -> value.equals("two")));
+        assertNotNull(map.remove((value) -> value.equals("two")));
         assertContent("one, three");
 
-        assertTrue(map.remove((value) -> value.equals("three")));
+        assertNotNull(map.remove((value) -> value.equals("three")));
         assertContent("one");
 
-        assertFalse(map.remove((value) -> value.equals("three"))); // again?
+        assertNull(map.remove((value) -> value.equals("three"))); // again?
         assertContent("one");
 
-        assertTrue(map.remove((value) -> value.equals("one")));
+        assertNotNull(map.remove((value) -> value.equals("one")));
         assertContent("");
 
-        assertFalse(map.remove((value) -> value.equals("one"))); // again?
+        assertNull(map.remove((value) -> value.equals("one"))); // again?
         assertContent("");
     }
 
@@ -66,22 +65,22 @@ public class Test_ObjectToObjectHashMapRemove {
         map.put("2", "two");
         map.put("3", "three");
 
-        assertFalse(map.remove(filter, "unknown")); // no such value
+        assertNull(map.remove(filter, "unknown")); // no such value
         assertContent("one, two, three");
 
-        assertTrue(map.remove(filter, "two"));
+        assertNotNull(map.remove(filter, "two"));
         assertContent("one, three");
 
-        assertTrue(map.remove(filter, "three"));
+        assertNotNull(map.remove(filter, "three"));
         assertContent("one");
 
-        assertFalse(map.remove(filter, "three")); // again?
+        assertNull(map.remove(filter, "three")); // again?
         assertContent("one");
 
-        assertTrue(map.remove(filter, "one"));
+        assertNotNull(map.remove(filter, "one"));
         assertContent("");
 
-        assertFalse(map.remove(filter, "one")); // again?
+        assertNull(map.remove(filter, "one")); // again?
         assertContent("");
     }
 
