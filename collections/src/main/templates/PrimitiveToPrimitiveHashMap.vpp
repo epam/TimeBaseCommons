@@ -27,6 +27,8 @@ import deltix.hddatetime.HdTimeSpan;
 #end
 #if( $second_name == "Object" )
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 #end
 
 @SuppressWarnings ("unchecked")
@@ -126,6 +128,55 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
                 consumer.accept((V) values[i]);
             }
         }
+    }
+
+    /**
+     * Remove first entry that matches with given filter
+     * @return true if remove was successful
+     */
+    public boolean remove(Predicate<? super V> filter) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                if (filter.test((V) values[i])) {
+                    free (i);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Remove first entry that matches with given filter
+     * @return true if remove was successful
+     */
+    public <Cookie> boolean remove(BiPredicate<? super V,Cookie> filter, Cookie cookie) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                if (filter.test((V) values[i], cookie)) {
+                    free (i);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Remove all entries that matches with given filter
+     * @return true if at least one entry was removed
+     */
+    public boolean removeAll(Predicate<? super V> filter) {
+        boolean result = false;
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                if (filter.test((V) values[i])) {
+                    free (i);
+                    result = true;
+                }
+            }
+        }
+        return result;
     }
 #end
 
