@@ -5,11 +5,11 @@ plugins {
 description = 'QuantServer commons-lang set of utilities'
 
 dependencies {
-    compile group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
-    compile group: 'deltix', name: 'hd-date-time', version: hdTimeVersion
-    compile 'deltix:deltix-gflog-api'
+    api "com.epam.deltix:dfp"
+    api 'deltix:deltix-gflog-api'
+    api "deltix:hd-date-time"
 
     // For JMH-based tests
-    testCompile 'org.openjdk.jmh:jmh-core'
-    testCompile 'org.openjdk.jmh:jmh-generator-annprocess'
+    testImplementation 'org.openjdk.jmh:jmh-core'
+    testImplementation 'org.openjdk.jmh:jmh-generator-annprocess'
 }

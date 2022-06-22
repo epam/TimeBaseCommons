@@ -1,7 +1,0 @@
-description = 'QuantServer abstraction/wrapper for gflogger'
-
-dependencies {
-    compile project(':util')
-
-    compile 'javax.mail:mail'
-}

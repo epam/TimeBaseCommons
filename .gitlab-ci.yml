@@ -47,7 +47,7 @@ cache:
   image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - ./gradlew build test --no-daemon
+    - ./gradlew build :util:downloadCodes test --no-daemon
   artifacts:
     paths:
       - libs/

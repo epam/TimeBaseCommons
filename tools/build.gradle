@@ -1,5 +1,6 @@
 description = 'QuantServer general purpose utilities'
 
 dependencies {
-    compile project(':util')
+    implementation project(':util'),
+                   project(':collections')
 }

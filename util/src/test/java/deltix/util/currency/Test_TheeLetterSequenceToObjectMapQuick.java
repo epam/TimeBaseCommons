@@ -23,12 +23,11 @@ public class Test_TheeLetterSequenceToObjectMapQuick {
         assertEquals(840, CurrencyCodeList.symbolicToNumeric("USD]", 0,3, (short)999));
         assertEquals(840, CurrencyCodeList.symbolicToNumeric("[USD", 1,4, (short)999));
         assertEquals(999, CurrencyCodeList.symbolicToNumeric("[USD]", 0,5, (short)999));
-
-
     }
 
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testResetBefore() {
         ThreeLetterToObjectMapQuick<String> map = new ThreeLetterToObjectMapQuick<> ();
         map.put("KEY1", "VALUE1");
@@ -40,6 +39,7 @@ public class Test_TheeLetterSequenceToObjectMapQuick {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testResetAfter() {
         ThreeLetterToObjectMapQuick<String> map = new ThreeLetterToObjectMapQuick<> ();
 

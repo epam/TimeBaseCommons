@@ -53,6 +53,7 @@ apply from: 'promotion.gradle'
 configure(leafProjects) {
     apply from: "$rootDir/gradle/Deltix.gradle"
     apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: "com.github.spotbugs" // Static analysis
     apply plugin: 'io.spring.dependency-management'
@@ -67,8 +68,15 @@ configure(leafProjects) {
 
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    compileJava {
+        //options.warnings = false
+        //options.deprecation = false
+        options.compilerArgs += ["--add-exports=java.base/sun.nio.ch=ALL-UNNAMED", "--add-exports=java.base/sun.nio=ALL-UNNAMED"]
+    }
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 
     // Defines versions of dependencies to be used by subprojects
     // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
@@ -80,6 +88,8 @@ configure(leafProjects) {
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'
 
+            dependency "com.epam.deltix:dfp:$dfpVersion"
+            dependency "deltix:hd-date-time:$hdTimeVersion"
             // dependency 'org.mockito:mockito-core:1.10.19'
 
             dependencySet (group: 'deltix', version: '2.0.22') {
@@ -121,7 +131,7 @@ configure(leafProjects) {
         compileOnly 'com.google.code.findbugs:jsr305'
         compileOnly 'com.google.code.findbugs:annotations'
 
-        testCompile 'junit:junit:4.12'
+        testImplementation 'junit:junit:4.12'
                 //'org.mockito:mockito-core:1.10.19'
 
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
@@ -174,7 +184,7 @@ configure(leafProjects) {
 
     afterEvaluate {
         // populate project classpath after evaluating
-        jar.manifest.attributes 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
+        jar.manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
     }
 
     // Contains current project jar and all required dependencies for that project
@@ -182,7 +192,7 @@ configure(leafProjects) {
 
     task gatherProjectDependencies(type: Sync) {
         description 'Copies all project runtime dependencies to ' + allJarsPath
-        from project.configurations.runtime
+        from project.configurations.runtimeClasspath
         into allJarsPath
     }
 
@@ -197,7 +207,7 @@ configure(leafProjects) {
 
     task gatherProjectTestDependencies(type: Sync) {
         description 'Copies all project test dependencies to ' + allTestJarsPath
-        from project.configurations.testCompile
+        from project.configurations.testRuntimeClasspath
         into allTestJarsPath
     }
 

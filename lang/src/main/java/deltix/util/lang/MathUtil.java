@@ -1,8 +1,11 @@
 package deltix.util.lang;
 
-import java.math.*;
-import java.util.concurrent.atomic.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
+@SuppressWarnings("unused")
 public class MathUtil {
     public static final double  TWO_PI = Math.PI * 2;
 
@@ -34,7 +37,7 @@ public class MathUtil {
      *	greater, less than, or equal to 0 respectively.
      */
     public static int		sign (int x) {
-        return (x > 0 ? 1 : x < 0 ? -1 : 0);
+        return (Integer.compare(x, 0));
     }
 
     /**
@@ -49,7 +52,7 @@ public class MathUtil {
      *	Returns 1, -1, or 0 depending on the difference between arguments.
      */
     public static int		compare (int x, int y) {
-        return (x > y ? 1 : x < y ? -1 : 0);
+        return (Integer.compare(x, y));
     }
 
     /**
@@ -70,7 +73,7 @@ public class MathUtil {
      *	Returns 1, -1, or 0 depending on the difference between arguments.
      */
     public static int		compare (long x, long y) {
-        return (x > y ? 1 : x < y ? -1 : 0);
+        return Long.compare(x, y);
     }
 
     /**
@@ -208,22 +211,22 @@ public class MathUtil {
 
     public static Number    negate (Number n) {
         if (n instanceof Integer)
-            return (new Integer (-n.intValue ()));
+            return (-n.intValue());
         
         if (n instanceof Long)
-            return (new Long (-n.longValue ()));
+            return (-n.longValue());
         
         if (n instanceof Double)
-            return (new Double (-n.doubleValue ()));
+            return (-n.doubleValue());
         
         if (n instanceof Float)
-            return (new Float (-n.floatValue ()));
+            return (-n.floatValue());
         
         if (n instanceof Byte)
-            return (new Byte ((byte) -n.byteValue ()));
+            return ((byte) -n.byteValue());
         
         if (n instanceof Short)
-            return (new Short ((short) -n.shortValue ()));
+            return ((short) -n.shortValue());
         
         if (n instanceof BigDecimal)
             return (((BigDecimal) n).negate ());
