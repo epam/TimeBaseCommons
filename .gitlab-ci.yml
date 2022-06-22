@@ -4,64 +4,62 @@ stages:
   - test
   - release
   - publish
+  - trigger
   - clean-up
   - promote
 
-# Overwrite Gradle cache directory.
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-# Tell GitLab to cache it between jobs.
 cache:
   paths:
     - .gradle/wrapper
     - .gradle/caches
 
-# Prepares release (remove "snapshot" from version, commit, bump version push and add "snapshot", commit, push to a dedicated branch)
 "Prepare":
-    stage: prepare
-    script:
-        - env
-        - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-        - echo $CI_PUSH_REPO
-        - git config user.name "Robot"
-        - git config user.email "<internal@rtmath.net>"
-        - git checkout -b pipeline-$CI_PIPELINE_ID
-        - ./gradlew prepareReleaseVersion --no-daemon
-        - git commit -am "[Skip CI] Generate release version"
-        - ./gradlew prepareSnapshotVersion --no-daemon
-        - git commit -am "[Skip CI] Generate next development version"
-        - git remote set-url --push origin "${CI_PUSH_REPO}"
-        - git push origin -u pipeline-$CI_PIPELINE_ID
-    tags:
-        - Linux
-        - ShellExecutor
-    only:
-        - /^release-.*$/
-    except:
-        - tags
-        - schedules
+  stage: prepare
+  script:
+    - export CI_PUSH_URL=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+    - echo $CI_PUSH_URL
+    - git config user.name "Robot"
+    - git config user.email "<internal@rtmath.net>"
+    - git checkout -b pipeline-$CI_PIPELINE_ID
+    - versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+    - versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
+    - versionSnapshotNext=`echo $versionSnapshot | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`
+    - echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
+    - sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
+    - git commit -am "[Skip CI] Generate release version"
+    - sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
+    - git commit -am "[Skip CI] Generate next development version"
+    - git remote set-url --push origin "${CI_PUSH_URL}"
+    - git push origin -u pipeline-$CI_PIPELINE_ID
+  tags:
+    - Linux
+    - ShellExecutor
+  only:
+    - /^release-.*$/
+  except:
+    - tags
 
-# Builds and tests release
-"Build: Java 8":
-    stage: build
-    image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
-    script:
-        - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-        - ./gradlew build test --no-daemon
-    artifacts:
-        paths:
-          - libs/
-    tags:
-        - DockerExecutor
-    except:
-        - tags
-        - schedules
+"Build":
+  stage: build
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  script:
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
+    - ./gradlew build test --no-daemon
+  artifacts:
+    paths:
+      - libs/
+  tags:
+    - DockerExecutor
+  except:
+    - tags
+    - schedules
 
-# Tests code (for scheduled checks)
 "Test":
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
@@ -75,7 +73,92 @@ cache:
   tags:
     - DockerExecutor
 
-# Checks dependencies (for scheduled checks)
+"Release":
+  stage: release
+  script:
+    - export CI_PUSH_URL=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+    - git config user.name "Robot"
+    - git config user.email "<internal@rtmath.net>"
+    - git remote set-url --push origin "${CI_PUSH_URL}"
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1
+    - versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+    - echo $versionRelease
+    - git tag $versionRelease
+    - git push origin $versionRelease
+    - git checkout origin/pipeline-$CI_PIPELINE_ID
+    - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_BUILD_REF_NAME}
+  tags:
+    - Linux
+    - ShellExecutor
+  only:
+    - /^release-.*$/
+  except:
+    - tags
+
+"Publish":
+  stage: publish
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  script:
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1
+    - ./gradlew publish
+  dependencies:
+    - "Build"
+  only:
+    - /^release-.*$/
+  tags:
+    - DockerExecutor
+  except:
+    - tags
+    - schedules
+
+"Trigger GitLab Release":
+  stage: trigger
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  script:
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
+    - ./gradlew gitlabRelease -i -S
+  only:
+    - /^release-.*$/
+  tags:
+    - Linux
+    - DockerExecutor
+    - AWS
+
+"Clean Up":
+  stage: clean-up
+  script:
+    - export CI_PUSH_URL=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
+    - git config user.name "Robot"
+    - git config user.email "<internal@rtmath.net>"
+    - git remote set-url --push origin "${CI_PUSH_URL}"
+    - git push origin --delete pipeline-$CI_PIPELINE_ID
+  only:
+    - /^release-.*$/
+  when: always
+  tags:
+    - Linux
+    - ShellExecutor
+  except:
+    - tags
+
+
+
+"Promote to public":
+  stage: promote
+  cache: {} # Disable cache for this job because this job does not uses any data from the cache
+  script:
+    - ./gradlew promoteToPublic
+  only:
+    - /^release-.*$/
+  when: manual
+  except:
+    - tags
+    - schedules
+  dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
+  tags:
+    - Linux
+    - ShellExecutor
+
 dependency-check:
   stage: test
   image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
@@ -89,76 +172,3 @@ dependency-check:
     expire_in: 30 day
     paths:
       - build/reports/dependency-check-report.html
-
-# Executes release (creates tag)
-"Release":
-    stage: release
-    script:
-        - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-        - git config user.name "Robot"
-        - git config user.email "<internal@rtmath.net>"
-        - git remote set-url --push origin "${CI_PUSH_REPO}"
-        - git checkout origin/pipeline-$CI_PIPELINE_ID~1
-        - ./gradlew pushVersion --no-daemon
-        - git checkout origin/pipeline-$CI_PIPELINE_ID
-        - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_BUILD_REF_NAME}
-    tags:
-        - Linux
-        - ShellExecutor
-    only:
-        - /^release-.*$/
-    except:
-        - tags
-        - schedules
-
-# Published built release artifacts
-"Publish: Java 8":
-    stage: publish
-    image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
-    script:
-        - git checkout origin/pipeline-$CI_PIPELINE_ID~1
-        - ./gradlew publish
-    dependencies:
-        - "Build: Java 8"
-    only:
-        - /^release-.*$/
-    tags:
-        - DockerExecutor
-    except:
-        - tags
-        - schedules
-
-# Clean up after release
-"Clean Up":
-    stage: clean-up
-    script:
-        - export CI_PUSH_REPO=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-        - git config user.name "Robot"
-        - git config user.email "<internal@rtmath.net>"
-        - git remote set-url --push origin "${CI_PUSH_REPO}"
-        - git push origin --delete pipeline-$CI_PIPELINE_ID
-    only:
-        - /^release-.*$/
-    when: always
-    tags:
-        - Linux
-        - ShellExecutor
-    except:
-        - tags
-        - schedules
-
-"Promote to public":
-  stage: promote
-  cache: {} # Disable cache for this job because this job does not uses any data from the cache
-  script:
-  - ./gradlew promoteToPublic
-  only:
-  - /^release-.*$/
-  except:
-  - tags
-  - schedules
-  dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
-  tags:
-  - Linux
-  - ShellExecutor
-  when: manual
