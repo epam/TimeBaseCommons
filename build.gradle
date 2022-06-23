@@ -8,9 +8,9 @@ buildscript {
 }
 
 plugins {
-    id "io.spring.dependency-management" version "1.0.5.RELEASE"
-    id "de.undercouch.download" version "3.4.3"
-    id "com.github.spotbugs" version "2.0.0" apply false
+    id "io.spring.dependency-management" version '1.0.11.RELEASE'
+    id "de.undercouch.download" version '5.1.0'
+    id "com.github.spotbugs" version '2.0.0' apply false
     // id 'deltix.gradle.plugins.velocity' version '1.3.0' apply false TODO: investigate
     id 'deltix.gradle.plugin.gitlab-release' version '1.0.11'
 }
@@ -33,6 +33,7 @@ ext {
     publisherUser = findProperty('ARTIFACTORY_USER') ?: System.getenv('ARTIFACTORY_USER') ?: "FakeUser"
     publisherPassword = findProperty('ARTIFACTORY_PASS') ?: System.getenv('ARTIFACTORY_PASS') ?: "FakePassword"
 
+    vendor = 'Deltix Inc.'
     categories = 'Unit' // Default test categories
 
     // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
@@ -56,8 +57,8 @@ configure(leafProjects) {
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
     compileJava {
-        options.warnings = false
-        options.deprecation = true
+        options.warnings = true
+        options.deprecation = false
         options.encoding = 'UTF-8'
         options.compilerArgs += ["--add-exports=java.base/sun.nio.ch=ALL-UNNAMED", "--add-exports=java.base/sun.nio=ALL-UNNAMED"]
     }
@@ -67,7 +68,6 @@ configure(leafProjects) {
     }
 
     // Defines versions of dependencies to be used by subprojects
-    // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
     dependencyManagement {
         dependencies {
             dependency 'deltix:deltix-thread-affinity:1.0.2'
@@ -78,7 +78,6 @@ configure(leafProjects) {
 
             dependency "com.epam.deltix:dfp:$dfpVersion"
             dependency "deltix:hd-date-time:$hdTimeVersion"
-            // dependency 'org.mockito:mockito-core:1.10.19'
 
             dependencySet (group: 'deltix', version: '2.0.22') {
                 entry 'deltix-gflog-api'
@@ -104,10 +103,6 @@ configure(leafProjects) {
         }
     }
 
-    ext {
-        vendor = 'Deltix Inc.'
-    }
-
     group 'deltix.qsrv'
     archivesBaseName = 'deltix-commons' + project.path.replaceAll(':', '-')
 
@@ -120,7 +115,6 @@ configure(leafProjects) {
         compileOnly 'com.google.code.findbugs:annotations'
 
         testImplementation 'junit:junit:4.12'
-                //'org.mockito:mockito-core:1.10.19'
 
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
     }
@@ -141,11 +135,6 @@ configure(leafProjects) {
             html.enabled = true
         }
     }
-
-//    javadoc {
-//        // Suppress javadoc warnings about unsafe code
-//        options.addStringOption('XDignore.symbol.file', 'quiet')
-//    }
 
     jar {
         manifest {
