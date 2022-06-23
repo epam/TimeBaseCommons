@@ -1,8 +1,9 @@
 package deltix.util.swing;
 
-import java.lang.reflect.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  *  Extension of StandardAction, which delegates the action to a void no-arguments
@@ -10,7 +11,7 @@ import java.awt.event.*;
  *  Please see
  *  {@link deltix.util.swing.StandardAction} documentation for a detailed description
  *  of how action properties are retrieved, based on the package of the object and
- *  the name key. The supplied object must be of a <tt>public</tt> class.
+ *  the name key. The supplied object must be of a <code>public</code> class.
  *  <p>
  *  Usage:
  *<pre>

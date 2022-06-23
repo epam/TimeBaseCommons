@@ -5,12 +5,13 @@ import deltix.gflog.LogFactory;
 
 import java.io.*;
 import java.lang.management.*;
-import java.net.*;
-import java.security.*;
+import java.lang.reflect.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.prefs.Preferences;
-
-import java.lang.reflect.*;
 
 /** Set of useful methods */
 public class Util {
@@ -120,7 +121,7 @@ public class Util {
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
      *
-     *  @param maxLength Only compare the first <tt>maxLength</tt> characters.
+     *  @param maxLength Only compare the first <code>maxLength</code> characters.
      *                      Send 0 to unlimit.
      *  @param fast     When true, use a fast algorithm, which makes a
      *                  char sequence greater than another if it is longer.

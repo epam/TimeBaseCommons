@@ -23,7 +23,7 @@ package deltix.util.concurrent;
  *}
  *</pre>
  * 
- * Note that it is absolutely critical to synchronize the <tt>maybeAvailable</tt> runnable
+ * Note that it is absolutely critical to synchronize the <code>maybeAvailable</code> runnable
  * callback on the same monitor as the critical operation call. This ensures
  * that, while UnavailableResourceException is being handled and the resource is
  * removed from the available pool, an opposite call to maybeAvailable cannot be

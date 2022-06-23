@@ -1,6 +1,8 @@
 package deltix.util.io;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 /**
  *  Adapts java.io.RandomAccessFile to java.io.InputStream interface,
@@ -54,7 +56,7 @@ public class RandomAccessFileToInputStreamAdapterMT
     
     /**
      *  Override to impose additional limit on file length.
-     *  Default implementation returns <tt>Long.MAX_VALUE</tt>.
+     *  Default implementation returns <code>Long.MAX_VALUE</code>.
      */
     protected long              additionalLimit () throws IOException {
         return (Long.MAX_VALUE);

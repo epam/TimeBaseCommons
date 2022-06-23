@@ -1,10 +1,5 @@
 package deltix.qsrv.hf.spi.conn;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.gflog.LogLevel;
-import deltix.util.lang.Util;
-import deltix.util.log.LazyLogger;
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
@@ -24,10 +19,10 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     public interface Reconnector {
         /**
          *  Try and reconnect. If successful, this method must call
-         *  {@link ReconnectableImpl#connected} on <tt>helper</tt>. After that, the return
+         *  {@link ReconnectableImpl#connected} on <code>helper</code>. After that, the return
          *  value is irrelevant. If unsucessful, this method can either throw
-         *  an exception, or return <tt>true</tt> to reschedule the reconnect,
-         *  or, in rare instances, return <tt>false</tt> to give up.
+         *  an exception, or return <code>true</code> to reschedule the reconnect,
+         *  or, in rare instances, return <code>false</code> to give up.
          *
          * @return  Whether reconnection should be rescheduled.
          * @throws java.lang.Exception

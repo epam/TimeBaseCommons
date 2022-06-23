@@ -1,18 +1,18 @@
 package deltix.util.cmdline;
 
-import deltix.util.io.StreamPump;
-import java.util.*;
-import java.io.*;
-
-import deltix.util.lang.Util;
 import deltix.util.collections.generated.IntegerArrayList;
 import deltix.util.io.IOUtil;
+import deltix.util.io.StreamPump;
+import deltix.util.lang.Util;
 import deltix.util.time.GMT;
+import org.xml.sax.SAXParseException;
+
+import java.io.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import org.xml.sax.SAXParseException;
+import java.util.*;
 
 /**
  *  Helps parse command-line arguments and handle exceptions.
@@ -237,7 +237,7 @@ public abstract class DefaultApplication {
      *	@param key		The argument being looked for.
      *	@return			The file value of the next argument
      *						following <i>key</i>,
-     *						or <tt>null</tt> if the key is not found.
+     *						or <code>null</code> if the key is not found.
      */
     public File 			getFileArg (String key) {
     	String				str = getArgValue (key);
@@ -269,7 +269,7 @@ public abstract class DefaultApplication {
      *	@param key		The argument being looked for.
      *	@return			The file value of the next argument
      *						following <i>key</i>,
-     *						or <tt>null</tt> if the key is not found.
+     *						or <code>null</code> if the key is not found.
      */
     public File []          getFileArgs (String key) {
     	String []			str = getArgValues (key);

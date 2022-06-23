@@ -217,9 +217,8 @@ configure(leafProjects) {
     }
 
     tasks.withType(Javadoc) {
-        // "Xdoclint:all,-reference" - disables fail on missing JavaDoc reference. TODO: Consider removing this.
-        // "-quiet" - skips warning messages (warnings still shown).
-        options.addStringOption('Xdoclint:all,-reference', '-quiet')
+        options.addStringOption('Xdoclint:all,-reference', '-quiet') //  disables fail on missing JavaDoc reference
+        //options.addStringOption('Xdoclint:none', '-quiet') // suppress all warnings
     }
 
     artifacts {

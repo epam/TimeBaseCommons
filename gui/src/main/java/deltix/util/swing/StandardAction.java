@@ -3,10 +3,10 @@ package deltix.util.swing;
 import deltix.gflog.Log;
 import deltix.gflog.LogFactory;
 import deltix.util.lang.SafeResourceBundle;
-import javax.swing.*;
-import java.util.*;
 
-import deltix.util.lang.Util;
+import javax.swing.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  *  Base class for Action implementations. Action properties
@@ -32,15 +32,15 @@ public abstract class StandardAction extends AbstractAction {
      *  <ol>
      *      <li>Figures out the package name of the specified class.
      *      <li>The action name is retrieved from the resource bundle
-     *          called <tt>actions</tt>, under the same package, under the key of
-     *          <tt><i>nameKey</i></tt>.
+     *          called <code>actions</code>, under the same package, under the key of
+     *          <code><i>nameKey</i></code>.
      *      <li>The tooltip text is retrieved from the resource bundle
-     *          called <tt>actions</tt>, under the same package, under the key of
-     *          <tt><i>nameKey</i>.tt</tt>.
+     *          called <code>actions</code>, under the same package, under the key of
+     *          <code><i>nameKey</i>.tt</code>.
      *      <li>Loads the icon image from this package's resource path,
      *          where the icon name is same as the <i>nameKey</i> argument;
-     *          extension <tt>imageType</tt>, unless the <tt>actions</tt>
-     *          resource bundle contains a key called <tt><i>nameKey</i>.tt</tt>,
+     *          extension <code>imageType</code>, unless the <code>actions</code>
+     *          resource bundle contains a key called <code><i>nameKey</i>.tt</code>,
      *          in which case the value of that key is used as the icon resource path.
      *  </ol>
      *

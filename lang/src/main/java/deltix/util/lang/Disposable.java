@@ -5,8 +5,8 @@ import java.io.Closeable;
 /**
  *  A resource that can be closed without throwing a checked exception.
  *  Analogous to the dot Net IDisposable concept. This interface
- *  extends <tt>java.io.Closeable</tt> by overriding its <tt>close</tt> method without
- *  throwing <tt>java.io.IOException</tt>.
+ *  extends <code>java.io.Closeable</code> by overriding its <code>close</code> method without
+ *  throwing <code>java.io.IOException</code>.
  */
 public interface Disposable extends Closeable {
     /**

@@ -1,10 +1,10 @@
 package deltix.util.time;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import deltix.gflog.Log;
 import deltix.gflog.LogFactory;
-import deltix.util.text.*;
+import deltix.util.text.CharSequenceParser;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
@@ -130,7 +130,7 @@ public abstract class Interval implements Serializable {
 
     /**
      *  Returns the short representation of this interval, such as
-     *  <tt>-4Q</tt>
+     *  <code>-4Q</code>
      */
     @Override
     public String                   toString () {

@@ -6,10 +6,10 @@ import deltix.gflog.Log;
 import deltix.gflog.LogFactory;
 import deltix.gflog.LogLevel;
 import deltix.util.concurrent.UncheckedInterruptedException;
-import deltix.util.lang.Util;
 import deltix.util.io.StreamPump;
-
 import deltix.util.io.UncheckedIOException;
+import deltix.util.lang.Util;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -547,7 +547,7 @@ public abstract class SwingUtil {
      *            The Window to be centered.
      * 
      * @throws IllegalArgumentException
-     *             If <TT>wind</TT> is <TT>null</TT>.
+     *             If <code>wind</code> is <code>null</code>.
      */
     public static void centerWithinParent (Window wind) {
         if (wind == null) {
@@ -572,7 +572,7 @@ public abstract class SwingUtil {
      *            The internal frame to be centered.
      * 
      * @throws IllegalArgumentException
-     *             If <TT>frame</TT> is <TT>null</TT>.
+     *             If <code>frame</code> is <code>null</code>.
      */
     public static void centerWithinDesktop (JInternalFrame frame) {
         if (frame == null) {
@@ -595,7 +595,7 @@ public abstract class SwingUtil {
      *            The Window to be centered.
      * 
      * @throws IllegalArgumentException
-     *             If <TT>wind</TT> is <TT>null</TT>.
+     *             If <code>wind</code> is <code>null</code>.
      */
     public static void centerWithinScreen (Window wind) {
         if (wind == null) {
@@ -626,7 +626,7 @@ public abstract class SwingUtil {
      *            within.
      * 
      * @throws IllegalArgumentException
-     *             If <TT>Window</TT> or <TT>Rectangle</TT> is <TT>null</TT>.
+     *             If <code>Window</code> or <code>Rectangle</code> is <code>null</code>.
      */
     private static void center (Component wind,
                                 Rectangle rect) {

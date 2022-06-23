@@ -206,7 +206,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
      *
      *  @param key          The key
      *  @param notFoundValue This will be returned if the key was not associated with a value.
-     *  @return The old value associated with the key, or <tt>notFoundValue</tt>.
+     *  @return The old value associated with the key, or <code>notFoundValue</code>.
      */
     public ${value_type}               remove (${key_type} key, ${value_type} notFoundValue) {
         int         idx = find (key);
@@ -270,7 +270,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
      *  @param key          The key
      *  @param value        The new value to put in table
      *  @param notFoundValue This will be returned if the key was not associated with a value.
-     *  @return The old value associated with the key, or <tt>notFoundValue</tt>.
+     *  @return The old value associated with the key, or <code>notFoundValue</code>.
      */
     public ${value_type}               putAndGet (
         ${key_type}                       key,
