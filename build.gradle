@@ -27,8 +27,6 @@ if (enableSpotbugs) {
     println("Spotbugs is ENABLED")
 }
 
-apply from: "$rootDir/gradle/Release.gradle"
-
 ext {
     publisherUser = findProperty('ARTIFACTORY_USER') ?: System.getenv('ARTIFACTORY_USER') ?: "FakeUser"
     publisherPassword = findProperty('ARTIFACTORY_PASS') ?: System.getenv('ARTIFACTORY_PASS') ?: "FakePassword"
@@ -141,9 +139,9 @@ configure(leafProjects) {
             baseName archivesBaseName
             attributes 'Manifest-Version': "1.0",
                     'Created-By': vendor,
-                    'Implementation-Title': project.name, // TODO: Fill it!
+                    'Implementation-Title': "QuantServer Commons",
                     'Implementation-Vendor': vendor,
-                    'Implementation-Version': version
+                    'Implementation-Version': project.version
         }
     }
 
@@ -296,8 +294,8 @@ gitlabRelease {
     assets.add(project.publishRepositoryUrl) // TODO: nexus pass
 
     msteams {
-        projectName = "Exchange Publisher"
-        color = "ABEB7B"
+        projectName = "QuantServer Commons"
+        color = "1B567B"
     }
 }
 
