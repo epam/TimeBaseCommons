@@ -338,7 +338,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #if($name == "Boolean")
             a[i] = (T) Boolean.valueOf(elementData[i]);
 #else
-            a[i] = (T) new ${type_Object}(elementData[i]);
+            a[i] = (T) ${type_Object}.valueOf(elementData[i]);
 #end
         }
 
@@ -990,9 +990,9 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     public String	toString () {
-		StringBuffer	buf = new StringBuffer ("{");
+		StringBuilder	buf = new StringBuilder ("{");
 		for (int idx = 0; idx < size; idx ++) {
-			buf.append ("" + elementData[idx]);
+			buf.append(elementData[idx]);
 			if (idx < size - 1)
 				buf.append (", ");
 			else
@@ -1037,7 +1037,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #if($name == "Boolean")
     		return Boolean.valueOf(nextBooleanElement());
 #else
-    		return (new ${type_Object} (next${name_abbr}Element ()));
+    		return next${name_abbr}Element ();
 #end
 
     	}
