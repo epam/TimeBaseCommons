@@ -68,7 +68,7 @@ configure(leafProjects) {
     // Defines versions of dependencies to be used by subprojects
     dependencyManagement {
         dependencies {
-            dependency 'deltix:deltix-thread-affinity:1.0.2'
+            dependency 'deltix:deltix-thread-affinity:1.0.3'
             dependency 'org.apache.commons:commons-lang3:3.4'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
@@ -173,7 +173,7 @@ configure(leafProjects) {
 
     task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
         group "build"
-        description 'Copies all project JAR and all it\'s runtime dependencies to ' + allJarsPath
+        description 'Copies all project JAR and all its runtime dependencies to ' + allJarsPath
         from jar // Main produced JAR of the subproject
         into allJarsPath
     }
