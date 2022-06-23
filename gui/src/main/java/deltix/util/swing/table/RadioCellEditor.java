@@ -1,16 +1,13 @@
-/**
- * 
- */
 package deltix.util.swing.table;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class RadioCellEditor extends AbstractCellEditor implements TableCellEditor {
-    private JRadioButton _radioButton;
+    private final JRadioButton _radioButton;
 
     public RadioCellEditor () {
         super ();
@@ -30,12 +27,12 @@ public class RadioCellEditor extends AbstractCellEditor implements TableCellEdit
 
         _radioButton.setHorizontalAlignment (SwingUtilities.CENTER);
         Boolean lValueAsBoolean = (Boolean) value;
-        _radioButton.setSelected (lValueAsBoolean.booleanValue ());
+        _radioButton.setSelected (lValueAsBoolean);
         _radioButton.setOpaque (false);
         return _radioButton;
     }
 
     public Object getCellEditorValue () {
-        return new Boolean (_radioButton.isSelected ());
+        return _radioButton.isSelected();
     }
 }

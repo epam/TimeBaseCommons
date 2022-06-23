@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.*;
 
+@SuppressWarnings("unused")
 public class SMTPHandler extends Handler {
 
     private static final int MAX_SUBJECT_LEN = Util.getIntSystemProperty("QuantServer.alerts.maxSubjectLength", 64, 10, 1000);
@@ -75,15 +76,15 @@ public class SMTPHandler extends Handler {
         setFrom(getProperty(manager, "from", null));
         setSmtpHost(getProperty(manager, "smtpHost", null));
         setSmtpPort(parseInt(getProperty(manager, "smtpPort", null), 0));
-        setSmtpSecure(Boolean.valueOf(getProperty(manager, "smtpSecure", "false")));
+        setSmtpSecure(Boolean.parseBoolean(getProperty(manager, "smtpSecure", "false")));
         setSmtpUsername(getProperty(manager, "smtpUsername", null));
         setSmtpPassword(getProperty(manager, "smtpPassword", null));
         setSubject(getProperty(manager, "subject", null));
 
         setSmtpTimeout(parseInt(getProperty(manager, "smtpTimeout", null), DEFAULT_SMTP_TIMEOUT));
-        setDebug(Boolean.valueOf(getProperty(manager, "debug", "false")));
+        setDebug(Boolean.parseBoolean(getProperty(manager, "debug", "false")));
 
-        boolean syncSend = Boolean.valueOf(getProperty(manager, "sync", "false"));
+        boolean syncSend = Boolean.parseBoolean(getProperty(manager, "sync", "false"));
         executor = syncSend ? DirectExecutor.INSTANCE : Executors.newSingleThreadExecutor();
 
         pushLevel = parseLevel(getProperty(manager, "pushLevel", null), defaultPushLevel);
@@ -284,12 +285,7 @@ public class SMTPHandler extends Handler {
     }
 
     protected void doSendBuffer(final LogRecord[] recordBuffer) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                sendBuffer(recordBuffer);
-            }
-        });
+        executor.execute(() -> sendBuffer(recordBuffer));
     }
 
     /**
@@ -336,7 +332,7 @@ public class SMTPHandler extends Handler {
 
             MimeBodyPart part = new MimeBodyPart();
 
-            StringBuffer sbuf = new StringBuffer();
+            StringBuilder sbuf = new StringBuilder();
 
             Formatter formatter = getFormatter();
             String head = formatter.getHead(this);
@@ -390,6 +386,7 @@ public class SMTPHandler extends Handler {
         return "text/plain";
     }
 
+    @SuppressWarnings("unchecked")
     protected static Object instantiateByClassName(String className, Object defaultObj) {
         if (className == null)
             return defaultObj;
@@ -397,7 +394,7 @@ public class SMTPHandler extends Handler {
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             Class clazz = loader.loadClass(className);
-            return clazz.newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception ex) {
             return defaultObj;
         }
@@ -446,7 +443,7 @@ public class SMTPHandler extends Handler {
     ///////////////////////// HELPER CLASSES /////////////////////
 
     public static final class UsernamePasswordAuthenticator extends Authenticator {
-        private PasswordAuthentication auth = null;
+        private PasswordAuthentication auth;
 
         public UsernamePasswordAuthenticator(String user, String password) {
             auth = new PasswordAuthentication(user, password);

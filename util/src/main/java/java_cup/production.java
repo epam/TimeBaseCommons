@@ -1,8 +1,8 @@
 
 package java_cup;
 
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /** This class represents a production in the grammar.  It contains
  *  a LHS non terminal, and an array of RHS symbols.  As various 
@@ -154,7 +154,7 @@ public class production {
       _index = next_index++;
 
       /* put us in the global collection of productions */
-      _all.put(new Integer(_index),this);
+      _all.put(_index,this);
 
       /* put us in the production list of the lhs non terminal */
       lhs_sym.add_production(this);
@@ -227,7 +227,7 @@ public class production {
 
     /** Lookup a production by index. */
   public static production find(int indx) {
-    return (production) _all.get(new Integer(indx));
+    return (production) _all.get(indx);
   }
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/

@@ -5,6 +5,7 @@ import deltix.gflog.LogFactory;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import java.lang.reflect.InvocationTargetException;
 
 public class JavaVerifier {
 
@@ -18,8 +19,8 @@ public class JavaVerifier {
         try {
             Class<? extends JavaCompiler> c = Class.forName(toolsJarClassLoader, false,
                     Thread.currentThread().getContextClassLoader()).asSubclass(JavaCompiler.class);
-            compiler = c.newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            compiler = c.getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             compiler = ToolProvider.getSystemJavaCompiler();
         }
         return compiler;

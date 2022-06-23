@@ -1,3 +1,17 @@
-//rootProject.name = 'commons'
+pluginManagement {
+    repositories {
+        maven {
+            credentials {
+                username System.getenv('NEXUS_USER') ?: getProperty('NEXUS_USER') ?: "FakeProGetUser"
+                password System.getenv('NEXUS_PASS') ?: getProperty('NEXUS_PASS') ?: "FakeProGetPass"
+            }
+            authentication {
+                digest(BasicAuthentication)
+            }
+            url 'https://nexus.deltixhub.com/repository/DevMain'
+        }
+        gradlePluginPortal()
+    }
+}
 
 include ':lang', ':collections', ':util', ':gui', ':tools'

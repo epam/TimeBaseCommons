@@ -1,13 +1,16 @@
 package deltix.util.swing;
 
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.tree.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.EventListenerList;
+import javax.swing.table.TableCellEditor;
+import javax.swing.tree.TreeCellEditor;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.Serializable;
+import java.util.EventObject;
 
 /**
  *  Courtesy of Zafir Anjum, this is a cell editor that shows
@@ -24,7 +27,7 @@ public class JComponentCellEditor implements TableCellEditor, TreeCellEditor, Se
                     dispatchComponent, 
                     MouseEvent.MOUSE_CLICKED,
                     e.getWhen (),
-                    e.getModifiers (), 
+                    e.getModifiersEx(),
                     e.getX (), 
                     e.getY (), 
                     e.getClickCount (),

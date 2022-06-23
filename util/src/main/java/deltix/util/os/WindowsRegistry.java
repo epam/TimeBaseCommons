@@ -1,9 +1,14 @@
 package deltix.util.os;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.prefs.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
+@SuppressWarnings("unused")
 public class WindowsRegistry {
     // inspired by
     // http://javabyexample.wisdomplug.com/java-concepts/34-core-java/62-java-registry-wrapper.html
@@ -17,9 +22,9 @@ public class WindowsRegistry {
 
     private static final int                    KEY_ALL_ACCESS     = 0xf003f;
     private static final int                    KEY_READ           = 0x20019;
-    private static Preferences                  userRoot           = Preferences.userRoot ( );
-    private static Preferences                  systemRoot         = Preferences.systemRoot ( );
-    private static Class<? extends Preferences> userClass          = userRoot.getClass ( );
+    private static final Preferences                  userRoot     = Preferences.userRoot ( );
+    private static final Preferences                  systemRoot   = Preferences.systemRoot ( );
+    private static final Class<? extends Preferences> userClass    = userRoot.getClass ( );
     private static Method                       regOpenKey         = null;
     private static Method                       regCloseKey        = null;
     private static Method                       regQueryValueEx    = null;
@@ -34,81 +39,51 @@ public class WindowsRegistry {
     static {
         try {
             regOpenKey = userClass.getDeclaredMethod ( "WindowsRegOpenKey",
-                                                       new Class[]
-                                                       {
-            int.class,
-            byte[].class,
-            int.class
-                                                       } );
+                    int.class,
+                    byte[].class,
+                    int.class);
             regOpenKey.setAccessible ( true );
             regCloseKey = userClass.getDeclaredMethod ( "WindowsRegCloseKey",
-                                                        new Class[]
-                                                        {
-                                                            int.class
-                                                        } );
+                    int.class);
             regCloseKey.setAccessible ( true );
             regQueryValueEx = userClass.getDeclaredMethod ( "WindowsRegQueryValueEx",
-                                                            new Class[]
-                                                            {
-            int.class,
-            byte[].class
-                                                            } );
+                    int.class,
+                    byte[].class);
             regQueryValueEx.setAccessible ( true );
             regEnumValue = userClass.getDeclaredMethod ( "WindowsRegEnumValue",
-                                                         new Class[]
-                                                         {
-            int.class,
-            int.class,
-            int.class
-                                                         } );
+                    int.class,
+                    int.class,
+                    int.class);
             regEnumValue.setAccessible ( true );
             regQueryInfoKey = userClass.getDeclaredMethod ( "WindowsRegQueryInfoKey1",
-                                                            new Class[]
-                                                            {
-                                                                int.class
-                                                            } );
+                    int.class);
             regQueryInfoKey.setAccessible ( true );
             regEnumKeyEx = userClass.getDeclaredMethod (
                                                          "WindowsRegEnumKeyEx",
-                                                         new Class[]
-                                                         {
-            int.class,
-            int.class,
-            int.class
-                                                         } );
+                    int.class,
+                    int.class,
+                    int.class);
             regEnumKeyEx.setAccessible ( true );
             regCreateKeyEx = userClass.getDeclaredMethod (
                                                            "WindowsRegCreateKeyEx",
-                                                           new Class[]
-                                                           {
-            int.class,
-            byte[].class
-                                                           } );
+                    int.class,
+                    byte[].class);
             regCreateKeyEx.setAccessible ( true );
             regSetValueEx = userClass.getDeclaredMethod (
                                                           "WindowsRegSetValueEx",
-                                                          new Class[]
-                                                          {
-            int.class,
-            byte[].class,
-            byte[].class
-                                                          } );
+                    int.class,
+                    byte[].class,
+                    byte[].class);
             regSetValueEx.setAccessible ( true );
             regDeleteValue = userClass.getDeclaredMethod (
                                                            "WindowsRegDeleteValue",
-                                                           new Class[]
-                                                           {
-            int.class,
-            byte[].class
-                                                           } );
+                    int.class,
+                    byte[].class);
             regDeleteValue.setAccessible ( true );
             regDeleteKey = userClass.getDeclaredMethod (
                                                          "WindowsRegDeleteKey",
-                                                         new Class[]
-                                                         {
-            int.class,
-            byte[].class
-                                                         } );
+                    int.class,
+                    byte[].class);
             regDeleteKey.setAccessible ( true );
         } catch (final Exception e) {
             e.printStackTrace ( );
@@ -120,15 +95,6 @@ public class WindowsRegistry {
 
     /**
      * Read a value from key and value name
-     * 
-     * @param hkey
-     *            HKEY_CURRENT_USER/HKEY_LOCAL_MACHINE
-     * @param key
-     * @param valueName
-     * @return the value
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static String readString ( final int hkey,
                                       final String key,
@@ -153,14 +119,6 @@ public class WindowsRegistry {
 
     /**
      * Read value(s) and value name(s) form given key
-     * 
-     * @param hkey
-     *            HKEY_CURRENT_USER/HKEY_LOCAL_MACHINE
-     * @param key
-     * @return the value name(s) plus the value(s)
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static Map<String, String> readStringValues ( final int hkey,
                                                          final String key )
@@ -182,14 +140,6 @@ public class WindowsRegistry {
 
     /**
      * Read the value name(s) from a given key
-     * 
-     * @param hkey
-     *            HKEY_CURRENT_USER/HKEY_LOCAL_MACHINE
-     * @param key
-     * @return the value name(s)
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static List<String> readStringSubKeys ( final int hkey,
                                                    final String key )
@@ -211,13 +161,6 @@ public class WindowsRegistry {
 
     /**
      * Create a key
-     * 
-     * @param hkey
-     *            HKEY_CURRENT_USER/HKEY_LOCAL_MACHINE
-     * @param key
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static void createKey ( final int hkey,
                                    final String key )
@@ -229,20 +172,12 @@ public class WindowsRegistry {
             ret = createKey ( systemRoot,
                               hkey,
                               key );
-            regCloseKey.invoke ( systemRoot,
-                                 new Object[]
-                                 {
-                                     new Integer ( ret[0] )
-                                 } );
+            regCloseKey.invoke ( systemRoot, ret[0]);
         } else if (hkey == HKEY_CURRENT_USER) {
             ret = createKey ( userRoot,
                               hkey,
                               key );
-            regCloseKey.invoke ( userRoot,
-                                 new Object[]
-                                 {
-                                     new Integer ( ret[0] )
-                                 } );
+            regCloseKey.invoke ( userRoot, ret[0]);
         } else {
             throw new IllegalArgumentException ( "hkey=" + hkey );
         }
@@ -253,15 +188,7 @@ public class WindowsRegistry {
 
     /**
      * Write a value in a given key/value name
-     * 
-     * @param hkey
-     * @param key
-     * @param valueName
-     * @param value
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     */
+      */
     public static void writeStringValue ( final int hkey,
                                           final String key,
                                           final String valueName,
@@ -288,12 +215,6 @@ public class WindowsRegistry {
 
     /**
      * Delete a given key
-     * 
-     * @param hkey
-     * @param key
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static void deleteKey ( final int hkey,
                                    final String key )
@@ -317,13 +238,6 @@ public class WindowsRegistry {
 
     /**
      * delete a value from a given key/value name
-     * 
-     * @param hkey
-     * @param key
-     * @param value
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static void deleteValue ( final int hkey,
                                      final String key,
@@ -360,24 +274,21 @@ public class WindowsRegistry {
         final int[] handles = (int[]) regOpenKey.invoke ( root,
                                                           new Object[]
                                                           {
-                                                                  new Integer ( hkey ),
+                                                                  hkey,
                                                                   toCstr ( key ),
-                                                                  new Integer ( KEY_ALL_ACCESS )
+                                                                  KEY_ALL_ACCESS
                                                           } );
         if (handles[1] != REG_SUCCESS) {
             return handles[1]; // can be REG_NOTFOUND, REG_ACCESSDENIED
         }
-        final int rc = ((Integer) regDeleteValue.invoke ( root,
-                                                          new Object[]
-                                                          {
-                                                                  new Integer ( handles[0] ),
-                                                                  toCstr ( value )
-                                                          } )).intValue ( );
+        final int rc = (Integer) regDeleteValue.invoke(root,
+                new Object[]
+                        {
+                                handles[0],
+                                toCstr(value)
+                        });
         regCloseKey.invoke ( root,
-                             new Object[]
-                             {
-                                 new Integer ( handles[0] )
-                             } );
+                handles[0]);
         return rc;
     }
 
@@ -387,13 +298,11 @@ public class WindowsRegistry {
                                                      throws IllegalArgumentException,
                                                      IllegalAccessException,
                                                      InvocationTargetException {
-        final int rc = ((Integer) regDeleteKey.invoke ( root,
-                                                        new Object[]
-                                                        {
-                                                                new Integer ( hkey ),
-                                                                toCstr ( key )
-                                                        } )).intValue ( );
-        return rc; // can REG_NOTFOUND, REG_ACCESSDENIED, REG_SUCCESS
+        return (int) (Integer) regDeleteKey.invoke(root, new Object[]
+                {
+                        hkey,
+                        toCstr(key)
+                }); // can REG_NOTFOUND, REG_ACCESSDENIED, REG_SUCCESS
     }
 
     private static String readString ( final Preferences root,
@@ -406,9 +315,9 @@ public class WindowsRegistry {
         final int[] handles = (int[]) regOpenKey.invoke ( root,
                                                           new Object[]
                                                           {
-                                                                  new Integer ( hkey ),
+                                                                  hkey,
                                                                   toCstr ( key ),
-                                                                  new Integer ( KEY_READ )
+                                                                  KEY_READ
                                                           } );
         if (handles[1] != REG_SUCCESS) {
             return null;
@@ -416,14 +325,11 @@ public class WindowsRegistry {
         final byte[] valb = (byte[]) regQueryValueEx.invoke ( root,
                                                               new Object[]
                                                               {
-                                                                      new Integer ( handles[0] ),
+                                                                      handles[0],
                                                                       toCstr ( value )
                                                               } );
         regCloseKey.invoke ( root,
-                             new Object[]
-                             {
-                                 new Integer ( handles[0] )
-                             } );
+                handles[0]);
         return (valb != null ? new String ( valb ).trim ( ) : null);
     }
 
@@ -433,13 +339,13 @@ public class WindowsRegistry {
                                                                             throws IllegalArgumentException,
                                                                             IllegalAccessException,
                                                                             InvocationTargetException {
-        final HashMap<String, String> results = new HashMap<String, String> ( );
+        final HashMap<String, String> results = new HashMap<>();
         final int[] handles = (int[]) regOpenKey.invoke ( root,
                                                           new Object[]
                                                           {
-                                                                  new Integer ( hkey ),
+                                                                  hkey,
                                                                   toCstr ( key ),
-                                                                  new Integer ( KEY_READ )
+                                                                  KEY_READ
                                                           } );
         if (handles[1] != REG_SUCCESS) {
             return null;
@@ -447,7 +353,7 @@ public class WindowsRegistry {
         final int[] info = (int[]) regQueryInfoKey.invoke ( root,
                                                             new Object[]
                                                             {
-                                                                new Integer ( handles[0] )
+                                                                    handles[0]
                                                             } );
 
         final int count = info[2]; // count
@@ -456,10 +362,9 @@ public class WindowsRegistry {
             final byte[] name = (byte[]) regEnumValue.invoke ( root,
                                                                new Object[]
                                                                {
-                                                                       new Integer
-                                                                       ( handles[0] ),
-                                                                       new Integer ( index ),
-                                                                       new Integer ( maxlen + 1 )
+                                                                       handles[0],
+                                                                       index,
+                                                                       maxlen + 1
                                                                } );
             final String value = readString ( hkey,
                                               key,
@@ -468,10 +373,7 @@ public class WindowsRegistry {
                           value );
         }
         regCloseKey.invoke ( root,
-                             new Object[]
-                             {
-                                 new Integer ( handles[0] )
-                             } );
+                handles[0]);
         return results;
     }
 
@@ -481,13 +383,13 @@ public class WindowsRegistry {
                                                                       throws IllegalArgumentException,
                                                                       IllegalAccessException,
                                                                       InvocationTargetException {
-        final List<String> results = new ArrayList<String> ( );
+        final List<String> results = new ArrayList<>();
         final int[] handles = (int[]) regOpenKey.invoke ( root,
                                                           new Object[]
                                                           {
-                                                                  new Integer ( hkey ),
+                                                                  hkey,
                                                                   toCstr ( key ),
-                                                                  new Integer ( KEY_READ )
+                                                                  KEY_READ
                                                           } );
         if (handles[1] != REG_SUCCESS) {
             return null;
@@ -495,7 +397,7 @@ public class WindowsRegistry {
         final int[] info = (int[]) regQueryInfoKey.invoke ( root,
                                                             new Object[]
                                                             {
-                                                                new Integer ( handles[0] )
+                                                                    handles[0]
                                                             } );
 
         final int count = info[2]; // count
@@ -504,18 +406,14 @@ public class WindowsRegistry {
             final byte[] name = (byte[]) regEnumKeyEx.invoke ( root,
                                                                new Object[]
                                                                {
-                                                                       new Integer
-                                                                       ( handles[0] ),
-                                                                       new Integer ( index ),
-                                                                       new Integer ( maxlen + 1 )
+                                                                       handles[0],
+                                                                       index,
+                                                                       maxlen + 1
                                                                } );
             results.add ( new String ( name ).trim ( ) );
         }
         regCloseKey.invoke ( root,
-                             new Object[]
-                             {
-                                 new Integer ( handles[0] )
-                             } );
+                handles[0]);
         return results;
     }
 
@@ -528,7 +426,7 @@ public class WindowsRegistry {
         return (int[]) regCreateKeyEx.invoke ( root,
                                                new Object[]
                                                {
-                                                       new Integer ( hkey ),
+                                                       hkey,
                                                        toCstr ( key )
                                                } );
     }
@@ -544,23 +442,17 @@ public class WindowsRegistry {
         final int[] handles = (int[]) regOpenKey.invoke ( root,
                                                           new Object[]
                                                           {
-                                                                  new Integer ( hkey ),
+                                                                  hkey,
                                                                   toCstr ( key ),
-                                                                  new Integer ( KEY_ALL_ACCESS )
+                                                                  KEY_ALL_ACCESS
                                                           } );
 
         regSetValueEx.invoke ( root,
-                               new Object[]
-                               {
-                                       new Integer ( handles[0] ),
-                                       toCstr ( valueName ),
-                                       toCstr ( value )
-                               } );
+                handles[0],
+                toCstr ( valueName ),
+                toCstr ( value ));
         regCloseKey.invoke ( root,
-                             new Object[]
-                             {
-                                 new Integer ( handles[0] )
-                             } );
+                handles[0]);
     }
 
     // utility
@@ -574,7 +466,7 @@ public class WindowsRegistry {
         return result;
     }
 
-    public static void main ( final String args[] ) throws IllegalArgumentException,
+    public static void main ( final String[] args) throws IllegalArgumentException,
                                                    IllegalAccessException,
                                                    InvocationTargetException {
         System.out.println ( WindowsRegistry.readString ( HKEY_LOCAL_MACHINE,

@@ -8,6 +8,7 @@ import deltix.util.io.ByteArrayOutputStreamEx;
 
 import javax.tools.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.*;
 
@@ -45,8 +46,8 @@ public class JavaCompilerHelper {
         try {
             Class<? extends JavaCompiler> c = Class.forName(toolsJarClassLoader, false,
                     Thread.currentThread().getContextClassLoader()).asSubclass(JavaCompiler.class);
-            compiler = c.newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            compiler = c.getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             compiler = ToolProvider.getSystemJavaCompiler();
         }
         return compiler;

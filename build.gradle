@@ -8,16 +8,12 @@ buildscript {
 }
 
 plugins {
-    // Supports functionality similar to Maven BOM.
-    // Helps to avoid re-declaring dependency version in each subproject.
-    // See https://github.com/spring-gradle-plugins/dependency-management-plugin
     id "io.spring.dependency-management" version "1.0.5.RELEASE"
     id "de.undercouch.download" version "3.4.3"
     id "com.github.spotbugs" version "2.0.0" apply false
+    // id 'deltix.gradle.plugins.velocity' version '1.3.0' apply false TODO: investigate
+    id 'deltix.gradle.plugin.gitlab-release' version '1.0.11'
 }
-
-// To update Gradle wrapper use:
-// gradlew wrapper --gradle-version 3.3 --distribution-type all
 
 group 'deltix.qsrv'
 
@@ -31,21 +27,19 @@ if (enableSpotbugs) {
     println("Spotbugs is ENABLED")
 }
 
-// We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
-// So we create a list of leaf projects and apply all java-related plugins on them only.
-def leafProjects = subprojects.findAll { subproject ->
-    subproject.subprojects.empty
-}
-ext.leafProjects = leafProjects // Publish as external variable
-
-// Default test categories
-ext.categories = 'Unit'
-
 apply from: "$rootDir/gradle/Release.gradle"
 
 ext {
     publisherUser = findProperty('ARTIFACTORY_USER') ?: System.getenv('ARTIFACTORY_USER') ?: "FakeUser"
     publisherPassword = findProperty('ARTIFACTORY_PASS') ?: System.getenv('ARTIFACTORY_PASS') ?: "FakePassword"
+
+    categories = 'Unit' // Default test categories
+
+    // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
+    // So we create a list of leaf projects and apply all java-related plugins on them only.
+    leafProjects = subprojects.findAll { subproject ->
+        subproject.subprojects.empty
+    }
 }
 
 apply from: 'promotion.gradle'
@@ -58,19 +52,13 @@ configure(leafProjects) {
     apply plugin: "com.github.spotbugs" // Static analysis
     apply plugin: 'io.spring.dependency-management'
 
-    compileJava.options.encoding = 'UTF-8'
-
     // --- JAVA 11 version ---
-    // sourceCompatibility = 11
-    // targetCompatibility = 11
-    //compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio.ch=ALL-UNNAMED'
-    //compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio=ALL-UNNAMED'
-
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
     compileJava {
-        //options.warnings = false
-        //options.deprecation = false
+        options.warnings = false
+        options.deprecation = true
+        options.encoding = 'UTF-8'
         options.compilerArgs += ["--add-exports=java.base/sun.nio.ch=ALL-UNNAMED", "--add-exports=java.base/sun.nio=ALL-UNNAMED"]
     }
     java {
@@ -312,3 +300,15 @@ task generateTestReport(type: TestReport) {
     reportOn testTasks
     destinationDir = file("$rootDir/build/reports/junit/html/all_reports_merged") // TODO: Pick better name for merged report
 }
+
+
+gitlabRelease {
+    distributionUrl = project.publishRepositoryUrl
+    assets.add(project.publishRepositoryUrl) // TODO: nexus pass
+
+    msteams {
+        projectName = "Exchange Publisher"
+        color = "ABEB7B"
+    }
+}
+

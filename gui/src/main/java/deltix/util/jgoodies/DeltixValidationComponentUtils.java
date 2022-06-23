@@ -1,18 +1,19 @@
 package deltix.util.jgoodies;
 
-import java.awt.*;
-import java.beans.*;
-import java.util.*;
+import com.jgoodies.validation.ValidationMessage;
+import com.jgoodies.validation.ValidationResult;
+import com.jgoodies.validation.view.ValidationComponentUtils;
+import com.jgoodies.validation.view.ValidationComponentUtils.Visitor;
+import deltix.util.lang.Util;
 
 import javax.swing.*;
-import javax.swing.plaf.*;
-import javax.swing.text.*;
-
-import com.jgoodies.validation.*;
-import com.jgoodies.validation.view.*;
-import com.jgoodies.validation.view.ValidationComponentUtils.*;
-
-import deltix.util.lang.*;
+import javax.swing.plaf.UIResource;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DeltixValidationComponentUtils {
 
@@ -32,7 +33,7 @@ public class DeltixValidationComponentUtils {
 
     // A Map that holds reusable prototype text components ********************
 
-    private static final Map<Class<? extends JTextComponent>, JTextComponent> PROTOTYPE_COMPONENTS  = new HashMap<Class<? extends JTextComponent>, JTextComponent> ();
+    private static final Map<Class<? extends JTextComponent>, JTextComponent> PROTOTYPE_COMPONENTS  = new HashMap<>();
 
     // Predefined Component Tree Updates **************************************
 
@@ -112,7 +113,7 @@ public class DeltixValidationComponentUtils {
         JTextComponent prototype = PROTOTYPE_COMPONENTS.get (prototypeClass);
         if (prototype == null) {
             try {
-                prototype = prototypeClass.newInstance ();
+                prototype = prototypeClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 prototype = new JTextField ();
             }

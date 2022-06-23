@@ -1,6 +1,7 @@
 package java_cup;
 
 import java_cup.runtime.Symbol;
+
 import java.util.Hashtable;
 
 /** This class implements a small scanner (aka lexical analyzer or lexer) for
@@ -125,34 +126,34 @@ public class lexer {
   public static void init() throws java.io.IOException
     {
       /* set up the keyword table */
-      keywords.put("package",    new Integer(sym.PACKAGE));
-      keywords.put("import",     new Integer(sym.IMPORT));
-      keywords.put("code",       new Integer(sym.CODE));
-      keywords.put("action",     new Integer(sym.ACTION));
-      keywords.put("parser",     new Integer(sym.PARSER));
-      keywords.put("terminal",   new Integer(sym.TERMINAL));
-      keywords.put("non",        new Integer(sym.NON));
-      keywords.put("nonterminal",new Integer(sym.NONTERMINAL));// [CSA]
-      keywords.put("init",       new Integer(sym.INIT));
-      keywords.put("scan",       new Integer(sym.SCAN));
-      keywords.put("with",       new Integer(sym.WITH));
-      keywords.put("start",      new Integer(sym.START));
-      keywords.put("precedence", new Integer(sym.PRECEDENCE));
-      keywords.put("left",       new Integer(sym.LEFT));
-      keywords.put("right",      new Integer(sym.RIGHT));
-      keywords.put("nonassoc",   new Integer(sym.NONASSOC));
+      keywords.put("package",    sym.PACKAGE);
+      keywords.put("import",     sym.IMPORT);
+      keywords.put("code",       sym.CODE);
+      keywords.put("action",     sym.ACTION);
+      keywords.put("parser",     sym.PARSER);
+      keywords.put("terminal",   sym.TERMINAL);
+      keywords.put("non",        sym.NON);
+      keywords.put("nonterminal",sym.NONTERMINAL);// [CSA]
+      keywords.put("init",       sym.INIT);
+      keywords.put("scan",       sym.SCAN);
+      keywords.put("with",       sym.WITH);
+      keywords.put("start",      sym.START);
+      keywords.put("precedence", sym.PRECEDENCE);
+      keywords.put("left",       sym.LEFT);
+      keywords.put("right",      sym.RIGHT);
+      keywords.put("nonassoc",   sym.NONASSOC);
 
       /* set up the table of single character symbols */
-      char_symbols.put(new Integer(';'), new Integer(sym.SEMI));
-      char_symbols.put(new Integer(','), new Integer(sym.COMMA));
-      char_symbols.put(new Integer('*'), new Integer(sym.STAR));
-      char_symbols.put(new Integer('.'), new Integer(sym.DOT));
-      char_symbols.put(new Integer('|'), new Integer(sym.BAR));
-      char_symbols.put(new Integer('['), new Integer(sym.LBRACK));
-      char_symbols.put(new Integer(']'), new Integer(sym.RBRACK));
-      char_symbols.put(new Integer('}'), new Integer(sym.RBRACE));
-      char_symbols.put(new Integer('<'), new Integer(sym.LT));
-      char_symbols.put(new Integer('>'), new Integer(sym.GT));
+      char_symbols.put((int) ';', sym.SEMI);
+      char_symbols.put((int) ',', sym.COMMA);
+      char_symbols.put((int) '*', sym.STAR);
+      char_symbols.put((int) '.', sym.DOT);
+      char_symbols.put((int) '|', sym.BAR);
+      char_symbols.put((int) '[', sym.LBRACK);
+      char_symbols.put((int) ']', sym.RBRACK);
+      char_symbols.put((int) '}', sym.RBRACE);
+      char_symbols.put((int) '<', sym.LT);
+      char_symbols.put((int) '>', sym.GT);
 
       /* read two characters of lookahead */
       next_char = System.in.read();
@@ -279,11 +280,11 @@ public class lexer {
     {
       Integer result;
 
-      result = (Integer)char_symbols.get(new Integer((char)ch));
+      result = (Integer)char_symbols.get((int) (char) ch);
       if (result == null) 
 	return -1;
       else
-	return result.intValue();
+	return result;
     }
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -369,7 +370,7 @@ public class lexer {
 	    }
 
 	  /* otherwise record the char and move on */
-	  result.append(new Character((char)next_char));
+	  result.append((char)next_char);
 	  advance();
 	}
 
@@ -411,7 +412,7 @@ public class lexer {
 
       /* if we found something, return that keyword */
       if (keyword_num != null)
-	return new Symbol(keyword_num.intValue());
+	    return new Symbol(keyword_num);
 
       /* otherwise build and return an id Symbol with an attached string */
       return new Symbol(sym.ID, result_str);
@@ -538,8 +539,8 @@ public class lexer {
 	  if (next_char == EOF_CHAR) return new Symbol(sym.EOF);
 
 	  /* if we get here, we have an unrecognized character */
-	  emit_warn("Unrecognized character '" + 
-	    new Character((char)next_char) + "'(" + next_char + 
+	  emit_warn("Unrecognized character '" +
+              (char) next_char + "'(" + next_char +
 	    ") -- ignored");
 
 	  /* advance past it */
