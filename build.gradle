@@ -243,7 +243,18 @@ configure(leafProjects) {
         }
 
         publications {
+            // https://github.com/gradle/gradle/issues/11862
+            // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/262
             mavenJava(MavenPublication) {
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
+
                 from components.java
                 if (includeJavaDocs) {
                     artifact javadocJar
