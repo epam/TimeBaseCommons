@@ -303,7 +303,7 @@ task generateTestReport(type: TestReport) {
 
 gitlabRelease {
     distributionUrl = project.publishRepositoryUrl
-    assets.add(project.publishRepositoryUrl) // TODO: nexus pass
+    assets.add('https://nexus.deltixhub.com/repository/DevMain')
 
     msteams {
         projectName = "QuantServer Commons"
