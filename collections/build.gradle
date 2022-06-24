@@ -22,7 +22,7 @@ buildscript {
 apply plugin: 'velocity'
 
 dependencies {
-    implementation project(':lang')
+    api project(':lang')
     testImplementation 'commons-collections:commons-collections:3.2.1'
 }
 
