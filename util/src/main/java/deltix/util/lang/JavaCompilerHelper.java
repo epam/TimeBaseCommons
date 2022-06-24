@@ -1,8 +1,8 @@
 package deltix.util.lang;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.gflog.LogLevel;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
+import com.epam.deltix.gflog.api.LogLevel;
 import deltix.util.io.ByteArrayInputStreamEx;
 import deltix.util.io.ByteArrayOutputStreamEx;
 

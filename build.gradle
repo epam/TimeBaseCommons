@@ -1,3 +1,5 @@
+import com.github.spotbugs.SpotBugsTask
+
 buildscript {
     repositories {
         mavenCentral()
@@ -77,12 +79,12 @@ configure(leafProjects) {
             dependency "com.epam.deltix:dfp:$dfpVersion"
             dependency "deltix:hd-date-time:$hdTimeVersion"
 
-            dependencySet (group: 'deltix', version: '2.0.22') {
-                entry 'deltix-gflog-api'
-                entry 'deltix-gflog-core'
-                entry 'deltix-gflog-jul'
-                entry 'deltix-gflog-dcl'
-                entry 'deltix-gflog-slf4j'
+            dependencySet (group: 'com.epam.deltix', version: '3.0.2') {
+                entry 'gflog-api'
+                entry 'gflog-core'
+                entry 'gflog-jul'
+                entry 'gflog-dcl'
+                entry 'gflog-slf4j'
             }
 
             dependencySet(group: 'com.jidesoft', version: '3.7.8') {
@@ -125,7 +127,7 @@ configure(leafProjects) {
         excludeFilter = rootProject.file('spotbugs-excludes.xml')
     }
 
-    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    tasks.withType(SpotBugsTask) {
         enabled = enableSpotbugs
 
         reports {

@@ -6,7 +6,7 @@ description = 'QuantServer commons-lang set of utilities'
 
 dependencies {
     api "com.epam.deltix:dfp"
-    api 'deltix:deltix-gflog-api'
+    api 'com.epam.deltix:gflog-api'
     api "deltix:hd-date-time"
 
     // For JMH-based tests

@@ -1,22 +1,23 @@
 package deltix.util.jide;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.lang.Thread.*;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogLevel;
+import com.jidesoft.action.DefaultDockableBarDockableHolder;
+import com.jidesoft.docking.DockableFrame;
+import com.jidesoft.docking.DockingManager;
+import com.jidesoft.plaf.LookAndFeelFactory;
+import com.jidesoft.plaf.UIDefaultsLookup;
+import com.jidesoft.plaf.basic.ThemePainter;
+import com.jidesoft.swing.JideScrollPane;
+import deltix.util.io.IOUtil;
+import deltix.util.swing.AppExceptionHandler;
 
 import javax.swing.*;
-
-import com.jidesoft.action.*;
-import com.jidesoft.docking.*;
-import com.jidesoft.plaf.*;
-import com.jidesoft.plaf.basic.*;
-import com.jidesoft.swing.*;
-
-import deltix.gflog.Log;
-import deltix.gflog.LogLevel;
-import deltix.util.io.*;
-import deltix.util.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 public class JideAbstractApp extends DefaultDockableBarDockableHolder 
     implements UncaughtExceptionHandler

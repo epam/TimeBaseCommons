@@ -1,7 +1,7 @@
 package deltix.util.xml;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;

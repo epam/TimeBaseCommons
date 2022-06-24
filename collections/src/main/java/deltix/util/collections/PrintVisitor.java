@@ -1,14 +1,11 @@
 package deltix.util.collections;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.util.lang.Util;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
+
 import java.io.IOException;
 
 
-/**
- *
- */
 public class PrintVisitor implements Visitor <Object> {
     private static final Log LOG = LogFactory.getLog(PrintVisitor.class);
     private final Appendable            out;

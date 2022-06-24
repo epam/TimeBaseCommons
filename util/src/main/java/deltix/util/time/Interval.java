@@ -1,7 +1,7 @@
 package deltix.util.time;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.text.CharSequenceParser;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;

@@ -1,7 +1,7 @@
 package deltix.util.memory;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.lang.Disposable;
 import deltix.util.lang.Util;
 

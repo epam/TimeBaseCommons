@@ -1,11 +1,14 @@
 package deltix.util.net.timer;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.lang.Util;
-import deltix.util.memory.*;
-import java.io.*;
-import java.net.*;
+import deltix.util.memory.DataExchangeUtils;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.SocketException;
 
 /**
  *

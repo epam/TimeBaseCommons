@@ -1,13 +1,15 @@
 package deltix.util.concurrent;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.gflog.LogLevel;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
+import com.epam.deltix.gflog.api.LogLevel;
 import deltix.util.collections.QuickList;
-import deltix.util.lang.Util;
-import java.util.*;
-import java.util.concurrent.locks.LockSupport;
 import net.jcip.annotations.GuardedBy;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  *  Similar to standard Java executors, but does not allocate memory on task

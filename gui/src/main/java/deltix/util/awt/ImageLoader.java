@@ -1,7 +1,7 @@
 package deltix.util.awt;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.io.IOUtil;
 import deltix.util.io.StreamPump;
 import deltix.util.lang.Util;

@@ -1,17 +1,20 @@
 package deltix.util.io;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.codec.HexBinCharEncoder;
 import deltix.util.codec.HexCharBinDecoder;
-import java.io.*;
-
 import deltix.util.lang.Util;
-import deltix.util.memory.*;
+import deltix.util.memory.MemoryDataInput;
+import deltix.util.memory.MemoryDataOutput;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import javax.crypto.*;
-import javax.crypto.spec.*;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import java.io.*;
 
 
 /**

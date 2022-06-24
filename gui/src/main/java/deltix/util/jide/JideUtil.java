@@ -1,18 +1,18 @@
 package deltix.util.jide;
 
-import java.awt.*;
-import java.io.*;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
+import com.epam.deltix.gflog.api.LogLevel;
+import com.jidesoft.dialog.JideOptionPane;
+import com.jidesoft.swing.JideButton;
+import com.jidesoft.swing.PartialLineBorder;
+import deltix.util.lang.Util;
 
 import javax.swing.*;
-import javax.swing.border.*;
-
-import com.jidesoft.dialog.*;
-import com.jidesoft.swing.*;
-
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.gflog.LogLevel;
-import deltix.util.lang.*;
+import javax.swing.border.CompoundBorder;
+import java.awt.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  *  Colleciton of static utilities

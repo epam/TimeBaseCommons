@@ -1,11 +1,13 @@
 package deltix.util.os;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.io.IOUtil;
 import deltix.util.lang.Util;
 
-import javax.management.*;
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.regex.Matcher;

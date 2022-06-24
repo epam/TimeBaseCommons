@@ -1,7 +1,7 @@
 package deltix.util.log;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 
 /**
  * Created by Alex Karpovich on 4/16/2018.

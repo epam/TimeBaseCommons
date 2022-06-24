@@ -1,7 +1,7 @@
 package deltix.util.lang;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 
 import java.io.*;
 import java.lang.management.*;
@@ -13,13 +13,13 @@ import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-/** Set of useful methods */
+@SuppressWarnings("unused")
 public class Util {
     public static final boolean  IS64BIT            = "64".equals(System.getProperty("sun.arch.data.model"));
     public static final boolean  IS32BIT            = "32".equals(System.getProperty("sun.arch.data.model"));
 
     public static final String   LOGGER_NAME        = "deltix.util";
-    private static final Log     LOG                = LogFactory.getLog(Util.class);
+    private static final Log LOG                = LogFactory.getLog(Util.class);
     public static final boolean  IS_WINDOWS_OS      = System.getProperty ("path.separator").equals(";");
     public static final String   NATIVE_LINE_BREAK  = System.getProperty("line.separator");
     public static final String[] EMPTY_STRING_ARRAY = {};
@@ -328,7 +328,6 @@ public class Util {
         Object ...              args
     )
         throws
-            ClassNotFoundException,
             NoSuchMethodException,
             InvocationTargetException,
             IllegalAccessException
@@ -521,7 +520,7 @@ public class Util {
     }
 
     public static Runnable  methodRunnable (final Object obj, String methodName) {                
-        Method      m = null;
+        Method      m;
 
         Class <?> cls = obj.getClass ();
         while (true)  {
@@ -1067,7 +1066,7 @@ public class Util {
             sb.append(" on ").append(info.getLockName());
 
         if (info.getLockOwnerName() != null)
-            sb.append(" owned by \"" + info.getLockOwnerName() + "\" id=" + info.getLockOwnerId());
+            sb.append(" owned by \"").append(info.getLockOwnerName()).append("\" id=").append(info.getLockOwnerId());
 
 //        if (isSuspended()) {
 //            sb.append(" (suspended)");
@@ -1107,7 +1106,7 @@ public class Util {
 
             for (MonitorInfo mi : info.getLockedMonitors()) {
                 if (mi.getLockedStackDepth() == i) {
-                    sb.append("\t-  locked " + mi);
+                    sb.append("\t-  locked ").append(mi);
                     sb.append('\n');
                 }
             }
@@ -1152,6 +1151,7 @@ public class Util {
     }
 
     /** @return Array of all interfaces implemented by given class (calls cls.getInterfaces() recursively), never null */
+    @SuppressWarnings("rawtypes")
     public static Class [] getClassInterfaces (Class cls) {
         List <Class> result = new ArrayList<Class> ();
 
@@ -1169,10 +1169,11 @@ public class Util {
             }
             c = c.getSuperclass();
         }
-        return result.toArray(new Class [result.size()]);
+        return result.toArray(new Class[0]);
     }
 
     /** @return true if given cls is instanceof interface specified by className */
+    @SuppressWarnings("rawtypes")
     public static boolean isntanceOf (Class cls, String className) {
 
         Class c = cls;
@@ -1306,7 +1307,7 @@ public class Util {
      *  @exception ArrayIndexOutOfBoundsException
      *                          If <code>atIdx</code> is out of bounds.
      */
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> T []    arraydel (T [] array, int atIdx) {
         int                 oldDim = array.length;
 

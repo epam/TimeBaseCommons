@@ -1,9 +1,8 @@
 package deltix.util.swing;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogLevel;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogLevel;
 import deltix.util.io.IOUtil;
-import deltix.util.lang.Util;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;

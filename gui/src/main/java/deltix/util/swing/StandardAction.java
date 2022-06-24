@@ -1,7 +1,7 @@
 package deltix.util.swing;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.lang.SafeResourceBundle;
 
 import javax.swing.*;

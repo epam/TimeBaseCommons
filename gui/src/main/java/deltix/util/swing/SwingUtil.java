@@ -1,10 +1,10 @@
 package deltix.util.swing;
 
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
+import com.epam.deltix.gflog.api.LogLevel;
 import com.jidesoft.combobox.AbstractComboBox;
 import com.jidesoft.combobox.DateComboBox;
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.gflog.LogLevel;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.io.StreamPump;
 import deltix.util.io.UncheckedIOException;

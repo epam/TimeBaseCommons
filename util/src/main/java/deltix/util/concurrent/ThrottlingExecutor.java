@@ -1,7 +1,7 @@
 package deltix.util.concurrent;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
 import deltix.util.collections.QuickList;
 import deltix.util.lang.ExceptionHandler;
 import deltix.util.time.TimeKeeper;

@@ -1,8 +1,8 @@
 package deltix.util.time;
 
-import deltix.gflog.Log;
-import deltix.gflog.LogFactory;
-import deltix.gflog.LogLevel;
+import com.epam.deltix.gflog.api.Log;
+import com.epam.deltix.gflog.api.LogFactory;
+import com.epam.deltix.gflog.api.LogLevel;
 
 /**
  *  Logs a message if an activity takes longer than specified time.
