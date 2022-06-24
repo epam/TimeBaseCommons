@@ -5,12 +5,12 @@ dependencies {
                    project(':util')
 
     // company repository
-    implementation 'com.jidesoft:deltix-jide-components',
-                   'com.jidesoft:deltix-jide-dialogs',
-                   'com.jidesoft:deltix-jide-action',
-                   'com.jidesoft:deltix-jide-dock'
+    api 'com.jidesoft:deltix-jide-components',
+        'com.jidesoft:deltix-jide-dialogs',
+        'com.jidesoft:deltix-jide-action',
+        'com.jidesoft:deltix-jide-dock'
 
-    implementation ('com.jidesoft:deltix-jide-grids') {
+    api ('com.jidesoft:deltix-jide-grids') {
         exclude module: 'log4j'
         exclude module: 'commons-logging'
     }
