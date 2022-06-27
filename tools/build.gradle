@@ -1,6 +1,0 @@
-description = 'QuantServer general purpose utilities'
-
-dependencies {
-    implementation project(':util'),
-                   project(':collections')
-}

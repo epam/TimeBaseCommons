@@ -1,8 +1,8 @@
 description = 'QuantServer general purpose utilities'
 
 dependencies {
-    api project(':lang')
-    implementation project(':collections')
+    api project(':lang'),
+        project(':collections')
 
     implementation 'deltix:deltix-thread-affinity'
     implementation 'javax.mail:mail'

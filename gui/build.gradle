@@ -1,8 +1,8 @@
 
 dependencies {
-    implementation project(':lang'),
-                   project(':collections'),
-                   project(':util')
+    api project(':lang'),
+        project(':collections'),
+        project(':util')
 
     // company repository
     api 'com.jidesoft:deltix-jide-components',

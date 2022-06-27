@@ -14,4 +14,4 @@ pluginManagement {
     }
 }
 
-include ':lang', ':collections', ':util', ':gui', ':tools'
+include ':lang', ':collections', ':util', ':gui'
