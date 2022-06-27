@@ -2,7 +2,9 @@ package deltix.util.csvx;
 
 import deltix.util.cmdline.DefaultApplication;
 import deltix.util.collections.CharSequenceSet;
-import deltix.util.io.*;
+import deltix.util.io.CSVWriter;
+import deltix.util.io.IOUtil;
+
 import java.io.*;
 
 public class CSVFilter extends DefaultApplication {

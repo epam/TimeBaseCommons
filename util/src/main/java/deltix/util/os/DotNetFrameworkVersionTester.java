@@ -1,7 +1,9 @@
 package deltix.util.os;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class DotNetFrameworkVersionTester {
 
