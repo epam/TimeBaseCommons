@@ -995,9 +995,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 			buf.append ("" + elementData[idx]);
 			if (idx < size - 1)
 				buf.append (", ");
-			else
-				buf.append ("}");
 		}
+		buf.append ("}");
 
 		return (buf.toString ());
     }
