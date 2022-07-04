@@ -47,6 +47,16 @@ public class Test_CollectionUtil {
         }
     }
 
+    @Test
+    public void testToString() {
+        LongArrayList list = new LongArrayList();
+        Assert.assertEquals("{}", list.toString());
+        list.add(1L);
+        Assert.assertEquals("{1}", list.toString());
+        list.add(2L);
+        Assert.assertEquals("{1, 2}", list.toString());
+    }
+
     private static LongList list(long... values) {
         return new LongArrayList(values);
     }
