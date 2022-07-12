@@ -1,17 +1,15 @@
 package deltix.util.memory;
 
-import deltix.util.CommonsJUnitCategories;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Alex Karpovich on 06/10/2020.
  */
-@Category(CommonsJUnitCategories.Utils.class)
+@Tag("utils")
 public class Test_MDI {
 
     @Test

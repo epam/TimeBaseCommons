@@ -100,6 +100,17 @@ configure(leafProjects) {
                 entry 'jmh-core'
                 entry 'jmh-generator-annprocess'
             }
+
+            dependency "junit:junit:4.13.2"
+            dependency "org.mockito:mockito-core:4.6.1"
+
+            dependencySet (group: 'org.junit.jupiter', version: '5.8.2') {
+                entry 'junit-jupiter-api'
+                entry 'junit-jupiter-engine'
+            }
+            dependencySet (group: 'org.junit.vintage', version: '5.8.2') {
+                entry 'junit-vintage-engine'
+            }
         }
     }
 
@@ -114,9 +125,29 @@ configure(leafProjects) {
         compileOnly 'com.google.code.findbugs:jsr305'
         compileOnly 'com.google.code.findbugs:annotations'
 
-        testImplementation 'junit:junit:4.12'
+        testCompileOnly 'junit:junit'
+
+        testImplementation "org.mockito:mockito-core"
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+        testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+
+        testRuntimeOnly 'com.epam.deltix:gflog-core'
 
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
+    }
+
+    test {
+        // legacy support for JUnit 4
+        useJUnit {
+            setIncludeCategories categories.split(',').collect { "deltix.util.CommonsJUnitCategories\$${it}".toString() } as Set
+        }
+
+        useJUnitPlatform {
+        }
+
+        jvmArgs '-Dgflog.sync=true', '-Dgflog.console.appender.wrap=true' // sync logging to not mix up messages from different tests
     }
 
     spotbugs {
@@ -267,13 +298,6 @@ configure(leafProjects) {
 
     if (!includeJavaDocs) {
         tasks.withType(Javadoc).all { enabled = false }
-    }
-
-    //tasks.test { enabled = false }
-    test {
-        useJUnit {
-            setIncludeCategories categories.split(',').collect { "deltix.util.CommonsJUnitCategories\$${it}".toString() } as Set
-        }
     }
 
 }

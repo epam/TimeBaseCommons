@@ -1,18 +1,19 @@
 package deltix.util.memory;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
 
-@Category(Utils.class)
+
+@Tag("utils")
 public class Test_MemoryDataInputOutput {
     private MemoryDataOutput        out;
     private MemoryDataInput         in;
     
         
-    @Before
+    @BeforeEach
     public void     setUp () {
         out = new MemoryDataOutput (1); 
         in = new MemoryDataInput ();
@@ -133,11 +134,11 @@ public class Test_MemoryDataInputOutput {
             double        actual = in.readScaledDouble ();
             
             if (Double.isNaN (v))
-                assertTrue ("!Double.isNaN (" + actual + ")", Double.isNaN (actual));
+                assertTrue(Double.isNaN (actual), "!Double.isNaN (" + actual + ")");
             else if (Double.isInfinite (v))
                 assertTrue (v == actual);
             else
-                assertEquals (v, actual, v * 1E-16);
+                assertEquals (v, actual, Math.abs(v * 1E-16));
         }
         
         out.reset ();
@@ -151,7 +152,7 @@ public class Test_MemoryDataInputOutput {
             double          read = in.readScaledDouble ();
             
             if (Double.isNaN (v))
-                assertTrue ("!Double.isNaN (" + read + ")", Double.isNaN (read));
+                assertTrue(Double.isNaN (read), "!Double.isNaN (" + read + ")");
             else {
                 long        actual = Math.round (read * 1000);
                 long        expected = Math.round (v * 1000);
@@ -173,7 +174,7 @@ public class Test_MemoryDataInputOutput {
             double        actual = in.readDecimal64 ();
 
             if (Double.isNaN (v))
-                assertTrue ("!Double.isNaN (" + actual + ")", Double.isNaN (actual));
+                assertTrue(Double.isNaN (actual), "!Double.isNaN (" + actual + ")");
             else if (Double.isInfinite (v))
                 assertTrue (v == actual);
             else

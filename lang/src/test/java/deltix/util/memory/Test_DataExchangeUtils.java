@@ -1,13 +1,11 @@
 package deltix.util.memory;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
-
-@Category(Utils.class)
+@Tag("utils")
 public class Test_DataExchangeUtils {
 
 
@@ -22,7 +20,7 @@ public class Test_DataExchangeUtils {
 
                 long expected = getBigEndianLong (buf);
                 long actual = DataExchangeUtils.readLong(buf, 0);
-                assertEquals ("100 nanos", expected, actual);
+                assertEquals (expected, actual, "100 nanos");
 
                 mask = mask << 1;
                 buf[i] = 0;
@@ -41,7 +39,7 @@ public class Test_DataExchangeUtils {
 
                 long expected = getBigEndianLong (buf);
                 long actual = DataExchangeUtils.readLong(buf, 0);
-                assertEquals ("100 nanos", expected, actual);
+                assertEquals (expected, actual,"100 nanos");
 
                 mask = mask << 1;
             }

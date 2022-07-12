@@ -1,18 +1,17 @@
 package deltix.util.lang;
 
-import deltix.util.CommonsJUnitCategories;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Andy
  *         Date: 6/4/12 11:15 AM
  */
-@Category(CommonsJUnitCategories.Utils.class)
+@Tag("utils")
 public class Test_Util {
 
     @Test
