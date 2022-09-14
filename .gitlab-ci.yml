@@ -43,7 +43,7 @@ cache:
         - schedules
 
 # Builds and tests release
-"Build: Java 8":
+"Build: Java 11":
     stage: build
     image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
     script:
@@ -53,7 +53,8 @@ cache:
         paths:
           - libs/
     tags:
-        - DockerExecutor
+      - Linux
+      - DockerExecutor
     except:
         - tags
         - schedules
@@ -61,7 +62,7 @@ cache:
 # Tests code (for scheduled checks)
 "Test":
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
@@ -73,12 +74,13 @@ cache:
     paths:
       - build/reports/spotbugs/main.html
   tags:
+    - Linux
     - DockerExecutor
 
 # Checks dependencies (for scheduled checks)
 dependency-check:
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
@@ -89,6 +91,9 @@ dependency-check:
     expire_in: 30 day
     paths:
       - build/reports/dependency-check-report.html
+    tags:
+      - Linux
+      - DockerExecutor
 
 # Executes release (creates tag)
 "Release":
