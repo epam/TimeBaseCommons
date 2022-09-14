@@ -123,7 +123,7 @@ dependency-check:
         - git checkout origin/pipeline-$CI_PIPELINE_ID~1
         - ./gradlew publish
     dependencies:
-        - "Build: Java 8"
+        - "Build: Java 11"
     only:
         - /^release-.*$/
     tags:
