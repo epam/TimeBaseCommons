@@ -62,7 +62,7 @@ cache:
 # Tests code (for scheduled checks)
 "Test":
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-11-gradle-5.4.1:latest
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
@@ -80,7 +80,7 @@ cache:
 # Checks dependencies (for scheduled checks)
 dependency-check:
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-11-gradle-5.4.1:latest
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
