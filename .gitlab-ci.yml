@@ -91,10 +91,9 @@ dependency-check:
     expire_in: 30 day
     paths:
       - build/reports/dependency-check-report.html
-    tags:
-      - Linux
-      - DockerExecutor
-
+  tags:
+    - Linux
+    - DockerExecutor
 # Executes release (creates tag)
 "Release":
     stage: release
