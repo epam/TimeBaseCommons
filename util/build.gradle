@@ -5,13 +5,13 @@ dependencies {
             project(':collections')
 
     compile 'deltix:deltix-gflog-api'
-    compile ('deltix:deltix-gflog-dcl') { transitive = false }
+    compile ('deltix:deltix-gflog-dcl')
     runtime 'deltix:deltix-gflog-core'
 
     compile 'deltix:deltix-thread-affinity'
 
     compile 'commons-lang:commons-lang'
-    compile 'org.apache.commons:commons-compress:1.7'
+    compile 'org.apache.commons:commons-compress'
 
     compile 'javax.xml.bind:jaxb-api:2.2.8'
     compile 'com.sun.xml.bind:jaxb-impl:2.3.0'

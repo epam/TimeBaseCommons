@@ -80,6 +80,10 @@ configure(leafProjects) {
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'
 
+            dependency 'org.apache.commons:commons-compress:1.21'
+
+            dependency 'com.google.guava:guava:20.0'
+
             // dependency 'org.mockito:mockito-core:1.10.19'
 
             dependencySet (group: 'deltix', version: '2.0.22') {
@@ -291,6 +295,16 @@ allprojects {
         suppressionFile = file("$rootDir/dependency-check-suppression-file.xml")
         analyzers {
             assemblyEnabled = false
+        }
+        scanConfigurations = ["runtimeClasspath", "compileClasspath"]
+    }
+
+    task printConfigurations {
+        doLast {task ->
+            println "Project Name: $project.name configurations:"
+            configurations.each {
+                println "    $it.name"
+            }
         }
     }
 }
