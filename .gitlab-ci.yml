@@ -1,6 +1,3 @@
-variables:
-  JAVA_IMAGE: dockerhub.deltixhub.com/gradle:7.4.2-jdk11-alpine
-
 stages:
   - prepare
   - build
@@ -47,7 +44,7 @@ cache:
 
 "Build":
   stage: build
-  image: ${JAVA_IMAGE}
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
     - ./gradlew build :util:downloadCodes test --no-daemon
@@ -62,7 +59,7 @@ cache:
 
 "Test":
   stage: test
-  image: ${JAVA_IMAGE}
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
@@ -100,7 +97,7 @@ cache:
 
 "Publish":
   stage: publish
-  image: ${JAVA_IMAGE}
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1
     - ./gradlew publish
@@ -116,7 +113,7 @@ cache:
 
 "Trigger GitLab Release":
   stage: trigger
-  image: ${JAVA_IMAGE}
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
     - ./gradlew gitlabRelease -i -S
@@ -164,7 +161,7 @@ cache:
 
 dependency-check:
   stage: test
-  image: ${JAVA_IMAGE}
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
   only:
     - schedules
   script:
