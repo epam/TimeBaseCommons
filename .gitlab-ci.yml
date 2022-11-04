@@ -47,7 +47,7 @@ cache:
   image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - ./gradlew build :util:downloadCodes test --no-daemon
+    - ./gradlew build :util:downloadCodes test --no-daemon :dependencyCheckAggregate
   artifacts:
     paths:
       - libs/
@@ -141,8 +141,6 @@ cache:
   except:
     - tags
 
-
-
 "Promote to public":
   stage: promote
   cache: {} # Disable cache for this job because this job does not uses any data from the cache
@@ -161,7 +159,7 @@ cache:
 
 dependency-check:
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/library/openjdk-8-gradle-5.4.1:latest
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
