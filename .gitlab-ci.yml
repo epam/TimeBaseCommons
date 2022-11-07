@@ -153,7 +153,7 @@ before_script:
   dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
   tags:
     - Linux
-    - ShellExecutor
+    - DockerExecutor
 
 dependency-check:
   stage: test
