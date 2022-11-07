@@ -14,11 +14,6 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
-
 "Prepare":
   stage: prepare
   script:
@@ -50,7 +45,7 @@ cache:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - ./gradlew build :util:downloadCodes test --no-daemon :dependencyCheckAggregate
+    - gradle build :util:downloadCodes test :dependencyCheckAggregate --no-daemon --no-watch-fs
   artifacts:
     paths:
       - libs/
@@ -66,7 +61,7 @@ cache:
   only:
     - schedules
   script:
-    - ./gradlew check --parallel
+    - gradle check --full-stacktrace --parallel --no-daemon --no-watch-fs
   artifacts:
     name: "${CI_JOB_ID}_${CI_JOB_NAME}"
     when: always
@@ -103,7 +98,7 @@ cache:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1
-    - ./gradlew publish
+    - gradle publish --no-daemon --no-watch-fs
   dependencies:
     - "Build"
   only:
@@ -119,7 +114,7 @@ cache:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - ./gradlew gitlabRelease -i -S
+    - gradle gitlabRelease --full-stacktrace --no-daemon --no-watch-fs
   only:
     - /^release-.*$/
   tags:
@@ -166,7 +161,7 @@ dependency-check:
   only:
     - schedules
   script:
-    - ./gradlew :dependencyCheckAggregate
+    - gradle :dependencyCheckAggregate --full-stacktrace --no-daemon --no-watch-fs
   artifacts:
     name: "${CI_JOB_ID}_${CI_JOB_NAME}"
     when: always
