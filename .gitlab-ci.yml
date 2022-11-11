@@ -1,3 +1,6 @@
+variables:
+  JAVA_IMAGE: dockerhub.deltixhub.com/gradle:7.4.2-jdk11-alpine
+
 stages:
   - prepare
   - build
@@ -10,11 +13,6 @@ stages:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
 
 "Prepare":
   stage: prepare
@@ -44,10 +42,10 @@ cache:
 
 "Build":
   stage: build
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - ./gradlew build :util:downloadCodes test --no-daemon :dependencyCheckAggregate
+    - gradle build :util:downloadCodes test :dependencyCheckAggregate --no-daemon --no-watch-fs
   artifacts:
     paths:
       - libs/
@@ -59,11 +57,11 @@ cache:
 
 "Test":
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   only:
     - schedules
   script:
-    - ./gradlew check --parallel
+    - gradle check --full-stacktrace --parallel --no-daemon --no-watch-fs
   artifacts:
     name: "${CI_JOB_ID}_${CI_JOB_NAME}"
     when: always
@@ -97,10 +95,10 @@ cache:
 
 "Publish":
   stage: publish
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1
-    - ./gradlew publish
+    - gradle publish --no-daemon --no-watch-fs
   dependencies:
     - "Build"
   only:
@@ -113,10 +111,10 @@ cache:
 
 "Trigger GitLab Release":
   stage: trigger
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - ./gradlew gitlabRelease -i -S
+    - gradle gitlabRelease --full-stacktrace --no-daemon --no-watch-fs
   only:
     - /^release-.*$/
   tags:
@@ -155,15 +153,15 @@ cache:
   dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
   tags:
     - Linux
-    - ShellExecutor
+    - DockerExecutor
 
 dependency-check:
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   only:
     - schedules
   script:
-    - ./gradlew :dependencyCheckAggregate
+    - gradle :dependencyCheckAggregate --full-stacktrace --no-daemon --no-watch-fs
   artifacts:
     name: "${CI_JOB_ID}_${CI_JOB_NAME}"
     when: always
