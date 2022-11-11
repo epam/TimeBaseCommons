@@ -27,5 +27,5 @@ dependencies {
 
     implementation('net.java.dev.jna:jna:4.2.1')
     implementation('net.java.dev.jna:jna-platform:4.2.1')
-    implementation('org.apache.bcel:bcel:6.0')
+    implementation('org.apache.bcel:bcel:6.6.0')
 }
