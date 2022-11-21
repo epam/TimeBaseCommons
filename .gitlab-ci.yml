@@ -155,16 +155,20 @@ before_script:
     - Linux
     - DockerExecutor
 
+# Checks dependencies (for scheduled checks)
 dependency-check:
   stage: test
-  image: ${JAVA_IMAGE}
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   only:
     - schedules
   script:
-    - gradle :dependencyCheckAggregate --full-stacktrace --no-daemon --no-watch-fs
+    - ./gradlew :dependencyCheckAggregate
   artifacts:
     name: "${CI_JOB_ID}_${CI_JOB_NAME}"
     when: always
     expire_in: 30 day
     paths:
       - build/reports/dependency-check-report.html
+  tags:
+    - Linux
+    - DockerExecutor
