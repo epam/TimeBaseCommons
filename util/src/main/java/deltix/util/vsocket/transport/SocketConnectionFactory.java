@@ -1,0 +1,15 @@
+package deltix.util.vsocket.transport;
+
+import java.io.BufferedInputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+/**
+ *
+ */
+public class SocketConnectionFactory {
+
+    public static Connection createConnection(Socket s, BufferedInputStream bis, OutputStream os) {
+        return new SocketConnection(s, bis, os);
+    }
+}
