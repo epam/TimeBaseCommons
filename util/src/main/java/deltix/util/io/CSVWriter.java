@@ -12,7 +12,7 @@ public class CSVWriter extends FilterWriter {
     
     private static final char   DEFAULT_SEPARATOR = ',';
     public static final char    DEFAULT_QUOTE_CHARACTER = '"';
-    private static final char[] DEFAULT_ESCAPE_CHARACTERS = new char[]{'\n', '\r'};
+    public static final char[] DEFAULT_ESCAPE_CHARACTERS = new char[] {'\n', '\r'};
 
     private boolean             closeDelegate = true;
     private boolean             flushEveryLine = false;
@@ -21,44 +21,69 @@ public class CSVWriter extends FilterWriter {
     private final char          quoteCharacter;
     private final CharacterHashSet escapeCharacters;
 
-    public CSVWriter (String f) throws IOException {
-        this (new File (f));
-    }
-    
-    public CSVWriter (String f, char separator) throws IOException {
-        this (new File (f), separator);
-    }
-
-    public CSVWriter (String f, boolean append) throws IOException {
-        this (new File (f), append);
-    }
-    
-    public CSVWriter (String f, boolean append, char separator ) throws IOException {
-        this (new File (f), append, separator);
+    /**
+     * Creates CSWWriter instance with default settings:
+     *  separator char = ','
+     *  quote char = '"'
+     *  escape chars = '\n' '\r' ',' '"'
+     *
+     * @param file output file
+     * @throws IOException when any IO
+     */
+    public CSVWriter (File file) throws IOException {
+        this(file, false);
     }
 
-    public CSVWriter (String f, boolean append, char separator, char quoteCharacter, char ... escapeCharacters) throws IOException {
-        this (new File (f), append, separator, quoteCharacter, escapeCharacters);
+    /**
+     * Creates CSWWriter instance with given separator char
+     *  quote char = '"'
+     *  escape chars = '\n' '\r' ',' '"'
+     *
+     * @param file output file
+     * @param separator separator char
+     * @throws IOException when any IO
+     */
+    public CSVWriter (File file, char separator) throws IOException {
+        this (file, false, separator);
     }
 
-    public CSVWriter (File f) throws IOException {
-        this (f, false);
-    }
-    
-    public CSVWriter (File f, char separator) throws IOException {
-        this (f, false, separator);
-    }
+    /**
+     * Creates CSWWriter instance with given separator char
+     *  quote char = '"'
+     *  escape chars = '\n' '\r' '"' separator
+     *
+     * @param f output file
+     * @param append append mode
+     * @throws IOException when any IO
+     */
 
     public CSVWriter (File f, boolean append) throws IOException {
         this (new BufferedWriter (new FileWriter (f, append)));
     }
-    
+
+    /**
+     * Creates CSWWriter instance with given separator char
+     *  quote char = '"'
+     *  escape chars = '\n' '\r' '"' separator
+     *
+     * @param f output file
+     * @param append append mode
+     * @throws IOException when any IO
+     */
     public CSVWriter (File f, boolean append, char separator) throws IOException {
         this (new BufferedWriter (new FileWriter (f, append)), separator);
     }
 
-    public CSVWriter (File f, boolean append, char separator, char quoteCharacter, char... escapeCharacters) throws IOException {
-        this(new BufferedWriter(new FileWriter(f, append)), separator, quoteCharacter, escapeCharacters);
+    /**
+     * @param file file name
+     * @param append append mode
+     * @param separator separator char
+     * @param quoteCharacter quote char to escape special characters
+     * @param escapeCharacters list of characters to escape (separator and quote chars will be included)
+     * @throws IOException on any error
+     */
+    public CSVWriter (File file, boolean append, char separator, char quoteCharacter, char... escapeCharacters) throws IOException {
+        this(new BufferedWriter(new FileWriter(file, append)), separator, quoteCharacter, escapeCharacters);
     }
 
     public CSVWriter (Writer out) {
