@@ -37,7 +37,7 @@ class CSVWriterTest {
         assertEquals(expected, actual);
         writer.writeCells("line\" with other escape", "line with, escape coma", "\"line with, multiple |different\" escape, characters");
         actual = extractBuffer(out);
-        expected = "\"line\"\" with other escape\"|\"line with, escape coma\"|\"\"\"line with, multiple |different\"\" escape, characters\"";
+        expected = "\"line\"\" with other escape\"|line with, escape coma|\"\"\"line with, multiple |different\"\" escape, characters\"";
         assertEquals(expected, actual);
     }
 
@@ -56,26 +56,25 @@ class CSVWriterTest {
     void printCellWithAdditionalEscapeCharacters() throws IOException {
 
         StringWriter out = new StringWriter();
-        CSVWriter writer = new CSVWriter(out, '|', '\r', '\n');
-        writer.writeCells("line| with escape", "line with additional\r\n escape", "line without escape");
+        CSVWriter writer = new CSVWriter(out, '|', '\t');
+        writer.writeCells("line| with escape", "line with additional\t\t escape", "line without escape");
         String actual = extractBuffer(out);
-        String expected = "\"line| with escape\"|\"line with additional\r\n escape\"|line without escape";
+        String expected = "\"line| with escape\"|\"line with additional\t\t escape\"|line without escape";
         assertEquals(expected, actual);
-        CSVXReader reader = new CSVXReader(new StringReader(actual), '|', false, "out");
-        reader.nextLine();
-        assertEquals(3, reader.getCells().length);
     }
 
     @Test
-    void printCellWithNoEscapeEOL() throws IOException {
+    void printCellWithEscapeEOL() throws IOException {
 
         StringWriter out = new StringWriter();
-        CSVWriter writer = new CSVWriter(out, '|');
-        writer.writeCells("line| with escape", "line with additional\r\n escape", "line without escape");
+        CSVWriter writer = new CSVWriter(out, '\t');
+        writer.writeCells("line\t with separator", "line with \n new line", "line without escape", "line with \r carriage return");
         String actual = extractBuffer(out);
-        CSVXReader reader = new CSVXReader(new StringReader(actual), '|', false, "out");
+        String expected = "\"line\t with separator\"\t\"line with \n new line\"\tline without escape\t\"line with \r carriage return\"";
+        assertEquals(expected, actual);
+        CSVXReader reader = new CSVXReader(new StringReader(actual), '\t', false, "out");
         reader.nextLine();
-        assertNotEquals(3, reader.getCells().length);
+        assertEquals(4, reader.getCells().length);
     }
 
     private String extractBuffer(StringWriter out) {
