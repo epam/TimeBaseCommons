@@ -11,12 +11,15 @@ import java.io.*;
 public class CSVWriter extends FilterWriter {
     
     private static final char   DEFAULT_SEPARATOR = ',';
+    public static final char    DEFAULT_QUOTE_CHARACTER = '"';
+    private static final char[] DEFAULT_ESCAPE_CHARACTERS = new char[]{'\n', '\r'};
 
     private boolean             closeDelegate = true;
     private boolean             flushEveryLine = false;
     
     private final char          separator;
-    private final CharacterHashSet escapeCharacters = new CharacterHashSet(new char[]{'"', '\n', '\r'});
+    private final char          quoteCharacter;
+    private final CharacterHashSet escapeCharacters;
 
     public CSVWriter (String f) throws IOException {
         this (new File (f));
@@ -34,8 +37,8 @@ public class CSVWriter extends FilterWriter {
         this (new File (f), append, separator);
     }
 
-    public CSVWriter (String f, boolean append, char separator, char ... escapeCharacters) throws IOException {
-        this (new File (f), append, separator, escapeCharacters);
+    public CSVWriter (String f, boolean append, char separator, char quoteCharacter, char ... escapeCharacters) throws IOException {
+        this (new File (f), append, separator, quoteCharacter, escapeCharacters);
     }
 
     public CSVWriter (File f) throws IOException {
@@ -54,8 +57,8 @@ public class CSVWriter extends FilterWriter {
         this (new BufferedWriter (new FileWriter (f, append)), separator);
     }
 
-    public CSVWriter (File f, boolean append, char separator, char... escapeCharacters) throws IOException {
-        this(new BufferedWriter(new FileWriter(f, append)), separator, escapeCharacters);
+    public CSVWriter (File f, boolean append, char separator, char quoteCharacter, char... escapeCharacters) throws IOException {
+        this(new BufferedWriter(new FileWriter(f, append)), separator, quoteCharacter, escapeCharacters);
     }
 
     public CSVWriter (Writer out) {
@@ -63,14 +66,16 @@ public class CSVWriter extends FilterWriter {
     }
 
     public CSVWriter (Writer out, char separator) {
-        this (out, separator, (char[]) null);
+        this (out, separator, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTERS);
     }
 
-    public CSVWriter (Writer out, char separator, char... escapeCharacters) {
+    public CSVWriter (Writer out, char separator, char quoteCharacter, char... escapeCharacters) {
         super (out);
         this.separator = separator;
-        addEscapeCharacters(escapeCharacters);
+        this.quoteCharacter = quoteCharacter;
+        this.escapeCharacters = new CharacterHashSet(escapeCharacters);
         this.escapeCharacters.add(separator);
+        this.escapeCharacters.add(quoteCharacter);
     }
     
     public CSVWriter (OutputStream os) {
@@ -99,14 +104,6 @@ public class CSVWriter extends FilterWriter {
         this.flushEveryLine = flushEveryLine;
     }
 
-    public void addEscapeCharacters(char... additionalEscapeCharacters){
-        if (additionalEscapeCharacters != null){
-            for (char ch : additionalEscapeCharacters) {
-                escapeCharacters.add(ch);
-            }
-        }
-    }
-    
     /**
      *  Writes out the specified CharSequence as a separate cell.
      * 
@@ -210,18 +207,18 @@ public class CSVWriter extends FilterWriter {
         }
 
         if (needEscape)
-            out.append('"');
+            out.append(quoteCharacter);
 
         for (int ii = 0; ii < len; ii++) {
             char ch = unescapedText.charAt(ii);
 
-            if (ch == '"')
-                out.append('"');
+            if (ch == quoteCharacter)
+                out.append(quoteCharacter);
 
             out.append(ch);
         }
 
         if (needEscape)
-            out.append('"');
+            out.append(quoteCharacter);
     }
 }

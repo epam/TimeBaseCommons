@@ -56,13 +56,24 @@ class CSVWriterTest {
     void printCellWithAdditionalEscapeCharacters() throws IOException {
 
         StringWriter out = new StringWriter();
-        CSVWriter writer = new CSVWriter(out, '|', '\t');
-        writer.writeCells("line| with escape", "line with additional\t\t escape", "line without escape");
+        CSVWriter writer = new CSVWriter(out, '|', '"', '\t');
+        writer.writeCells("line| with escape", "line with additional\t\t escape", "line with no\n escape new line",
+                "line with escape\" quote char");
         String actual = extractBuffer(out);
-        String expected = "\"line| with escape\"|\"line with additional\t\t escape\"|line without escape";
+        String expected = "\"line| with escape\"|\"line with additional\t\t escape\"|line with no\n escape new line|\"line with escape\"\" quote char\"";
         assertEquals(expected, actual);
     }
 
+    @Test
+    void printCellWithAnotherQuoteCharacter() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out, '\t', '\'');
+        writer.writeCells("line| with ,default\" \r\nnot used escapes", "line with \t\t separator", "line wit' quote char");
+        String actual = extractBuffer(out);
+        String expected = "line| with ,default\" \r\nnot used escapes\t'line with \t\t separator'\t'line wit'' quote char'";
+        assertEquals(expected, actual);
+    }
     @Test
     void printCellWithEscapeEOL() throws IOException {
 
