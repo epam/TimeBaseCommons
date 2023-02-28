@@ -35,9 +35,9 @@ public class CSVWriter extends FilterWriter {
     }
 
     /**
-     * Creates CSWWriter instance with given separator char
+     * Creates CSWWriter instance with given separator char and defaults:
      *  quote char = '"'
-     *  escape chars = '\n' '\r' ',' '"'
+     *  escape chars = '\n' '\r' '"' separator
      *
      * @param file output file
      * @param separator separator char
@@ -48,21 +48,21 @@ public class CSVWriter extends FilterWriter {
     }
 
     /**
-     * Creates CSWWriter instance with given separator char
+     * Creates CSWWriter instance with default settings:
+     *  separator char = ','
      *  quote char = '"'
-     *  escape chars = '\n' '\r' '"' separator
+     *  escape chars = '\n' '\r' ',' '"'
      *
-     * @param f output file
+     * @param file output file
      * @param append append mode
      * @throws IOException when any IO
      */
-
-    public CSVWriter (File f, boolean append) throws IOException {
-        this (new BufferedWriter (new FileWriter (f, append)));
+    public CSVWriter (File file, boolean append) throws IOException {
+        this (new BufferedWriter (new FileWriter (file, append)));
     }
 
     /**
-     * Creates CSWWriter instance with given separator char
+     * Creates CSWWriter instance with given separator char and defaults:
      *  quote char = '"'
      *  escape chars = '\n' '\r' '"' separator
      *
@@ -75,11 +75,11 @@ public class CSVWriter extends FilterWriter {
     }
 
     /**
-     * @param file file name
+     * @param file output file
      * @param append append mode
      * @param separator separator char
      * @param quoteCharacter quote char to escape special characters
-     * @param escapeCharacters list of characters to escape (separator and quote chars will be included)
+     * @param escapeCharacters list of characters to escape (separator and quote char will be included)
      * @throws IOException on any error
      */
     public CSVWriter (File file, boolean append, char separator, char quoteCharacter, char... escapeCharacters) throws IOException {
