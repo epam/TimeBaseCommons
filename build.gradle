@@ -116,7 +116,7 @@ configure(leafProjects) {
                 entry 'aeron-driver'
                 entry 'aeron-archive'
             }
-            dependency 'com.google.guava:guava:20.0'
+            dependency 'com.google.guava:guava:32.0.1-jre'
         }
     }
 

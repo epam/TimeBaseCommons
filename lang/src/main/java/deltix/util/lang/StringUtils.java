@@ -711,6 +711,11 @@ public class StringUtils {
         return true;
     }
 
+    /** @return true if trimmed input is not blank string and is not null */
+    public static boolean isNotEmpty (CharSequence value) {
+        return !isEmpty(value);
+    }
+
     /** @return true if input is null or empty string contains only whitespaces */
     public static boolean isWhitespace (CharSequence value) {
         if (value == null)
@@ -840,6 +845,7 @@ public class StringUtils {
     static {
         DECIMAL_FORMAT.setMaximumIntegerDigits(309);
         DECIMAL_FORMAT.setMaximumFractionDigits(10);
+
     }
 
     public static String toDecimalString(float value) {
