@@ -2,17 +2,23 @@ package deltix.util.concurrent;
 
 
 import java.util.Random;
+
+import com.epam.deltix.gflog.api.LogLevel;
 import org.junit.*;
+
+import static deltix.util.log.LogUtil.LOGGER;
 import static org.junit.Assert.*;
 
 /**
  *
  */
 public class Test_ThrottlingExecutor {
-    private final Random                    random = new Random (2009);
-    private long                            usedTime;
     
-    class TestTask extends ThrottlingExecutor.Task {
+    static class TestTask extends ThrottlingExecutor.Task {
+
+        private final Random                    random = new Random (2009);
+        private long                            usedTime;
+
         public boolean         run () {
             long                t1 = System.currentTimeMillis ();
             int                 t = random.nextInt (30) + 15;
@@ -32,7 +38,7 @@ public class Test_ThrottlingExecutor {
             usedTime += dt;
 
             //if (!Boolean.getBoolean ("quiet"))
-                System.out.printf ("%,16d %16d %16d\n", t1, t, dt);
+            LOGGER.info(String.format("%,16d %16d %16d\n", t1, t, dt));
             
             return (true);
         }
@@ -45,7 +51,7 @@ public class Test_ThrottlingExecutor {
         double                  desiredRatio = cruiseControlMode ? 0.25 : 0.07;   // when executed together with other tests CPU usage much higher
 
         //if (!Boolean.getBoolean ("quiet"))
-            System.out.println ("Target: " + desiredRatio);
+        LOGGER.info("Target: " + desiredRatio);
 
         Thread.sleep (100);
 
@@ -57,7 +63,8 @@ public class Test_ThrottlingExecutor {
 
         long            startTime = System.currentTimeMillis ();
 
-        new TestTask().submit(exe);
+        TestTask testTask = new TestTask();
+        testTask.submit(exe);
 
         Thread.sleep (10000);
 
@@ -65,11 +72,11 @@ public class Test_ThrottlingExecutor {
         exe.join ();
 
         double          totalTime = System.currentTimeMillis () - startTime;
-        double          actualRatio = usedTime / totalTime;
+        double          actualRatio = testTask.usedTime / totalTime;
         double          dev = Math.abs (actualRatio - desiredRatio);
         
         //if (!Boolean.getBoolean ("quiet"))
-            System.out.println ("Actual: " + actualRatio + "; d=" + (dev * 100) + "%");
+        LOGGER.info("Actual: " + actualRatio + "; d=" + (dev * 100) + "%");
 
         assertTrue (
             "Target ratio: " + desiredRatio +

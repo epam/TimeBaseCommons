@@ -45,10 +45,15 @@ before_script:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - gradle build :util:downloadCodes test :dependencyCheckAggregate --no-daemon --no-watch-fs -Dquiet=false
+    - gradle build :util:downloadCodes test :dependencyCheckAggregate --no-daemon --no-watch-fs
   artifacts:
     paths:
       - libs/
+    reports:
+      junit:
+        - util/build/reports/tests/test/*
+        - lang/build/reports/tests/test/*
+        - collections/build/reports/tests/test/*
   tags:
     - DockerExecutor
   except:
