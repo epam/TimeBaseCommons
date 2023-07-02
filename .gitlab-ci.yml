@@ -53,7 +53,6 @@ before_script:
       junit:
         - util/build/reports/tests/test/*
         - lang/build/reports/tests/test/*
-        - collections/build/reports/tests/test/*
   tags:
     - DockerExecutor
   except:
