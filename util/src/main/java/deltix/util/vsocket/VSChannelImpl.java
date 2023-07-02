@@ -4,6 +4,7 @@ import deltix.util.concurrent.ContextContainer;
 import deltix.util.concurrent.QuickExecutor;
 import deltix.util.io.CountingInputStream;
 import deltix.util.io.GapQueueInputStream;
+import deltix.util.lang.DisposableListener;
 import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;
 import deltix.util.memory.MemoryDataOutput;
@@ -15,6 +16,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.logging.Level;
 import java.util.zip.DataFormatException;
@@ -71,6 +73,8 @@ final class VSChannelImpl implements VSChannel {
 
     private volatile long                   numBytesSend; // synchronized by "this"
     private final Counter                   numBytesRead = new Counter();
+
+    private final HashSet<DisposableListener> listeners = new HashSet<> ();
 
 //    private final StringBuffer              sendLog = new StringBuffer();
 //    private final StringBuffer              recievedLog = new StringBuffer();
@@ -294,6 +298,8 @@ final class VSChannelImpl implements VSChannel {
 
             state = VSChannelState.Closed;
         }
+
+        notifyListeners();
     }
 
     public void processCommand(int cmd, long position) {
@@ -348,6 +354,8 @@ final class VSChannelImpl implements VSChannel {
         synchronized (this) {
             state = VSChannelState.Removed;
         }
+
+        notifyListeners();
     }
 
     void                        onRemoteClosing() {
@@ -392,6 +400,9 @@ final class VSChannelImpl implements VSChannel {
 
         // notify availability listener after input close
         notifyDataAvailable();
+
+        // notify disposable listeners
+        notifyListeners();
     }
 
 //    void                        onRemoteClosing() {
@@ -824,5 +835,31 @@ final class VSChannelImpl implements VSChannel {
 
     int getIndex() {
         return index;
+    }
+
+
+    public void                     addDisposableListener(DisposableListener listener) {
+        synchronized (listeners) {
+            if (!listeners.contains(listener))
+                listeners.add(listener);
+        }
+    }
+
+    public void                     removeDisposableListener(DisposableListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
+    }
+
+    private void                    notifyListeners() {
+        DisposableListener[] list;
+
+        synchronized (listeners) {
+            //noinspection ToArrayCallWithZeroLengthArrayArgument
+            list = listeners.toArray(new DisposableListener[listeners.size()]);
+        }
+
+        for (DisposableListener dl : list)
+            dl.disposed(this);
     }
 }

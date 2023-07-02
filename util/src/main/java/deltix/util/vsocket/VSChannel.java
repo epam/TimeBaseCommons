@@ -1,6 +1,7 @@
 package deltix.util.vsocket;
 
 import deltix.util.lang.Disposable;
+import deltix.util.lang.DisposableListener;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -48,4 +49,8 @@ public interface VSChannel extends Disposable {
     public String               encode(String value);
 
     public String               decode(String value);
+
+    public void                addDisposableListener(DisposableListener listener);
+
+    public void                removeDisposableListener(DisposableListener listener);
 }
