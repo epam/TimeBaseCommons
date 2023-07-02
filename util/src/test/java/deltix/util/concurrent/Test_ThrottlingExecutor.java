@@ -31,7 +31,7 @@ public class Test_ThrottlingExecutor {
 
             usedTime += dt;
 
-            if (!Boolean.getBoolean ("quiet"))
+            //if (!Boolean.getBoolean ("quiet"))
                 System.out.printf ("%,16d %16d %16d\n", t1, t, dt);
             
             return (true);
@@ -44,7 +44,7 @@ public class Test_ThrottlingExecutor {
         boolean cruiseControlMode = true; //Boolean.getBoolean("deltix.test.mode");
         double                  desiredRatio = cruiseControlMode ? 0.25 : 0.07;   // when executed together with other tests CPU usage much higher
 
-        if (!Boolean.getBoolean ("quiet"))
+        //if (!Boolean.getBoolean ("quiet"))
             System.out.println ("Target: " + desiredRatio);
 
         Thread.sleep (100);
@@ -68,7 +68,7 @@ public class Test_ThrottlingExecutor {
         double          actualRatio = usedTime / totalTime;
         double          dev = Math.abs (actualRatio - desiredRatio);
         
-        if (!Boolean.getBoolean ("quiet"))
+        //if (!Boolean.getBoolean ("quiet"))
             System.out.println ("Actual: " + actualRatio + "; d=" + (dev * 100) + "%");
 
         assertTrue (
