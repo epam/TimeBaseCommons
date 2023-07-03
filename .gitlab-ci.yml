@@ -1,4 +1,4 @@
-variables:
+    variables:
   JAVA_IMAGE: dockerhub.deltixhub.com/gradle:7.4.2-jdk11-alpine
 
 stages:
@@ -45,14 +45,15 @@ before_script:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - gradle build :util:downloadCodes test :dependencyCheckAggregate --no-daemon --no-watch-fs
+    - gradle build :util:downloadCodes :dependencyCheckAggregate --no-daemon --no-watch-fs
   artifacts:
     paths:
       - libs/
     reports:
       junit:
-        - util/build/reports/tests/test/*
-        - lang/build/reports/tests/test/*
+        - util/build/test-results/test/TEST-*.xml
+        - lang/build/test-results/test/TEST-*.xml
+        - collections/build/test-results/test/TEST-*.xml
   tags:
     - DockerExecutor
   except:
