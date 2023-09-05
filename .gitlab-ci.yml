@@ -146,6 +146,7 @@ before_script:
 
 "Promote to public":
   stage: promote
+  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
   cache: {} # Disable cache for this job because this job does not uses any data from the cache
   script:
     - ./gradlew promoteToPublic
