@@ -89,7 +89,7 @@ before_script:
     - git tag $versionRelease
     - git push origin $versionRelease
     - git checkout origin/pipeline-$CI_PIPELINE_ID
-    - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_BUILD_REF_NAME}
+    - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_COMMIT_REF_NAME}
   tags:
     - Linux
     - ShellExecutor
