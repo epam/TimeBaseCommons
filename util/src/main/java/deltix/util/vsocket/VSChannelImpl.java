@@ -378,6 +378,8 @@ final class VSChannelImpl implements VSChannel {
                     break;
             }
         }
+
+        notifyListeners();
     }
 
     void                        onDisconnected(IOException error) {
