@@ -71,13 +71,13 @@ configure(leafProjects) {
             dependency 'deltix:deltix-thread-affinity:1.0.3'
             dependency 'org.apache.commons:commons-lang3:3.4'
             dependency 'org.apache.commons:commons-compress:1.21'
+            dependency 'commons-collections:commons-collections:3.2.2'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'
 
-
             dependency "com.epam.deltix:dfp:$dfpVersion"
-            dependency "deltix:hd-date-time:$hdTimeVersion"
+            dependency "com.epam.deltix:hd-date-time:$hdTimeVersion"
 
             dependencySet (group: 'com.epam.deltix', version: '3.0.2') {
                 entry 'gflog-api'

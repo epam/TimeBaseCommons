@@ -4,9 +4,9 @@ import deltix.util.collections.ElementsEnumeration;
 #if( $name == "Decimal" )
 import com.epam.deltix.dfp.Decimal64;
 #elseif( $name == "HdDateTime" )
-import deltix.hddatetime.HdDateTime;
+import com.epam.deltix.hdtime.HdDateTime;
 #elseif( $name == "HdTimeSpan" )
-import deltix.hddatetime.HdTimeSpan;
+import com.epam.deltix.hdtime.HdTimeSpan;
 #end
 
 public interface ${name}Enumeration extends ElementsEnumeration<$type_Object> {

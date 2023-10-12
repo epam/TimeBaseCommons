@@ -1,9 +1,7 @@
 package deltix.util.memory;
 
-
 import com.epam.deltix.dfp.Decimal64;
-import deltix.hddatetime.HdDateTime;
-import deltix.hddatetime.HdTimeSpan;
+import com.epam.deltix.hdtime.*;
 
 /**
  *  Reads/writes primitive values from/to an array of bytes,

@@ -23,7 +23,7 @@ apply plugin: 'velocity'
 
 dependencies {
     api project(':lang')
-    testImplementation 'commons-collections:commons-collections:3.2.1'
+    testImplementation 'commons-collections:commons-collections'
 }
 
 ext {

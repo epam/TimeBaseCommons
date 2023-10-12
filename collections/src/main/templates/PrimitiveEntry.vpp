@@ -7,12 +7,12 @@ import com.epam.deltix.dfp.Decimal64;
 public interface ${name}Entry extends KeyEntry<${type}> {
 
 #elseif( $name == "HdDateTime" )
-import deltix.hddatetime.HdDateTime;
+import com.epam.deltix.hdtime.HdDateTime;
 public interface ${name}Entry extends KeyEntry<${type}> {
 
 
 #elseif( $name == "HdTimeSpan" )
-import deltix.hddatetime.HdTimeSpan;
+import com.epam.deltix.hdtime.HdTimeSpan;
 public interface ${name}Entry extends KeyEntry<${type}> {
 
 #else
