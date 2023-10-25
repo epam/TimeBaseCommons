@@ -1,0 +1,177 @@
+#if( $name == "Object" )
+#set( $type = "ObjectType" )
+#end
+package deltix.util.collections.generated;
+
+import java.util.AbstractList;
+import java.util.Arrays;
+
+public class ${name}RingedList extends AbstractList<${name}> implements ${name}List {
+
+    private static final int MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
+
+    protected ${type}[] array;
+
+    private int first, size;
+
+    public ${name}RingedList() {
+        this(0x10);
+    }
+
+    public ${name}RingedList(int capacity) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException("Initial capacity (" + capacity + ") is negative");
+        }
+
+        array = new ${type}[capacity];
+        first = size = 0;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public ${name} get(int index) {
+        return get${name}(index);
+    }
+
+    @Override
+    public ${type} get${name}(int index) {
+        if (index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return get${name}NoRangeCheck(index);
+    }
+
+    @Override
+    public ${type} get${name}NoRangeCheck(int index) {
+        index += first;
+        index = index >= array.length ? index - array.length : index;
+        return array[index];
+    }
+
+    @Override
+    public boolean add(${type} x) {
+        ensureFreeSpace(1);
+
+        int index = first + size++;
+        index = index >= array.length ? index - array.length : index;
+        array[index] = x;
+        return true;
+    }
+
+    public void set(int index, ${type} element) {
+        if (index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        index += first;
+        index = index >= array.length ? index - array.length : index;
+        array[index] = element;
+    }
+
+    public ${type} first() {
+        return array[first];
+    }
+
+    public ${type} last() {
+        return get(size - 1);
+    }
+
+    public ${type} pop() {
+        ${type} res = array[first++];
+        first = first >= array.length ? first - array.length : first;
+        --size;
+
+        return res;
+    }
+
+    @Override
+    public boolean contains(${type} elem) {
+        return indexOf(elem) >= 0;
+    }
+
+    @Override
+    public int indexOf(${type} elem) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int lastIndexOf(${type} elem) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ${type}[] to${name_abbr}Array() {
+        ${type}[] result = new ${type}[size];
+        toArray(result, 0);
+        return result;
+    }
+
+    public void toArray(${type}[] data, int offset) {
+        if (size > data.length - offset) {
+            throw new IllegalArgumentException();
+        }
+
+        for (int i = 0, j = first; i < size; ++i) {
+            data[i] = array[j++];
+            j = j == array.length ? 0 : j;
+        }
+    }
+
+    private void ensureFreeSpace(int required) {
+        long requiredCapacity = (long) size + required;
+        ensureCapacity(requiredCapacity);
+    }
+
+    public void ensureCapacity(long minCapacity) {
+        if (minCapacity > array.length) {
+            extend(minCapacity);
+        }
+    }
+
+    private void extend(long requiredCapacity) {
+        if (requiredCapacity > MAX_ARRAY_LENGTH) {
+            throw new OutOfMemoryError("required capacity=" + requiredCapacity + " exceeds max");
+        }
+
+        int newCapacity = (int) Math.min(MAX_ARRAY_LENGTH,  requiredCapacity  + (requiredCapacity >>> 1)); // 50% for growth
+
+        ${type}[] newArray = new ${type}[newCapacity];
+
+        System.arraycopy(array, first, newArray, 0, array.length - first);
+        if (first > 0) {
+            System.arraycopy(array, 0, newArray, array.length - first, first);
+        }
+        first = 0;
+        array = newArray;
+    }
+
+    @Override
+    public void clear() {
+        first = size= 0;
+    }
+
+    @Override
+    public void setSize(int newSize) {
+        ensureCapacity(newSize);
+        size = newSize;
+    }
+
+#if ($type != "boolean")
+    @Override
+    public void sort() {
+        array = to${name_abbr}Array();
+        first = 0;
+        Arrays.sort(array, 0, size);
+    }
+#end
+
+}
+
+#if( $name == "Object")
+#set( $type = "Object" )
+#end
