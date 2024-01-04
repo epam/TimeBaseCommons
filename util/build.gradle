@@ -14,6 +14,8 @@ dependencies {
     api 'com.sun.xml.bind:jaxb-impl:2.3.0'
     api 'com.sun.xml.bind:jaxb-core:2.3.0'
 
+    implementation 'org.green:green-jelly:0.1.0'
+
     implementation('org.apache.bcel:bcel:6.6.0')
 
     implementation('io.aeron:aeron-client')

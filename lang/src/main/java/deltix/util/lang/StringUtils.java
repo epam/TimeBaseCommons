@@ -1265,6 +1265,33 @@ public class StringUtils {
                 ("_%".indexOf(expression.charAt(pos + 1)) != -1);
     }
 
+    public static boolean equals(CharSequence s1, CharSequence s2) {
+        if (s1 == null) {
+            return s2 == null;
+        }
+
+        if (s2 == null) {
+            return false;
+        }
+
+        final int len1 = s1.length();
+        final int len2 = s2.length();
+
+        final int diff = len1 - len2;
+
+        if (diff != 0) {
+            return false;
+        }
+
+        for (int i = 0; i < len1; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
 
 
