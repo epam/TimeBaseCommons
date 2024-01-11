@@ -632,13 +632,14 @@ public final class VSDispatcher implements Disposable {
         int id = vsc.getLocalId();
 
         synchronized (channels) {
-            if (vsc.equals(channels.get(id)))
-                channels.set (id, null);
-            else
-                VSProtocol.LOGGER.log (Level.SEVERE, "Trying to remove wrong channel.");
+            if (vsc.equals(channels.get(id))) {
+                channels.set(id, null);
 
-            activeChannels--;
-            channels.notify();
+                activeChannels--;
+                channels.notify();
+            } else {
+                VSProtocol.LOGGER.log(Level.SEVERE, "Trying to remove wrong channel.");
+            }
         }
     }
 

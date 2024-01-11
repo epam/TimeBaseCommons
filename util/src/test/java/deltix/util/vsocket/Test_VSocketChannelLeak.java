@@ -1,7 +1,6 @@
 package deltix.util.vsocket;
 
 import deltix.util.concurrent.QuickExecutor;
-import deltix.util.lang.Disposable;
 import deltix.util.lang.DisposableListener;
 import org.junit.Test;
 
@@ -31,9 +30,9 @@ public class Test_VSocketChannelLeak {
                 byte[] payload = new byte[1_000_000];
                 payload[0] = 1;
 
-                serverChannel.addDisposableListener(new DisposableListener() {
+                serverChannel.addDisposableListener(new DisposableListener<>() {
                     @Override
-                    public void disposed(Disposable resource) {
+                    public void disposed(VSChannel resource) {
                         byte val = payload[11];
                         if (val != 0) {
                             System.out.println("Should never happen");
