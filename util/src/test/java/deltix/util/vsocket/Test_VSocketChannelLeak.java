@@ -4,12 +4,22 @@ import deltix.util.concurrent.QuickExecutor;
 import deltix.util.lang.DisposableListener;
 import org.junit.Test;
 
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Tests if there is a memory leak in VSChannel when channel gets closed on the client side.
+ *
+ * <p>Run the test with -Xmx500m to see the problem.
  */
+@SuppressWarnings("NewClassNamingConvention")
 public class Test_VSocketChannelLeak {
+    static final boolean enableCloseFix = true;
+
     public static void main (String [] args) throws Exception {
         testImpl();
         //Thread.sleep(Long.MAX_VALUE);
@@ -23,12 +33,22 @@ public class Test_VSocketChannelLeak {
     @SuppressWarnings("Convert2Lambda")
     private static void testImpl() throws IOException, InterruptedException {
         VSServer server = new VSServer(0);
+
+        AtomicLong openChannels = new AtomicLong();
+        AtomicLong closedChannels = new AtomicLong();
+
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
         server.setConnectionListener(new VSConnectionListener() {
             @Override
             public void connectionAccepted(QuickExecutor executor, VSChannel serverChannel) {
+                openChannels.incrementAndGet();
+
                 // This payload will be kept in memory until the channel is closed
                 byte[] payload = new byte[1_000_000];
                 payload[0] = 1;
+
+
 
                 serverChannel.addDisposableListener(new DisposableListener<>() {
                     @Override
@@ -40,33 +60,66 @@ public class Test_VSocketChannelLeak {
                         // Intentionally do not remove the listener from the channel to release the memory only if channel is released
                     }
                 });
+
+                if (enableCloseFix) {
+                    executorService.submit(() -> {
+                        DataInputStream dis = serverChannel.getDataInputStream();
+                        //noinspection TryFinallyCanBeTryWithResources
+                        try {
+                            while (true) {
+                                try {
+                                    dis.readByte();
+                                } catch (EOFException e) {
+                                    // Graceful close
+                                    break;
+                                } catch (IOException e) {
+                                    break;
+                                }
+                            }
+                        } finally {
+                            serverChannel.close(); // This will release the memory
+                            closedChannels.incrementAndGet();
+                        }
+                    });
+                }
             }
         });
         server.setDaemon(true);
         server.start();
         System.out.println("Server started on " + server.getLocalPort());
 
-        createConnections("localhost", server.getLocalPort());
+        try {
+            createConnections("localhost", server.getLocalPort());
+        } finally {
+            System.out.println("Open channels: " + openChannels.get());
+            System.out.println("Closed channels: " + closedChannels.get());
+        }
+
+        server.close();
+        executorService.shutdown();
     }
 
     public static void createConnections(String host, int port)
             throws IOException, InterruptedException {
 
-        VSClient c = new VSClient(host, port);
-        c.connect();
+        VSClient client = new VSClient(host, port);
+        client.connect();
 
         // This loop fails with OutOfMemoryError
-        for (int i = 0; i < 10000; i++) {
-            VSChannel s = c.openChannel();
+        for (int i = 0; i < 20000; i++) {
+            VSChannel s = client.openChannel();
             s.close(false);
+            Thread.yield();
         }
         long usedMemory1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
         System.gc();
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         long usedMemory2 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Used memory before gc: " + usedMemory1);
         System.out.println("Used memory after gc: " + usedMemory2);
+
+        client.close();
     }
 }
