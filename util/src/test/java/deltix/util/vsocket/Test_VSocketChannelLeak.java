@@ -18,7 +18,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @SuppressWarnings("NewClassNamingConvention")
 public class Test_VSocketChannelLeak {
-    static final boolean enableCloseFix = true;
+    private static final boolean enableCloseFix = true;
+    private static final int ITERATIONS = 1000;
+    private static final int PAYLOAD_SIZE = 1_024 * 1_024; // 1 MB
 
     public static void main (String [] args) throws Exception {
         testImpl();
@@ -45,7 +47,7 @@ public class Test_VSocketChannelLeak {
                 openChannels.incrementAndGet();
 
                 // This payload will be kept in memory until the channel is closed
-                byte[] payload = new byte[1_000_000];
+                byte[] payload = new byte[PAYLOAD_SIZE];
                 payload[0] = 1;
 
 
@@ -106,10 +108,16 @@ public class Test_VSocketChannelLeak {
         client.connect();
 
         // This loop fails with OutOfMemoryError
-        for (int i = 0; i < 20000; i++) {
+        for (int i = 0; i < ITERATIONS; i++) {
             VSChannel s = client.openChannel();
             s.close(false);
-            Thread.yield();
+
+            if (i % 10 == 0) {
+                // Needed for CI env - it's slow
+                Thread.sleep(1);
+            } else {
+                Thread.yield();
+            }
         }
         long usedMemory1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
@@ -121,5 +129,9 @@ public class Test_VSocketChannelLeak {
         System.out.println("Used memory after gc: " + usedMemory2);
 
         client.close();
+
+        if (usedMemory2 > ITERATIONS * PAYLOAD_SIZE) {
+            throw new RuntimeException("Memory leak detected");
+        }
     }
 }
