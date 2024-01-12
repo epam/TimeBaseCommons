@@ -28,7 +28,7 @@ public class Test_VSocketChannelLeak {
         //Thread.sleep(Long.MAX_VALUE);
     }
 
-    @Test
+    @Test(timeout = 60_000)
     public void test() throws IOException, InterruptedException {
         testImpl();
     }
@@ -115,7 +115,7 @@ public class Test_VSocketChannelLeak {
 
             if (waitForFreeMem && (Runtime.getRuntime().freeMemory() < Runtime.getRuntime().totalMemory() / 5)) {
                 // Wait if we below 20% of free memory
-                Thread.sleep(100);
+                Thread.sleep(200);
             } else {
                 Thread.yield();
             }
