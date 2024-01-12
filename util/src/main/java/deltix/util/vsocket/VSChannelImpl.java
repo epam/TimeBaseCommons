@@ -9,6 +9,7 @@ import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;
 import deltix.util.memory.MemoryDataOutput;
 import net.jcip.annotations.GuardedBy;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import java.io.DataInputStream;
@@ -74,6 +75,8 @@ final class VSChannelImpl implements VSChannel {
 
     private volatile long                   numBytesSend; // synchronized by "this"
     private final Counter                   numBytesRead = new Counter();
+
+    private String tag; // Arbitrary tag for debugging purposes. It is not sent to the remote side.
 
     @GuardedBy("listeners")
     private final HashSet<DisposableListener<VSChannel>> listeners = new HashSet<>();
@@ -866,5 +869,16 @@ final class VSChannelImpl implements VSChannel {
         for (DisposableListener<VSChannel> dl : list) {
             dl.disposed(this);
         }
+    }
+
+    @Override
+    @Nullable
+    public String getTag() {
+        return tag;
+    }
+
+    @Override
+    public void setTag(@Nullable String tag) {
+        this.tag = tag;
     }
 }

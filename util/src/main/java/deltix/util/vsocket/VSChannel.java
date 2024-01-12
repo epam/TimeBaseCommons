@@ -2,6 +2,7 @@ package deltix.util.vsocket;
 
 import deltix.util.lang.Disposable;
 import deltix.util.lang.DisposableListener;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -53,4 +54,20 @@ public interface VSChannel extends Disposable {
     void                        addDisposableListener(DisposableListener<VSChannel> listener);
 
     void                        removeDisposableListener(DisposableListener<VSChannel> listener);
+
+
+    /**
+     * @return value previously set by {@link #setTag(String)}
+     *
+     * @apiNote experimental
+     */
+    @Nullable
+    String getTag();
+
+    /**
+     * Sets an arbitrary tag that can be used for debugging purposes. It is not sent to the remote side.
+     *
+     * @apiNote experimental
+     */
+    void setTag(@Nullable String tag);
 }
