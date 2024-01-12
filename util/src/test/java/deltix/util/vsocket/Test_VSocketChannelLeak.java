@@ -21,6 +21,7 @@ public class Test_VSocketChannelLeak {
     private static final boolean enableCloseFix = true;
     private static final int ITERATIONS = 1000;
     private static final int PAYLOAD_SIZE = 1_024 * 1_024; // 1 MB
+    private static final boolean waitForFreeMem = true; // Needed for CI env - it's slow
 
     public static void main (String [] args) throws Exception {
         testImpl();
@@ -112,9 +113,9 @@ public class Test_VSocketChannelLeak {
             VSChannel s = client.openChannel();
             s.close(false);
 
-            if (i % 10 == 0) {
-                // Needed for CI env - it's slow
-                Thread.sleep(1);
+            if (waitForFreeMem && (Runtime.getRuntime().freeMemory() < Runtime.getRuntime().totalMemory() / 10)) {
+                // Wait if we below 10% of free memory
+                Thread.sleep(10);
             } else {
                 Thread.yield();
             }
