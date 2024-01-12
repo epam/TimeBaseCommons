@@ -8,6 +8,7 @@ import deltix.util.lang.DisposableListener;
 import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;
 import deltix.util.memory.MemoryDataOutput;
+import net.jcip.annotations.GuardedBy;
 
 import javax.annotation.CheckReturnValue;
 import java.io.DataInputStream;
@@ -74,7 +75,8 @@ final class VSChannelImpl implements VSChannel {
     private volatile long                   numBytesSend; // synchronized by "this"
     private final Counter                   numBytesRead = new Counter();
 
-    private final HashSet<DisposableListener> listeners = new HashSet<> ();
+    @GuardedBy("listeners")
+    private final HashSet<DisposableListener<VSChannel>> listeners = new HashSet<>();
 
 //    private final StringBuffer              sendLog = new StringBuffer();
 //    private final StringBuffer              recievedLog = new StringBuffer();
@@ -839,29 +841,30 @@ final class VSChannelImpl implements VSChannel {
         return index;
     }
 
-
-    public void                     addDisposableListener(DisposableListener listener) {
+    @Override
+    public void addDisposableListener(DisposableListener<VSChannel> listener) {
         synchronized (listeners) {
-            if (!listeners.contains(listener))
-                listeners.add(listener);
+            listeners.add(listener);
         }
     }
 
-    public void                     removeDisposableListener(DisposableListener listener) {
+    @Override
+    public void removeDisposableListener(DisposableListener<VSChannel> listener) {
         synchronized (listeners) {
             listeners.remove(listener);
         }
     }
 
     private void                    notifyListeners() {
-        DisposableListener[] list;
+        DisposableListener<VSChannel>[] list;
 
         synchronized (listeners) {
-            //noinspection ToArrayCallWithZeroLengthArrayArgument
+            //noinspection unchecked,ToArrayCallWithZeroLengthArrayArgument
             list = listeners.toArray(new DisposableListener[listeners.size()]);
         }
 
-        for (DisposableListener dl : list)
+        for (DisposableListener<VSChannel> dl : list) {
             dl.disposed(this);
+        }
     }
 }

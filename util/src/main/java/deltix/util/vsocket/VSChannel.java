@@ -50,7 +50,7 @@ public interface VSChannel extends Disposable {
 
     public String               decode(String value);
 
-    public void                addDisposableListener(DisposableListener listener);
+    void                        addDisposableListener(DisposableListener<VSChannel> listener);
 
-    public void                removeDisposableListener(DisposableListener listener);
+    void                        removeDisposableListener(DisposableListener<VSChannel> listener);
 }
