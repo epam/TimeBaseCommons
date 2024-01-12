@@ -113,9 +113,9 @@ public class Test_VSocketChannelLeak {
             VSChannel s = client.openChannel();
             s.close(false);
 
-            if (waitForFreeMem && (Runtime.getRuntime().freeMemory() < Runtime.getRuntime().totalMemory() / 10)) {
-                // Wait if we below 10% of free memory
-                Thread.sleep(10);
+            if (waitForFreeMem && (Runtime.getRuntime().freeMemory() < Runtime.getRuntime().totalMemory() / 5)) {
+                // Wait if we below 20% of free memory
+                Thread.sleep(100);
             } else {
                 Thread.yield();
             }
