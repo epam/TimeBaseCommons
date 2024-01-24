@@ -27,3 +27,6 @@ task downloadCodes(type: Download) {
     src 'https://smi.deltixhub.com/api/v1/currencyinfo/xml'
     dest new File(projectDir, 'src/main/resources/deltix/util/currency/CurrencyCodes.xml')
 }
+
+processResources.mustRunAfter downloadCodes
+sourcesJar.mustRunAfter downloadCodes

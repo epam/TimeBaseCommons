@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.owasp:dependency-check-gradle:7.1.2'
+        classpath 'org.owasp:dependency-check-gradle:9.0.9'
     }
 }
 
@@ -319,6 +319,10 @@ allprojects {
         }
 
         scanConfigurations = ["runtimeClasspath", "compileClasspath"]
+
+        nvd {
+            apiKey = findProperty('NVD_API_KEY') ?: System.getenv('NVD_API_KEY')
+        }
     }
 }
 
