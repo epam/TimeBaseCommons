@@ -45,7 +45,7 @@ before_script:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - gradle build :util:downloadCodes :dependencyCheckAggregate --no-daemon --no-watch-fs
+    - ./gradlew build :util:downloadCodes :dependencyCheckAggregate --no-daemon --no-watch-fs
   artifacts:
     paths:
       - libs/
@@ -66,7 +66,7 @@ before_script:
   only:
     - schedules
   script:
-    - gradle check --full-stacktrace --parallel --no-daemon --no-watch-fs
+    - ./gradlew check --full-stacktrace --parallel --no-daemon --no-watch-fs
   artifacts:
     name: "${CI_JOB_ID}_${CI_JOB_NAME}"
     when: always
@@ -103,7 +103,7 @@ before_script:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1
-    - gradle publish --no-daemon --no-watch-fs
+    - ./gradlew publish --no-daemon --no-watch-fs
   dependencies:
     - "Build"
   only:
@@ -119,7 +119,7 @@ before_script:
   image: ${JAVA_IMAGE}
   script:
     - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
-    - gradle gitlabRelease --full-stacktrace --no-daemon --no-watch-fs
+    - ./gradlew gitlabRelease --full-stacktrace --no-daemon --no-watch-fs
   only:
     - /^release-.*$/
   tags:
