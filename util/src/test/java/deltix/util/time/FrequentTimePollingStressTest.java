@@ -112,14 +112,20 @@ public class FrequentTimePollingStressTest {
     }
 
     private static void runMeasurement(long mainMeasurementIterations) {
-        int warmupCount = 1_000_000;
+        long warmupCount = mainMeasurementIterations / 5;
+        System.out.println("=========");
+        System.out.println("Warmup count: " + warmupCount);
+        System.out.println("=========");
         if (mainMeasurementIterations <= warmupCount) {
             throw new IllegalArgumentException("mainMeasurementIterations < warmupCount");
         }
+
+        long totalCount = warmupCount + mainMeasurementIterations;
+
         Histogram seqMsgHistogram = new Histogram(3);
         long startTime = System.currentTimeMillis();
         long prevValue = nanoTimeMethodToBeTested();
-        for (long i = 0; i < mainMeasurementIterations; i++) {
+        for (long i = 0; i < totalCount; i++) {
             long value = nanoTimeMethodToBeTested();
 
             if (i == warmupCount) {
