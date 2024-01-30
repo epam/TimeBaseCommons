@@ -21,6 +21,11 @@ dependencies {
     implementation('io.aeron:aeron-client')
     implementation('io.aeron:aeron-driver')
     implementation ('com.google.guava:guava')
+
+    // https://gitlab.deltixhub.com/Deltix/Common/nativeclock
+    implementation('deltix:deltix-clock')
+
+    testImplementation 'org.hdrhistogram:HdrHistogram'
 }
 
 task downloadCodes(type: Download) {

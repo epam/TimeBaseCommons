@@ -78,6 +78,8 @@ configure(leafProjects) {
 
             dependency "com.epam.deltix:dfp:$dfpVersion"
             dependency "com.epam.deltix:hd-date-time:$hdTimeVersion"
+            dependency "deltix:deltix-clock:1.0.4"
+
 
             dependencySet (group: 'com.epam.deltix', version: '3.0.2') {
                 entry 'gflog-api'
@@ -117,6 +119,8 @@ configure(leafProjects) {
                 entry 'aeron-archive'
             }
             dependency 'com.google.guava:guava:32.0.1-jre'
+
+            dependency 'org.hdrhistogram:HdrHistogram:2.1.12'
         }
     }
 

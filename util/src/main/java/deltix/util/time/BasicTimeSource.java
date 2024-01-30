@@ -1,6 +1,7 @@
 package deltix.util.time;
 
 import deltix.qsrv.hf.pub.TimeSource;
+import net.jcip.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Alexei Osipov
  */
+@ThreadSafe
 public class BasicTimeSource implements TimeSource {
     private static final long NANOS_IN_MS = 1_000_000;
 
