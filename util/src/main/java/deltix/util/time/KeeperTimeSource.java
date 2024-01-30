@@ -1,6 +1,7 @@
 package deltix.util.time;
 
 import deltix.qsrv.hf.pub.TimeSource;
+import net.jcip.annotations.ThreadSafe;
 
 /**
  * {@link TimeSource} implementation that uses {@link TimeKeeper} as time source.
@@ -11,6 +12,7 @@ import deltix.qsrv.hf.pub.TimeSource;
  *
  * @author Alexei Osipov
  */
+@ThreadSafe
 public class KeeperTimeSource implements TimeSource {
     public static final KeeperTimeSource INSTANCE = new KeeperTimeSource();
 
