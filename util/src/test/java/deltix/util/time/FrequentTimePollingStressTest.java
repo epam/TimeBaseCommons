@@ -29,24 +29,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </ul>
  */
 public class FrequentTimePollingStressTest {
+    private static final boolean USE_RAW_CLOCK = Boolean.getBoolean("deltix.util.time.FrequentTimePollingStressTest.useRawClock");
 
     @SuppressWarnings("unused")
-    private static final MonotonicRealTimeSource monotonicTimeSource = new MonotonicRealTimeSource();
+    private static final MonotonicRealTimeSource monotonicTimeSource = MonotonicRealTimeSource.getInstance();
 
     private static long nanoTimeMethodToBeTested() {
-        return Clocks.REALTIME.time();
-        //return monotonicTimeSource.currentTimeNanos();
+        return USE_RAW_CLOCK ? Clocks.REALTIME.time() : monotonicTimeSource.currentTimeNanos();
     }
 
     public static void main(String[] args) throws InterruptedException {
         // Settings
-        int backgroundThreads = 6;
-        long targetRate = 100_000;
-        Integer manualDummyIterationCount = null; // 3500;
+        int backgroundThreads = getLongArg(args, 0, 4L).intValue();
+        long targetRate = getLongArg(args, 1, 100_000L);
+        long mainMeasurementIterations = getLongArg(args, 2, 200_000_000L);
+        boolean enableTimePollFromBackgroundThread = getLongArg(args, 3, 1L) != 0;
+        Long manualDummyIterationCount = getLongArg(args, 4, null);
 
 
         System.out.println("Background threads: " + backgroundThreads);
         System.out.println("Target rate: " + targetRate + " calls/s");
+        System.out.println("Main measurement iterations: " + mainMeasurementIterations);
+        System.out.println("Enable time poll from background thread: " + enableTimePollFromBackgroundThread);
 
         float dummyIterationCostNs = measureDummyIterationCost();
         System.out.println("Dummy iteration cost: " + dummyIterationCostNs + " ns");
@@ -67,7 +71,6 @@ public class FrequentTimePollingStressTest {
         long dummyIterationsPerCallEstimate = (long) (extraDelayNeeded / dummyIterationCostNs);
         System.out.println("Estimated dummy iterations per call: " + dummyIterationsPerCallEstimate);
 
-        @SuppressWarnings("ConstantValue")
         long dummyIterationsPerCall = manualDummyIterationCount != null ? manualDummyIterationCount : dummyIterationsPerCallEstimate;
         System.out.println("Dummy iterations per call: " + dummyIterationsPerCall);
 
@@ -79,7 +82,7 @@ public class FrequentTimePollingStressTest {
                 long count = 0;
                 boolean warmup = true;
                 while (!stopBackground.get()) {
-                    long value = nanoTimeMethodToBeTested();
+                    long value = enableTimePollFromBackgroundThread ? nanoTimeMethodToBeTested() : 1;
                     count++;
                     if (value == Long.MIN_VALUE) {
                         // Should not happen
@@ -103,18 +106,23 @@ public class FrequentTimePollingStressTest {
         backgroundWarmedUp.await();
         System.out.println("Starting main measurement...");
 
-        runMeasurement();
+        runMeasurement(mainMeasurementIterations);
 
         stopBackground.set(true);
     }
 
-    private static void runMeasurement() {
+    private static void runMeasurement(long mainMeasurementIterations) {
+        int warmupCount = 1_000_000;
+        if (mainMeasurementIterations <= warmupCount) {
+            throw new IllegalArgumentException("mainMeasurementIterations < warmupCount");
+        }
         Histogram seqMsgHistogram = new Histogram(3);
+        long startTime = System.currentTimeMillis();
         long prevValue = nanoTimeMethodToBeTested();
-        for (long i = 0; i < 200_000_000; i++) {
+        for (long i = 0; i < mainMeasurementIterations; i++) {
             long value = nanoTimeMethodToBeTested();
 
-            if (i == 1_000_000) {
+            if (i == warmupCount) {
                 seqMsgHistogram.reset();
                 System.out.println("Warmup done. Running measurements...");
                 value = nanoTimeMethodToBeTested();
@@ -122,9 +130,19 @@ public class FrequentTimePollingStressTest {
             seqMsgHistogram.recordValue(value - prevValue);
             prevValue = value;
         }
+        long endTime = System.currentTimeMillis();
         synchronized (System.out) {
             System.out.println("=========");
             seqMsgHistogram.outputPercentileDistribution(System.out, 1.0);
+            System.out.println("=========");
+            System.out.println("Mean   :" + seqMsgHistogram.getMean());
+            System.out.println("50%    :" + seqMsgHistogram.getValueAtPercentile(50));
+            System.out.println("90%    :" + seqMsgHistogram.getValueAtPercentile(90));
+            System.out.println("99%    :" + seqMsgHistogram.getValueAtPercentile(99));
+            System.out.println("99.9%  :" + seqMsgHistogram.getValueAtPercentile(99.9));
+            System.out.println("99.99% :" + seqMsgHistogram.getValueAtPercentile(99.99));
+            System.out.println("=========");
+            System.out.println("Measurement took " + (endTime - startTime) + " ms");
             System.out.println("=========");
         }
     }
@@ -169,6 +187,14 @@ public class FrequentTimePollingStressTest {
         if (val == Long.MAX_VALUE) {
             // Should not happen
             System.out.println("Error in dummy ops");
+        }
+    }
+
+    private static Long getLongArg(String[] args, int pos, Long defaultValue) {
+        if (args.length > pos) {
+            return Long.parseLong(args[pos]);
+        } else {
+            return defaultValue;
         }
     }
 }

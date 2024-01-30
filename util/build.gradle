@@ -35,3 +35,23 @@ task downloadCodes(type: Download) {
 
 processResources.mustRunAfter downloadCodes
 sourcesJar.mustRunAfter downloadCodes
+
+
+tasks.register('buildFatTestJar', Jar) {
+    group 'build'
+    description 'Assembles a jar archive containing the test classes and all dependencies'
+
+    manifest {
+        attributes "Main-Class": "deltix.util.time.FrequentTimePollingStressTest"
+    }
+
+    from {
+        configurations.testRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from sourceSets.main.output
+    from sourceSets.test.output
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    archiveClassifier = 'testFat'
+}
+

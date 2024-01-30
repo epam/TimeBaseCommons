@@ -23,9 +23,19 @@ public class MonotonicRealTimeSource implements TimeSource {
     // Shared value
     private static final AtomicLong lastTimeNs = new AtomicLong(Long.MIN_VALUE);
 
+    private static final MonotonicRealTimeSource INSTANCE = new MonotonicRealTimeSource();
+
+    private MonotonicRealTimeSource() {
+    }
+
+    public static MonotonicRealTimeSource getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public long currentTimeMillis() {
-        // TODO: Consider using System.currentTimeMillis() directly Clocks.REALTIME is not available to avoid extra multiplication and division steps
+        // TODO: Consider using System.currentTimeMillis() directly Clocks.REALTIME is not available
+        //  to avoid extra multiplication and division steps
         return currentTimeNanos() / 1_000_000L;
     }
 
@@ -35,13 +45,11 @@ public class MonotonicRealTimeSource implements TimeSource {
         long currentTimeNanos = Clocks.REALTIME.time();
         while (true) {
             long prevVal = lastTimeNs.get();
-            if (prevVal == currentTimeNanos) {
-                return currentTimeNanos;
-            }
-            if (prevVal > currentTimeNanos) {
+            if (prevVal >= currentTimeNanos) {
+                // Shared value is already ahead (or same). So we can use it and do not need to update shared value.
                 return prevVal;
             }
-            // currentTime > prevVal
+            // currentTimeNanos > prevVal
             if (lastTimeNs.compareAndSet(prevVal, currentTimeNanos)) {
                 return currentTimeNanos;
             }
