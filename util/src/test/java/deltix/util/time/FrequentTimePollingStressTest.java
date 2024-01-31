@@ -1,5 +1,6 @@
 package deltix.util.time;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import deltix.clock.Clock;
 import deltix.clock.Clocks;
 import deltix.qsrv.hf.pub.TimeSource;
@@ -74,7 +75,9 @@ public class FrequentTimePollingStressTest {
         System.out.println("Dummy iterations per call: " + dummyIterationsPerCall);
 
         CountDownLatch backgroundWarmedUp = new CountDownLatch(backgroundThreads);
+        CountDownLatch backgroundStopped = new CountDownLatch(backgroundThreads);
         AtomicBoolean stopBackground = new AtomicBoolean(false);
+        AtomicDouble rateSum = new AtomicDouble(0);
         for (int i = 0; i < backgroundThreads; i++) {
             new Thread(() -> {
                 long t0 = Long.MIN_VALUE;
@@ -98,7 +101,10 @@ public class FrequentTimePollingStressTest {
                     }
                 }
                 long t1 = System.nanoTime();
-                System.out.println("Actual rate: " + (count * 1_000_000_000d / (t1 - t0)) + " calls/s");
+                double rate = count * 1_000_000_000d / (t1 - t0);
+                rateSum.addAndGet(rate);
+                System.out.println("Actual rate: " + rate + " calls/s");
+                backgroundStopped.countDown();
             }).start();
         }
         System.out.println("Warming up background threads...");
@@ -108,6 +114,9 @@ public class FrequentTimePollingStressTest {
         runMeasurement(mainMeasurementIterations, timeSource);
 
         stopBackground.set(true);
+        backgroundStopped.await();
+        System.out.println("=========");
+        System.out.println("Total background rate estimate: " + ((long) rateSum.get()) + " calls/s");
     }
 
     private static TimeSource getSourcedByName(String clockName) {
@@ -138,6 +147,7 @@ public class FrequentTimePollingStressTest {
         Histogram seqMsgHistogram = new Histogram(3);
         long startTime = System.currentTimeMillis();
         long prevValue = timeSource.currentTimeNanos();
+        long startMeasurementNanos = Long.MIN_VALUE;
         for (long i = 0; i < totalCount; i++) {
             long value = timeSource.currentTimeNanos();
 
@@ -145,23 +155,28 @@ public class FrequentTimePollingStressTest {
                 seqMsgHistogram.reset();
                 System.out.println("Warmup done. Running measurements...");
                 value = timeSource.currentTimeNanos();
+                startMeasurementNanos = value;
             }
             seqMsgHistogram.recordValue(value - prevValue);
             prevValue = value;
         }
+        long endMeasurementNanos = prevValue;
         long endTime = System.currentTimeMillis();
         synchronized (System.out) {
             System.out.println("=========");
             seqMsgHistogram.outputPercentileDistribution(System.out, 1.0);
             System.out.println("=========");
-            System.out.println("Mean   :" + seqMsgHistogram.getMean());
-            System.out.println("50%    :" + seqMsgHistogram.getValueAtPercentile(50));
-            System.out.println("90%    :" + seqMsgHistogram.getValueAtPercentile(90));
-            System.out.println("99%    :" + seqMsgHistogram.getValueAtPercentile(99));
-            System.out.println("99.9%  :" + seqMsgHistogram.getValueAtPercentile(99.9));
-            System.out.println("99.99% :" + seqMsgHistogram.getValueAtPercentile(99.99));
+            System.out.println("Mean     : " + seqMsgHistogram.getMean());
+            System.out.println("50%      : " + seqMsgHistogram.getValueAtPercentile(50));
+            System.out.println("90%      : " + seqMsgHistogram.getValueAtPercentile(90));
+            System.out.println("99%      : " + seqMsgHistogram.getValueAtPercentile(99));
+            System.out.println("99.9%    : " + seqMsgHistogram.getValueAtPercentile(99.9));
+            System.out.println("99.99%   : " + seqMsgHistogram.getValueAtPercentile(99.99));
+            System.out.println("99.999%  : " + seqMsgHistogram.getValueAtPercentile(99.999));
+            System.out.println("99.9999% : " + seqMsgHistogram.getValueAtPercentile(99.9999));
             System.out.println("=========");
-            System.out.println("Measurement took " + (endTime - startTime) + " ms");
+            System.out.println("Measurement took: " + (endTime - startTime) + " ms");
+            System.out.println("Main thread rate: " + (mainMeasurementIterations * 1_000_000_000 / (endMeasurementNanos - startMeasurementNanos)) + " calls/s");
             System.out.println("=========");
         }
     }
