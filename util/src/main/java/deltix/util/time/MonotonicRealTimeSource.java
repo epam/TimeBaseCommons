@@ -2,6 +2,8 @@ package deltix.util.time;
 
 import deltix.clock.Clocks;
 import deltix.qsrv.hf.pub.TimeSource;
+import deltix.util.annotations.TimestampMs;
+import deltix.util.annotations.TimestampNs;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,6 +35,7 @@ public class MonotonicRealTimeSource implements TimeSource {
     }
 
     @Override
+    @TimestampMs
     public long currentTimeMillis() {
         // TODO: Consider using System.currentTimeMillis() directly Clocks.REALTIME is not available
         //  to avoid extra multiplication and division steps
@@ -41,6 +44,7 @@ public class MonotonicRealTimeSource implements TimeSource {
 
     @SuppressWarnings("DuplicatedCode")
     @Override
+    @TimestampNs
     public long currentTimeNanos() {
         long currentTimeNanos = Clocks.REALTIME.time();
         while (true) {

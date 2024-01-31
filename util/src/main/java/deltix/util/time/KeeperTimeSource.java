@@ -1,6 +1,8 @@
 package deltix.util.time;
 
 import deltix.qsrv.hf.pub.TimeSource;
+import deltix.util.annotations.TimestampMs;
+import deltix.util.annotations.TimestampNs;
 import net.jcip.annotations.ThreadSafe;
 
 /**
@@ -24,11 +26,13 @@ public class KeeperTimeSource implements TimeSource {
     }
 
     @Override
+    @TimestampMs
     public long currentTimeMillis() {
         return TimeKeeper.currentTime;
     }
 
     @Override
+    @TimestampNs
     public long currentTimeNanos() {
         return TimeKeeper.currentTimeNanos;
     }

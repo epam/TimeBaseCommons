@@ -1,6 +1,8 @@
 package deltix.util.time;
 
 import deltix.qsrv.hf.pub.TimeSource;
+import deltix.util.annotations.TimestampMs;
+import deltix.util.annotations.TimestampNs;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -24,7 +26,12 @@ public class BasicTimeSource implements TimeSource {
     private BasicTimeSource() {
     }
 
+    public static BasicTimeSource getInstance() {
+        return INSTANCE;
+    }
+
     @Override
+    @TimestampMs
     public long currentTimeMillis() {
         long currentTime = System.currentTimeMillis();
         while (true) {
@@ -41,6 +48,7 @@ public class BasicTimeSource implements TimeSource {
     }
 
     @Override
+    @TimestampNs
     public long currentTimeNanos() {
         return currentTimeMillis() * NANOS_IN_MS;
     }

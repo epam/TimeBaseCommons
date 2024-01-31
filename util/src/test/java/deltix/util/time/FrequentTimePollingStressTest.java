@@ -1,16 +1,18 @@
 package deltix.util.time;
 
+import deltix.clock.Clock;
 import deltix.clock.Clocks;
+import deltix.qsrv.hf.pub.TimeSource;
 import org.HdrHistogram.Histogram;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Attempts to measure time spent on single {@link #nanoTimeMethodToBeTested()} call with semi-realistic
+ * Attempts to measure time spent on single {@link TimeSource#currentTimeNanos()} call with semi-realistic
  * background load.
  *
- * <p>To simulate the load runs a fixed number of threads that call {@link #nanoTimeMethodToBeTested()}
+ * <p>To simulate the load runs a fixed number of threads that call {@link TimeSource#currentTimeNanos()}
  * at fixed rate (approximately).
  *
  * <p>Main thread performs measurements in loop without any delays.
@@ -29,23 +31,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </ul>
  */
 public class FrequentTimePollingStressTest {
-    private static final boolean USE_RAW_CLOCK = Boolean.getBoolean("deltix.util.time.FrequentTimePollingStressTest.useRawClock");
-
-    @SuppressWarnings("unused")
-    private static final MonotonicRealTimeSource monotonicTimeSource = MonotonicRealTimeSource.getInstance();
-
-    private static long nanoTimeMethodToBeTested() {
-        return USE_RAW_CLOCK ? Clocks.REALTIME.time() : monotonicTimeSource.currentTimeNanos();
-    }
 
     public static void main(String[] args) throws InterruptedException {
         // Settings
-        int backgroundThreads = getLongArg(args, 0, 4L).intValue();
-        long targetRate = getLongArg(args, 1, 100_000L);
-        long mainMeasurementIterations = getLongArg(args, 2, 200_000_000L);
-        boolean enableTimePollFromBackgroundThread = getLongArg(args, 3, 1L) != 0;
-        Long manualDummyIterationCount = getLongArg(args, 4, null);
+        int backgroundThreads = getLongArg(args, 1, 4L).intValue();
+        long targetRate = getLongArg(args, 2, 100_000L);
+        long mainMeasurementIterations = getLongArg(args, 3, 200_000_000L);
+        boolean enableTimePollFromBackgroundThread = getLongArg(args, 4, 1L) != 0;
+        Long manualDummyIterationCount = getLongArg(args, 5, null);
 
+        String clockName = args.length > 0 ? args[0] : "MonotonicReal";
+
+        TimeSource timeSource = getSourcedByName(clockName);
+
+        System.out.println("Clock name: " + clockName);
 
         System.out.println("Background threads: " + backgroundThreads);
         System.out.println("Target rate: " + targetRate + " calls/s");
@@ -58,11 +57,11 @@ public class FrequentTimePollingStressTest {
         float targetCallPeriodNs = 1_000_000_000f / targetRate;
         System.out.println("Target call period: " + targetCallPeriodNs + " ns");
 
-        float approxCallCost1 = measureApproxCallCost();
+        float approxCallCost1 = measureApproxCallCost(timeSource);
         System.out.println("Call cost estimate 1: " + approxCallCost1 + " ns");
-        float approxCallCost2 = measureApproxCallCost();
+        float approxCallCost2 = measureApproxCallCost(timeSource);
         System.out.println("Call cost estimate 2: " + approxCallCost2 + " ns");
-        float approxCallCost3 = measureApproxCallCost();
+        float approxCallCost3 = measureApproxCallCost(timeSource);
         System.out.println("Call cost estimate 3: " + approxCallCost3 + " ns");
 
         float extraDelayNeeded = Math.max(0, targetCallPeriodNs - approxCallCost3);
@@ -82,7 +81,7 @@ public class FrequentTimePollingStressTest {
                 long count = 0;
                 boolean warmup = true;
                 while (!stopBackground.get()) {
-                    long value = enableTimePollFromBackgroundThread ? nanoTimeMethodToBeTested() : 1;
+                    long value = enableTimePollFromBackgroundThread ? timeSource.currentTimeNanos() : 1;
                     count++;
                     if (value == Long.MIN_VALUE) {
                         // Should not happen
@@ -106,12 +105,26 @@ public class FrequentTimePollingStressTest {
         backgroundWarmedUp.await();
         System.out.println("Starting main measurement...");
 
-        runMeasurement(mainMeasurementIterations);
+        runMeasurement(mainMeasurementIterations, timeSource);
 
         stopBackground.set(true);
     }
 
-    private static void runMeasurement(long mainMeasurementIterations) {
+    private static TimeSource getSourcedByName(String clockName) {
+        switch (clockName) {
+            case "MonotonicReal":
+                return MonotonicRealTimeSource.getInstance();
+            case "RawReal":
+                return new RawRealTimeSource();
+            case "Keeper": // Very imprecise data!
+                TimeKeeper.setMode(TimeKeeper.Mode.HIGH_RESOLUTION_SYNC_BACK);
+                return KeeperTimeSource.getInstance();
+            default:
+                throw new IllegalArgumentException("Unknown clock name: " + clockName);
+        }
+    }
+
+    private static void runMeasurement(long mainMeasurementIterations, TimeSource timeSource) {
         long warmupCount = mainMeasurementIterations / 5;
         System.out.println("=========");
         System.out.println("Warmup count: " + warmupCount);
@@ -124,14 +137,14 @@ public class FrequentTimePollingStressTest {
 
         Histogram seqMsgHistogram = new Histogram(3);
         long startTime = System.currentTimeMillis();
-        long prevValue = nanoTimeMethodToBeTested();
+        long prevValue = timeSource.currentTimeNanos();
         for (long i = 0; i < totalCount; i++) {
-            long value = nanoTimeMethodToBeTested();
+            long value = timeSource.currentTimeNanos();
 
             if (i == warmupCount) {
                 seqMsgHistogram.reset();
                 System.out.println("Warmup done. Running measurements...");
-                value = nanoTimeMethodToBeTested();
+                value = timeSource.currentTimeNanos();
             }
             seqMsgHistogram.recordValue(value - prevValue);
             prevValue = value;
@@ -174,12 +187,12 @@ public class FrequentTimePollingStressTest {
     }
 
     // Non-precise estimate of tested cost, so we can calculate right delay between calls to get the right rate.
-    private static float measureApproxCallCost() {
+    private static float measureApproxCallCost(TimeSource timeSource) {
         long val = 0;
         long count = 1_000_000;
         long t0 = System.nanoTime();
         for (int i = 0; i < count; i++) {
-            val = val | nanoTimeMethodToBeTested();
+            val = val | timeSource.currentTimeNanos();
         }
         long t1 = System.nanoTime();
         return ((float)(t1 - t0)) / count;
@@ -201,6 +214,23 @@ public class FrequentTimePollingStressTest {
             return Long.parseLong(args[pos]);
         } else {
             return defaultValue;
+        }
+    }
+
+    /**
+     * Non-monotonic real time source. For test use only. Most TimeBase-related use cases require monotonic time source.
+     */
+    private static class RawRealTimeSource implements deltix.qsrv.hf.pub.TimeSource {
+        private static final Clock clock = Clocks.REALTIME;
+
+        @Override
+        public long currentTimeMillis() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public long currentTimeNanos() {
+            return clock.time();
         }
     }
 }
