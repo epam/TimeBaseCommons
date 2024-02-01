@@ -9,7 +9,7 @@ import net.jcip.annotations.ThreadSafe;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Shared monotonic realtime time source with up to nanosecond resolution (if available).
+ * Shared non-decreasing realtime time source with up to nanosecond resolution (if available).
  *
  * <p>Time source that:
  * <ul>
@@ -18,6 +18,10 @@ import java.util.concurrent.atomic.AtomicLong;
  *     <li>Guaranties consistent time across multiple threads (instance users)</li>
  *     <li>Provided "millis" version is in sync with "nanos" value (rounded down) but is not very efficient</li>
  * </ul>
+ *
+ * <p>WARNING: This implementation is monotonic in the sense of non-decreasing returned values.
+ * However, it is not monotonic in the same sense as Linux CLOCK_MONOTONIC (or {@link Clocks#MONOTONIC})
+ * that assumes linear growth with time flow.
  */
 @ThreadSafe
 public class MonotonicRealTimeSource implements TimeSource {
