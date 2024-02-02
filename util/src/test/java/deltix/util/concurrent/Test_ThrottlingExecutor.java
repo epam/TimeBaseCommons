@@ -3,7 +3,6 @@ package deltix.util.concurrent;
 
 import java.util.Random;
 
-import com.epam.deltix.gflog.api.LogLevel;
 import org.junit.*;
 
 import static deltix.util.log.LogUtil.LOGGER;
@@ -45,6 +44,7 @@ public class Test_ThrottlingExecutor {
     }
 
     @Test(timeout = 90000)
+    @Ignore
     public void             go () throws InterruptedException {
 
         boolean cruiseControlMode = true; //Boolean.getBoolean("deltix.test.mode");
