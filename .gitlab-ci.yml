@@ -169,8 +169,6 @@ before_script:
   cache: {} # Disable cache for this job because this job does not uses any data from the cache
   script:
     - ./gradlew -PPROMOTE_VERSION=5.6.16 promoteToPublic
-  only:
-    - /^release-.*$/
   when: manual
   except:
     - tags
