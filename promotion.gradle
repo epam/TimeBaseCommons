@@ -13,7 +13,7 @@ task promoteToPublic(type: PromotionTask) {
         promoteJava('deltix.qsrv:deltix-commons-gui')
         promoteJava('deltix.qsrv:deltix-commons-lang')
         //promoteJava('deltix.qsrv:deltix-commons-log') // Deprecated
-        promoteJava('deltix.qsrv:deltix-commons-tools')
+        //promoteJava('deltix.qsrv:deltix-commons-tools') // Deprecated
         promoteJava('deltix.qsrv:deltix-commons-util')
         
     }
