@@ -162,22 +162,6 @@ before_script:
     - Linux
     - DockerExecutor
 
-# Temporary job to promote an older version
-"Promote to public 5.6.16":
-  stage: promote
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
-  cache: {} # Disable cache for this job because this job does not uses any data from the cache
-  script:
-    - ./gradlew -PPROMOTE_VERSION=5.6.16 promoteToPublic
-  when: manual
-  except:
-    - tags
-    - schedules
-  dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
-  tags:
-    - Linux
-    - DockerExecutor
-
 # Checks dependencies (for scheduled checks)
 dependency-check:
   stage: test
