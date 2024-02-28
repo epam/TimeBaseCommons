@@ -1,8 +1,5 @@
 package deltix.qsrv.hf.spi.conn;
 
-import deltix.qsrv.hf.spi.conn.Disconnectable;
-import deltix.qsrv.hf.spi.conn.DisconnectEventListener;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -13,14 +10,17 @@ public class DisconnectableEventHandler implements Disconnectable {
     private final CopyOnWriteArrayList<DisconnectEventListener> listeners =
         new CopyOnWriteArrayList<DisconnectEventListener>();
 
+    @Override
     public void addDisconnectEventListener(DisconnectEventListener listener) {
         listeners.addIfAbsent(listener);
     }
 
+    @Override
     public void removeDisconnectEventListener(DisconnectEventListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public boolean isConnected() {
         throw new UnsupportedOperationException();
     }
