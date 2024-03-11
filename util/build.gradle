@@ -13,7 +13,7 @@ dependencies {
     implementation 'com.epam.deltix:thread-affinity:1.0.4'
 
     implementation 'org.apache.commons:commons-lang3:3.7'
-    implementation 'org.apache.commons:commons-compress:1.19'
+    implementation 'org.apache.commons:commons-compress:1.26.0'
 
     implementation 'javax.xml.bind:jaxb-api:2.2.8'
     implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
@@ -27,5 +27,5 @@ dependencies {
 
     implementation('net.java.dev.jna:jna:4.2.1')
     implementation('net.java.dev.jna:jna-platform:4.2.1')
-    implementation('org.apache.bcel:bcel:6.0')
+    implementation('org.apache.bcel:bcel:6.6.0')
 }

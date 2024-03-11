@@ -17,7 +17,7 @@ dependencies {
     implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
     implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
 
-    testImplementation 'commons-collections:commons-collections:3.2.1'
+    testImplementation 'commons-collections:commons-collections:3.2.2'
 }
 
 ext {
