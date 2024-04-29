@@ -38,6 +38,8 @@ import com.epam.deltix.hdtime.HdTimeSpan;
 /**
  * Resizable array of primitive ${type}s. Much more efficient than
  *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
+ *
+ * Generated from ArrayList.vpp.
  */
 
 #if($name == "Object")
@@ -768,6 +770,20 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		modCount++;
 		return numNew != 0;
     }
+
+    #if( $name == "Object")
+    /** Special version of add all for lists (avoid allocation of iterator) */
+    public void addAll (List<${type}> items) {
+        final int size = items.size();
+        ensureFreeSpace(size);
+
+    	for (int i=0; i < size; i++) {
+    	   add (items.get(i));
+    	}
+    	modCount++;
+    }
+    #end
+
 
     /**
      * Removes from this List all of the elements whose index is between
