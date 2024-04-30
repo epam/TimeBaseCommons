@@ -34,12 +34,14 @@ import com.epam.deltix.hdtime.HdTimeSpan;
 #set($actualType = $type)
 #end
 
+////////////////////////////////////
+/// Generated from ArrayList.vpp ///
+////////////////////////////////////
+
 
 /**
  * Resizable array of primitive ${type}s. Much more efficient than
  *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
- *
- * Generated from ArrayList.vpp.
  */
 
 #if($name == "Object")
