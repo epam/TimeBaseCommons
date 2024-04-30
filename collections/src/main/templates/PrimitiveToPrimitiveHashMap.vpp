@@ -190,7 +190,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
     }
 
   #if( $first_name == "Long" )
-    public V computeIfAbsent (${first_name} key, java.util.function.LongFunction<V> mappingFunction) {
+    public V computeIfAbsent (${first_name} key, LongFunction<V> mappingFunction) {
         int         hidx = hashIndex (key);
         int         idx = find (hidx, key);
 
