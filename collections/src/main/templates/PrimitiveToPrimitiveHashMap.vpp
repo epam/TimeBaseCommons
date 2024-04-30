@@ -18,12 +18,14 @@ import deltix.util.collections.hash.*;
 import deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
-#if( $name == "Decimal" )
+#if( $first_name == "Decimal" )
 import com.epam.deltix.dfp.Decimal64;
-#elseif( $name == "HdDateTime" )
+#elseif( $first_name == "HdDateTime" )
 import com.epam.deltix.hdtime.HdDateTime;
-#elseif( $name == "HdTimeSpan" )
+#elseif( $first_name == "HdTimeSpan" )
 import com.epam.deltix.hdtime.HdTimeSpan;
+#elseif( $first_name == "Long" )
+import java.util.function.LongFunction;
 #end
 #if( $second_name == "Object" )
 import java.util.function.Consumer;
@@ -31,6 +33,12 @@ import java.util.function.Predicate;
 import java.util.function.BiPredicate;
 #end
 
+//////////////////////////////////////////////////////
+/// Generated from PrimitiveToPrimitiveHashMap.vpp ///
+//////////////////////////////////////////////////////
+
+
+/** Specialized collection that avoids boxing/unboxing primitives. */
 @SuppressWarnings ("unchecked")
 public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" && $second_name == "Object" )<K, V>#else$!{key_param}$!{value_param}
 #end
@@ -180,6 +188,30 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
         }
         return result;
     }
+
+  #if( $first_name == "Long" )
+    public V computeIfAbsent (${first_name} key, java.util.function.LongFunction<V> mappingFunction) {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL) {
+            return (V) values [idx];
+        }
+
+        V value = mappingFunction.apply(key);
+        if (value != null) {
+            if (freeHead == NULL) {
+                resizeTable(values.length * 2);
+                hidx = hashIndex(key); // recompute!
+            }
+
+            idx = allocEntry(hidx);
+            values [idx] = value;
+            putKey(idx, key);
+        }
+        return value;
+    }
+  #end
 #end
 
     protected void              resizeTable (int newSize) {
