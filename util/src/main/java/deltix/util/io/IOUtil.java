@@ -103,7 +103,7 @@ public class IOUtil extends BasicIOUtil {
      *  without clearing it first.
      */
     @Deprecated // buggy
-    public final static void readUTF(MemoryDataInput in, Appendable sb) throws IOException {
+    public static void readUTF(MemoryDataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
 
         if (utflen == 0)

@@ -384,9 +384,8 @@ public final class MemoryDataInput {
     }
     
     /**
-     *  Returns false if the string value is null. 
+     *  Appends to the StringBuilder
      */
-    @Deprecated // buggy
     public StringBuilder    appendToStringBuilder (StringBuilder sb) {
         int         utflen = readUnsignedShort ();
         
@@ -401,10 +400,9 @@ public final class MemoryDataInput {
         int count = 0;        
         
         for (;;) {
-            c = readByte ();
-            if (c < 0) //WAS: if (c > 127 || c < 0)
-                break;
-            
+            c = (int) readByte () & 0xff; // convert to unsigned
+            if (c > 127) break; // we have character takes more than 1 byte
+
             count++;
             sb.append ((char) c);
             
