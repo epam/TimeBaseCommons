@@ -17,6 +17,11 @@ import com.epam.deltix.hdtime.HdDateTime;
 #elseif( $name == "HdTimeSpan" )
 import com.epam.deltix.hdtime.HdTimeSpan;
 #end
+
+///////////////////////////////////////////////
+/// Generated from PrimitiveHashMapBase.vpp ///
+///////////////////////////////////////////////
+
 /**
  *  Base class for ${name} to anything hash maps.
  */
@@ -101,7 +106,6 @@ public abstract class ${name}HashMapBase$!{key_param} extends VLinkHashMapBase {
     	return (new KeyIterator ());
     }
 #end
-
     @Override
     protected void          allocTable (int cap) {
         super.allocTable (cap);
