@@ -71,6 +71,9 @@ class JarScanner {
             } else if (secondUri.endsWith(".jar")) {
                 JarURLConnection jarConn = (JarURLConnection) packageFolderURL.openConnection();
                 String rootEntryName = jarConn.getEntryName();
+                if (rootEntryName == null) {
+                    rootEntryName = "";
+                }
                 int rootEnd = rootEntryName.length() + 1;
                 if (!secondUri.endsWith("jar"))
                     return result;
