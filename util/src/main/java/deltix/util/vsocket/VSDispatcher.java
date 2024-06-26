@@ -606,7 +606,7 @@ public final class VSDispatcher implements Disposable {
     }
 
     public String               getClientAddress() {
-        return clientAddress;
+        return "/" + clientAddress + ":";
     }
 
     VSChannelImpl               getChannel (int id) {

@@ -33,7 +33,7 @@ import java.util.regex.*;
  *  I/O Utilities which have no dependencies on Deltix CG code.
  */
 public abstract class BasicIOUtil {
-    public static final String  CR = System.getProperty ("line.separator");
+    public static final String  CR = System.lineSeparator();
     public static final String  TEMP_FILE_PREFIX = "~";
 
     /**
