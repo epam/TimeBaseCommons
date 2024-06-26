@@ -50,7 +50,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     // Protects "dispatcher" field and interactions with quick executor
     private final Object dispatcherLock = new Object();
 
-    private final String                clientId;
+    private String                      clientId;
     private long                        serverTime = -1;    
 
     private volatile DisconnectEventListener     listener;
@@ -218,12 +218,10 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
             this.clientId = new GUID().toStringWithPrefix (InetAddress.getLocalHost().getHostAddress() + ":");
         else
             this.clientId = new GUID().toStringWithPrefix(InetAddress.getLocalHost().getHostAddress() + ":" + ownerID + ":");
+    }
 
-        /*
-        if (TRANSPORT_RECONNECT_ATTEMPT_INTERVAL < soTimeout) {
-            VSProtocol.LOGGER.warning("Reconnect interval (" + TRANSPORT_RECONNECT_ATTEMPT_INTERVAL + ") should not be less than socket open timeout (" + soTimeout + ")");
-        }
-        */
+    public void                     setClientAddress(String address, String ownerID) {
+        this.clientId = new GUID().toStringWithPrefix(address + ":" + ownerID + ":");
     }
 
     public int                      getSoTimeout () {

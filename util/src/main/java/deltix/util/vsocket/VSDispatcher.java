@@ -123,6 +123,7 @@ public final class VSDispatcher implements Disposable {
     private final String        clientId;
     private final boolean       isClient;
     private volatile int        index = 0;
+    private final String        remoteAddress;
 
     private final HashSet<DisposableListener> listeners =
         new HashSet<DisposableListener> ();
@@ -132,6 +133,10 @@ public final class VSDispatcher implements Disposable {
      */
     public VSDispatcher(String clientId, boolean isClient, ContextContainer contextContainer) {
         this.clientId = clientId;
+
+        String[] parts = clientId.split(":");
+        this.remoteAddress = parts.length > 1 ? parts[0] : null;
+
         this.isClient = isClient;
         this.contextContainer = contextContainer;
 
@@ -202,7 +207,7 @@ public final class VSDispatcher implements Disposable {
 
     public boolean              hasTransportChannels() {
         synchronized (transportChannels) {
-            return transportChannels.size() > 0;
+            return !transportChannels.isEmpty();
         }
     }
 
@@ -597,6 +602,8 @@ public final class VSDispatcher implements Disposable {
     }
 
     public String               getRemoteAddress() {
+        if (remoteAddress != null && !remoteAddress.equals(address))
+            return remoteAddress;
         return address;
     }
 
