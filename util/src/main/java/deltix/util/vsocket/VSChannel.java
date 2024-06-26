@@ -19,6 +19,8 @@ public interface VSChannel extends Disposable {
 
     public String               getRemoteAddress();
 
+    public String               getClientAddress();
+
     public String               getRemoteApplication();
 
     public String               getClientId();

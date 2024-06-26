@@ -211,6 +211,11 @@ final class VSChannelImpl implements VSChannel {
         return dispatcher != null ? dispatcher.getRemoteAddress() : null;
     }
 
+    @Override
+    public String               getClientAddress() {
+        return dispatcher != null ? dispatcher.getClientAddress() : null;
+    }
+
     public String               getRemoteApplication() {
         return dispatcher != null ? dispatcher.getApplicationID() : null;
     }
