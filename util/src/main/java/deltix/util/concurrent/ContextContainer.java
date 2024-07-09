@@ -1,7 +1,7 @@
 package deltix.util.concurrent;
 
-import com.google.common.annotations.VisibleForTesting;
 import deltix.thread.affinity.AffinityConfig;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
