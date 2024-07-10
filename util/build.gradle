@@ -4,6 +4,8 @@ dependencies {
     api project(':lang'),
         project(':collections')
 
+    compileOnly 'org.jetbrains:annotations'
+
     implementation 'deltix:deltix-thread-affinity'
     implementation 'javax.mail:mail'
 
@@ -18,9 +20,7 @@ dependencies {
 
     implementation('org.apache.bcel:bcel:6.6.0')
 
-    implementation('io.aeron:aeron-client')
-    implementation('io.aeron:aeron-driver')
-    implementation ('com.google.guava:guava')
+    testImplementation 'com.google.guava:guava' // Removable
 
     // https://gitlab.deltixhub.com/Deltix/Common/nativeclock
     implementation('deltix:deltix-clock')

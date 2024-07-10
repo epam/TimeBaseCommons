@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class VSocketFactory {
@@ -15,9 +14,6 @@ public class VSocketFactory {
         SharedMemory,
         Memory
     }
-
-    private final static HashMap<String, VSocket> cache =
-            new HashMap<String, VSocket>();
 
     public static volatile Transport transport;
 
@@ -40,7 +36,7 @@ public class VSocketFactory {
 
         Socket s = cc.getSocket();
         if (transportType == TransportType.AERON_IPC) {
-            return new AeronIpcSocket(s, s.hashCode(), false, socketNumber);
+            throw new RuntimeException("Legacy version of Aeron IPC is not supported");
         }
         else if (transportType == TransportType.OFFHEAP_IPC)
             return new OffHeapIpcSocket(s, s.hashCode(), false, socketNumber);
@@ -54,8 +50,6 @@ public class VSocketFactory {
         VSocket socket;
         if (stopped instanceof VSocketImpl) {
             socket = new VSocketImpl(cc, socketNumber);
-        } else if (stopped instanceof AeronIpcSocket) {
-            socket = new AeronIpcSocket(s, stopped.getCode(), false, socketNumber);
         } else if (stopped instanceof OffHeapIpcSocket) {
             socket = new OffHeapIpcSocket(s, stopped.getCode(), false, socketNumber);
         } else {

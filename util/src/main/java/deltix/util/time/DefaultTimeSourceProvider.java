@@ -2,9 +2,9 @@ package deltix.util.time;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
-import com.google.common.annotations.VisibleForTesting;
 import deltix.qsrv.hf.pub.TimeSource;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * Time source provided for applications that do not have own source of clock configuration.
