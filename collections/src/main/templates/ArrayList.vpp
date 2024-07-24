@@ -45,9 +45,9 @@ import com.epam.deltix.hdtime.HdTimeSpan;
  */
 
 #if($name == "Object")
-public final class ${name}ArrayList<${type}> extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List<${type}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
+public final class ${name}ArrayList<${type}> extends AbstractList<${type_Object}> implements ${name}List<${type}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
 #else
-public final class ${name}ArrayList extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
+public final class ${name}ArrayList extends AbstractList<${type_Object}> implements ${name}List, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
 #end
 
     static final long  serialVersionUID = 1L;

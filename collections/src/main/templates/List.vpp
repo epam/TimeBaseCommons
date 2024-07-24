@@ -3,6 +3,7 @@
 #end
 package deltix.util.collections.generated;
 
+import java.util.List;
 
 #if( $name == "Object" )
 #set($actualType = "Object")
@@ -23,9 +24,9 @@ import com.epam.deltix.hdtime.HdTimeSpan;
  *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
  */
 #if($name == "Object")
-public interface ${name}List<${type}> extends Cloneable {
+public interface ${name}List<${type}> extends List<${type_Object}>, Cloneable {
 #else
-public interface ${name}List extends Cloneable {
+public interface ${name}List extends List<${type_Object}>, Cloneable {
 #end
     /**
      * Returns the number of elements in this list.
@@ -176,6 +177,28 @@ public interface ${name}List extends Cloneable {
     Object [] to${name_abbr}Array ();
 #else
     ${type} [] to${name_abbr}Array ();
+#end
+
+    /**
+     * Appends the specified element to the end of this list.
+     *
+     * @param d element to be appended to this list.
+     * @return <tt>true</tt> (as per the general contract of Collection.add).
+     */
+    boolean add (${type} d);
+
+    /**
+     *	Sets the size of this array to the supplied value.
+     *	If the array is extended by this call, the content of new elements
+     *	is undefined.
+     */
+    void setSize (int newSize);
+
+#if ($type != "boolean")
+    /**
+     * Sorts the array into ascending numerical order.
+     */
+    void sort ();
 #end
 
 }
