@@ -72,6 +72,12 @@ velocity {
         contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
+    ringedList {
+        from = "$srcDir/RingedList.vpp"
+        to = "$dstDir/@{name}RingedList.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean ]
+    }
+
     comparator {
         from = "$srcDir/PrimitiveComparator.vpp"
         to = "$dstDir/@{name}Comparator.java"
