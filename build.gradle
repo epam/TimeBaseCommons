@@ -41,6 +41,8 @@ ext {
     }
 }
 
+// Provides rootProject.ext.getVersionFromProperties() that is used by promotion script
+apply from: "$rootDir/gradle/Release.gradle"
 apply from: 'promotion.gradle'
 
 configure(leafProjects) {
