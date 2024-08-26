@@ -3,7 +3,6 @@ package deltix.util.vsocket;
 import deltix.util.collections.generated.IntegerToObjectHashMap;
 import deltix.util.concurrent.ContextContainer;
 import deltix.util.concurrent.QuickExecutor;
-import deltix.util.io.aeron.DXAeron;
 import deltix.util.io.offheap.OffHeap;
 import deltix.util.lang.DisposableListener;
 import deltix.util.tomcat.ConnectionHandshakeHandler;
@@ -136,7 +135,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         if (transportProperties != null) {
             transportType = transportProperties.transportType;
             if (transportType == TransportType.AERON_IPC) {
-                DXAeron.start(transportProperties.transportDir, false);
+                throw new RuntimeException("Legacy version of Aeron IPC is not supported");
             } else if (transportType == TransportType.OFFHEAP_IPC) {
                 OffHeap.start(transportProperties.transportDir, true);
             }
@@ -379,7 +378,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
         c.setTransportType(type);
         if (type == TransportType.AERON_IPC)
-            dout.writeUTF(DXAeron.getAeronDir());
+            throw new RuntimeException("Legacy version of Aeron IPC is not supported");
         else if (type == TransportType.OFFHEAP_IPC)
             dout.writeUTF(OffHeap.getOffHeapDir());
     }
@@ -400,7 +399,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
     @Override
     public void close() {
         if (transportType == TransportType.AERON_IPC)
-            DXAeron.shutdown();
+            throw new RuntimeException("Legacy version of Aeron IPC is not supported");
     }
 
     static class Connector extends ConnectionStateListener implements Closeable {

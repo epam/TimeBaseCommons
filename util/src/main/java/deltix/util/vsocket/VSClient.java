@@ -1,18 +1,17 @@
 package deltix.util.vsocket;
 
-import com.google.common.annotations.VisibleForTesting;
 import deltix.qsrv.hf.spi.conn.DisconnectEventListener;
 import deltix.util.concurrent.ContextContainer;
 import deltix.util.concurrent.QuickExecutor;
 import deltix.util.io.GUID;
 import deltix.util.io.IOUtil;
-import deltix.util.io.aeron.DXAeron;
 import deltix.util.io.offheap.OffHeap;
 import deltix.util.lang.Disposable;
 import deltix.util.lang.DisposableListener;
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimeKeeper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -64,7 +63,6 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     private int                         sslPort = 0;
     private SSLContext                  sslContext;
 
-    private boolean                     aeronEnabled = false;
 
     private final ContextContainer      contextContainer;
 
@@ -524,11 +522,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     private TransportType           processTransportHandshake(DataInputStream dis) throws IOException {
         TransportType transportType = TransportType.values()[dis.readInt()];
         if (transportType == TransportType.AERON_IPC) {
-            String aeronDir = dis.readUTF();
-            if (!aeronEnabled) {
-                DXAeron.start(aeronDir, false);
-                aeronEnabled = true;
-            }
+            throw new RuntimeException("Legacy version of Aeron IPC is not supported");
         } else if (transportType == TransportType.OFFHEAP_IPC) {
             OffHeap.start(dis.readUTF(), false);
         }
@@ -565,9 +559,6 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     private void close(boolean waitForChannelsToFinish) {
         synchronized (dispatcherLock) {
             closed = true;
-
-            if (aeronEnabled)
-                DXAeron.shutdown();
 
             VSDispatcher d = dispatcher;
 
@@ -650,9 +641,6 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     public void                     disposed (VSDispatcher d) {
         synchronized (dispatcherLock) {
             closed = true;
-
-            if (aeronEnabled)
-                DXAeron.shutdown();
 
             if (d == dispatcher) {
                 d.setStateListener(null);

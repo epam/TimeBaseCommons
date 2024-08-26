@@ -1,7 +1,6 @@
 package deltix.util.vsocket.transport;
 
 import deltix.util.io.IOUtil;
-import deltix.util.vsocket.AeronIpcSocket;
 import deltix.util.vsocket.OffHeapIpcSocket;
 import deltix.util.vsocket.TransportType;
 import deltix.util.vsocket.VSProtocol;
@@ -62,7 +61,7 @@ public class SocketConnection implements Connection {
     private VSocket                 create(int code, TransportType type) throws IOException {
         int socketNumber = VSocketFactory.nextSocketNumber();
         if (type == TransportType.AERON_IPC)
-            return new AeronIpcSocket(socket, code, true, socketNumber);
+            throw new RuntimeException("Legacy version of Aeron IPC is not supported");
         else if (type == TransportType.OFFHEAP_IPC)
             return new OffHeapIpcSocket(socket, code, true, socketNumber);
         else

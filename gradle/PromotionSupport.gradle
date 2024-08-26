@@ -1,7 +1,8 @@
-// v0.8
+// v0.8.2
 // Change log:
 // - Added promotion of multiple docker image flavors
 // - Gradle 8 support
+// - `usesSnapshots = false` by default
 
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.Callable
@@ -28,7 +29,7 @@ class PromotionTask extends DefaultTask {
     /**
      * Set to true if project uses "SNAPSHOTS" in the versions and promotion task is expected to remove "-SNAPSHOTS" suffix from version number.
      */
-    @Input boolean usesSnapshots = true
+    @Input boolean usesSnapshots = false
 
     /**
      * Version that will be promoted
@@ -175,6 +176,11 @@ class PromotionTask extends DefaultTask {
     void promotePom(from, to, String group, String artifactId) {
         checkRepositorySettings()
         copyPom(from, to, group, artifactId, promoteVersion, artifactoryUrl, artifactoryUser, artifactoryPass)
+    }
+
+    void promotePom(String groupAndId) {
+        def parts = groupAndId.split(':')
+        promotePom(javaSrc, javaDst, parts[0], parts[1])
     }
 
     /**
