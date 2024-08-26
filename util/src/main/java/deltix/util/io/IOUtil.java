@@ -22,8 +22,8 @@ import java.io.*;
  */
 public class IOUtil extends BasicIOUtil {
     private static final Log LOG = LogFactory.getLog(IOUtil.class);
+
     public static final String NOT_DECRYPTED      = "???????";
-    public static final String TB_SECURE_CONN_KEY = "SECURE_CONN_KEY";
 
     /**
      *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
@@ -187,6 +187,7 @@ public class IOUtil extends BasicIOUtil {
     
     private static final PBEParameterSpec pars = 
         new PBEParameterSpec (header, header.length);
+
     private static final String           csname = "UTF-8";
     // TODO: Switch to a better cipher (with HMAC)
     private static final String           algon = "PBEWithMD5AndDES";
@@ -194,7 +195,7 @@ public class IOUtil extends BasicIOUtil {
     
     static {
         try {
-            skf = SecretKeyFactory.getInstance (algon);            
+            skf = SecretKeyFactory.getInstance (algon);
         } catch (Exception x) {
             throw new RuntimeException (x);
         }
@@ -300,12 +301,5 @@ public class IOUtil extends BasicIOUtil {
         }
         
         return true;
-    }
-    
-    public static void main(String[] args) throws Exception {
-        File file = new File("C:\\Quartus-web-14.1.0.186.iso");
-        System.out.println(copiedCompletely(file));
-        System.out.println(waitForCopiedCompletely(file));
-        System.out.println("DONE");
     }
 }
