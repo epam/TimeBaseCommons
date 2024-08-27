@@ -4,6 +4,10 @@ task promoteToPublic(type: PromotionTask) {
 
     javaSrc = "EPM-RTC-java"
     javaDst = "EPM-RTC-public-java"
+
+    // Indicates that promotion task may be executed on "-SNAPSHOT" version
+    // and that suffix should be removed during promotion.
+    usesSnapshots = true
     
     doLast {
         printPromotionSettings()
