@@ -34,7 +34,14 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     public static final int             MAX_COMP_SERVER_VERSION = VSProtocol.VERSION;
 
     public static final String          SSL_TERMINATION_PROPERTY = "TimeBase.network.VSClient.sslTermination";
-    public static final boolean         SSL_TERMINATION = Boolean.getBoolean(SSL_TERMINATION_PROPERTY);
+
+    public static boolean isSslTerminationEnabled() {
+        return Boolean.getBoolean(SSL_TERMINATION_PROPERTY);
+    }
+
+    public static void setSslTerminationProperty(boolean value) {
+        System.setProperty(SSL_TERMINATION_PROPERTY, String.valueOf(value));
+    }
 
     //private static final int MAX_TRANSPORT_RECONNECT_ATTEMPTS = Integer.getInteger("TimeBase.network.VSClient.maxTransportReconnectAttempts", 5);
     private static final int TRANSPORT_RECONNECT_ATTEMPT_INTERVAL = Integer.getInteger("TimeBase.network.VSClient.transportReconnectAttemptInterval", 1000);
@@ -311,7 +318,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     private Socket              processSSLHandshake(Socket socket) throws IOException {
-        if (SSL_TERMINATION && enableSSL) {
+        if (isSslTerminationEnabled() && enableSSL) {
             try {
                 VSProtocol.LOGGER.info("SSL termination enabled.");
                 socket = sslContext.getSocketFactory().createSocket(socket, socket.getInetAddress().getHostAddress(),
