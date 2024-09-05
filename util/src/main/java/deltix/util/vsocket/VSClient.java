@@ -34,14 +34,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     public static final int             MAX_COMP_SERVER_VERSION = VSProtocol.VERSION;
 
     public static final String          SSL_TERMINATION_PROPERTY = "TimeBase.network.VSClient.sslTermination";
-
-    public static boolean isSslTerminationEnabled() {
-        return Boolean.getBoolean(SSL_TERMINATION_PROPERTY);
-    }
-
-    public static void setSslTerminationProperty(boolean value) {
-        System.setProperty(SSL_TERMINATION_PROPERTY, String.valueOf(value));
-    }
+    public static final boolean         SSL_TERMINATION = Boolean.getBoolean(SSL_TERMINATION_PROPERTY);
 
     //private static final int MAX_TRANSPORT_RECONNECT_ATTEMPTS = Integer.getInteger("TimeBase.network.VSClient.maxTransportReconnectAttempts", 5);
     private static final int TRANSPORT_RECONNECT_ATTEMPT_INTERVAL = Integer.getInteger("TimeBase.network.VSClient.transportReconnectAttemptInterval", 1000);
@@ -67,6 +60,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     private int                         timeout = Integer.getInteger("TimeBase.network.VSClient.timeout", 5000);
 
     private boolean                     enableSSL = false;
+    private final boolean               sslTermination;
     private int                         sslPort = 0;
     private SSLContext                  sslContext;
 
@@ -213,9 +207,15 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     public VSClient(String host, int port, String ownerID, boolean enableSSL, ContextContainer contextContainer) throws IOException {
+        this(host, port, ownerID, enableSSL, SSL_TERMINATION, contextContainer);
+    }
+
+    public VSClient(String host, int port, String ownerID, boolean enableSSL, boolean sslTermination,
+                    ContextContainer contextContainer) throws IOException {
         this.host = host;
         this.port = port;
         this.enableSSL = enableSSL;
+        this.sslTermination = sslTermination;
         this.contextContainer = contextContainer;
         this.reconnector = createReconnectorTask(contextContainer.getQuickExecutor());
 
@@ -318,7 +318,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     private Socket              processSSLHandshake(Socket socket) throws IOException {
-        if (isSslTerminationEnabled() && enableSSL) {
+        if (sslTermination && enableSSL) {
             try {
                 VSProtocol.LOGGER.info("SSL termination enabled.");
                 socket = sslContext.getSocketFactory().createSocket(socket, socket.getInetAddress().getHostAddress(),
