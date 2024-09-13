@@ -1,13 +1,13 @@
-package deltix.util.oauth;
+package deltix.util.oauth.impl;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-class TimerTokenScheduler implements RefreshTokenScheduler {
+public class TimerTokenScheduler implements RefreshTokenScheduler {
 
     private final Timer timer;
 
-    TimerTokenScheduler(Timer timer) {
+    public TimerTokenScheduler(Timer timer) {
         this.timer = timer;
     }
 

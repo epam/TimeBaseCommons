@@ -2,6 +2,7 @@ package deltix.util.oauth;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
+import deltix.util.oauth.impl.*;
 import deltix.util.time.TimeKeeper;
 
 import java.io.IOException;
@@ -14,10 +15,18 @@ public class Oauth2Client implements AutoCloseable {
 
     public static final Log LOGGER = LogFactory.getLog(Oauth2Client.class.getName());
 
+    public static final String GRANT_TYPE_PARAM = "grant_type";
+    public static final String CLIENT_ID_PARAM = "client_id";
+    public static final String CLIENT_SECRET_PARAM = "client_secret";
+
+    public static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
+
     private static final long DEFAULT_RETRY_DELAY_MS = 5 * 1000;
     private static final long MAX_RETRY_DELAY_MS = 5 * 60 * 1000; // 5 min
 
+    private final Oauth2ClientConfig config;
     private final RestClient restClient;
+    private final TokenQuery tokenQuery;
 
     private final TokenResponseParser parser;
     private final String clientId;
@@ -26,8 +35,6 @@ public class Oauth2Client implements AutoCloseable {
     private final TokenListener listener;
     private final RefreshTokenScheduler refreshScheduler;
 
-    private final long expirationMultiplier;
-
     private long retryDelay = DEFAULT_RETRY_DELAY_MS;
 
     private volatile TokenInfo tokenInfo;
@@ -35,24 +42,25 @@ public class Oauth2Client implements AutoCloseable {
 
     private volatile boolean closed;
 
-    private final long timeoutMs;
     private final ReentrantLock lock = new ReentrantLock();
 
-    public static Builder builder() {
-        return new Builder();
+    public static Oauth2Client create(Oauth2ClientConfig config) {
+        RestClient restClient = HttpConnectionRestClient.create(
+            config.getUrl(), config.getConnectTimeoutMs(), config.getReadTimeoutMs()
+        );
+        return new Oauth2Client(config, restClient);
     }
 
-    private Oauth2Client(RestClient restClient, Map<String, String> parameters,
-                         RefreshTokenScheduler refreshScheduler, TokenListener listener,
-                         long expirationMultiplier, long timeoutMs) {
+    private Oauth2Client(Oauth2ClientConfig config, RestClient restClient) {
+        this.config = config;
         this.restClient = restClient;
-        this.parser = new GreenJellyTokenResponseParser();
-        this.clientId = parameters.get("client_id");
-        this.parameters.putAll(parameters);
-        this.listener = listener;
-        this.refreshScheduler = refreshScheduler;
-        this.expirationMultiplier = expirationMultiplier;
-        this.timeoutMs = timeoutMs;
+        this.tokenQuery = createTokenQuery(config);
+        this.parser = new TokenResponseParser();
+        this.parameters.putAll(config.getParameters());
+        this.clientId = parameters.get(CLIENT_ID_PARAM);
+        this.listener = config.getListener();
+        this.refreshScheduler = config.getTimer() != null
+            ? new TimerTokenScheduler(config.getTimer()) : null;
 
         // initial token request
         try {
@@ -60,6 +68,27 @@ public class Oauth2Client implements AutoCloseable {
         } catch (Throwable t) {
             LOGGER.error().append("Failed to request token").append(t).commit();
         }
+    }
+
+    private static TokenQuery createTokenQuery(Oauth2ClientConfig config) {
+        if (CLIENT_CREDENTIALS_GRANT_TYPE.equals(config.getParameters().get(GRANT_TYPE_PARAM))) {
+            String clientId = config.getParameters().get(CLIENT_ID_PARAM);
+            if (clientId == null) {
+                throw new RuntimeException(CLIENT_ID_PARAM + " is not specified");
+            }
+
+            if (config.getParameters().get(CLIENT_SECRET_PARAM) == null) {
+                if (config.getKeystoreConfig() != null) {
+                    return new CertificateTokenQuery(config.getUrl(), clientId,
+                        config.getKeystoreConfig(), config.getParameters()
+                    );
+                }
+
+                throw new RuntimeException("Invalid credentials: specify `" + CLIENT_SECRET_PARAM + "` parameter or keystore config.");
+            }
+        }
+
+        return new ParametersTokenQuery(config.getParameters());
     }
 
     public String clientId() {
@@ -113,7 +142,7 @@ public class Oauth2Client implements AutoCloseable {
     private boolean tryUnderLock(Runnable logic) {
         boolean locked;
         try {
-            locked = lock.tryLock(timeoutMs, TimeUnit.MILLISECONDS);
+            locked = lock.tryLock(config.getTimeoutMs(), TimeUnit.MILLISECONDS);
             if (locked) {
                 try {
                     logic.run();
@@ -143,25 +172,33 @@ public class Oauth2Client implements AutoCloseable {
         }
 
         long requestTime = currentTime();
-        tokenInfo = parser.parse(sendTokenRequest(parameters));
+        tokenInfo = parser.parse(sendTokenRequest());
+        if (tokenInfo.expiresInSec() == 0) {
+            LOGGER.warn().append("Token updated (grant type: ").append(parameters.get(GRANT_TYPE_PARAM))
+                .append("); expiration timestamp unknown, refresh task is not scheduled.").commit();
+        } else {
+            // update expiration time
+            long expirationDelayMs = tokenInfo.expiresInSec() * (long) (config.getExpirationMultiplier() * 1000.0d);
+            expirationTimestampMs = requestTime + expirationDelayMs;
 
-        // update expiration time
-        long expirationDelayMs = tokenInfo.expiresInSec() * expirationMultiplier;
-        expirationTimestampMs = requestTime + expirationDelayMs;
+            LOGGER.info().append("Token updated (grant type: ").append(parameters.get(GRANT_TYPE_PARAM))
+                .append("); expiration timestamp: ")
+                .append(Instant.ofEpochMilli(expirationTimestampMs)).commit();
 
-        LOGGER.info().append("Token updated (grant type: ").append(parameters.get("grant_type"))
-            .append("); expiration timestamp: ")
-            .append(Instant.ofEpochMilli(expirationTimestampMs)).commit();
+            scheduleRefresh(expirationDelayMs);
+        }
 
-        scheduleRefresh(expirationDelayMs);
         notifyRefreshed();
     }
 
-    private String sendTokenRequest(Map<String, String> parameters) {
+    private String sendTokenRequest() {
         try {
-            return restClient.postForm(parameters);
+            return restClient.postForm(tokenQuery);
         } catch (IOException e) {
             throw new RuntimeException("Failed to perform REST query", e);
+        } catch (Throwable t) {
+            LOGGER.warn().append("Failed to request token").append(t).commit();
+            throw t;
         }
     }
 
@@ -213,90 +250,6 @@ public class Oauth2Client implements AutoCloseable {
         if (refreshScheduler != null) {
             refreshScheduler.close();
         }
-    }
-
-    public static class Builder {
-
-        private String url;
-        private final Map<String, String> parameters = new HashMap<>();
-
-        private RefreshTokenScheduler refreshScheduler;
-
-        private TokenListener listener;
-
-        private long timeoutMs = 5000;
-        private int connectTimeoutMs = 5000;
-        private int readTimeoutMs = 5000;
-
-        private long expirationMultiplier = 700;
-
-        private Builder() {
-        }
-
-        public Builder withUrl(String url) {
-            this.url = url;
-            return this;
-        }
-
-        public Builder withClientCredentials(String clientId, String clientSecret) {
-            parameters.put("grant_type", "client_credentials");
-            parameters.put("client_id", clientId);
-            parameters.put("client_secret", clientSecret);
-            return this;
-        }
-
-        public Builder withParameter(String name, String value) {
-            this.parameters.put(name, value);
-            return this;
-        }
-
-        public Builder withRefreshScheduler(RefreshTokenScheduler refreshScheduler) {
-            this.refreshScheduler = refreshScheduler;
-            return this;
-        }
-
-        public Builder withTimer(Timer timer) {
-            this.refreshScheduler = new TimerTokenScheduler(timer);
-            return this;
-        }
-
-        public Builder withListener(TokenListener listener) {
-            this.listener = listener;
-            return this;
-        }
-
-        public Builder withTimeout(long timeoutMs) {
-            this.timeoutMs = timeoutMs;
-            return this;
-        }
-
-        public Builder withConnectTimeout(int connectTimeoutMs) {
-            this.connectTimeoutMs = connectTimeoutMs;
-            return this;
-        }
-
-        public Builder withReadTimeout(int readTimeoutMs) {
-            this.readTimeoutMs = readTimeoutMs;
-            return this;
-        }
-
-        public Builder withExpirationMultiplier(double multiplier) {
-            this.expirationMultiplier = (long) (multiplier * (double) 1000);
-            return this;
-        }
-
-        public Oauth2Client build() {
-            if (parameters.get("client_id") == null) {
-                throw new RuntimeException("client id is not specified");
-            }
-            if (parameters.get("client_secret") == null) {
-                throw new RuntimeException("client secret is not specified");
-            }
-
-            RestClient restClient = HttpConnectionRestClient.create(url, connectTimeoutMs, readTimeoutMs);
-            return new Oauth2Client(restClient, parameters, refreshScheduler, listener, expirationMultiplier, timeoutMs);
-        }
-
     }
 
 }

@@ -1,4 +1,4 @@
-package deltix.util.oauth;
+package deltix.util.oauth.impl;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,13 +9,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-class HttpConnectionRestClient implements RestClient {
+public class HttpConnectionRestClient implements RestClient {
 
     private final URL url;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
 
-    static RestClient create(String url, int connectTimeoutMs, int readTimeoutMs) {
+    public static RestClient create(String url, int connectTimeoutMs, int readTimeoutMs) {
         try {
             return new HttpConnectionRestClient(new URL(url), connectTimeoutMs, readTimeoutMs);
         } catch (MalformedURLException e) {
@@ -30,7 +30,7 @@ class HttpConnectionRestClient implements RestClient {
     }
 
     @Override
-    public String postForm(Map<String, String> parameters) throws IOException {
+    public String postForm(TokenQuery query) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(connectTimeoutMs);
         connection.setReadTimeout(readTimeoutMs);
@@ -43,6 +43,7 @@ class HttpConnectionRestClient implements RestClient {
 
         try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
             boolean first = true;
+            Map<String, String> parameters = query.getParameters();
             for (Map.Entry<String, String> entry : parameters.entrySet()) {
                 if (first) {
                     first = false;
