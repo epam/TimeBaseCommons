@@ -1,48 +1,26 @@
-package deltix.util.oauth;
+package deltix.util.oauth.impl;
 
 import deltix.util.lang.StringUtils;
 import org.green.jelly.JsonNumber;
 import org.green.jelly.JsonParser;
 import org.green.jelly.JsonParserListener;
 
-class GreenJellyTokenResponseParser implements TokenResponseParser {
+public class TokenResponseParser {
 
     private final JsonParser parser = new JsonParser();
     private final Listener listener = new Listener();
 
-    GreenJellyTokenResponseParser() {
+    public TokenResponseParser() {
         parser.setListener(listener);
     }
 
-    @Override
     public synchronized TokenInfo parse(String response) {
         parser.parseAndEoj(response);
         if (listener.error != null) {
             throw new RuntimeException("Failed to parse response: " + listener.error);
         }
 
-        return listener.token();
-    }
-
-    private static class TokenInfoDto implements TokenInfo {
-
-        private final String token;
-        private final long expiresInSec;
-
-        public TokenInfoDto(String token, long expiresInSec) {
-            this.token = token;
-            this.expiresInSec = expiresInSec;
-        }
-
-        @Override
-        public String accessToken() {
-            return token;
-        }
-
-        @Override
-        public long expiresInSec() {
-            return expiresInSec;
-        }
+        return new TokenInfo(listener.token(), listener.expiresInSec);
     }
 
     private static class Listener implements JsonParserListener {
@@ -58,8 +36,12 @@ class GreenJellyTokenResponseParser implements TokenResponseParser {
 
         private long expiresInSec;
 
-        public TokenInfoDto token() {
-            return new TokenInfoDto(token, expiresInSec);
+        public String token() {
+            return token;
+        }
+
+        public long getExpiresInSec() {
+            return expiresInSec;
         }
 
         @Override

@@ -20,6 +20,9 @@ dependencies {
 
     implementation('org.apache.bcel:bcel:6.6.0')
 
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.40'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
+
     testImplementation 'com.google.guava:guava' // Removable
 
     // https://gitlab.deltixhub.com/Deltix/Common/nativeclock
