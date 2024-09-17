@@ -15,6 +15,7 @@ import java.util.*;
 /**
  * Provides helper methods to compile one or several classes on-the-fly.
  */
+@SuppressWarnings("SizeReplaceableByIsEmpty")
 public class JavaCompilerHelper {
     private static final Log LOG = LogFactory.getLog(JavaCompilerHelper.class);
     private static final JavaCompiler           JAVA_COMPILER_INSTANCE;
@@ -72,14 +73,16 @@ public class JavaCompilerHelper {
     }
 
     public Class<?> compileClass (String className, String code) throws ClassNotFoundException {
-        List<MemorySource> compilationUnits = Arrays.asList(new MemorySource(className, code));
+        List<MemorySource> compilationUnits = List.of(new MemorySource(className, code));
         Writer out = new PrintWriter(System.err);
         DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<>();
         final String optionString = System.getProperty("javac.options");
         final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
-        JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
+        JavaCompiler.CompilationTask compile;
         final boolean ok;
         synchronized (JAVA_COMPILER_INSTANCE) {
+            // "fileManager" is not thread-safe, so "getTask" should be synchronized
+            compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
             ok = compile.call();
         }
 
@@ -118,9 +121,11 @@ public class JavaCompilerHelper {
         DiagnosticCollector<JavaFileObject> dianosticListener = new DiagnosticCollector<>();
         final String optionString = System.getProperty("javac.options");
         final Iterable<String> options = optionString == null ? null : Arrays.asList(optionString.split(" "));
-        JavaCompiler.CompilationTask compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
+        JavaCompiler.CompilationTask compile;
         final boolean ok;
         synchronized (JAVA_COMPILER_INSTANCE) {
+            // "fileManager" is not thread-safe, so "getTask" should be synchronized
+            compile = JAVA_COMPILER_INSTANCE.getTask(out, fileManager, dianosticListener, options, null, compilationUnits);
             ok = compile.call();
         }
 
@@ -161,7 +166,7 @@ public class JavaCompilerHelper {
     }
 
     private static class MemorySource extends SimpleJavaFileObject {
-        private String src;
+        private final String src;
 
         public MemorySource(String name, String src) {
             super(URI.create("string:///" + name.replace ('.', '/') + ".java"), Kind.SOURCE);
@@ -186,7 +191,7 @@ public class JavaCompilerHelper {
 
 
     private static class SpecialJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
-        private SpecialClassLoader xcl;
+        private final SpecialClassLoader xcl;
 
         public SpecialJavaFileManager(JavaFileManager sjfm, SpecialClassLoader xcl) {
             super(sjfm);
@@ -194,7 +199,7 @@ public class JavaCompilerHelper {
         }
 
         @Override
-        public JavaFileObject getJavaFileForOutput(Location location, String name, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
+        public JavaFileObject getJavaFileForOutput(Location location, String name, JavaFileObject.Kind kind, FileObject sibling) {
             MemoryByteCode mbc = new MemoryByteCode(name);
             xcl.addClass(name, mbc);
             return mbc;
@@ -265,7 +270,7 @@ public class JavaCompilerHelper {
         extends ClassLoader 
         implements ClassDirectory
     {
-        private Map<String, MemoryByteCode> m = new HashMap<>();
+        private final Map<String, MemoryByteCode> m = new HashMap<>();
 
         public SpecialClassLoader(ClassLoader parent) {
             super(parent);
@@ -299,10 +304,11 @@ public class JavaCompilerHelper {
             return clazz == null ? defineClass(name, mbc.getBytes(), 0, mbc.getBytes().length) : clazz;
         }
 
-        public void addClass(String name, MemoryByteCode mbc) {
+        void addClass(String name, MemoryByteCode mbc) {
             m.put(name, mbc);
         }
 
+        @Override
         public Collection <Class<?>> listClassesForPackage (String packageName) {
             if (packageName != null && packageName.isEmpty ())
                 packageName = null;
