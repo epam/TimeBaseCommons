@@ -11,6 +11,7 @@ import deltix.util.lang.DisposableListener;
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimeKeeper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.net.ssl.SSLContext;
@@ -317,54 +318,67 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
             dispatcher.addTransportChannel (openTransport ());
     }
 
-    private Socket              processSSLHandshake(Socket socket) throws IOException {
-        if (sslTermination && enableSSL) {
-            try {
-                VSProtocol.LOGGER.info("SSL termination enabled.");
-                socket = sslContext.getSocketFactory().createSocket(socket, socket.getInetAddress().getHostAddress(),
-                        socket.getPort(), false);
-                ((SSLSocket) socket).setUseClientMode(true);
-                ((SSLSocket) socket).startHandshake();
-                enableSSL = true;
-                VSProtocol.LOGGER.info("Socket upgraded to SSL socket! Now connection is secured.");
-            } catch (Exception e) {
-                VSProtocol.LOGGER.log(Level.SEVERE, "Error occurred during SSL handshake. Check if you really use SSL Termination in your setup." +
-                        "If no - remove system property \"" + SSL_TERMINATION_PROPERTY + "\" or set it to 'false'");
-                throw e;
-            }
-            InputStream is = socket.getInputStream();
-            OutputStream os = socket.getOutputStream();
+    @NotNull
+    private Socket setupSocket() throws IOException {
+        // If SSL termination is enabled, then we start with SSL socket and will NOT try to perform upgrade.
+        // This is necessary because intermediate proxies will get confused
+        // if we start with non-SSL socket and then upgrade to SSL after negotiation with TB.
+        boolean startWithSSL = enableSSL && sslTermination;
 
-            os.write(0); //first byte of VS protocol
-            os.write(VSProtocol.getHeader(false)); // because SSL termination is enabled
-            os.flush();
-            int serverResponse = is.read();
-            int serverHeader = is.read();
+        InetSocketAddress socketAddress = new InetSocketAddress(host, port);
+
+        Socket socket;
+        if (startWithSSL) {
+            VSProtocol.LOGGER.info("SSL termination enabled.");
+            socket = sslContext.getSocketFactory().createSocket();
         } else {
-            InputStream is = socket.getInputStream();
-            OutputStream os = socket.getOutputStream();
+            socket = new Socket();
+        }
+        socket.setSoTimeout(soTimeout);
+        socket.setTcpNoDelay(true);
+        socket.connect(socketAddress, timeout);
 
-            os.write(0); //first byte of VS protocol
-            os.write(VSProtocol.getHeader(enableSSL));
-            os.flush();
+        InputStream is = socket.getInputStream();
+        OutputStream os = socket.getOutputStream();
 
-            int serverResponse = is.read();
-            if (serverResponse == VSProtocol.CONN_RESP_SSL_NOT_SUPPORTED)
-                throw new IOException("Server not supported SSL.");
+        // We should not request SSL from TB server if SSL termination is enabled
+        boolean requestSSL = enableSSL && !startWithSSL;
 
-            int serverHeader = is.read();
-            if (serverHeader == VSProtocol.SSL_HEADER) {
-                socket = sslContext.getSocketFactory().createSocket(
-                        socket, socket.getInetAddress().getHostAddress(), socket.getPort(), false);
-                ((SSLSocket) socket).setUseClientMode(true);
-                ((SSLSocket) socket).startHandshake();
-                enableSSL = true;
-                VSProtocol.LOGGER.info("Socket upgraded to SSL socket! Now connection is secured.");
-            } else {
-                if (enableSSL)
-                    VSProtocol.LOGGER.info("Connection isn't secured.");
+        os.write(0); //first byte of VS protocol
+        os.write(VSProtocol.getHeader(requestSSL));
+        os.flush();
+
+        int serverResponse = is.read();
+        if (serverResponse == VSProtocol.CONN_RESP_SSL_NOT_SUPPORTED) {
+            assert !startWithSSL;
+            throw new IOException("Server not supported SSL.");
+        } else if (serverResponse != VSProtocol.CONN_RESP_OK) {
+            throw new RuntimeException("Unexpected server response: " + serverResponse);
+        }
+
+        int serverHeader = is.read();
+        if (serverHeader == VSProtocol.SSL_HEADER) {
+            if (startWithSSL) {
+                throw new IllegalStateException("SSL termination is enabled but server attempts to upgrade to SSL");
+            }
+
+            // Upgrade non-SSL socket to SSL
+            socket = sslContext.getSocketFactory().createSocket(
+                    socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
+            ((SSLSocket) socket).setUseClientMode(true);
+            ((SSLSocket) socket).startHandshake();
+            enableSSL = true; // We now use SSL socket, even if client have not requested it.
+            VSProtocol.LOGGER.info("Socket upgraded to SSL socket! Now connection is secured.");
+        } else if (serverHeader == VSProtocol.HEADER) {
+            if (enableSSL && !startWithSSL) {
+                // Normally we should not get here:
+                // 1. If SSL termination is enabled, then we don't request SSL from TB server
+                // 2. If we have enableSSL = true, then we should request it from TB server and get explicit reject if it's not supported
+                VSProtocol.LOGGER.info("Connection isn't secured.");
                 enableSSL = false;
             }
+        } else {
+            throw new RuntimeException("Unexpected server header: " + serverHeader);
         }
 
         return socket;
@@ -378,17 +392,14 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         this.protocolVersion = version;
     }
 
+    /** Used for re-connecting existing VSocket */
     @SuppressFBWarnings(value = "UNENCRYPTED_SOCKET", justification = "Timebase ports should be protected from public access by SSL-terminating NLB")
     private VSocket                         openTransport (VSocket stopped) throws IOException, TransportRecoveryFailre {
-        Socket              s = new Socket();
+        Socket              s = null;
         boolean             ok = false;
 
         try {
-            s.setSoTimeout(soTimeout);
-            s.setTcpNoDelay(true);
-            s.connect(new InetSocketAddress(host, port), timeout);
-
-            s = processSSLHandshake(s);
+            s = setupSocket();
 
             ClientConnection cc = new ClientConnection(s);
 
@@ -460,17 +471,13 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
 
     @SuppressFBWarnings(value = "UNENCRYPTED_SOCKET", justification = "Timebase ports should be protected from public access by SSL-terminating NLB")
     VSocket                             openTransport () throws IOException {
-        Socket              s = new Socket();
+        Socket              s = null;
         boolean             ok = false;
         TransportType transportType;
         ClientConnection cc;
 
         try {
-            s.setSoTimeout(soTimeout);
-            s.setTcpNoDelay(true);
-            s.connect(new InetSocketAddress(host, port), timeout);
-
-            s = processSSLHandshake(s);
+            s = setupSocket();
             cc = new ClientConnection(s);
 
             DataOutputStream    dos = new DataOutputStream (cc.getOutputStream());

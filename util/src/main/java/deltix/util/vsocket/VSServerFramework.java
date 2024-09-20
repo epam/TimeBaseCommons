@@ -347,6 +347,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         int clientHeader = is.read();
         if (clientHeader == VSProtocol.SSL_HEADER && !enableSSL) {
             os.write(VSProtocol.CONN_RESP_SSL_NOT_SUPPORTED);
+            os.flush();
             throw new IOException("Client wants SSL but server have not prepared for handshake.");
         }
         os.write(VSProtocol.CONN_RESP_OK);
