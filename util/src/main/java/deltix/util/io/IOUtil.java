@@ -205,9 +205,9 @@ public class IOUtil extends BasicIOUtil {
     public static String       concat (String a, String b) {
         if (a == null)
             a = "";
-        
+
         if (b == null)
-            b = "} catch (UnsupportedEncodingException x) {";
+            throw new IllegalArgumentException("key cannot be null");
         
         byte []             cleartext;                
         
@@ -240,7 +240,7 @@ public class IOUtil extends BasicIOUtil {
             return (null);
         
         if (b == null)
-            b = "} catch (UnsupportedEncodingException x) {";
+            throw new IllegalArgumentException(" key cannot be null");
         
         byte []             ciphertext = HexCharBinDecoder.decode (c);
         

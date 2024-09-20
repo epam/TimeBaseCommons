@@ -342,7 +342,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         OutputStream os = socket.getOutputStream();
 
         // We should not request SSL from TB server if SSL termination is enabled
-        boolean requestSSL = enableSSL && !startWithSSL;
+        boolean requestSSL = enableSSL && !sslTermination;
 
         os.write(0); //first byte of VS protocol
         os.write(VSProtocol.getHeader(requestSSL));
@@ -358,9 +358,9 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
 
         int serverHeader = is.read();
         if (serverHeader == VSProtocol.SSL_HEADER) {
-            if (startWithSSL) {
+
+            if (startWithSSL)
                 throw new IllegalStateException("SSL termination is enabled but server attempts to upgrade to SSL");
-            }
 
             // Upgrade non-SSL socket to SSL
             socket = sslContext.getSocketFactory().createSocket(
