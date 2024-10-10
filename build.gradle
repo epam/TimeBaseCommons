@@ -82,7 +82,7 @@ configure(leafProjects) {
 
             dependency "com.epam.deltix:dfp:$dfpVersion"
             dependency "com.epam.deltix:hd-date-time:$hdTimeVersion"
-            dependency "deltix:deltix-clock:1.0.6"
+            dependency "deltix:deltix-clock:1.0.7"
 
 
             dependencySet (group: 'com.epam.deltix', version: '3.0.2') {
