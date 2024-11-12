@@ -127,8 +127,13 @@ task vppHashMap(type: deltix.gradle.plugins.velocity.VelocityTask) {
 }
 project.tasks.getByName('compileJava').dependsOn(vppHashMap)
 
-clean.doFirst {
+def cleanupDstDir = tasks.register('cleanupDstDir', Delete) {
     delete fileTree(dir: "$dstDir")
+}
+clean.dependsOn cleanupDstDir
+
+project.tasks.withType(deltix.gradle.plugins.velocity.VelocityTask).configureEach {
+    mustRunAfter clean
 }
 
 sourceSets.main.java.srcDirs += ext.generatedSourcesDir
