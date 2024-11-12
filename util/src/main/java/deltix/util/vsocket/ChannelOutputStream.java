@@ -3,6 +3,7 @@ package deltix.util.vsocket;
 import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Util;
 import net.jcip.annotations.GuardedBy;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,8 +14,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ChannelOutputStream extends VSOutputStream {
     private final int                       maxCapacity;
     private final VSChannelImpl             channel;
+    @GuardedBy("this")
     private boolean                         closed = false;
+    @GuardedBy("this")
     private byte []                         buffer;
+    @GuardedBy("this")
     private boolean                         flushDisabled = false;
 
     @GuardedBy("this")
@@ -104,6 +108,7 @@ public class ChannelOutputStream extends VSOutputStream {
         return remoteCapacityAvailable.get();
     }
 
+    @GuardedBy("this")
     private void                flushInternal (boolean partialOk) throws IOException, InterruptedException {
         for (;;) {
             for (;;) {
@@ -153,6 +158,7 @@ public class ChannelOutputStream extends VSOutputStream {
         }
     }
 
+    @GuardedBy("this")
     private void                            ensureCapacity (int c) {
         int     cap = buffer.length;
 
@@ -166,7 +172,7 @@ public class ChannelOutputStream extends VSOutputStream {
     }
 
     @Override
-    public synchronized void                write (byte [] b, int off, int len)
+    public synchronized void                write (byte @NotNull [] b, int off, int len)
             throws IOException
     {
         if (closed)
@@ -238,7 +244,8 @@ public class ChannelOutputStream extends VSOutputStream {
             capacityIncrement.addAndGet(capacity);
     }
 
-    private int                             send (byte[] data, int offset, int length)
+    @GuardedBy("this")
+    private int                             send (byte @NotNull [] data, int offset, int length)
             throws IOException
     {
         int bytes = 0;
