@@ -42,7 +42,7 @@ class ChannelExecutor implements Runnable {
 
     private final QuickList<Entry>  channels = new QuickList<>();
     private boolean                 stopped = false;
-    private final CPUEater          cpuEater;
+    private final CPUEater          cpuEater; // Used only for Windows
     private final int               idleTime;
     private final Thread thread;
 
@@ -57,7 +57,7 @@ class ChannelExecutor implements Runnable {
 
     private ChannelExecutor(ThreadFactory factory) {
         idleTime = VSProtocol.getIdleTime();
-        cpuEater = new CPUEater(idleTime);
+        cpuEater = Util.IS_WINDOWS_OS ? new CPUEater(idleTime) : null;
 
         this.thread = factory.newThread(this);
     }
