@@ -6,6 +6,7 @@ import deltix.util.collections.QuickList;
 import deltix.util.lang.Util;
 import deltix.util.memory.MemoryDataOutput;
 import deltix.util.time.TimeKeeper;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.util.concurrent.ThreadFactory;
@@ -19,6 +20,12 @@ class ChannelExecutor implements Runnable {
         ChannelExecutor executor = create(affinityConfig);
         executor.thread.start();
         return executor;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    @VisibleForTesting
+    static ChannelExecutor createNonSharedTestInstance(AffinityConfig affinityConfig) {
+        return createInstance(affinityConfig);
     }
 
     public static ChannelExecutor getInstance(AffinityConfig affinityConfig) {
@@ -39,7 +46,7 @@ class ChannelExecutor implements Runnable {
     private final int               idleTime;
     private final Thread thread;
 
-    private static ChannelExecutor create(AffinityConfig affinityConfig) {
+    static ChannelExecutor create(AffinityConfig affinityConfig) {
         ThreadFactory factory = new AffinityThreadFactoryBuilder(affinityConfig)
                 .setNameFormat("ChannelExecutor Thread")
                 .setDaemon(true)
@@ -78,51 +85,69 @@ class ChannelExecutor implements Runnable {
 
         while (!stopped) {
             Entry entry;
+            boolean isEmpty;
 
             synchronized (channels) {
                 entry = channels.getFirst();
-            }
-
-            if (entry == null) {
-                LockSupport.park();
-
-                if (Thread.interrupted ()) {
-                    if (stopped)
-                        break;
-                }
-            }
-
-            synchronized (channels) {
-                entry = channels.getFirst();
+                isEmpty = entry == null;
                 while (entry != null) {
 
                     VSChannel channel = entry.channel;
                     try {
-                        if (channel != null && channel.getNoDelay() && channel.getState() == VSChannelState.Connected) {
-                            VSOutputStream out = channel.getOutputStream();
-                            out.flushAvailable();
-
-                            entry = entry.next();
-                        } else if (channel != null) {
-                            if (channel.getState() == VSChannelState.Removed || channel.getState() == VSChannelState.Closed)
-                                entry = remove(entry);
+                        if (channel != null) {
+                            switch (channel.getState()) {
+                                case Connected: {
+                                    if (channel.getNoDelay()) {
+                                        // Flush
+                                        VSOutputStream out = channel.getOutputStream();
+                                        out.flushAvailable();
+                                    }
+                                    break;
+                                }
+                                case Removed:
+                                case Closed: {
+                                    entry = remove(entry);
+                                    continue;
+                                }
+                            }
                         }
                     } catch (ChannelClosedException e) {
                         // ignore
                         entry = remove(entry);
+                        continue;
                     } catch (IOException e) {
                         VSProtocol.LOGGER.log (Level.WARNING, "Exception while flushing data", e);
                     }
+
+                    // Move to the next channel
+                    entry = entry.next();
                 }
             }
 
-            if (!Util.IS_WINDOWS_OS) {
-                LockSupport.parkNanos (idleTime);
+            if (isEmpty) {
+                // No channels to process => Wait for channels to be added.
+                LockSupport.park();
+
+                if (Thread.interrupted ()) {
+                    if (stopped) {
+                        break;
+                    }
+                }
             } else {
-                if (TimeKeeper.getMode() == TimeKeeper.Mode.HIGH_RESOLUTION_SYNC_BACK)
-                    TimeKeeper.parkNanos(idleTime);
-                else
-                    cpuEater.run();
+                // Wait till next time to flush channels
+                idleWait();
+            }
+        }
+    }
+
+    private void idleWait() {
+        if (!Util.IS_WINDOWS_OS) {
+            LockSupport.parkNanos(idleTime);
+        } else {
+            if (TimeKeeper.getMode() == TimeKeeper.Mode.HIGH_RESOLUTION_SYNC_BACK) {
+                TimeKeeper.parkNanos(idleTime);
+            } else {
+                cpuEater.run();
             }
         }
     }
@@ -146,7 +171,7 @@ class ChannelExecutor implements Runnable {
         private final long  cycles;
 
         private final MemoryDataOutput out = new MemoryDataOutput();
-        private final double value = 345.56787899;
+        private static final double value = 345.56787899;
 
         private CPUEater(long nanos) {
             this.avgCostOfNanoTimeCall = nanoTimeCost();
