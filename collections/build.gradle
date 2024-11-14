@@ -13,10 +13,13 @@ buildscript {
             }
             url rootProject.ext.proxyRepository + "DevMain/"
         }
+//        maven {
+//            url "../../maven-repo" // Local repository for custom plugins
+//        }
     }
 
     dependencies {
-        classpath group: 'deltix.gradle.plugins', name: 'velocity', version: '1.4.0'
+        classpath group: 'deltix.gradle.plugins', name: 'velocity', version: '1.4.1'
     }
 }
 apply plugin: 'velocity'
@@ -97,7 +100,7 @@ velocity {
     }
 }
 
-Map<String, Object> mapMerge(Map first, Map second) {
+static Map<String, Object> mapMerge(Map first, Map second) {
     def newMap = [:]
 
     for (Map.Entry<String, Object> e in first.entrySet())
