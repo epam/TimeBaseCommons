@@ -16,7 +16,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'deltix.gradle.plugins', name: 'velocity', version: '1.3.0'
+        classpath group: 'deltix.gradle.plugins', name: 'velocity', version: '1.4.0'
     }
 }
 apply plugin: 'velocity'
