@@ -44,7 +44,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
     private final int                           connectionsLimit;
     private final short                         transportsLimit;
     private final long                          time;
-    private int                                 reconnectInterval;
+    private final int                           reconnectInterval;
     private final VSCompression                 compression;
 
     private TLSContext                          tlsContext;
@@ -560,9 +560,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
         @Override
         public String toString() {
-            return "FakeVSocket{" +
-                    "" + label + '\'' +
-                    '}';
+            return "FakeVSocket{" + label + '}';
         }
     }
 }

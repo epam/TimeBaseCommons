@@ -329,7 +329,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
 
         Socket socket;
         if (startWithSSL) {
-            VSProtocol.LOGGER.info("SSL termination enabled.");
+            VSProtocol.LOGGER.info("SSL termination enabled: creating SSL socket on [" + host + ":" + port +"]");
             socket = sslContext.getSocketFactory().createSocket();
         } else {
             socket = new Socket();

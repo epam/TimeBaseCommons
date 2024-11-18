@@ -72,8 +72,33 @@ class ChannelExecutor implements Runnable {
     }
 
     public void                 addChannel(VSChannel channel) {
+        assert channel != null;
+
+        if (channel == null)
+            return;
+
         synchronized (channels) {
             channels.linkLast(new Entry(channel));
+        }
+
+        wakeup();
+    }
+
+    public void                 removeChannel(VSChannel channel) {
+        assert channel != null;
+
+
+        synchronized (channels) {
+            Entry entry = channels.getFirst();
+
+            while (entry != null) {
+                if (entry.channel.equals(channel)) {
+                    remove(entry);
+                    return;
+                } else {
+                    entry = entry.next();
+                }
+            }
         }
 
         wakeup();
@@ -90,25 +115,23 @@ class ChannelExecutor implements Runnable {
             synchronized (channels) {
                 entry = channels.getFirst();
                 isEmpty = entry == null;
-                while (entry != null) {
 
+                while (entry != null) {
                     VSChannel channel = entry.channel;
                     try {
-                        if (channel != null) {
-                            switch (channel.getState()) {
-                                case Connected: {
-                                    if (channel.getNoDelay()) {
-                                        // Flush
-                                        VSOutputStream out = channel.getOutputStream();
-                                        out.flushAvailable();
-                                    }
-                                    break;
+                        switch (channel.getState()) {
+                            case Connected: {
+                                if (channel.getNoDelay()) {
+                                    // Flush
+                                    VSOutputStream out = channel.getOutputStream();
+                                    out.flushAvailable();
                                 }
-                                case Removed:
-                                case Closed: {
-                                    entry = remove(entry);
-                                    continue;
-                                }
+                                break;
+                            }
+                            case Removed:
+                            case Closed: {
+                                entry = remove(entry);
+                                continue;
                             }
                         }
                     } catch (ChannelClosedException e) {
@@ -159,7 +182,7 @@ class ChannelExecutor implements Runnable {
     }
 
     private static class Entry extends QuickList.Entry<Entry> {
-        VSChannel channel;
+        final VSChannel channel;
 
         private Entry(VSChannel channel) {
             this.channel = channel;

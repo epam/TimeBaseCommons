@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
     public static final String          ZFS_WRITE_MODE = "ZFS_WRITE_MODE";
     
-    private boolean                     writeMode;
+    private final boolean               writeMode;
     private final ZipInputStream        zin;
     private final ZipOutputStream       zout;
     
