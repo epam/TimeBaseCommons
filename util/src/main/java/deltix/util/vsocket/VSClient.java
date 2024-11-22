@@ -336,6 +336,16 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         }
         socket.setSoTimeout(soTimeout);
         socket.setTcpNoDelay(true);
+
+        // Sets socket buffer sizes.
+        // Please note that later socket also will be additionally configured in VSocketImpl.setUpSocket() method.
+        // However, that happens only after socket gets connected.
+        // It's important to configure receive buffer size before connection is established
+        // to allow it to use TCP window size greater than 64kb.
+        // That's why we have to do that here.
+        VSocketImpl.configureBufferSizes(socket);
+
+        // Connect
         socket.connect(socketAddress, timeout);
 
         InputStream is = socket.getInputStream();
