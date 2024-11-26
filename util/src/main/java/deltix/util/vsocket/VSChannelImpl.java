@@ -9,6 +9,7 @@ import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;
 import deltix.util.memory.MemoryDataOutput;
 import net.jcip.annotations.GuardedBy;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
@@ -36,6 +37,9 @@ import static deltix.util.vsocket.VSProtocol.LOGGER;
  *
  */
 final class VSChannelImpl implements VSChannel {
+    @ApiStatus.Experimental // Configurable option for testing optimal value of notifyThreshold in different setups
+    private static final int MAX_NOTIFY_THRESHOLD = Integer.getInteger("TimeBase.network.channel.maxNotifyThreshold", VSProtocol.MAXSIZE);
+
     private final ContextContainer contextContainer;
     private volatile VSChannelState         state = VSChannelState.NotConnected;
     
@@ -170,7 +174,10 @@ final class VSChannelImpl implements VSChannel {
         this.out = new ChannelOutputStream(this, outCapacity);
         this.in = new GapQueueInputStream (inCapacity);
 
-        this.cin = new CountingInputStream(this.in, inCapacity / 4) {
+        // In case of big buffer we want to notify sender as soon as a full packet can be sent
+        // or 1/4 of max capacity accumulated
+        int notifyThreshold = Math.min(inCapacity / 4, MAX_NOTIFY_THRESHOLD);
+        this.cin = new CountingInputStream(this.in, notifyThreshold) {
 
             @Override
             protected boolean bytesRead(long change) {
