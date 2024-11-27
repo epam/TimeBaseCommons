@@ -116,7 +116,7 @@ public class VSDispatcherTest {
         boolean gotChanelClosedException = false;
         try {
             // Note: test may hang here if Dispatcher bug still present
-            vsChannel.getOutputStream().flushAvailable();
+            vsChannel.getOutputStream().flushAvailable(true);
         } catch (ConnectionAbortedException e) {
             gotChanelClosedException = true;
             System.out.println("Got ConnectionAbortedException as expected");

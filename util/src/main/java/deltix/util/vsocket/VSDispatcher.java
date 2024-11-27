@@ -88,7 +88,12 @@ public final class VSDispatcher implements Disposable {
                 VSChannelImpl channel = list[i];
                 try {
                     if (channel != null && channel.isAutoflush()) {
-                        channel.getOutputStream().flushAvailable();
+                        // For low latency channels (noDelay==true) we do not want to flush all
+                        // the accumulated data at once because the remaining data will be sent
+                        // by ChannelExecutor shortly. This allows to get more steady rate.
+                        // For regular channels (noDelay==false) we want to send all the data
+                        // (there is nobody else to do that).
+                        channel.getOutputStream().flushAvailable(!channel.getNoDelay());
                     }
                 } catch (ChannelClosedException e) {
                     // ignore
