@@ -51,11 +51,11 @@ final class VSChannelImpl implements VSChannel {
     private final int                       inCapacity; // = 1 << 15;
     private final int                       outCapacity; // = 1 << 14;
 
-    private GapQueueInputStream in;
-    private CountingInputStream cin;
+    private final GapQueueInputStream in;
+    private final CountingInputStream cin;
     private DataInputStream                 din;
     
-    private ChannelOutputStream             out;
+    private final ChannelOutputStream       out;
     private DataOutputStream                dout;
     
     private boolean                         autoFlush = false;
@@ -71,10 +71,15 @@ final class VSChannelImpl implements VSChannel {
 
     private final boolean                   compressed;
 
+    @GuardedBy("inflater")
     private final Inflater                  inflater;
+    @GuardedBy("inflater")
     private final MemoryDataOutput          infOut;
 
+    // Previously was protected by "deflater" itself however this was redundant as we always sync on "this"
+    @GuardedBy("this")
     private final Deflater                  deflater;
+    @GuardedBy("this")
     private final MemoryDataOutput          defOut;
 
     private volatile long                   numBytesSend; // synchronized by "this"
@@ -565,6 +570,7 @@ final class VSChannelImpl implements VSChannel {
         }
     }
 
+    @GuardedBy("this")
     void                    sendClosing()
         throws InterruptedException, IOException
     {
@@ -580,6 +586,7 @@ final class VSChannelImpl implements VSChannel {
         final VSTransportChannel    tc = dispatcher.checkOut ();
         try {
             tc.write (data, 0, data.length);
+            //noinspection NonAtomicOperationOnVolatileField This is safe because writes always happen with lock on "this"
             numBytesSend += 2;
         } finally {
             dispatcher.checkIn (tc);
@@ -589,6 +596,7 @@ final class VSChannelImpl implements VSChannel {
         }
     }
 
+    @GuardedBy("this")
     void                    sendClosed ()
         throws InterruptedException, IOException
     {
@@ -604,6 +612,7 @@ final class VSChannelImpl implements VSChannel {
         final VSTransportChannel    tc = dispatcher.checkOut ();
         try {
             tc.write (data, 0, data.length);
+            //noinspection NonAtomicOperationOnVolatileField This is safe because writes always happen with lock on "this"
             numBytesSend += 2;
         } finally {
             dispatcher.checkIn (tc);
@@ -621,20 +630,15 @@ final class VSChannelImpl implements VSChannel {
                 VSTransportChannel tc = null;
 
                 try {
+                    tc = dispatcher.checkOut ();
                     if (compressed) {
-                        tc = dispatcher.checkOut ();
-
-                        synchronized (deflater) {
-                            int compressed = compress(data, offset, length);
-                            tc.write(remoteId, remoteIndex, numBytesSend, defOut.getBuffer(), 0, compressed, length);
-                            numBytesSend += length;
-                        }
+                        int compressed = compress(data, offset, length);
+                        tc.write(remoteId, remoteIndex, numBytesSend, defOut.getBuffer(), 0, compressed, length);
                     } else {
-                        tc = dispatcher.checkOut ();
                         tc.write(remoteId, remoteIndex, numBytesSend, data, offset, length, length);
-                        numBytesSend += length;
-                        //sendLog.append("sending bytes: ").append(numBytesSend);
                     }
+                    numBytesSend += length;
+                    //sendLog.append("sending bytes: ").append(numBytesSend);
 
                 } finally {
                     if (tc != null)
@@ -806,6 +810,7 @@ final class VSChannelImpl implements VSChannel {
         return new String(output);
     }
 
+    @GuardedBy("this")
     private int compress(byte[] data, int offset, int length) {
 
         deflater.reset();
@@ -828,6 +833,7 @@ final class VSChannelImpl implements VSChannel {
         return count;
     }
 
+    @GuardedBy("inflater")
     private int decompress(byte[] data, int offset, int length) {
 
         inflater.reset();
