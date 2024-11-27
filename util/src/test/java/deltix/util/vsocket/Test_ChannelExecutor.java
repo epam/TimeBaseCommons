@@ -180,8 +180,9 @@ public class Test_ChannelExecutor {
             }
 
             @Override
-            public void flushAvailable() throws IOException {
+            public int flushAvailable(boolean flushAll) throws IOException {
                 StubVSChannel.this.flushed = true;
+                return 0;
             }
 
             @Override

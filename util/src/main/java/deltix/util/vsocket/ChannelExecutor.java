@@ -6,6 +6,7 @@ import deltix.util.collections.QuickList;
 import deltix.util.lang.Util;
 import deltix.util.memory.MemoryDataOutput;
 import deltix.util.time.TimeKeeper;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
@@ -14,6 +15,9 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 
 class ChannelExecutor implements Runnable {
+    @ApiStatus.Experimental // Temporary option for testing performance effect of using yield on Windows
+    private static final boolean USE_YIELD_ON_WINDOWS = Boolean.getBoolean("TimeBase.network.executor.windows.useYield");
+
     private static volatile ChannelExecutor INSTANCE;
 
     private static ChannelExecutor createInstance(AffinityConfig affinityConfig) {
@@ -112,6 +116,7 @@ class ChannelExecutor implements Runnable {
             Entry entry;
             boolean isEmpty;
 
+            long bytesSent = 0;
             synchronized (channels) {
                 entry = channels.getFirst();
                 isEmpty = entry == null;
@@ -124,7 +129,8 @@ class ChannelExecutor implements Runnable {
                                 if (channel.getNoDelay()) {
                                     // Flush
                                     VSOutputStream out = channel.getOutputStream();
-                                    out.flushAvailable();
+                                    // We do not want to send all at once, we will, re-try send shortly
+                                    bytesSent += out.flushAvailable(false);
                                 }
                                 break;
                             }
@@ -157,21 +163,37 @@ class ChannelExecutor implements Runnable {
                     }
                 }
             } else {
-                // Wait till next time to flush channels
-                idleWait();
+                // Do not wait if we have sent any data.
+                // It's very likely that it's time to send more because the sending time is relatively long.
+                if (bytesSent == 0) {
+                    // Wait till next time to flush channels
+                    idleWait();
+                }
             }
         }
     }
 
     private void idleWait() {
         if (!Util.IS_WINDOWS_OS) {
-            LockSupport.parkNanos(idleTime);
+            if (USE_YIELD_ON_WINDOWS) {
+                waitWithYield(idleTime);
+            } else {
+                LockSupport.parkNanos(idleTime);
+            }
         } else {
             if (TimeKeeper.getMode() == TimeKeeper.Mode.HIGH_RESOLUTION_SYNC_BACK) {
                 TimeKeeper.parkNanos(idleTime);
             } else {
                 cpuEater.run();
             }
+        }
+    }
+
+    private static void waitWithYield(int idleTime) {
+        long start = System.nanoTime();
+        long end = start + idleTime;
+        while (System.nanoTime() < end) {
+            Thread.yield();
         }
     }
 
