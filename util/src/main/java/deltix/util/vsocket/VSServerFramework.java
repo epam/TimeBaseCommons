@@ -147,9 +147,9 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         s.setTcpNoDelay(true);
         s.setKeepAlive(true);
 
+        BufferedInputStream bis = new BufferedInputStream(s.getInputStream(), VSocketImpl.INPUT_STREAM_BUFFER_SIZE);
         return handleHandshake(
-            SocketConnectionFactory.createConnection(
-                s, new BufferedInputStream(s.getInputStream()), s.getOutputStream())
+            SocketConnectionFactory.createConnection(s, bis, s.getOutputStream())
         );
     }
 

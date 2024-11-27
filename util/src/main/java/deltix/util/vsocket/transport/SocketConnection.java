@@ -104,7 +104,8 @@ public class SocketConnection implements Connection {
         ((SSLSocket) socket).startHandshake();
 
         //upgrade streams
-        in = new BufferedInputStream(socket.getInputStream());
+
+        in = new BufferedInputStream(socket.getInputStream(), VSocketImpl.INPUT_STREAM_BUFFER_SIZE);
         out = socket.getOutputStream();
     }
 }

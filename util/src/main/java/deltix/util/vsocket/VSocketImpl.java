@@ -3,6 +3,7 @@ package deltix.util.vsocket;
 import deltix.util.io.IOUtil;
 import deltix.util.lang.Util;
 import deltix.util.vsocket.transport.Connection;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -22,6 +23,21 @@ public class VSocketImpl implements VSocket {
     public static final int         SOCKET_DEFAULT_BUFFER_SIZE = Integer.getInteger("TimeBase.network.socket.bufferSize", 1 << 16);
     public static final int         SOCKET_RECEIVE_BUFFER_SIZE = Integer.getInteger("TimeBase.network.socket.receiveBufferSize", SOCKET_DEFAULT_BUFFER_SIZE);
     public static final int         SOCKET_SEND_BUFFER_SIZE = Integer.getInteger("TimeBase.network.socket.sendBufferSize", SOCKET_DEFAULT_BUFFER_SIZE);
+
+    @ApiStatus.Experimental // Temporary option for testing performance effect of using buffered reader of different size
+    // 8kb size matches to the previous value. However it's very likely that we need 64k or 128k buffer size to match the maximum "logical packet" size (VSProtocol.MAXSIZE).
+    // TODO: Consider increasing default value to 64kb.
+    public static final int INPUT_STREAM_BUFFER_SIZE = Integer.getInteger("TimeBase.network.streamBufferSize", 8 * 1024);
+
+    public static final boolean PRINT_VSOCKET_SETTINGS = Boolean.getBoolean("TimeBase.network.printSettings");
+
+    static {
+        if (PRINT_VSOCKET_SETTINGS) {
+            System.out.println("SOCKET_RECEIVE_BUFFER_SIZE: " + SOCKET_RECEIVE_BUFFER_SIZE);
+            System.out.println("SOCKET_SEND_BUFFER_SIZE: " + SOCKET_SEND_BUFFER_SIZE);
+            System.out.println("INPUT_STREAM_BUFFER_SIZE: " + INPUT_STREAM_BUFFER_SIZE);
+        }
+    }
 
     private static final int        IPTOS_THROUGHPUT = 0x08;
     private static final int        DEFAULT_TRAFFIC_CLASS = IPTOS_THROUGHPUT;
