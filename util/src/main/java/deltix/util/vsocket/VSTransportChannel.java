@@ -161,7 +161,7 @@ class VSTransportChannel implements Runnable, Disposable {
                 if (currentThread.isInterrupted())
                     throw new InterruptedException();
 
-                if (vin.getBytesRead() - reported > VSocketOutputStream.CAPACITY / 4)
+                if (vin.getBytesRead() - reported > VSocketOutputStream.REPORT_THRESHOLD)
                     completeTask.submit();
                 
                 int destId = din.readUnsignedShort ();
