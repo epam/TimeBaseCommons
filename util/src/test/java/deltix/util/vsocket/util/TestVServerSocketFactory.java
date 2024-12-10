@@ -1,6 +1,7 @@
 package deltix.util.vsocket.util;
 
 import deltix.util.concurrent.QuickExecutor;
+import deltix.util.io.EOQException;
 import deltix.util.memory.DataExchangeUtils;
 import deltix.util.vsocket.ChannelClosedException;
 import deltix.util.vsocket.VSChannel;
@@ -27,6 +28,14 @@ public class TestVServerSocketFactory {
 
     public static VSServer createEchoVServer(int port) throws IOException {
         return createVServerSocket(port, ((executor, serverChannel) -> new EchoServer(executor, serverChannel).submit()));
+    }
+
+    public static VSServer createBinaryEchoVServer(int port) throws IOException {
+        return createVServerSocket(port, ((executor, serverChannel) -> {
+            BinaryEchoServer binaryEchoServer = new BinaryEchoServer(executor, serverChannel);
+            serverChannel.setAvailabilityListener(binaryEchoServer::submit);
+            binaryEchoServer.submit();
+        }));
     }
 
     public static VSServer createReadingVServer(int port, int packetSize) throws IOException {
@@ -103,6 +112,58 @@ public class TestVServerSocketFactory {
             } finally {
                 channel.close();
             }
+        }
+    }
+
+    /**
+     * Unlike EchoServer, this server reads and writes any binary data, not just text strings.
+     */
+    static class BinaryEchoServer extends QuickExecutor.QuickTask {
+        private final VSChannel channel;
+        private final byte[] buffer = new byte[8 * 1024];
+        private long total = 0;
+        volatile boolean closed = false; // Protects from extra-execution immediately after the channel closure
+
+        public BinaryEchoServer(QuickExecutor executor, VSChannel channel) {
+            super(executor);
+            this.channel = channel;
+        }
+
+        @Override
+        public void run() throws InterruptedException {
+            // This task will be re-armed when more data will be available
+            if (closed) {
+                return;
+            }
+            String oldName = Thread.currentThread().getName();
+            Thread.currentThread().setName("BinaryEchoServer");
+
+            DataInputStream is = channel.getDataInputStream();
+            DataOutputStream out = channel.getDataOutputStream();
+
+            try {
+                int available;
+                while ((available = is.available()) > 0) {
+                    // This read should not block because we read only up to "available" bytes
+                    int read = is.read(buffer, 0, Math.min(available, buffer.length));
+                    out.write(buffer, 0, read);
+                    total += read;
+                }
+                out.flush();
+            } catch (EOQException e) {
+                finish();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                Thread.currentThread().setName(oldName);
+            }
+        }
+
+        private void finish() {
+            closed = true;
+            channel.setAvailabilityListener(null);
+            channel.close();
+            System.out.println("BinaryEchoServer: total bytes echoed: " + total);
         }
     }
 
