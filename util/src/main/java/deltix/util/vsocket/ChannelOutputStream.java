@@ -60,12 +60,19 @@ public class ChannelOutputStream extends VSOutputStream {
         flushDisabled = false;
         available = size;
 
-        if (size >= maxCapacity)
+        // Previously this check looked like this: "size >= maxCapacity"
+        // However this is ineffective: the remote capacity is "maxCapacity" at most,
+        // So attempt to flush more than that almost certainly results in situation
+        // when we will block on that flush and need to wait for BYTES_AVAILABLE_REPORT from the remote side.
+        // At the same time we do not want to flush too often (it's costly),
+        // so we flush only when we have at least half of the buffer filled.
+        if (size >= maxCapacity >> 1) {
             try {
-                flushInternal (false, false);
+                flushInternal(false, false);
             } catch (InterruptedException e) {
-                throw new UncheckedInterruptedException (e);
+                throw new UncheckedInterruptedException(e);
             }
+        }
     }
 
     @Override
