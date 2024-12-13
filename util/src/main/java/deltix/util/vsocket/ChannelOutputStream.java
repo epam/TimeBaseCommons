@@ -68,7 +68,7 @@ public class ChannelOutputStream extends VSOutputStream {
         // so we flush only when we have at least half of the buffer filled.
         if (size >= maxCapacity >> 1) {
             try {
-                flushInternal(false, false);
+                flushInternal(true, false);
             } catch (InterruptedException e) {
                 throw new UncheckedInterruptedException(e);
             }
