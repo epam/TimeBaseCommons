@@ -513,6 +513,11 @@ final class VSChannelImpl implements VSChannel {
 
         if (available) {
             notifyDataAvailable();
+        }
+        // It's necessary to still process commands when "in" gets closed to properly complete
+        // the channel closing process. Otherwise, commands may stuck in queue and the channel may leak.
+        // See https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1264
+        if (available || in.isClosed()) {
             checkCommands();
         }
     }
