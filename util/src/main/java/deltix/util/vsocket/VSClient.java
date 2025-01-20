@@ -581,10 +581,14 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     private void close(boolean waitForChannelsToFinish) {
+        boolean triggerDisconnectEvent;
         synchronized (dispatcherLock) {
             closed = true;
 
             VSDispatcher d = dispatcher;
+
+            // If dispatcher is null, then we already disconnected or even never were connected.
+            triggerDisconnectEvent = d != null;
 
             if (d != null) {
                 d.setStateListener(null);
@@ -595,6 +599,15 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
             }
 
             dispatcher = null;
+        }
+
+        // https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1269
+        // Trigger a disconnect event, so any disconnect listeners can be notified.
+        if (triggerDisconnectEvent) {
+            DisconnectEventListener listenerRef = listener;
+            if (listenerRef != null) {
+                listenerRef.onDisconnected();
+            }
         }
     }
 
