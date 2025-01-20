@@ -258,6 +258,17 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
                     VSProtocol.LOGGER.fine("Recovery attempt failed because another attempt for this thread in progress");
                 }
             }
+        } else {
+            if (!isNew) {
+                // Client attempts to recover a connection but there are no connection with such "sCode" on the server side.
+                // That may happen if server was restarted. In such case we should reject the connection
+                // and force a client to do a full reconnect.
+                VSProtocol.LOGGER.warning("Connection restore failed for transport (" + sCode + ") for " + clientId + " because server side transport is not found");
+
+                dout.writeByte(VSProtocol.CONN_RESP_CONNECTION_REJECTED);
+                dout.flush();
+                return false;
+            }
         }
 
         boolean success = false;

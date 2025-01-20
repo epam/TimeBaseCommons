@@ -140,6 +140,10 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
                             } else {
                                 VSProtocol.LOGGER.log(Level.INFO, "Reconnect failed (no error), connection " + socket.getSocketIdStr() + ", address " + socket.getRemoteAddress() + ", attempt " + attemptNumber);
                             }
+                        } catch (ConnectionRejectedException e) {
+                            // Explicit reject from server. That means that we should not try to reconnect anymore.
+                            transportLost = true;
+                            VSProtocol.LOGGER.log(Level.INFO, "Reconnect rejected by server, connection " + socket.getSocketIdStr() + ", address " + socket.getRemoteAddress() + ", attempt " + attemptNumber);
                         } catch (IOException e) {
                             VSProtocol.LOGGER.log(Level.INFO, "Reconnect failed (" + e.getMessage() + "), connection " + socket.getSocketIdStr() + ", address " + socket.getRemoteAddress() + ", attempt " + attemptNumber);
                         } catch (TransportRecoveryFailre transportRecoveryFailre) {
