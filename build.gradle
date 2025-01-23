@@ -12,7 +12,7 @@ plugins {
     id "de.undercouch.download" version '5.1.0'
     id "com.github.spotbugs" version '5.0.14' apply false
     // id 'deltix.gradle.plugins.velocity' version '1.3.0' apply false TODO: investigate
-    id 'deltix.gradle.plugin.gitlab-release' version '1.0.11'
+    id 'deltix.gradle.plugin.gitlab-release' version '1.0.12'
 }
 
 group 'deltix.qsrv'
