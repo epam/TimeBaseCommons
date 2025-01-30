@@ -424,7 +424,9 @@ public final class VSDispatcher implements Disposable {
             }
             synchronized (transportChannels) {
                 // Trigger immediate "failed" status for recoveryFuture if it was not completed yet
-                dispatcherRecoveryFuture.complete(false);
+                if (dispatcherRecoveryFuture != null) {
+                    dispatcherRecoveryFuture.complete(false);
+                }
             }
         }
     }
