@@ -66,9 +66,17 @@ public class ChannelOutputStream extends VSOutputStream {
         // when we will block on that flush and need to wait for BYTES_AVAILABLE_REPORT from the remote side.
         // At the same time we do not want to flush too often (it's costly),
         // so we flush only when we have at least half of the buffer filled.
-        if (size >= maxCapacity >> 1) {
+        int halfCapacity = maxCapacity >> 1;
+        if (size >= halfCapacity) {
+            // If we below of 75% capacity, we can flush buffer partially.
+            // However, if we are above 75% capacity, we should flush all data
+            // and block till all accumulated data is sent.
+            // Otherwise, if the consumer too slow, the buffer will start to grow indefinitely.
+            // See https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1298
+            int buffer75percent = halfCapacity + halfCapacity >> 1;
+            boolean partialOk = size < buffer75percent;
             try {
-                flushInternal(true, false);
+                flushInternal(partialOk, false);
             } catch (InterruptedException e) {
                 throw new UncheckedInterruptedException(e);
             }
