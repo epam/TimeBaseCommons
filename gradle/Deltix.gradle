@@ -17,13 +17,13 @@ rootProject.ext.proxyRepository = proxyRepository
 repositories.ext.mavenDeltixProxy = { name ->
     repositories.maven {
         credentials {
-            username repoUser
-            password repoPassword
+            username = repoUser
+            password = repoPassword
         }
         authentication {
             digest(BasicAuthentication)
         }
-        url proxyRepository + name + "/"
+        url = proxyRepository + name + "/"
     }
 }
 

@@ -8,14 +8,14 @@ buildscript {
 }
 
 plugins {
-    id "io.spring.dependency-management" version '1.1.0'
+    id "io.spring.dependency-management" version '1.1.7'
     id "de.undercouch.download" version '5.1.0'
     id "com.github.spotbugs" version '5.0.14' apply false
     // id 'deltix.gradle.plugins.velocity' version '1.3.0' apply false TODO: investigate
     id 'deltix.gradle.plugin.gitlab-release' version '1.0.12'
 }
 
-group 'deltix.qsrv'
+group = 'deltix.qsrv'
 
 // To enable JavaDoc generation add Gradle property to command line:
 // -PincludeJavaDocs
@@ -124,8 +124,10 @@ configure(leafProjects) {
         }
     }
 
-    group 'deltix.qsrv'
-    archivesBaseName = 'deltix-commons' + project.path.replaceAll(':', '-')
+    group = 'deltix.qsrv'
+    base {
+        archivesName = 'deltix-commons' + project.path.replaceAll(':', '-')
+    }
 
     repositories {
         mavenDeltixProxy("DevMain")
@@ -177,7 +179,7 @@ configure(leafProjects) {
 
     jar {
         manifest {
-            archiveBaseName.set(archivesBaseName)
+            archiveBaseName.set(base.archivesName)
             attributes 'Manifest-Version': "1.0",
                     'Created-By': vendor,
                     'Implementation-Title': "QuantServer Commons",
@@ -207,14 +209,14 @@ configure(leafProjects) {
     def allJarsPath = 'build/alljars'
 
     task gatherProjectDependencies(type: Sync) {
-        description 'Copies all project runtime dependencies to ' + allJarsPath
+        description = 'Copies all project runtime dependencies to ' + allJarsPath
         from project.configurations.runtimeClasspath
         into allJarsPath
     }
 
     task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
-        group "build"
-        description 'Copies all project JAR and all its runtime dependencies to ' + allJarsPath
+        group = "build"
+        description = 'Copies all project JAR and all its runtime dependencies to ' + allJarsPath
         from jar // Main produced JAR of the subproject
         into allJarsPath
     }
@@ -222,20 +224,20 @@ configure(leafProjects) {
     def allTestJarsPath = 'build/alltestjars'
 
     task gatherProjectTestDependencies(type: Sync) {
-        description 'Copies all project test dependencies to ' + allTestJarsPath
+        description = 'Copies all project test dependencies to ' + allTestJarsPath
         from project.configurations.testRuntimeClasspath
         into allTestJarsPath
     }
 
     task generateTestJar(type: Jar) {
-        description 'Generates JAR with test classes'
+        description = 'Generates JAR with test classes'
         archiveClassifier = 'tests'
         from sourceSets.test.output
     }
 
     task gatherAllTestJarsWithDependencies(type: Copy, dependsOn: ['jar', generateTestJar, gatherProjectTestDependencies]) {
-        group "build"
-        description 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
+        group = "build"
+        description = 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
         from jar // Main produced JAR of the subproject
         from generateTestJar // JAR with test classes
 
@@ -246,14 +248,14 @@ configure(leafProjects) {
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         archiveClassifier.set('sources')
-        archiveBaseName.set(archivesBaseName)
+        archiveBaseName.set(base.archivesName)
         from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
         enabled = includeJavaDocs
         archiveClassifier.set('javadoc')
-        archiveBaseName.set(archivesBaseName)
+        archiveBaseName.set(base.archivesName)
         from javadoc.destinationDir
     }
 
@@ -273,10 +275,10 @@ configure(leafProjects) {
     publishing {
         repositories {
             maven {
-                url javaPublicationUrl
+                url = javaPublicationUrl
                 credentials {
-                    username publisherUser
-                    password publisherPassword
+                    username = publisherUser
+                    password = publisherPassword
                 }
             }
         }
@@ -299,7 +301,7 @@ configure(leafProjects) {
                     artifact javadocJar
                 }
                 artifact sourcesJar
-                artifactId = archivesBaseName
+                artifactId = base.archivesName.get()
             }
         }
     }
@@ -333,7 +335,7 @@ allprojects {
 def testTasks = ext.leafProjects*.test
 
 task generateTestReport(type: TestReport) {
-    group 'verification'
+    group = 'verification'
     reportOn testTasks
     destinationDirectory.set(file("$rootDir/build/reports/junit/html/all_reports_merged")) // TODO: Pick better name for merged report
 }

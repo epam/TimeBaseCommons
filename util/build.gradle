@@ -41,8 +41,8 @@ sourcesJar.mustRunAfter downloadCodes
 
 
 tasks.register('buildFatTestJar', Jar) {
-    group 'build'
-    description 'Assembles a jar archive containing the test classes and all dependencies'
+    group = 'build'
+    description = 'Assembles a jar archive containing the test classes and all dependencies'
 
     manifest {
         attributes "Main-Class": "deltix.util.time.FrequentTimePollingStressTest"

@@ -5,13 +5,13 @@ buildscript {
     repositories {
         maven {
             credentials {
-                username rootProject.ext.repoUser
-                password rootProject.ext.repoPassword
+                username = rootProject.ext.repoUser
+                password = rootProject.ext.repoPassword
             }
             authentication {
                 digest(BasicAuthentication)
             }
-            url rootProject.ext.proxyRepository + "DevMain/"
+            url = rootProject.ext.proxyRepository + "DevMain/"
         }
 //        maven {
 //            url "../../maven-repo" // Local repository for custom plugins
