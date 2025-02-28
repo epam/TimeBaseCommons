@@ -1,3 +1,15 @@
+// v0.8.6
+// - Migrate to new Gradle syntax
+
+// v0.8.5
+// - Fix publisherUser/publisherPassword property resolution
+
+// v0.8.4
+// - Lazy Gradle task creation
+
+// v0.8.3
+// - Allow "promoteJava" to accept explicitly provided version.
+
 // v0.8.2
 // Change log:
 // - Added promotion of multiple docker image flavors
@@ -23,8 +35,8 @@ class PromotionTask extends DefaultTask {
     @Input @Optional String dockerDst
 
     @Input @Optional String artifactoryUrl = project.findProperty('publishRepositoryUrl') ?: System.getenv('ARTIFACTORY_URL')
-    @Input @Optional String artifactoryUser = project.ext.publisherUser ?: rootProject.project.ext.publisherUser
-    @Input @Optional String artifactoryPass = project.ext.publisherPassword ?: rootProject.project.ext.publisherPassword
+    @Input @Optional String artifactoryUser = (project.ext.has('publisherUser') ? project.ext.publisherUser : null) ?: project.rootProject.ext.publisherUser
+    @Input @Optional String artifactoryPass = (project.ext.has('publisherPassword') ? project.ext.publisherPassword : null) ?: project.rootProject.ext.publisherPassword
 
     /**
      * Set to true if project uses "SNAPSHOTS" in the versions and promotion task is expected to remove "-SNAPSHOTS" suffix from version number.
@@ -162,14 +174,18 @@ class PromotionTask extends DefaultTask {
         return builder.toString()
     }
 
-    void promoteJava(from, to, String group, String artifactId, javadoc = false, sources = false) {
+    // "version" parameter is put at the end for backwards compatibility
+    void promoteJava(String from, String to, String group, String artifactId, boolean javadoc = false, boolean sources = false, String version = null) {
+        if (version == null) {
+            version = promoteVersion
+        }
         checkRepositorySettings()
-        copyJarAndPom(from, to, group, artifactId, promoteVersion, artifactoryUrl, artifactoryUser, artifactoryPass)
+        copyJarAndPom(from, to, group, artifactId, version, artifactoryUrl, artifactoryUser, artifactoryPass)
         if (javadoc) {
-            copyJavadocJar(from, to, group, artifactId, promoteVersion, artifactoryUrl, artifactoryUser, artifactoryPass)
+            copyJavadocJar(from, to, group, artifactId, version, artifactoryUrl, artifactoryUser, artifactoryPass)
         }
         if (sources) {
-            copySourcesJar(from, to, group, artifactId, promoteVersion, artifactoryUrl, artifactoryUser, artifactoryPass)
+            copySourcesJar(from, to, group, artifactId, version, artifactoryUrl, artifactoryUser, artifactoryPass)
         }
     }
 
@@ -194,7 +210,7 @@ class PromotionTask extends DefaultTask {
      * @param javadoc if true, then will also copy "-javadoc.jar"
      * @param sources if true, then will also copy "-sources.jar"
      */
-    void promoteJava(String group, String artifactId, javadoc = false, sources = false) {
+    void promoteJava(String group, String artifactId, boolean javadoc = false, boolean sources = false) {
         checkJavaSettings()
         promoteJava(javaSrc, javaDst, group, artifactId, javadoc, sources)
     }
@@ -202,13 +218,28 @@ class PromotionTask extends DefaultTask {
     /**
      * Promotes Java artifact.
      *
-     * Example: promoteJava("deltix.qsrv.timebase:deltix-timebase-server")
+     * <p>Example: promoteJava("deltix.qsrv.timebase:deltix-timebase-server").
+     *
+     * <p>Additionally supports promotion of a specific version, if it is provided.
+     *
+     * <p>Example: promoteJava("deltix.qsrv.timebase:deltix-timebase-server:3.4.5").
      *
      * @param groupAndId artifact group and id separated by ":".
      */
-    void promoteJava(String groupAndId, javadoc = false, sources = false) {
+    void promoteJava(String groupAndId, boolean javadoc = false, boolean sources = false) {
         def parts = groupAndId.split(':')
-        promoteJava(parts[0], parts[1], javadoc, sources)
+        if (parts.length <= 2 || parts.length > 3) {
+            throw new IllegalArgumentException("Invalid groupAndId: ${groupAndId}")
+        }
+        def group = parts[0]
+        def artifactId = parts[1]
+        if (parts.length == 2) {
+            promoteJava(group, artifactId, javadoc, sources)
+        } else {
+            def version = parts[2]
+            checkJavaSettings()
+            promoteJava(javaSrc, javaDst, group, artifactId, javadoc, sources, version)
+        }
     }
 
 
@@ -322,9 +353,9 @@ class PromotionTask extends DefaultTask {
 // Makes task class accessible outside this file
 ext.PromotionTask = PromotionTask
 
-task listPublishableMavenArtifacts {
-    description "Prints list of publishable artifacts for all projects"
-    group 'info'
+tasks.register('listPublishableMavenArtifacts') {
+    description = "Prints list of publishable artifacts for all projects"
+    group = 'info'
 
     doFirst {
         println("Artifacts:")
@@ -342,9 +373,9 @@ task listPublishableMavenArtifacts {
  *
  * IMPORTANT: It does not prints artifacts produced by specific tasks. Instead, it prints artifacts for PROJECTS that contain such tasks.
  */
-task listArtifactsForTasks {
-    description "Prints list of publishable artifacts for specific projects"
-    group 'info'
+tasks.register('listArtifactsForTasks') {
+    description = "Prints list of publishable artifacts for specific projects"
+    group = 'info'
 
     doFirst {
         String taskList = findProperty('taskList')
@@ -363,8 +394,11 @@ task listArtifactsForTasks {
 
 private static printPublishableMavenArtifactsForProject(Project proj) {
     // https://docs.gradle.org/current/dsl/org.gradle.api.publish.maven.tasks.PublishToMavenRepository.html
+    // Do not change "each" to "configureEach" here!
     proj.tasks.withType(PublishToMavenRepository).each { t ->
         def p = t.publication
         println p.groupId + ':' + p.artifactId
     }
 }
+
+
