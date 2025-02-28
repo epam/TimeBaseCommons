@@ -73,7 +73,7 @@ public class ChannelOutputStream extends VSOutputStream {
             // and block till all accumulated data is sent.
             // Otherwise, if the consumer too slow, the buffer will start to grow indefinitely.
             // See https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1298
-            int buffer75percent = halfCapacity + halfCapacity >> 1;
+            int buffer75percent = halfCapacity + (halfCapacity >> 1);
             boolean partialOk = size < buffer75percent;
             try {
                 flushInternal(partialOk, false);

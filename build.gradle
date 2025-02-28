@@ -108,7 +108,7 @@ configure(leafProjects) {
             }
 
             dependency "junit:junit:4.13.2"
-            dependency "org.mockito:mockito-core:4.6.1"
+            dependency "org.mockito:mockito-core:5.15.2"
 
             dependencySet (group: 'org.junit.jupiter', version: '5.8.2') {
                 entry 'junit-jupiter-api'

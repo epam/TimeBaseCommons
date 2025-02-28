@@ -29,6 +29,7 @@ dependencies {
     implementation('deltix:deltix-clock')
 
     testImplementation 'org.hdrhistogram:HdrHistogram'
+    testImplementation 'org.mockito:mockito-core'
 }
 
 task downloadCodes(type: Download) {
