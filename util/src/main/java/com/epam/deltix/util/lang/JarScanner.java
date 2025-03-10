@@ -17,7 +17,6 @@
 package com.epam.deltix.util.lang;
 
 import javax.tools.JavaFileObject;
-import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URI;
@@ -59,7 +58,7 @@ class JarScanner {
     }
 
     private static List<JavaFileObject> processJar(String packageName, URL packageFolderURL) {
-        List<JavaFileObject> result = new ArrayList<JavaFileObject>();
+        List<JavaFileObject> result = new ArrayList<>();
         try {
             String[] uris = packageFolderURL.toExternalForm().split("!");
             String jarUri = uris[0];
@@ -87,6 +86,9 @@ class JarScanner {
             } else if (secondUri.endsWith(".jar")) {
                 JarURLConnection jarConn = (JarURLConnection) packageFolderURL.openConnection();
                 String rootEntryName = jarConn.getEntryName();
+                if (rootEntryName == null) {
+                    rootEntryName = "";
+                }
                 int rootEnd = rootEntryName.length() + 1;
                 if (!secondUri.endsWith("jar"))
                     return result;
