@@ -62,7 +62,7 @@ configure(leafProjects) {
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
     // Defines versions of dependencies to be used by subprojects
-    // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
+    // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl    
     dependencyManagement {
         dependencies {
             dependency ('com.epam.deltix:thread-affinity:1.0.4')
@@ -99,7 +99,6 @@ configure(leafProjects) {
         vendor = 'EPAM'
         isReleaseVersion = !version.endsWith("SNAPSHOT")
     }
-
     java {
         withJavadocJar()
         withSourcesJar()
