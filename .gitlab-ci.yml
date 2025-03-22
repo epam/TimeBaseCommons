@@ -1,5 +1,5 @@
 variables:
-  JAVA_IMAGE: dockerhub.deltixhub.com/gradle:8.11.0-jdk11-alpine
+  JAVA_IMAGE: dockerhub.deltixhub.com/gradle:8.13.0-jdk11-alpine
 
 stages:
   - prepare
