@@ -340,71 +340,81 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
 
         InetSocketAddress socketAddress = new InetSocketAddress(host, port);
 
-        Socket socket;
-        if (startWithSSL) {
-            VSProtocol.LOGGER.info("SSL termination enabled: creating SSL socket on [" + host + ":" + port +"]");
-            socket = sslContext.getSocketFactory().createSocket();
-        } else {
-            socket = new Socket();
-        }
-        socket.setSoTimeout(soTimeout);
-        socket.setTcpNoDelay(true);
-
-        // Sets socket buffer sizes.
-        // Please note that later socket also will be additionally configured in VSocketImpl.setUpSocket() method.
-        // However, that happens only after socket gets connected.
-        // It's important to configure receive buffer size before connection is established
-        // to allow it to use TCP window size greater than 64kb.
-        // That's why we have to do that here.
-        VSocketImpl.configureBufferSizes(socket);
-
-        // Connect
-        socket.connect(socketAddress, timeout);
-
-        InputStream is = socket.getInputStream();
-        OutputStream os = socket.getOutputStream();
-
-        // We should not request SSL from TB server if SSL termination is enabled
-        boolean requestSSL = enableSSL && !sslTermination;
-
-        os.write(0); //first byte of VS protocol
-        os.write(VSProtocol.getHeader(requestSSL));
-        os.flush();
-
-        int serverResponse = is.read();
-        if (serverResponse == VSProtocol.CONN_RESP_SSL_NOT_SUPPORTED) {
-            assert !startWithSSL;
-            throw new IOException("Server not supported SSL.");
-        } else if (serverResponse != VSProtocol.CONN_RESP_OK) {
-            throw new RuntimeException("Unexpected server response: " + serverResponse);
-        }
-
-        int serverHeader = is.read();
-        if (serverHeader == VSProtocol.SSL_HEADER) {
-
-            if (startWithSSL)
-                throw new IllegalStateException("SSL termination is enabled but server attempts to upgrade to SSL");
-
-            // Upgrade non-SSL socket to SSL
-            socket = sslContext.getSocketFactory().createSocket(
-                    socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
-            ((SSLSocket) socket).setUseClientMode(true);
-            ((SSLSocket) socket).startHandshake();
-            enableSSL = true; // We now use SSL socket, even if client have not requested it.
-            VSProtocol.LOGGER.info("Socket upgraded to SSL socket! Now connection is secured.");
-        } else if (serverHeader == VSProtocol.HEADER) {
-            if (enableSSL && !startWithSSL) {
-                // Normally we should not get here:
-                // 1. If SSL termination is enabled, then we don't request SSL from TB server
-                // 2. If we have enableSSL = true, then we should request it from TB server and get explicit reject if it's not supported
-                VSProtocol.LOGGER.info("Connection isn't secured.");
-                enableSSL = false;
+        Socket socket = null;
+        boolean success = false;
+        try {
+            if (startWithSSL) {
+                VSProtocol.LOGGER.info("SSL termination enabled: creating SSL socket on [" + host + ":" + port + "]");
+                socket = sslContext.getSocketFactory().createSocket();
+            } else {
+                socket = new Socket();
             }
-        } else {
-            throw new RuntimeException("Unexpected server header: " + serverHeader);
-        }
 
-        return socket;
+            socket.setSoTimeout(soTimeout);
+            socket.setTcpNoDelay(true);
+
+            // Sets socket buffer sizes.
+            // Please note that later socket also will be additionally configured in VSocketImpl.setUpSocket() method.
+            // However, that happens only after socket gets connected.
+            // It's important to configure receive buffer size before connection is established
+            // to allow it to use TCP window size greater than 64kb.
+            // That's why we have to do that here.
+            VSocketImpl.configureBufferSizes(socket);
+
+            // Connect
+            socket.connect(socketAddress, timeout);
+
+            InputStream is = socket.getInputStream();
+            OutputStream os = socket.getOutputStream();
+
+            // We should not request SSL from TB server if SSL termination is enabled
+            boolean requestSSL = enableSSL && !sslTermination;
+
+            os.write(0); //first byte of VS protocol
+            os.write(VSProtocol.getHeader(requestSSL));
+            os.flush();
+
+            int serverResponse = is.read();
+            if (serverResponse == VSProtocol.CONN_RESP_SSL_NOT_SUPPORTED) {
+                assert !startWithSSL;
+                throw new IOException("Server not supported SSL.");
+            } else if (serverResponse != VSProtocol.CONN_RESP_OK) {
+                throw new RuntimeException("Unexpected server response: " + serverResponse);
+            }
+
+            int serverHeader = is.read();
+            if (serverHeader == VSProtocol.SSL_HEADER) {
+
+                if (startWithSSL) {
+                    throw new IllegalStateException("SSL termination is enabled but server attempts to upgrade to SSL");
+                }
+
+                // Upgrade non-SSL socket to SSL
+                socket = sslContext.getSocketFactory().createSocket(
+                        socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
+                ((SSLSocket) socket).setUseClientMode(true);
+                ((SSLSocket) socket).startHandshake();
+                enableSSL = true; // We now use SSL socket, even if client have not requested it.
+                VSProtocol.LOGGER.info("Socket upgraded to SSL socket! Now connection is secured.");
+            } else if (serverHeader == VSProtocol.HEADER) {
+                if (enableSSL && !startWithSSL) {
+                    // Normally we should not get here:
+                    // 1. If SSL termination is enabled, then we don't request SSL from TB server
+                    // 2. If we have enableSSL = true, then we should request it from TB server and get explicit reject if it's not supported
+                    VSProtocol.LOGGER.info("Connection isn't secured.");
+                    enableSSL = false;
+                }
+            } else {
+                throw new RuntimeException("Unexpected server header: " + serverHeader);
+            }
+
+            success = true;
+            return socket;
+        } finally {
+            if (!success) {
+                IOUtil.close(socket);
+            }
+        }
     }
 
     public void             setProtocolVersion(int version) {
