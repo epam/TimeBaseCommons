@@ -304,10 +304,16 @@ public final class VSDispatcher implements Disposable {
 
                 // At this point we start to wait for this transport recovery
                 transportRecoveryFuture = new CompletableFuture<>();
-                if (dispatcherRecoveryFuture == null) {
-                    dispatcherRecoveryFuture = transportRecoveryFuture;
+
+                CompletableFuture<Boolean> existingFuture = dispatcherRecoveryFuture;
+                // If existing future is already successfully resolved to "true" value,
+                // then previous recovery was successful, and we can just discard that old future object.
+                // This way we avoid getting a memory leak on infinite chain of futures.
+                boolean overrideExisting = existingFuture == null || (existingFuture.isDone() && !existingFuture.isCompletedExceptionally() && existingFuture.getNow(false));
+                if (overrideExisting) {
+                    this.dispatcherRecoveryFuture = transportRecoveryFuture;
                 } else {
-                    dispatcherRecoveryFuture = dispatcherRecoveryFuture.thenCombine(transportRecoveryFuture, (a, b) -> a && b);
+                    this.dispatcherRecoveryFuture = existingFuture.thenCombine(transportRecoveryFuture, (a, b) -> a && b);
                 }
 
                 synchronized (freeChannels) {
