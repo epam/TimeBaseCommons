@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Level;
 
@@ -291,11 +292,14 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         return dispatcher != null && dispatcher.hasAvailableTransport();
     }
 
-    public CompletableFuture<Boolean> getConnectionStateFuture() {
+    /**
+     * See {@link VSDispatcher#waitAngGetConnectionsStatus()}.
+     */
+    public boolean waitAngGetConnectionsStatus() {
         if (dispatcher == null) {
-            return CompletableFuture.completedFuture(false);
+            return false;
         } else {
-            return dispatcher.getConnectionStateFuture();
+            return dispatcher.waitAngGetConnectionsStatus();
         }
     }
 

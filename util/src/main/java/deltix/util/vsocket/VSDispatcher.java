@@ -447,16 +447,25 @@ public final class VSDispatcher implements Disposable {
         }
     }
 
-    public CompletableFuture<Boolean> getConnectionStateFuture() {
+    /**
+     * If reconnect procedure is in progress, waits for it to finish and returns the result.
+     *
+     * <p>Otherwise, returns the result immediately.
+     *
+     * @return true if connected, false if disconnected
+     */
+    public boolean waitAngGetConnectionsStatus() {
         if (hasAvailableTransport) {
-            return FUTURE_TRUE;
+            return true;
         }
+        CompletableFuture<Boolean> future;
         synchronized (transportChannels) {
-            if (dispatcherRecoveryFuture == null) {
-                return FUTURE_FALSE;
-            }
-            return dispatcherRecoveryFuture;
+            future = dispatcherRecoveryFuture;
         }
+        if (future == null) {
+            return false;
+        }
+        return future.join();
     }
 
     /**
