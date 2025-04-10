@@ -448,24 +448,49 @@ public final class VSDispatcher implements Disposable {
     }
 
     /**
-     * If reconnect procedure is in progress, waits for it to finish and returns the result.
+     * Immediately returns true if at least one transport channel is connected.
      *
-     * <p>Otherwise, returns the result immediately.
+     * <p>If not, and reconnect procedure is in progress, waits for it to finish.
      *
-     * @return true if connected, false if disconnected
+     * <p>If all connections get recovered, returns true otherwise false.
+     *
+     * <p>Note that if any of transport channels fails to recover,
+     * then all connections will be eventually closed. So this is possible sequence of events:
+     * <ol>
+     *     <li>One of two transports gets disconnected</li>
+     *     <li>Call on {@code waitAngGetConnectionsStatus()} returns true without blocking (because second transport is OK)</li>
+     *     <li>First transport fails to reconnect</li>
+     *     <li>Second transport gets closed because recovery for the first one failed</li>
+     *     <li>Call on {@code waitAngGetConnectionsStatus()} returns false</li>
+     * </ol>
      */
     public boolean waitAngGetConnectionsStatus() {
-        if (hasAvailableTransport) {
-            return true;
+        // This loop is needed to handle situation when new transport gets disconnected and starts recovery
+        // while we are waiting for the previous transport to recover.
+        while (true) {
+            if (hasAvailableTransport) {
+                return true;
+            }
+            CompletableFuture<Boolean> future;
+            synchronized (transportChannels) {
+                future = dispatcherRecoveryFuture;
+            }
+            if (future == null) {
+                return false;
+            }
+            Boolean result = future.join();
+            if (!result) {
+                // Reconnect failed
+                return false;
+            }
+            synchronized (transportChannels) {
+                if (dispatcherRecoveryFuture == future) {
+                    // This is same future as we waited for, so now we sure that reconnect is completed
+                    return true;
+                }
+                // Else: Try again (restart the loop)
+            }
         }
-        CompletableFuture<Boolean> future;
-        synchronized (transportChannels) {
-            future = dispatcherRecoveryFuture;
-        }
-        if (future == null) {
-            return false;
-        }
-        return future.join();
     }
 
     /**
