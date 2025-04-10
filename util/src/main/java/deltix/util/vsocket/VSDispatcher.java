@@ -84,6 +84,8 @@ public final class VSDispatcher implements Disposable {
     private volatile long                           totalBytes = 0; // number of bytes sent
     private final EMA                               average = new EMA(1000 * 60); // 1 minute
 
+    // Set to "true" once all operations related to closing the dispatcher are completed,
+    // just before calling notifyListeners()
     private final AtomicBoolean                     disposed = new AtomicBoolean(false);
 
     private TimerTask flusher = new TimerRunner() {
@@ -409,6 +411,13 @@ public final class VSDispatcher implements Disposable {
                             vsChannel.onDisconnected(iex);
                 }
 
+                // Mark this recovery status as failed *before* calling stateListener.onDisconnected()
+                // to avoid situation when stateListener.onDisconnected() handler tires to check connection status
+                // on the dispatcher using getConnectionStateFuture() and gets deadlocked because that future still
+                // not resolved.
+                // See https://gitlab.deltixhub.com/Deltix/QuantServer/TimebaseWS/-/issues/1598
+                transportRecoveryFuture.complete(false);
+
                 // notify state listener that connections lost
                 if (stateListener != null)
                     stateListener.onDisconnected();
@@ -420,6 +429,7 @@ public final class VSDispatcher implements Disposable {
             }
         } finally {
             if (transportRecoveryFuture != null) {
+                // Set future to false (recovery failed) unless it is already completed with other value
                 transportRecoveryFuture.complete(false);
             }
             synchronized (transportChannels) {
@@ -457,7 +467,7 @@ public final class VSDispatcher implements Disposable {
 
         boolean checkedIn = false;
         try {
-            while (now < endTime && !checkedIn) {
+            while (now < endTime && !checkedIn && !disposed.get()) {
                 transportChannels.wait(endTime - now);
                 now = System.currentTimeMillis();
                 synchronized (freeChannels) {
@@ -591,6 +601,12 @@ public final class VSDispatcher implements Disposable {
 
             transportChannels.clear ();
             transportChannels.notify();
+
+            if (dispatcherRecoveryFuture != null) {
+                // Set future to false (recovery failed) to ensure that nobody waits for that future anymore,
+                // even if some threads still try to perform reconnect.
+                dispatcherRecoveryFuture.complete(false);
+            }
         }
 
         remoteConnected = hasAvailableTransport = false;
