@@ -84,7 +84,7 @@ public final class VSDispatcher implements Disposable {
     private volatile long                           totalBytes = 0; // number of bytes sent
     private final EMA                               average = new EMA(1000 * 60); // 1 minute
 
-    private volatile VSDispatcherState              state;
+    private volatile VSDispatcherState              state = VSDispatcherState.DISCONNECTED;
 
     // Set to "true" once all operations related to closing the dispatcher are completed,
     // just before calling notifyListeners()
@@ -240,10 +240,14 @@ public final class VSDispatcher implements Disposable {
         return state == VSDispatcherState.CONNECTED;
     }
 
+    private void                setState(VSDispatcherState newState) {
+
+    }
+
     public void                 addTransportChannel (VSocket socket)
         throws IOException
     {
-        boolean hasTransport = state != VSDispatcherState.CONNECTED;
+        boolean hasTransport = state == VSDispatcherState.CONNECTED;
 
         VSTransportChannel          tc = new VSTransportChannel(this, socket, transportChannelThreadFactory);
         tc.checkedOut = true; // Initially this channel is not in "freeChannels" so it is effectively "checked out"
