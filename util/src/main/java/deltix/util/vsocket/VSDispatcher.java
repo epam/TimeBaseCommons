@@ -4,10 +4,12 @@ import deltix.thread.affinity.AffinityThreadFactoryBuilder;
 import deltix.util.collections.generated.ObjectHashSet;
 import deltix.util.concurrent.ContextContainer;
 import deltix.util.concurrent.QuickExecutor;
+import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Disposable;
 import deltix.util.lang.DisposableListener;
 import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;
+import deltix.util.time.TimeKeeper;
 import net.jcip.annotations.GuardedBy;
 import deltix.util.time.TimerRunner;
 
@@ -56,8 +58,6 @@ public final class VSDispatcher implements Disposable {
      * If multiple transport channels are being recovered, this future will be completed with value "true" if all of
      * them are recovered successfully, or "false" if at least one of them failed to recover.
      */
-    @GuardedBy("transportChannels")
-    private CompletableFuture<Boolean> dispatcherRecoveryFuture = null;
 
     @GuardedBy("freeChannels")
     // TODO: Replace by Deque
@@ -66,7 +66,7 @@ public final class VSDispatcher implements Disposable {
 
     private final ArrayList <VSChannelImpl>         channels =
             new ArrayList <> (10);
-    private volatile boolean                        hasAvailableTransport = false;
+    //private volatile boolean                        hasAvailableTransport = false;
     
     volatile VSConnectionListener                   connectionListener = null;
     volatile ConnectionStateListener                stateListener;
@@ -83,6 +83,8 @@ public final class VSDispatcher implements Disposable {
     private volatile long                           throughput = 0;
     private volatile long                           totalBytes = 0; // number of bytes sent
     private final EMA                               average = new EMA(1000 * 60); // 1 minute
+
+    private volatile VSDispatcherState              state;
 
     // Set to "true" once all operations related to closing the dispatcher are completed,
     // just before calling notifyListeners()
@@ -235,20 +237,20 @@ public final class VSDispatcher implements Disposable {
     }
 
     public boolean              hasAvailableTransport() {
-        return hasAvailableTransport;
+        return state == VSDispatcherState.CONNECTED;
     }
 
     public void                 addTransportChannel (VSocket socket)
         throws IOException
     {
-        boolean hasTransport = hasAvailableTransport;
+        boolean hasTransport = state != VSDispatcherState.CONNECTED;
 
         VSTransportChannel          tc = new VSTransportChannel(this, socket, transportChannelThreadFactory);
         tc.checkedOut = true; // Initially this channel is not in "freeChannels" so it is effectively "checked out"
 
         // set that we have transport before starting transport channel thread
         if (!hasTransport)
-            hasAvailableTransport = true;
+            state = VSDispatcherState.CONNECTED;
 
         // start transport
         tc.start ();
@@ -287,185 +289,166 @@ public final class VSDispatcher implements Disposable {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + reconnectInterval;
 
-        boolean transportIsUnrecoverablyBroken = false;
-
-        // Eventually resolves to true if this specific transport gets recovered, or to false if it fails to recover.
-        CompletableFuture<Boolean> transportRecoveryFuture = null;
+        //boolean transportIsUnrecoverablyBroken = false;
 
         boolean wasCheckedIn;
 
-        try {
-            synchronized (transportChannels) {
-                if (transportChannels.isEmpty()) // already closed
-                    return;
+        synchronized (transportChannels) {
+            if (transportChannels.isEmpty()) // already closed
+                return;
 
-                if (!transportChannels.remove(channel)) // check that channel already removed
-                    return;
+            if (!transportChannels.remove(channel)) // check that channel already removed
+                return;
 
-                // At this point we start to wait for this transport recovery
-                transportRecoveryFuture = new CompletableFuture<>();
+            synchronized (freeChannels) {
+                wasCheckedIn = freeChannels.remove(channel);
+                assert wasCheckedIn == !channel.checkedOut;
+                freeChannels.notifyAll();
+            }
 
-                CompletableFuture<Boolean> existingFuture = dispatcherRecoveryFuture;
-                // If existing future is already successfully resolved to "true" value,
-                // then previous recovery was successful, and we can just discard that old future object.
-                // This way we avoid getting a memory leak on infinite chain of futures.
-                boolean overrideExisting = existingFuture == null || (existingFuture.isDone() && !existingFuture.isCompletedExceptionally() && existingFuture.getNow(false));
-                if (overrideExisting) {
-                    this.dispatcherRecoveryFuture = transportRecoveryFuture;
-                } else {
-                    this.dispatcherRecoveryFuture = existingFuture.thenCombine(transportRecoveryFuture, (a, b) -> a && b);
-                }
-
-                synchronized (freeChannels) {
-                    wasCheckedIn = freeChannels.remove(channel);
-                    assert wasCheckedIn == !channel.checkedOut;
-                    freeChannels.notifyAll();
-                }
-
+            if (!wasCheckedIn) {
+                // Try to wait for the channel to become checked in
+                wasCheckedIn = waitForTransportCheckIn(channel, startTime, endTime);
                 if (!wasCheckedIn) {
-                    // Try to wait for the channel to become checked in
-                    wasCheckedIn = waitForTransportCheckIn(channel, startTime, endTime);
-                    if (!wasCheckedIn) {
-                        if (VSProtocol.LOGGER.isLoggable(Level.INFO)) {
-                            VSProtocol.LOGGER.log(Level.INFO, "Error waiting to reconnect (transport was not checked in).");
-                        }
+                    if (VSProtocol.LOGGER.isLoggable(Level.INFO)) {
+                        VSProtocol.LOGGER.log(Level.INFO, "Error waiting to reconnect (transport was not checked in).");
                     }
                 }
-
-                hasAvailableTransport = transportChannels.size() > 0;
             }
 
-            VSocketRecoveryInfo recoveryInfo = new VSocketRecoveryInfo(channel.socket, startTime);
+            state = VSDispatcherState.CONNECTING;
+        }
 
-            long now = System.currentTimeMillis();
-            if (wasCheckedIn && (now < endTime)) {
-                // notify state listener that transport lost
-                if (stateListener != null) {
-                    if (stateListener.onTransportStopped(recoveryInfo)) {
-                        transportIsUnrecoverablyBroken = true;
-                    }
-                }
+        boolean transportIsUnrecoverablyBroken = false;
 
-                if (remoteConnected && !transportIsUnrecoverablyBroken) {
-                    // System.out.println("WAITED: remoteConnected=" + remoteConnected + " transportIsUnrecoverablyBroken=" + transportIsUnrecoverablyBroken);
-                    try {
-                        // Try to wait for connection restore
+        // trying to recover transport
+        VSocketRecoveryInfo recoveryInfo = new VSocketRecoveryInfo(channel.socket, startTime);
 
-                        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-                        synchronized (recoveryInfo) {
-                            long timeToWait;
-                            while ((timeToWait = endTime - now) > 0 && recoveryInfo.isWaitingForRecovery() && remoteConnected) {
-                                recoveryInfo.wait(timeToWait);
-                                if (recoveryInfo.isWaitingForRecovery() && remoteConnected) {
-                                    now = System.currentTimeMillis();
-                                }
-                            }
-                            if (recoveryInfo.isRecoveryFailed()) {
-                                transportIsUnrecoverablyBroken = true;
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        if (VSProtocol.LOGGER.isLoggable(Level.FINE))
-                            VSProtocol.LOGGER.log(Level.FINE, "Error waiting to reconnect.", e);
-                    }
-                } else {
-                    //System.out.println("NOT WAITED: remoteConnected=" + remoteConnected + " transportIsUnrecoverablyBroken=" + transportIsUnrecoverablyBroken);
-                }
-            } else {
-                transportIsUnrecoverablyBroken = true;
-                if (VSProtocol.LOGGER.isLoggable(Level.FINE)) {
-                    VSProtocol.LOGGER.log(Level.FINE, "Cancelled recovery of failed connection because of timeout on waiting for check-in from other thread. Remote address: " + getRemoteAddress());
-                }
-            }
+        long now = System.currentTimeMillis();
+        if (wasCheckedIn && (now < endTime)) {
 
             if (stateListener != null) {
-                if (stateListener.onTransportBroken(recoveryInfo)) {
+                if (stateListener.onTransportStopped(recoveryInfo)) {
                     transportIsUnrecoverablyBroken = true;
                 }
             }
 
-            if (transportIsUnrecoverablyBroken) {
-                // We lost this transport channel and were unable to recover it.
-                // This means that we lost at least some data and can't recover from this state.
-                // We need to close all remaining connections and explicitly notify use about that.
+            if (remoteConnected && !transportIsUnrecoverablyBroken) {
+                // System.out.println("WAITED: remoteConnected=" + remoteConnected + " transportIsUnrecoverablyBroken=" + transportIsUnrecoverablyBroken);
+                try {
+                    // Try to wait for connection restore
+                    state = VSDispatcherState.CONNECTING;
 
-                boolean wasConnected = remoteConnected;
-
-                // mark that we lost transport completely
-                hasAvailableTransport = false;
-
-                // notify all waiting for transport that connection is lost
-                onRemoteClosed();
-
-                if (ex instanceof SocketException || ex instanceof EOFException || ex instanceof SocketTimeoutException) {
+                    synchronized (recoveryInfo) {
+                        long timeToWait;
+                        while ((timeToWait = endTime - now) > 0 && recoveryInfo.isWaitingForRecovery() && remoteConnected) {
+                            recoveryInfo.wait(timeToWait);
+                            if (recoveryInfo.isWaitingForRecovery() && remoteConnected) {
+                                now = System.currentTimeMillis();
+                            }
+                        }
+                        if (recoveryInfo.isRecoveryFailed()) {
+                            transportIsUnrecoverablyBroken = true;
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     if (VSProtocol.LOGGER.isLoggable(Level.FINE))
-                        VSProtocol.LOGGER.log(Level.FINE, "Exception on transport channel. Remote address: " + getRemoteAddress(), ex);
-                } else {
-                    VSProtocol.LOGGER.log(Level.SEVERE, "Exception on transport channel. Remote address: " + getRemoteAddress(), ex);
+                        VSProtocol.LOGGER.log(Level.FINE, "Error waiting to reconnect.", e);
                 }
-                if (wasConnected) {
-                    VSProtocol.LOGGER.log(Level.WARNING, "Disconnecting due to unrecoverable transport channel loss. Remote address: " + getRemoteAddress(), ex);
-                } else {
-                    VSProtocol.LOGGER.log(Level.FINER, "Disconnecting (re-triggered) due to unrecoverable transport channel loss. Remote address: " + getRemoteAddress(), ex);
-                }
-
-                // and then notify all channels that we lost transport
-                synchronized (channels) {
-                    for (VSChannelImpl vsChannel : channels)
-                        if (vsChannel != null)
-                            vsChannel.onDisconnected(iex);
-                }
-
-                // Mark this recovery status as failed *before* calling stateListener.onDisconnected()
-                // to avoid situation when stateListener.onDisconnected() handler tires to check connection status
-                // on the dispatcher using getConnectionStateFuture() and gets deadlocked because that future still
-                // not resolved.
-                // See https://gitlab.deltixhub.com/Deltix/QuantServer/TimebaseWS/-/issues/1598
-                transportRecoveryFuture.complete(false);
-
-                // notify state listener that connections lost
-                if (stateListener != null)
-                    stateListener.onDisconnected();
-
-                close();
             } else {
-                // Consider this transport recovered
-                transportRecoveryFuture.complete(true);
+                //System.out.println("NOT WAITED: remoteConnected=" + remoteConnected + " transportIsUnrecoverablyBroken=" + transportIsUnrecoverablyBroken);
             }
-        } finally {
-            if (transportRecoveryFuture != null) {
-                // Set future to false (recovery failed) unless it is already completed with other value
-                transportRecoveryFuture.complete(false);
+        } else {
+            transportIsUnrecoverablyBroken = true;
+            if (VSProtocol.LOGGER.isLoggable(Level.FINE)) {
+                VSProtocol.LOGGER.log(Level.FINE, "Cancelled recovery of failed connection because of timeout on waiting for check-in from other thread. Remote address: " + getRemoteAddress());
             }
-            synchronized (transportChannels) {
-                // Trigger immediate "failed" status for recoveryFuture if it was not completed yet
-                if (dispatcherRecoveryFuture != null) {
-                    dispatcherRecoveryFuture.complete(false);
-                }
+        }
+
+        if (stateListener != null) {
+            if (stateListener.onTransportBroken(recoveryInfo)) {
+                transportIsUnrecoverablyBroken = true;
             }
+        }
+
+        if (transportIsUnrecoverablyBroken) {
+            // We lost this transport channel and were unable to recover it.
+            // This means that we lost at least some data and can't recover from this state.
+            // We need to close all remaining connections and explicitly notify use about that.
+
+            boolean wasConnected = remoteConnected;
+
+            // mark that we lost transport completely
+            state = VSDispatcherState.DISCONNECTED;
+
+            // notify all waiting for transport that connection is lost
+            onRemoteClosed();
+
+            if (ex instanceof SocketException || ex instanceof EOFException || ex instanceof SocketTimeoutException) {
+                if (VSProtocol.LOGGER.isLoggable(Level.FINE))
+                    VSProtocol.LOGGER.log(Level.FINE, "Exception on transport channel. Remote address: " + getRemoteAddress(), ex);
+            } else {
+                VSProtocol.LOGGER.log(Level.SEVERE, "Exception on transport channel. Remote address: " + getRemoteAddress(), ex);
+            }
+
+            if (wasConnected) {
+                VSProtocol.LOGGER.log(Level.WARNING, "Disconnecting due to unrecoverable transport channel loss. Remote address: " + getRemoteAddress(), ex);
+            } else {
+                VSProtocol.LOGGER.log(Level.FINER, "Disconnecting (re-triggered) due to unrecoverable transport channel loss. Remote address: " + getRemoteAddress(), ex);
+            }
+
+            // and then notify all channels that we lost transport
+            synchronized (channels) {
+                for (VSChannelImpl vsChannel : channels)
+                    if (vsChannel != null)
+                        vsChannel.onDisconnected(iex);
+            }
+
+            // notify state listener that connections lost
+            if (stateListener != null)
+                stateListener.onDisconnected();
+
+            close();
+        } else {
+            state = VSDispatcherState.CONNECTED;
         }
     }
 
     /**
-     * If reconnect procedure is in progress, waits for it to finish and returns the result.
-     *
-     * <p>Otherwise, returns the result immediately.
+     * Return true, if it has CONNECTED state.
+     * Return false, if it has DISCONNECTED state.
+     * Otherwise, waits at least {@link #reconnectInterval} until status gets CONNECTED or DISCONNECTED.
      *
      * @return true if connected, false if disconnected
      */
-    public boolean waitAngGetConnectionsStatus() {
-        if (hasAvailableTransport) {
+    public boolean tryGetConnectionStatus() {
+
+        // set timeout > reconnectInterval
+        int timeout = reconnectInterval * 2;
+
+        long timeLimit = TimeKeeper.currentTime + timeout;
+        if (timeLimit < 0) // overflow check
+            timeLimit = Long.MAX_VALUE;
+
+        long period = Math.min(timeout, 1000);
+        try {
+            while (TimeKeeper.currentTime < timeLimit) {
+                if (state == VSDispatcherState.CONNECTED)
+                    return true;
+                else if (state == VSDispatcherState.DISCONNECTED)
+                    return false;
+                Thread.sleep(period);
+            }
+        } catch (InterruptedException e) {
+        }
+
+        if (state == VSDispatcherState.CONNECTED)
             return true;
-        }
-        CompletableFuture<Boolean> future;
-        synchronized (transportChannels) {
-            future = dispatcherRecoveryFuture;
-        }
-        if (future == null) {
+        else if (state == VSDispatcherState.DISCONNECTED)
             return false;
-        }
-        return future.join();
+
+        return false;
     }
 
     /**
@@ -533,7 +516,7 @@ public final class VSDispatcher implements Disposable {
     {
         synchronized (freeChannels) {
             for (;;) {
-                if (!hasAvailableTransport && !remoteConnected)
+                if (state != VSDispatcherState.CONNECTED && !remoteConnected)
                     throw new ConnectionAbortedException("Connection aborted from remote side [" + getRemoteAddress() + "]");
 
                 if (!freeChannels.isEmpty ()) {
@@ -589,7 +572,7 @@ public final class VSDispatcher implements Disposable {
     }
 
     private void                sendClosing() {
-        if (!remoteConnected || !hasAvailableTransport)
+        if (!remoteConnected || state != VSDispatcherState.CONNECTED)
             return;
         
         VSTransportChannel    channel = null;
@@ -616,15 +599,10 @@ public final class VSDispatcher implements Disposable {
 
             transportChannels.clear ();
             transportChannels.notify();
-
-            if (dispatcherRecoveryFuture != null) {
-                // Set future to false (recovery failed) to ensure that nobody waits for that future anymore,
-                // even if some threads still try to perform reconnect.
-                dispatcherRecoveryFuture.complete(false);
-            }
         }
 
-        remoteConnected = hasAvailableTransport = false;
+        state = VSDispatcherState.DISCONNECTED;
+        remoteConnected = false;
 
         // disable free channels to prevent locking on code below
         synchronized (freeChannels) {

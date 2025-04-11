@@ -293,13 +293,17 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     /**
-     * See {@link VSDispatcher#waitAngGetConnectionsStatus()}.
+     * Return true, if it has CONNECTED state.
+     * Return false, if it has DISCONNECTED state.
+     * Otherwise, waits at least {@link #reconnectInterval} until status gets CONNECTED or DISCONNECTED.
+     *
+     * @return true if connected, false if disconnected
      */
-    public boolean waitAngGetConnectionsStatus() {
+    public boolean                  tryGetConnectionStatus() {
         if (dispatcher == null) {
             return false;
         } else {
-            return dispatcher.waitAngGetConnectionsStatus();
+            return dispatcher.tryGetConnectionStatus();
         }
     }
 

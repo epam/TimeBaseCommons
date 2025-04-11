@@ -234,7 +234,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
         boolean             isNew = dis.readBoolean();
         int                 sCode = dis.readInt();
-        long                recieved = dis.readLong();
+        long                received = dis.readLong();
 
         Connector           connector = process(clientId);
         if (connector == null) {
@@ -277,7 +277,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
             String transportTag = sCode + " / " + Integer.toHexString(sCode);
             if (broken != null) {
                 VSProtocol.LOGGER.info("Restoring connection (" + transportTag + ") for " + clientId);
-                broken.getOutputStream().confirm(recieved);
+                broken.getOutputStream().confirm(received);
             } else {
                 if (!isNew) {
                     VSProtocol.LOGGER.warning("Connection restore failed for transport (" + transportTag + ") for " + clientId + " because server side transport is not found");
