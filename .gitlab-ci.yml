@@ -1,3 +1,11 @@
+# See https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/-/wikis/CI-Templates
+# Includes https://gitlab.deltixhub.com/GitLab/ci/-/blob/master/jobs/release-branch.gitlab-ci.yml
+# Jobs included from the template: "Prepare", "Release", "Clean Up"
+include:
+  - project: GitLab/ci
+    ref: 0.5.1
+    file: jobs/release-branch.gitlab-ci.yml
+
 variables:
   JAVA_IMAGE: dockerhub.deltixhub.com/gradle:8.13.0-jdk11-alpine
 
@@ -14,31 +22,35 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
+# Override "Prepare" job from template
 "Prepare":
   stage: prepare
+  image: ${TOOLS_IMAGE}
   script:
-    - export CI_PUSH_URL=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-    - echo $CI_PUSH_URL
-    - git config user.name "Robot"
-    - git config user.email "<internal@rtmath.net>"
+    - git config user.name ${GITLAB_ROBOT_NAME}
+    - git config user.email ${GITLAB_ROBOT_EMAIL}
     - git checkout -b pipeline-$CI_PIPELINE_ID
     - versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
     - versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
-    - versionSnapshotNext=`echo $versionSnapshot | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`
+    # Customized line to support version suffix:
+    - versionSnapshotNext=$(echo "$versionSnapshot" | sed -E 's/^([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?-SNAPSHOT$/echo "\1.\2.$((\3+1))\4-SNAPSHOT"/' | bash)
     - echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
     - sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
     - git commit -am "[Skip CI] Generate release version"
     - sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
     - git commit -am "[Skip CI] Generate next development version"
-    - git remote set-url --push origin "${CI_PUSH_URL}"
+    - git remote set-url --push origin https://$GITLAB_ROBOT_NAME:$CI_GIT_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
     - git push origin -u pipeline-$CI_PIPELINE_ID
+  dependencies: []
   tags:
     - Linux
-    - ShellExecutor
+    - AWS
+    - DockerExecutor
   only:
     - /^release-.*$/
   except:
     - tags
+    - schedules
 
 "Build":
   stage: build
@@ -77,27 +89,14 @@ before_script:
   tags:
     - DockerExecutor
 
+# Included from template
+# Executes release (creates tag)
+# Part of release process
 "Release":
-  stage: release
-  script:
-    - export CI_PUSH_URL=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-    - git config user.name "Robot"
-    - git config user.email "<internal@rtmath.net>"
-    - git remote set-url --push origin "${CI_PUSH_URL}"
-    - git checkout origin/pipeline-$CI_PIPELINE_ID~1
-    - versionRelease=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
-    - echo $versionRelease
-    - git tag $versionRelease
-    - git push origin $versionRelease
-    - git checkout origin/pipeline-$CI_PIPELINE_ID
-    - git push origin origin/pipeline-$CI_PIPELINE_ID:${CI_COMMIT_REF_NAME}
-  tags:
-    - Linux
-    - ShellExecutor
-  only:
-    - /^release-.*$/
-  except:
-    - tags
+  cache:
+    policy: pull
+  after_script:
+    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
 
 "Publish":
   stage: publish
@@ -128,26 +127,15 @@ before_script:
     - DockerExecutor
     - AWS
 
-"Clean Up":
-  stage: clean-up
-  script:
-    - export CI_PUSH_URL=`echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-    - git config user.name "Robot"
-    - git config user.email "<internal@rtmath.net>"
-    - git remote set-url --push origin "${CI_PUSH_URL}"
-    - git push origin --delete pipeline-$CI_PIPELINE_ID
-  only:
-    - /^release-.*$/
-  when: always
-  tags:
-    - Linux
-    - ShellExecutor
-  except:
-    - tags
+# Clean up after release
+# Part of release process
+# Included from template
+#"Clean Up":
+# (fully included in the template)
 
 "Promote to public":
   stage: promote
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   cache: {} # Disable cache for this job because this job does not uses any data from the cache
   script:
     - ./gradlew promoteToPublic
@@ -165,7 +153,7 @@ before_script:
 # Checks dependencies (for scheduled checks)
 dependency-check:
   stage: test
-  image: ${ARTIFACTORY_DOCKER_DEV_REPOSITORY}/gitlabci.docker/openjdk-11-gradle-5.4.1:latest
+  image: ${JAVA_IMAGE}
   only:
     - schedules
   script:
