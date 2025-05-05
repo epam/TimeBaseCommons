@@ -1,4 +1,4 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.utils;
 
 import deltix.util.lang.Disposable;
 

@@ -1,8 +1,8 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.service;
 
 import java.util.Map;
 
-public interface TokenQuery {
+interface TokenQuery {
 
     Map<String, String> getParameters();
 

@@ -1,4 +1,4 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.service;
 
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CertificateTokenQuery implements TokenQuery {
+class CertificateTokenQuery implements TokenQuery {
 
     private static final long EXPIRATION_TIME_MS = 10 * 60 * 1000;
 
@@ -44,7 +44,7 @@ public class CertificateTokenQuery implements TokenQuery {
     private final JWK certJwk;
     private final JWSSigner jwsSigner;
 
-    public CertificateTokenQuery(String url, String clientId, KeystoreConfig keystoreConfig, Map<String, String> parameters) {
+    CertificateTokenQuery(String url, String clientId, KeystoreConfig keystoreConfig, Map<String, String> parameters) {
         this.url = url;
         this.clientId = clientId;
         this.keystoreConfig = keystoreConfig;

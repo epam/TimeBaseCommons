@@ -1,13 +1,13 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.service;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParametersTokenQuery implements TokenQuery {
+class ParametersTokenQuery implements TokenQuery {
 
     private final Map<String, String> parameters = new HashMap<>();
 
-    public ParametersTokenQuery(Map<String, String> parameters) {
+    ParametersTokenQuery(Map<String, String> parameters) {
         this.parameters.putAll(parameters);
     }
 

@@ -1,4 +1,4 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.service;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,7 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-public class HttpConnectionRestClient implements RestClient {
+class HttpConnectionRestClient implements RestClient {
 
     private final URL url;
     private final int connectTimeoutMs;
