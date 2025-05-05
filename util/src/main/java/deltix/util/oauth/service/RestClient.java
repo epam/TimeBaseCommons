@@ -1,8 +1,8 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.service;
 
 import java.io.IOException;
 
-public interface RestClient {
+interface RestClient {
 
     String postForm(TokenQuery query) throws IOException;
 

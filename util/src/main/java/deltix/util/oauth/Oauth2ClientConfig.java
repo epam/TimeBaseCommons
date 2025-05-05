@@ -1,5 +1,7 @@
 package deltix.util.oauth;
 
+import deltix.util.oauth.service.Oauth2ClientImpl;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -14,7 +16,7 @@ public class Oauth2ClientConfig {
 
     private Timer timer;
 
-    private TokenListener listener;
+    private RefreshTokenListener listener;
 
     private long timeoutMs = 5000;
     private int connectTimeoutMs = 5000;
@@ -41,7 +43,7 @@ public class Oauth2ClientConfig {
         return timer;
     }
 
-    public TokenListener getListener() {
+    public RefreshTokenListener getListener() {
         return listener;
     }
 
@@ -76,15 +78,15 @@ public class Oauth2ClientConfig {
         }
 
         public Oauth2ClientConfig.Builder withClientCredentials(String clientId, String clientSecret) {
-            parameters.put(Oauth2Client.GRANT_TYPE_PARAM, Oauth2Client.CLIENT_CREDENTIALS_GRANT_TYPE);
-            parameters.put(Oauth2Client.CLIENT_ID_PARAM, clientId);
-            parameters.put(Oauth2Client.CLIENT_SECRET_PARAM, clientSecret);
+            parameters.put(Oauth2ClientImpl.GRANT_TYPE_PARAM, Oauth2ClientImpl.CLIENT_CREDENTIALS_GRANT_TYPE);
+            parameters.put(Oauth2ClientImpl.CLIENT_ID_PARAM, clientId);
+            parameters.put(Oauth2ClientImpl.CLIENT_SECRET_PARAM, clientSecret);
             return this;
         }
 
         public Oauth2ClientConfig.Builder withClientCredentials(String clientId, KeystoreConfig keystoreConfig) {
-            parameters.put(Oauth2Client.GRANT_TYPE_PARAM, Oauth2Client.CLIENT_CREDENTIALS_GRANT_TYPE);
-            parameters.put(Oauth2Client.CLIENT_ID_PARAM, clientId);
+            parameters.put(Oauth2ClientImpl.GRANT_TYPE_PARAM, Oauth2ClientImpl.CLIENT_CREDENTIALS_GRANT_TYPE);
+            parameters.put(Oauth2ClientImpl.CLIENT_ID_PARAM, clientId);
             Oauth2ClientConfig.this.keystoreConfig = keystoreConfig;
             return this;
         }
@@ -104,7 +106,7 @@ public class Oauth2ClientConfig {
             return this;
         }
 
-        public Oauth2ClientConfig.Builder withListener(TokenListener listener) {
+        public Oauth2ClientConfig.Builder withListener(RefreshTokenListener listener) {
             Oauth2ClientConfig.this.listener = listener;
             return this;
         }

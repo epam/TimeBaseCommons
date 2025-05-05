@@ -1,11 +1,12 @@
-package deltix.util.oauth.impl;
+package deltix.util.oauth.service;
 
 import deltix.util.lang.StringUtils;
+import deltix.util.oauth.AuthResult;
 import org.green.jelly.JsonNumber;
 import org.green.jelly.JsonParser;
 import org.green.jelly.JsonParserListener;
 
-public class TokenResponseParser {
+class TokenResponseParser {
 
     private final JsonParser parser = new JsonParser();
     private final Listener listener = new Listener();
@@ -14,13 +15,13 @@ public class TokenResponseParser {
         parser.setListener(listener);
     }
 
-    public synchronized TokenInfo parse(String response) {
+    synchronized AuthResult parse(String clientId, String response) {
         parser.parseAndEoj(response);
         if (listener.error != null) {
             throw new RuntimeException("Failed to parse response: " + listener.error);
         }
 
-        return new TokenInfo(listener.token(), listener.expiresInSec);
+        return new AuthResult(clientId, listener.token(), listener.expiresInSec);
     }
 
     private static class Listener implements JsonParserListener {
