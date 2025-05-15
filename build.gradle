@@ -102,7 +102,7 @@ configure(leafProjects) {
             }
 
             // JMH
-            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+            dependencySet(group: 'org.openjdk.jmh', version: '1.37') {
                 entry 'jmh-core'
                 entry 'jmh-generator-annprocess'
             }
