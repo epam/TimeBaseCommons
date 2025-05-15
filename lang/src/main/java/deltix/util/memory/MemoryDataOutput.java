@@ -4,12 +4,18 @@ import com.epam.deltix.dfp.Decimal64;
 import com.epam.deltix.dfp.Decimal64Utils;
 import deltix.util.BitUtil;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.nio.ByteOrder;
+
 /**
  *  Equivalent of DataOutputStream wrapped around
  *  ByteArrayOutputStream optimized for extreme performance. This class uses
  *  no virtual method calls and presents a non-virtual public API.
  */
 public final class MemoryDataOutput {
+    private static final VarHandle LE_INT_HANDLE = MethodHandles.byteArrayViewVarHandle(int[].class, ByteOrder.LITTLE_ENDIAN);
+
     private byte []             mBuffer;
     private int                 mPos = 0;
     private int                 mSize = 0;
@@ -24,6 +30,16 @@ public final class MemoryDataOutput {
     
     public void          makeRoom (int space) {
         ensureSize (mPos + space);
+    }
+
+    /**
+     * Extends buffer capacity to accommodate the specified space after the current position.
+     * Unlike {@link #makeRoom(int)} this method does not change the logical size of the buffer.
+     */
+    public void ensureSpace(int space) {
+        if (mPos + space > mBuffer.length) {
+            extendBuffer(mSize, mPos + space);
+        }
     }
 
     /**
@@ -46,6 +62,7 @@ public final class MemoryDataOutput {
 
     /**
      * Increases "physical" size (size of "mBuffer") up to specified value.
+     * Does not change "logical" buffer size (mSize).
      */
     private void ensureBufferSize(int minSize) {
         int currentSize = mBuffer.length;
@@ -103,7 +120,15 @@ public final class MemoryDataOutput {
         makeRoom (numBytes);
         mPos += numBytes;
     }
-    
+
+    /**
+     * Advances current position without checking if there is enough space in the buffer.
+     * <p>Should be used only after {@link #makeRoom(int)} call to ensure that there is enough space.
+     */
+    public void           skipUnsafe(int numBytes) {
+        mPos += numBytes;
+    }
+
     public byte []        getBuffer () {
         return (mBuffer);
     }
@@ -218,7 +243,10 @@ public final class MemoryDataOutput {
     /**
      * Writes byte to buffer without checking if there space for this byte available.
      * This call *must* be prepended with corresponding {@link #makeRoom(int)} call.
+     *
+     * @deprecated Use direct access to buffer via {@link #getBuffer()} and advance position using {@link #skipUnsafe} instead.
      */
+    @Deprecated
     public void           writeByteUnsafe (long v) {
         writeByteUnsafe((byte) v);
     }
@@ -592,25 +620,37 @@ public final class MemoryDataOutput {
 //    }
 
     /**
-     *  Writes out a long in LSBF order, and stops when all 
+     *  Writes out a long in LSBF (Little-Endian) order, and stops when all
      *  remaining bytes are 0.
      * 
      *  @param v The long to write.
      *  @return  The number of bytes written, between 0 .. 8 inclusively.
      */
     public int                      writeLongBytes (long v) {
-        int                 addlPos = mPos;
+        // Get number of non-zero bytes
+        int numBytes = 8 - (Long.numberOfLeadingZeros(v) >>> 3);
 
-        // Expand buffer enough to cover te worst cast
-        // Note: we might expand buffer a bit more than we actually need
-        ensureBufferSize(mPos + 8);
+        int pos = mPos;
+        int newPos = pos + numBytes;
+        // Expand buffer enough to cover the worst case
+        ensureBufferSize(newPos);
 
-        while (v != 0) {
-            writeByteUnsafe (v);
-            v = v >>> 8;
+        // Note: while generally this implementation can benefit from using VarHandle to copy 8 bytes at once as long,
+        // in practice this method is called only with values that fit into 7 bytes.
+        // So it's not useful to have a special case for 8 bytes.
+        int i = 0;
+        if (numBytes >= Integer.BYTES) {
+            // Write first 4 bytes (lowest)
+            LE_INT_HANDLE.set(mBuffer, pos, (int) v);
+            i += Integer.BYTES;
         }
-        mSize = Math.max(mSize, mPos);
-        return (mPos - addlPos);
+        for (; i < numBytes; i++) {
+            mBuffer[pos + i] = (byte) (v >>> (i * Byte.SIZE));
+        }
+
+        mPos = newPos;
+        mSize = Math.max(mSize, newPos);
+        return numBytes;
     }
     
     public byte []        toByteArray () {

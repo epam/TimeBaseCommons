@@ -478,7 +478,7 @@ public final class MemoryDataInput {
         return (sb);
     }
 
-    private static double []    SCALES = new double [MemoryDataOutput.MAX_SCALE_EXP];
+    private static final double []    SCALES = new double [MemoryDataOutput.MAX_SCALE_EXP];
     
     static {
         long v = 1;
