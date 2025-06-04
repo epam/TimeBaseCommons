@@ -9,6 +9,8 @@ dependencies {
     api 'com.epam.deltix:gflog-api'
     api "com.epam.deltix:hd-date-time"
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+
     // For JMH-based tests
     testImplementation 'org.openjdk.jmh:jmh-core'
     testImplementation 'org.openjdk.jmh:jmh-generator-annprocess'

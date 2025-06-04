@@ -25,6 +25,10 @@ public class Util {
     public static final String[] EMPTY_STRING_ARRAY = {};
     public static final boolean  QUIET              = Boolean.getBoolean("quiet");
 
+    // https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+    private static final int HALF_OF_MAX_INTEGER = Integer.MAX_VALUE / 2;
+
     public static void collectLocalFiles(String path, Collection<String> files) {
         File file = new File(path);
         if (file.isDirectory()) {
@@ -59,14 +63,50 @@ public class Util {
         }
     }
 
+    /**
+     * WARN: Consider using {@link #growArraySize(int, int)} instead, if you do not need the produced value
+     * to be double of the original value and if the produced value will be used to create an array.
+     */
     public static int           doubleUntilAtLeast (int a, int limit) {
         if (a == 0)
             return limit;
 
-        while (a < limit)
+        while (a < limit) {
+            if (a > HALF_OF_MAX_INTEGER) {
+                throw new IllegalArgumentException("Cannot double " + a + " to at least " + limit + ", it will overflow");
+            }
+            // Double value
             a = a << 1;
+        }
         
         return (a);
+    }
+
+    /**
+     * Returns a new size of the array that is at least <code>minSize</code>.
+     * Similar to {@link #doubleUntilAtLeast(int, int)}, but allows to specify
+     *
+     * @param currentSize Current size of the array
+     * @param minSize required minimum value
+     */
+    public static int growArraySize(int currentSize, int minSize) {
+        if (currentSize == 0) {
+            return minSize;
+        }
+
+        while (currentSize < minSize) {
+            if (currentSize > HALF_OF_MAX_INTEGER) {
+                if (minSize > MAX_ARRAY_SIZE) {
+                    throw new IllegalArgumentException("Cannot grow " + currentSize + " to at least " + minSize + ", the limit is higher than MAX_ARRAY_SIZE");
+                } else {
+                    return MAX_ARRAY_SIZE;
+                }
+            }
+
+            currentSize = currentSize << 1;
+        }
+
+        return currentSize;
     }
 
     /**
