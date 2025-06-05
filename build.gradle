@@ -219,23 +219,26 @@ configure(leafProjects) {
 
     def allTestJarsPath = 'build/alltestjars'
 
-    task gatherProjectTestDependencies(type: Sync) {
+    tasks.register('gatherProjectTestDependencies', Sync) {
+        group = 'debug'
         description = 'Copies all project test dependencies to ' + allTestJarsPath
         from project.configurations.testRuntimeClasspath
         into allTestJarsPath
     }
 
-    task generateTestJar(type: Jar) {
+    tasks.register('generateTestJar', Jar) {
+        group = 'debug'
         description = 'Generates JAR with test classes'
         archiveClassifier = 'tests'
         from sourceSets.test.output
     }
 
-    task gatherAllTestJarsWithDependencies(type: Copy, dependsOn: ['jar', generateTestJar, gatherProjectTestDependencies]) {
-        group = "build"
+    tasks.register('gatherAllTestJarsWithDependencies', Copy) {
+        dependsOn 'jar', 'generateTestJar', 'gatherProjectTestDependencies'
+        group = 'debug'
         description = 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
-        from jar // Main produced JAR of the subproject
-        from generateTestJar // JAR with test classes
+        from tasks.named('jar') // Main produced JAR of the subproject
+        from tasks.named('generateTestJar') // JAR with test classes
 
         into allTestJarsPath
     }
