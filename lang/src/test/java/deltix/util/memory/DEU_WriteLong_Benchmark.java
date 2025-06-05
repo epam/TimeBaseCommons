@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @author Alexei Osipov
  */
 @State(Scope.Thread)
-@Fork(1)
+@Fork(3)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Warmup(iterations = 4, time = 3)

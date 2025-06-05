@@ -159,12 +159,16 @@ public final class MemoryDataOutput {
         writeStringNonNull (str, 0, str.length ());
     }
 
-    public void           writeStringNonNull (CharSequence str, int start, int strlen) {
+    /**
+     * @deprecated Use {@link #writeStringNonNull(CharSequence, int, int)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public void           writeStringNonNullOld (CharSequence str, int start, int endIndex) {
         int     utflen = 0;
         int     c, count = 0;
 
         /* use charAt instead of copying String to char array */
-        for (int i = start; i < strlen; i++) {
+        for (int i = start; i < endIndex; i++) {
             c = str.charAt(i);
             if ((c >= 0x0001) && (c <= 0x007F)) 
                 utflen++;
@@ -182,7 +186,7 @@ public final class MemoryDataOutput {
 	        
         int i=0;
         
-        for (i=start; i<strlen; i++) {
+        for (i=start; i<endIndex; i++) {
            c = str.charAt (i);
            
            if (!((c >= 0x0001) && (c <= 0x007F))) 
@@ -190,8 +194,8 @@ public final class MemoryDataOutput {
            
            mBuffer [mPos++] = (byte) c;
         }
-	
-        for (; i < strlen; i++) {
+
+        for (; i < endIndex; i++) {
             c = str.charAt(i);
             
             if ((c >= 0x0001) && (c <= 0x007F)) 
@@ -206,6 +210,41 @@ public final class MemoryDataOutput {
                 mBuffer [mPos++] = (byte) (0x80 | (c & 0x3F));
             }
         }
+    }
+
+    public void writeStringNonNull(CharSequence str, int startIndex, int endIndex) {
+        // Ensure enough space for the worst case
+        ensureSpace(2 + (endIndex - startIndex) * 3);
+        int startPos = mPos;
+
+        int pos = startPos + 2; // reserve space for length
+
+        for (int i = startIndex; i < endIndex; i++) {
+            int c = str.charAt(i);
+
+            if ((c >= 0x0001) && (c <= 0x007F)) {
+                mBuffer[pos] = (byte) c;
+                pos++;
+            } else if (c > 0x07FF) {
+                mBuffer[pos] = (byte) (0xE0 | ((c >> 12) & 0x0F));
+                mBuffer[pos + 1] = (byte) (0x80 | ((c >> 6) & 0x3F));
+                mBuffer[pos + 2] = (byte) (0x80 | (c & 0x3F));
+                pos += 3;
+            } else {
+                mBuffer[pos] = (byte) (0xC0 | ((c >> 6) & 0x1F));
+                mBuffer[pos + 1] = (byte) (0x80 | (c & 0x3F));
+                pos += 2;
+            }
+        }
+
+        int utfLen = pos - startPos - 2;
+        if (utfLen >= 0xFFFF) {
+            throw new RuntimeException("Encoded string too long: " + utfLen + " bytes");
+        }
+        DataExchangeUtils.writeUnsignedShort(mBuffer, startPos, utfLen);
+
+        mPos = pos;
+        mSize = Math.max(mSize, mPos);
     }
 
     public void           write (byte[] b, int off, int len) {

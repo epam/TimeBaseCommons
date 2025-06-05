@@ -208,4 +208,27 @@ public class Test_MemoryDataInputOutput {
         assertEquals (c, "world");
         assertFalse (in.hasAvail ());
     }
+
+    @SuppressWarnings("UnnecessaryUnicodeEscape")
+    @Test
+    public void     testWriteString () {
+        String s1 = "hello";
+        String s2 = "hello \u0442\u0435\u0441\u0442";
+        String s3 = "some emoji: \uD83D\uDE01";
+
+        out.reset ();
+        out.writeString(s1);
+        out.writeString(s2);
+        out.writeString(s3);
+
+        in.setBytes (out);
+
+        String r1 = in.readString();
+        String r2 = in.readString();
+        String r3 = in.readString();
+
+        assertEquals (s1, r1);
+        assertEquals (s2, r2);
+        assertEquals (s3, r3);
+    }
 }
