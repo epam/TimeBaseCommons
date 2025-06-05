@@ -22,3 +22,8 @@ dependencies {
     api('com.jgoodies:jgoodies-validation:2.4.2'){ transitive = false }
     api('org.swinglabs:jxlayer:3.0.4'){ transitive = false }
 }
+
+// No tests in this subproject
+tasks.named('test') {
+    enabled = false
+}

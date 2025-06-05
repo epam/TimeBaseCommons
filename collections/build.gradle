@@ -29,6 +29,11 @@ dependencies {
     testImplementation 'commons-collections:commons-collections'
 }
 
+// No tests in this subproject
+tasks.named('test') {
+    enabled = false
+}
+
 ext {
     srcDir = "src/main/templates"
     generatedSourcesDir = "${buildDir}/generated/main/java"

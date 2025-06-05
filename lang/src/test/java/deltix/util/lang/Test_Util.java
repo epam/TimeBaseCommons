@@ -89,6 +89,6 @@ public class Test_Util {
         int limit = Integer.MAX_VALUE - 20;
 
         int maxArraySize = Integer.MAX_VALUE - 8;
-        assertEquals(maxArraySize, Util.doubleUntilAtLeast(halfMax + 1, limit));
+        assertEquals(maxArraySize, Util.growArraySize(halfMax + 1, limit));
     }
 }
