@@ -260,15 +260,15 @@ final class VSChannelImpl implements VSChannel {
         return (dout);
     }
 
-    public synchronized VSChannelState  getState() {
+    public VSChannelState  getState() {
         return state;
     }
 
-    public synchronized boolean         isClosed () {
-        return state == VSChannelState.Closed || state == VSChannelState.Removed;
-    }
+//    public boolean         isClosed () {
+//        return state == VSChannelState.Closed || state == VSChannelState.Removed;
+//    }
     
-    private synchronized boolean isRemoteConnected() {
+    private boolean isRemoteConnected() {
         return state == VSChannelState.Connected;
     }
 
@@ -530,24 +530,26 @@ final class VSChannelImpl implements VSChannel {
     void                   sendBytesRead (long bytes)
         throws InterruptedException, IOException
     {
-        VSChannelState state = this.state;
+        VSChannelState state = getState();
+
         if (state != VSChannelState.Connected && state != VSChannelState.RemoteClosed) {
-            if (LOGGER.isLoggable(Level.FINE)) {
+            if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.log(Level.FINE, "Skipping BYTES_AVAILABLE_REPORT report: " + bytes + " because channel state is " + state);
-            }
             return;
         }
-        if (state == VSChannelState.RemoteClosed && LOGGER.isLoggable(Level.FINE)) {
+
+        state = getState();
+
+        if (state == VSChannelState.RemoteClosed && LOGGER.isLoggable(Level.FINE))
             LOGGER.log(Level.FINE, "Sending BYTES_AVAILABLE_REPORT report: " + bytes + " at state " + state + " with remoteIndex=" + remoteIndex);
-        }
 
         DataExchangeUtils.writeInt (buffer8, 4, (int)bytes);
         DataExchangeUtils.writeInt (buffer8, 8, remoteIndex);
 
-        final VSTransportChannel    tc = dispatcher.checkOut ();
-        if (LOGGER.isLoggable(Level.FINEST)) {
+        VSTransportChannel    tc = dispatcher.checkOut ();
+        if (LOGGER.isLoggable(Level.FINEST))
             LOGGER.log(Level.FINEST, "Sending BYTES_AVAILABLE_REPORT report: " + ((int)bytes) + " from " + tc.getSocketIdStr());
-        }
+
         try {
             tc.write (buffer8, 0, buffer8.length);
         } finally {
@@ -596,9 +598,9 @@ final class VSChannelImpl implements VSChannel {
         } finally {
             dispatcher.checkIn (tc);
         }
-        if (LOGGER.isLoggable(Level.FINEST)) {
+
+        if (LOGGER.isLoggable(Level.FINEST))
             LOGGER.log(Level.FINEST, "Sending CLOSING: remoteIndex=" + remoteIndex + " numBytesSend=" + numBytesSend);
-        }
     }
 
     @GuardedBy("this")
@@ -622,9 +624,9 @@ final class VSChannelImpl implements VSChannel {
         } finally {
             dispatcher.checkIn (tc);
         }
-        if (LOGGER.isLoggable(Level.FINEST)) {
+
+        if (LOGGER.isLoggable(Level.FINEST))
             LOGGER.log(Level.FINEST, "Sending CLOSED: remoteIndex=" + remoteIndex + " numBytesSend=" + numBytesSend);
-        }
     }
 
     synchronized void           send(byte [] data, int offset, int length)
@@ -736,15 +738,10 @@ final class VSChannelImpl implements VSChannel {
         DataExchangeUtils.writeUnsignedShort (buffer8, 0, remoteId);
         DataExchangeUtils.writeUnsignedShort (buffer8, 2, BYTES_AVAILABLE_REPORT);
 
-        boolean wasClosed;
-        
-        synchronized (this) {
-            //assert state == VSChannelState.NotConnected; //TODO: check this
+        boolean wasClosed = state == VSChannelState.Closed;
+        //assert state == VSChannelState.NotConnected; //TODO: check this
 
-            wasClosed = state == VSChannelState.Closed;
-            state = VSChannelState.Connected;
-        }
-
+        state = VSChannelState.Connected;
         out.setRemoteCapacity(remoteCapacity);
 
         if (wasClosed) {
