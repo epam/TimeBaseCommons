@@ -36,6 +36,11 @@ def leafProjects = subprojects.findAll { subproject ->
 }
 ext.leafProjects = leafProjects // Publish as external variable
 
+ext {
+    sonaUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"
+    sonaPass = findProperty('SONATYPE_NEXUS_PASSWORD') ?:  System.getenv('SONATYPE_NEXUS_PASSWORD') ?: "FakePass"
+}
+
 // Default test categories
 ext.categories = 'Unit'
 
@@ -287,14 +292,18 @@ configure(leafProjects) {
 
         required { isReleaseVersion }
     }
+}
 
-//    //tasks.test { enabled = false }
-//    test {
-//        useJUnit {
-//            setIncludeCategories categories.split(',').collect { "deltix.util.CommonsJUnitCategories\$${it}".toString() } as Set
-//        }
-//    }
+task publishAll(dependsOn: leafProjects.collect { it.path + ":publish" }) {
+    group 'publishing'
+    description 'Publish All Artifacts'
+}
 
+tasks.register('uploadArtifactsToCentralPortal', com.epam.deltix.buildsrc.SonatypeCentralPortalUploadRepositoryTask) {
+    portalUsername.set(sonaUser)
+    portalPassword.set(sonaPass)
+    groupId.set('com.epam.deltix')
+    snapshotRelease.set(false)
 }
 
 allprojects {

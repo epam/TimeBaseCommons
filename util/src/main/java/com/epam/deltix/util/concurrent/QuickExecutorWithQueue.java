@@ -20,7 +20,6 @@ import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
 import com.epam.deltix.util.collections.QuickList;
-import com.epam.deltix.util.lang.Util;
 import java.util.*;
 import java.util.concurrent.locks.LockSupport;
 import net.jcip.annotations.GuardedBy;

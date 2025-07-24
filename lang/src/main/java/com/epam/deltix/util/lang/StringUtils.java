@@ -728,6 +728,11 @@ public class StringUtils {
         return true;
     }
 
+    /** @return true if trimmed input is not blank string and is not null */
+    public static boolean isNotEmpty (CharSequence value) {
+        return !isEmpty(value);
+    }
+
     /** @return true if input is null or empty string contains only whitespaces */
     public static boolean isWhitespace (CharSequence value) {
         if (value == null)
@@ -1274,6 +1279,33 @@ public class StringUtils {
                 expression.charAt(pos) == '\\' &&
                 pos < expression.length() - 1 &&
                 ("_%".indexOf(expression.charAt(pos + 1)) != -1);
+    }
+
+    public static boolean equals(CharSequence s1, CharSequence s2) {
+        if (s1 == null) {
+            return s2 == null;
+        }
+
+        if (s2 == null) {
+            return false;
+        }
+
+        final int len1 = s1.length();
+        final int len2 = s2.length();
+
+        final int diff = len1 - len2;
+
+        if (diff != 0) {
+            return false;
+        }
+
+        for (int i = 0; i < len1; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

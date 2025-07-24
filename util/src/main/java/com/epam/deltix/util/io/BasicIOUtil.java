@@ -49,7 +49,7 @@ import java.util.regex.*;
  *  I/O Utilities which have no dependencies on Deltix CG code.
  */
 public abstract class BasicIOUtil {
-    public static final String  CR = System.getProperty ("line.separator");
+    public static final String  CR = System.lineSeparator();
     public static final String  TEMP_FILE_PREFIX = "~";
 
     /**
@@ -685,13 +685,7 @@ public abstract class BasicIOUtil {
             r = new BufferedReader (r);
 
         if (props != null) {
-            r = new TokenReplacingReader(r, new TokenReplacingReader.TokenResolver() {
-
-                @Override
-                public String resolveToken(String token) {
-                    return props.getProperty(token);
-                }
-            });
+            r = new TokenReplacingReader(r, props::getProperty);
         }
         
         CharBuffer			tmpContent = CharBuffer.allocate(4096);

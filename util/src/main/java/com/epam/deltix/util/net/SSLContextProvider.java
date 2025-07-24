@@ -42,9 +42,26 @@ public class SSLContextProvider {
     public static SSLContext                        createSSLContext(String protocol, String keystoreFile, String keystorePass, boolean trustALL)
             throws GeneralSecurityException, IOException
     {
+        KeyStore keystore = KeyStore.getInstance(KEYSTORE_FORMAT);
+        try (FileInputStream stream = new FileInputStream(keystoreFile)) {
+            keystore.load(stream, keystorePass != null ? keystorePass.toCharArray() : null);
+        }
+
         SSLContext context = SSLContext.getInstance(protocol);
-        context.init(getKeyManagers(keystoreFile, keystorePass), getTrustManagers(trustALL, keystoreFile, keystorePass), null);
+        context.init(getKeyManagers(keystore, keystorePass), getTrustManagers(trustALL, keystore), null);
         //Util.LOGGER.info("SSLContext based on " + keystoreFile + " loaded successfully.");
+        return context;
+    }
+
+    public static SSLContext createSSLContext(String keystoreType, boolean trustALL)
+        throws GeneralSecurityException, IOException {
+
+        KeyStore keyStore = KeyStore.getInstance(keystoreType);
+        keyStore.load(null, null);
+
+        SSLContext context = SSLContext.getInstance(SAFE_TRANSPORT_PROTOCOL);
+        context.init(getKeyManagers(keyStore, null), getTrustManagers(trustALL, keyStore), null);
+
         return context;
     }
 
@@ -73,37 +90,23 @@ public class SSLContextProvider {
         return context;
     }
 
-    private static KeyManager[]                     getKeyManagers(String keystoreFile, String keystorePass)
-            throws GeneralSecurityException, IOException
+    private static KeyManager[]                     getKeyManagers(KeyStore keyStore, String keystorePass)
+            throws GeneralSecurityException
     {
-        KeyManager[] keyManagers = null;
-
-        KeyStore keyStore = KeyStore.getInstance(KEYSTORE_FORMAT);
-        keyStore.load(new FileInputStream(keystoreFile), keystorePass != null ? keystorePass.toCharArray() : null);
-
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(keyStore, keystorePass != null ? keystorePass.toCharArray() : null);
-
-        keyManagers = keyManagerFactory.getKeyManagers();
-
-
-        return keyManagers;
+        return keyManagerFactory.getKeyManagers();
     }
 
-    private static TrustManager[]                   getTrustManagers(boolean trustAll, String keystoreFile, String keystorePass)
-            throws GeneralSecurityException, IOException
+    private static TrustManager[]                   getTrustManagers(boolean trustAll, KeyStore keyStore)
+            throws GeneralSecurityException
     {
         TrustManager[] trustManagers = null;
 
         if (!trustAll) {
-            KeyStore keystore = KeyStore.getInstance(KEYSTORE_FORMAT);
-            try (FileInputStream stream = new FileInputStream(keystoreFile)) {
-                keystore.load(stream, keystorePass != null ? keystorePass.toCharArray() : null);
-            }
-
             //create and init trust manager factory
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keystore);
+            trustManagerFactory.init(keyStore);
 
             //create trust manager
             trustManagers = trustManagerFactory.getTrustManagers();

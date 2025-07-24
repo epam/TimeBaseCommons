@@ -16,9 +16,6 @@
  */
 package com.epam.deltix.util.os;
 
-import com.epam.deltix.util.lang.Disposable;
-import com.epam.deltix.util.lang.Util;
-
 import java.io.*;
 
 /**

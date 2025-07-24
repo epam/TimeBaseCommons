@@ -20,12 +20,18 @@ import com.epam.deltix.dfp.Decimal64;
 import com.epam.deltix.dfp.Decimal64Utils;
 import com.epam.deltix.util.BitUtil;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.nio.ByteOrder;
+
 /**
  *  Equivalent of DataOutputStream wrapped around
  *  ByteArrayOutputStream optimized for extreme performance. This class uses
  *  no virtual method calls and presents a non-virtual public API.
  */
 public final class MemoryDataOutput {
+    private static final VarHandle LE_INT_HANDLE = MethodHandles.byteArrayViewVarHandle(int[].class, ByteOrder.LITTLE_ENDIAN);
+
     private byte []             mBuffer;
     private int                 mPos = 0;
     private int                 mSize = 0;
@@ -40,6 +46,16 @@ public final class MemoryDataOutput {
     
     public void          makeRoom (int space) {
         ensureSize (mPos + space);
+    }
+
+    /**
+     * Extends buffer capacity to accommodate the specified space after the current position.
+     * Unlike {@link #makeRoom(int)} this method does not change the logical size of the buffer.
+     */
+    public void ensureSpace(int space) {
+        if (mPos + space > mBuffer.length) {
+            extendBuffer(mSize, mPos + space);
+        }
     }
 
     /**
@@ -62,6 +78,7 @@ public final class MemoryDataOutput {
 
     /**
      * Increases "physical" size (size of "mBuffer") up to specified value.
+     * Does not change "logical" buffer size (mSize).
      */
     private void ensureBufferSize(int minSize) {
         int currentSize = mBuffer.length;
@@ -119,7 +136,15 @@ public final class MemoryDataOutput {
         makeRoom (numBytes);
         mPos += numBytes;
     }
-    
+
+    /**
+     * Advances current position without checking if there is enough space in the buffer.
+     * <p>Should be used only after {@link #makeRoom(int)} call to ensure that there is enough space.
+     */
+    public void           skipUnsafe(int numBytes) {
+        mPos += numBytes;
+    }
+
     public byte []        getBuffer () {
         return (mBuffer);
     }
@@ -150,12 +175,16 @@ public final class MemoryDataOutput {
         writeStringNonNull (str, 0, str.length ());
     }
 
-    public void           writeStringNonNull (CharSequence str, int start, int strlen) {
+    /**
+     * @deprecated Use {@link #writeStringNonNull(CharSequence, int, int)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public void           writeStringNonNullOld (CharSequence str, int start, int endIndex) {
         int     utflen = 0;
         int     c, count = 0;
 
         /* use charAt instead of copying String to char array */
-        for (int i = start; i < strlen; i++) {
+        for (int i = start; i < endIndex; i++) {
             c = str.charAt(i);
             if ((c >= 0x0001) && (c <= 0x007F)) 
                 utflen++;
@@ -173,7 +202,7 @@ public final class MemoryDataOutput {
 	        
         int i=0;
         
-        for (i=start; i<strlen; i++) {
+        for (i=start; i<endIndex; i++) {
            c = str.charAt (i);
            
            if (!((c >= 0x0001) && (c <= 0x007F))) 
@@ -181,8 +210,8 @@ public final class MemoryDataOutput {
            
            mBuffer [mPos++] = (byte) c;
         }
-	
-        for (; i < strlen; i++) {
+
+        for (; i < endIndex; i++) {
             c = str.charAt(i);
             
             if ((c >= 0x0001) && (c <= 0x007F)) 
@@ -197,6 +226,41 @@ public final class MemoryDataOutput {
                 mBuffer [mPos++] = (byte) (0x80 | (c & 0x3F));
             }
         }
+    }
+
+    public void writeStringNonNull(CharSequence str, int startIndex, int endIndex) {
+        // Ensure enough space for the worst case
+        ensureSpace(2 + (endIndex - startIndex) * 3);
+        int startPos = mPos;
+
+        int pos = startPos + 2; // reserve space for length
+
+        for (int i = startIndex; i < endIndex; i++) {
+            int c = str.charAt(i);
+
+            if ((c >= 0x0001) && (c <= 0x007F)) {
+                mBuffer[pos] = (byte) c;
+                pos++;
+            } else if (c > 0x07FF) {
+                mBuffer[pos] = (byte) (0xE0 | ((c >> 12) & 0x0F));
+                mBuffer[pos + 1] = (byte) (0x80 | ((c >> 6) & 0x3F));
+                mBuffer[pos + 2] = (byte) (0x80 | (c & 0x3F));
+                pos += 3;
+            } else {
+                mBuffer[pos] = (byte) (0xC0 | ((c >> 6) & 0x1F));
+                mBuffer[pos + 1] = (byte) (0x80 | (c & 0x3F));
+                pos += 2;
+            }
+        }
+
+        int utfLen = pos - startPos - 2;
+        if (utfLen >= 0xFFFF) {
+            throw new RuntimeException("Encoded string too long: " + utfLen + " bytes");
+        }
+        DataExchangeUtils.writeUnsignedShort(mBuffer, startPos, utfLen);
+
+        mPos = pos;
+        mSize = Math.max(mSize, mPos);
     }
 
     public void           write (byte[] b, int off, int len) {
@@ -234,7 +298,10 @@ public final class MemoryDataOutput {
     /**
      * Writes byte to buffer without checking if there space for this byte available.
      * This call *must* be prepended with corresponding {@link #makeRoom(int)} call.
+     *
+     * @deprecated Use direct access to buffer via {@link #getBuffer()} and advance position using {@link #skipUnsafe} instead.
      */
+    @Deprecated
     public void           writeByteUnsafe (long v) {
         writeByteUnsafe((byte) v);
     }
@@ -608,25 +675,37 @@ public final class MemoryDataOutput {
 //    }
 
     /**
-     *  Writes out a long in LSBF order, and stops when all 
+     *  Writes out a long in LSBF (Little-Endian) order, and stops when all
      *  remaining bytes are 0.
      * 
      *  @param v The long to write.
      *  @return  The number of bytes written, between 0 .. 8 inclusively.
      */
     public int                      writeLongBytes (long v) {
-        int                 addlPos = mPos;
+        // Get number of non-zero bytes
+        int numBytes = 8 - (Long.numberOfLeadingZeros(v) >>> 3);
 
-        // Expand buffer enough to cover te worst cast
-        // Note: we might expand buffer a bit more than we actually need
-        ensureBufferSize(mPos + 8);
+        int pos = mPos;
+        int newPos = pos + numBytes;
+        // Expand buffer enough to cover the worst case
+        ensureBufferSize(newPos);
 
-        while (v != 0) {
-            writeByteUnsafe (v);
-            v = v >>> 8;
+        // Note: while generally this implementation can benefit from using VarHandle to copy 8 bytes at once as long,
+        // in practice this method is called only with values that fit into 7 bytes.
+        // So it's not useful to have a special case for 8 bytes.
+        int i = 0;
+        if (numBytes >= Integer.BYTES) {
+            // Write first 4 bytes (lowest)
+            LE_INT_HANDLE.set(mBuffer, pos, (int) v);
+            i += Integer.BYTES;
         }
-        mSize = Math.max(mSize, mPos);
-        return (mPos - addlPos);
+        for (; i < numBytes; i++) {
+            mBuffer[pos + i] = (byte) (v >>> (i * Byte.SIZE));
+        }
+
+        mPos = newPos;
+        mSize = Math.max(mSize, newPos);
+        return numBytes;
     }
     
     public byte []        toByteArray () {

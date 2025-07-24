@@ -26,7 +26,7 @@ import java.util.Calendar;
  */
 public abstract class TinyFIX {
 
-    private class CharArray implements CharSequence {
+    private static class CharArray implements CharSequence {
 
         private final char [] buf;
 

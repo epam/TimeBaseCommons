@@ -46,8 +46,9 @@ public class DateFormatDetector {
         SECONDS,
         BEFORE_MILLIS,
         MILLIS,
+        NANOS,
         STOP
-    };
+    }
 
     private static void         appendToFormat (char c, StringBuilder out) {
         if (c == '\'')
@@ -232,17 +233,31 @@ public class DateFormatDetector {
                     
                 case BEFORE_MILLIS: 
                     if (isdigit) state = TPS.MILLIS; 
-                    break;                    
-                    
-                case MILLIS: 
-                    if (!isdigit)
-                        if (StringUtils.endsWith (timeFormat, "SSS")) 
+                    break;
+
+                case MILLIS:
+                    if (!isdigit) {
+                        if (StringUtils.endsWith(timeFormat, "SSS"))
                             state = TPS.STOP;
                         else
                             return (false); // Prohibit partial millis to avoid false matches with year!
-                    else if (StringUtils.endsWith (timeFormat, "SSS")) 
-                        state = TPS.STOP; 
-                    break;                                                                
+
+                    } else if (StringUtils.endsWith(timeFormat, "SSS")) {
+                        state = TPS.NANOS;
+                    }
+                    break;
+
+                case NANOS:
+                    if (!isdigit) {
+                        if (StringUtils.endsWith(timeFormat, "SSSSSSSSS"))
+                            state = TPS.STOP;
+                        else
+                            return (false); // Prohibit partial nano and micro
+
+                    } else if (StringUtils.endsWith(timeFormat, "SSSSSSSSS")) {
+                        state = TPS.STOP;
+                    }
+                    break;
             }
             
             if (c == 0)
@@ -257,8 +272,11 @@ public class DateFormatDetector {
                         
                     case MINUTES:   timeFormat.append ('m'); break;               
                     case SECONDS:   timeFormat.append ('s'); break;   
-                    case MILLIS:    timeFormat.append ('S'); break;
-                    case STOP:      
+                    case MILLIS:
+                    case NANOS:
+                        timeFormat.append ('S');
+                        break;
+                    case STOP:
                         return (false);
                 }
             else

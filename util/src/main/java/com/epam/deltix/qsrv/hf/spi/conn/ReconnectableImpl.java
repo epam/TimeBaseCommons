@@ -16,15 +16,11 @@
  */
 package com.epam.deltix.qsrv.hf.spi.conn;
 
-import com.epam.deltix.gflog.api.Log;
-import com.epam.deltix.gflog.api.LogFactory;
-import com.epam.deltix.gflog.api.LogLevel;
-import com.epam.deltix.util.lang.Util;
-import com.epam.deltix.util.log.LazyLogger;
 import com.epam.deltix.util.time.GlobalTimer;
 import com.epam.deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
 
+import java.util.Objects;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,10 +36,10 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     public interface Reconnector {
         /**
          *  Try and reconnect. If successful, this method must call
-         *  {@link ReconnectableImpl#connected} on <tt>helper</tt>. After that, the return
+         *  {@link ReconnectableImpl#connected} on <code>helper</code>. After that, the return
          *  value is irrelevant. If unsucessful, this method can either throw
-         *  an exception, or return <tt>true</tt> to reschedule the reconnect,
-         *  or, in rare instances, return <tt>false</tt> to give up.
+         *  an exception, or return <code>true</code> to reschedule the reconnect,
+         *  or, in rare instances, return <code>false</code> to give up.
          *
          * @return  Whether reconnection should be rescheduled.
          * @throws java.lang.Exception
@@ -121,32 +117,46 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     private volatile Level                      logLevel = Level.FINE;
     private volatile String                     logprefix;
 
-    @GuardedBy ("this")
+
+    private final Object lockObject;
+
+    @GuardedBy("lockObject")
     private Reconnector                         reconnector = null;
 
     private volatile boolean                    isConnected = false;
 
-    @GuardedBy ("this")
+    @GuardedBy("lockObject")
     private long                                timeDisconnected;
 
-    @GuardedBy ("this")
+    @GuardedBy("lockObject")
     private int                                 numReconnectAttempts;
 
-    @GuardedBy ("this")
-    private long                                currentReconnectInterval;    
+    @GuardedBy("lockObject")
+    private long                                currentReconnectInterval;
 
-    @GuardedBy ("this")
+    @GuardedBy("lockObject")
     private TimerTask                           reconnectTask;
 
-    @GuardedBy ("this")
+    @GuardedBy("lockObject")
     private String                              lastExceptionAsString;
 
     public ReconnectableImpl() {
         this.logprefix = getDefaultPrefix(getClass());
+        this.lockObject = this;
     }
 
     public ReconnectableImpl(String logprefix) {
         this.logprefix = logprefix;
+        this.lockObject = this;
+    }
+
+    /**
+     * @param lockObject an object to use as lock for synchronization instead of "this"
+     */
+    public ReconnectableImpl(String logprefix, Object lockObject) {
+        this.logprefix = logprefix;
+        // Use this as lock object if not provided. That's preserves old behavior.
+        this.lockObject = Objects.requireNonNull(lockObject, "lockObject may not be null");
     }
 
     public ReconnectIntervalAdjuster        getAdjuster () {
@@ -178,9 +188,11 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     {
         this.initialReconnectInterval = initialReconnectInterval;
     }
-    
-    public synchronized int                 getNumReconnectAttempts () {
-        return numReconnectAttempts;
+
+    public int getNumReconnectAttempts() {
+        synchronized (lockObject) {
+            return numReconnectAttempts;
+        }
     }
 
     public Level                            getLogLevel () {
@@ -208,7 +220,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     }
 
     public void                             connected () {
-        synchronized (this) {
+        synchronized (lockObject) {
             if (reconnectTask != null)
                 reconnectTask.cancel ();
 
@@ -223,7 +235,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
     }
 
     public void                             disconnected () {
-        synchronized (this) {
+        synchronized (lockObject) {
             isConnected = false;
             timeDisconnected = System.currentTimeMillis ();
         }
@@ -254,57 +266,63 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
             lg.log (logLevel, msg, x);
     }
 
-    public synchronized boolean             isConnected () {
-        return (isConnected);
+    @Override
+    public boolean isConnected() {
+        synchronized (lockObject) {
+            return isConnected;
+        }
     }
-    
-    private synchronized void               tryReconnect () throws Exception {
-        reconnectTask = null;
-        
-        boolean     reschedule = false;
-        
-        if (!isConnected && reconnector != null) {
-            try {
-                reschedule = 
-                    reconnector.tryReconnect (
-                        numReconnectAttempts,
-                        System.currentTimeMillis () - timeDisconnected,
-                        this
-                    );
-            } catch (Throwable x) {
-                String check = x.toString ();
-                if (check.equals (lastExceptionAsString)) {
-                    //logger.log (logLevel, "[%s] Reconnect failed due to: %s").with(logprefix).with(lastExceptionAsString);
-                    log ("[{0}] Reconnect failed due to: {1}", logprefix, lastExceptionAsString);
-                } else {
-                    //logger.log (logLevel, "[%s] Reconnect failed: %s").with(logprefix).with(x);
-                    log ("[" + logprefix + "] Reconnect failed", x);
-                    lastExceptionAsString = check;
+
+    private void tryReconnect() {
+        synchronized (lockObject) {
+            reconnectTask = null;
+
+            boolean reschedule = false;
+
+            if (!isConnected && reconnector != null) {
+                try {
+                    reschedule =
+                            reconnector.tryReconnect(
+                                    numReconnectAttempts,
+                                    System.currentTimeMillis() - timeDisconnected,
+                                    this
+                            );
+                } catch (Throwable x) {
+                    String check = x.toString();
+                    if (check.equals(lastExceptionAsString)) {
+                        //logger.log (logLevel, "[%s] Reconnect failed due to: %s").with(logprefix).with(lastExceptionAsString);
+                        log("[{0}] Reconnect failed due to: {1}", logprefix, lastExceptionAsString);
+                    } else {
+                        //logger.log (logLevel, "[%s] Reconnect failed: %s").with(logprefix).with(x);
+                        log("[" + logprefix + "] Reconnect failed", x);
+                        lastExceptionAsString = check;
+                    }
+
+                    reschedule = true;
                 }
 
-                reschedule = true;
+                numReconnectAttempts++;
             }
 
-            numReconnectAttempts++;
-        }
+            if (!isConnected && reschedule) {
+                ReconnectIntervalAdjuster adj = adjuster;
 
-        if (!isConnected && reschedule) {
-            ReconnectIntervalAdjuster   adj = adjuster;
+                if (adj != null)
+                    currentReconnectInterval =
+                            adj.nextInterval(
+                                    numReconnectAttempts,
+                                    timeDisconnected,
+                                    currentReconnectInterval
+                            );
 
-            if (adj != null)
-                currentReconnectInterval =
-                    adj.nextInterval (
-                        numReconnectAttempts,
-                        timeDisconnected,
-                        currentReconnectInterval
-                    );
-
-            scheduleTask ();
+                scheduleTask();
+            }
         }
     }
 
+    @GuardedBy("lockObject")
     private void                            scheduleTask () {
-        assert Thread.holdsLock (this);
+        assert Thread.holdsLock(lockObject);
 
         reconnectTask =
             new TimerRunner() {
@@ -325,21 +343,26 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
         log("[{0}] Next reconnect in {1}", logprefix, currentReconnectInterval);
     }
 
-    public synchronized void                scheduleReconnect () {
-        if (reconnector == null)
-            throw new IllegalStateException ("[" + logprefix + "] Call setReconnector() first.");
+    public void scheduleReconnect() {
+        synchronized (lockObject) {
+            if (reconnector == null)
+                throw new IllegalStateException ("[" + logprefix + "] Call setReconnector() first.");
 
-        if (reconnectTask != null)
-            reconnectTask.cancel ();
-        
-        numReconnectAttempts = 0;
-        currentReconnectInterval = initialReconnectInterval;
-        scheduleTask ();
+            if (reconnectTask != null)
+                reconnectTask.cancel ();
+
+            numReconnectAttempts = 0;
+            currentReconnectInterval = initialReconnectInterval;
+            scheduleTask ();
+        }
     }
 
-    public synchronized void                cancelReconnect () {
-        if (reconnectTask != null)
-            reconnectTask.cancel ();
+    public void cancelReconnect() {
+        synchronized (lockObject) {
+            if (reconnectTask != null) {
+                reconnectTask.cancel();
+            }
+        }
     }
 
     private static String getDefaultPrefix(Class<?> current) {

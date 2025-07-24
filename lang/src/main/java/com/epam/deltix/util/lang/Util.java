@@ -21,12 +21,13 @@ import com.epam.deltix.gflog.api.LogFactory;
 
 import java.io.*;
 import java.lang.management.*;
-import java.net.*;
-import java.security.*;
+import java.lang.reflect.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.prefs.Preferences;
-
-import java.lang.reflect.*;
 
 /** Set of useful methods */
 public class Util {
@@ -39,6 +40,10 @@ public class Util {
     public static final String   NATIVE_LINE_BREAK  = System.getProperty("line.separator");
     public static final String[] EMPTY_STRING_ARRAY = {};
     public static final boolean  QUIET              = Boolean.getBoolean("quiet");
+
+    // https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+    private static final int HALF_OF_MAX_INTEGER = Integer.MAX_VALUE / 2;
 
     public static void collectLocalFiles(String path, Collection<String> files) {
         File file = new File(path);
@@ -74,14 +79,50 @@ public class Util {
         }
     }
 
+    /**
+     * WARN: Consider using {@link #growArraySize(int, int)} instead, if you do not need the produced value
+     * to be double of the original value and if the produced value will be used to create an array.
+     */
     public static int           doubleUntilAtLeast (int a, int limit) {
         if (a == 0)
             return limit;
 
-        while (a < limit)
+        while (a < limit) {
+            if (a > HALF_OF_MAX_INTEGER) {
+                throw new IllegalArgumentException("Cannot double " + a + " to at least " + limit + ", it will overflow");
+            }
+            // Double value
             a = a << 1;
-        
+        }
+
         return (a);
+    }
+
+    /**
+     * Returns a new size of the array that is at least <code>minSize</code>.
+     * Similar to {@link #doubleUntilAtLeast(int, int)}, but allows to specify
+     *
+     * @param currentSize Current size of the array
+     * @param minSize required minimum value
+     */
+    public static int growArraySize(int currentSize, int minSize) {
+        if (currentSize == 0) {
+            return minSize;
+        }
+
+        while (currentSize < minSize) {
+            if (currentSize > HALF_OF_MAX_INTEGER) {
+                if (minSize > MAX_ARRAY_SIZE) {
+                    throw new IllegalArgumentException("Cannot grow " + currentSize + " to at least " + minSize + ", the limit is higher than MAX_ARRAY_SIZE");
+                } else {
+                    return MAX_ARRAY_SIZE;
+                }
+            }
+
+            currentSize = currentSize << 1;
+        }
+
+        return currentSize;
     }
 
     /**
@@ -136,7 +177,7 @@ public class Util {
      *  Compare two CharSequences. A null argument is always less than a non-null argument
      *  and is equal to another null argument.
      *
-     *  @param maxLength Only compare the first <tt>maxLength</tt> characters.
+     *  @param maxLength Only compare the first <code>maxLength</code> characters.
      *                      Send 0 to unlimit.
      *  @param fast     When true, use a fast algorithm, which makes a
      *                  char sequence greater than another if it is longer.
@@ -206,6 +247,56 @@ public class Util {
         }
 
         return (diff);
+    }
+
+    /**
+     * Searches target CharSequence in the source.
+     * The source is the character sequence being searched, and the target
+     * is the character sequence being searched for.
+     *
+     * @param   source       the characters being searched.
+     * @param   sourceOffset offset of the source string.
+     * @param   sourceCount  count of the source string.
+     * @param   target       the characters being searched for.
+     * @param   targetOffset offset of the target string.
+     * @param   targetCount  count of the target string.
+     * @param   fromIndex    the index to begin searching from.
+     */
+    public static int indexOf(CharSequence source, int sourceOffset, int sourceCount,
+                              CharSequence target, int targetOffset, int targetCount,
+                              int fromIndex) {
+        if (fromIndex >= sourceCount) {
+            return (targetCount == 0 ? sourceCount : -1);
+        }
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        if (targetCount == 0) {
+            return fromIndex;
+        }
+
+        char first = target.charAt(targetOffset);
+        int max = sourceOffset + (sourceCount - targetCount);
+
+        for (int i = sourceOffset + fromIndex; i <= max; i++) {
+            /* Look for first character. */
+            if (source.charAt(i) != first) {
+                while (++i <= max && source.charAt(i) != first);
+            }
+
+            /* Found first character, now look at the rest of v2 */
+            if (i <= max) {
+                int j = i + 1;
+                int end = j + targetCount - 1;
+                for (int k = targetOffset + 1; j < end && source.charAt(j) == target.charAt(k); j++, k++);
+
+                if (j == end) {
+                    /* Found whole string. */
+                    return i - sourceOffset;
+                }
+            }
+        }
+        return -1;
     }
 
     public static <T extends Comparable <T>> T  max (T a, T b) {
@@ -293,7 +384,6 @@ public class Util {
         Object ...              args
     )
         throws
-            ClassNotFoundException,
             NoSuchMethodException,
             InvocationTargetException,
             IllegalAccessException
@@ -844,53 +934,57 @@ public class Util {
     }
 
     /**
-     * Given a Class object, attempts to find its .class location
-     * Returns null  if no such definition can be found. Use for testing/debugging only.
-     * @param clazz class to lookup
+     * Given a Class object, attempts to find its .class location [returns null
+     * if no such definition can be found]. Use for testing/debugging only.
+     * @param cls class to lookup
      * @return URL that points to the class definition [null if not found].
+     * (From http://www.javaworld.com/javaqa/2003-07/01-qa-0711-classsrc_p.html)
      */
-    public static URL getClassLocation(final Class clazz)
+    public static URL getClassLocation(final Class cls)
     {
-        URL url = null;
+        if (cls == null)
+            throw new IllegalArgumentException ("null input: cls");
 
-        if (clazz == null)
-            throw new IllegalArgumentException ("Class in undefined");
+        URL result = null;
+        final String clsAsResource = cls.getName ().replace ('.', '/').concat (".class");
 
-        ProtectionDomain pd = clazz.getProtectionDomain ();
-
-        String resource = clazz.getName ().replace ('.', '/').concat (".class");
-
-        // java.lang.Class contract does not specify if 'pd' can ever be null, but anyway
+        final ProtectionDomain pd = cls.getProtectionDomain ();
+        // java.lang.Class contract does not specify if 'pd' can ever be null;
+        // it is not the case for Sun's implementations, but guard against null
+        // just in case:
         if (pd != null) {
-            if (pd.getCodeSource () != null)
-                url = pd.getCodeSource ().getLocation ();
+            final CodeSource cs = pd.getCodeSource ();
+            // 'cs' can be null depending on the classloader behavior:
+            if (cs != null)
+                result = cs.getLocation ();
 
-            if (url != null) {
+            if (result != null) {
                 // Convert a code source location into a full class file location
-                if ("file".equals (url.getProtocol ())) {
+                // for some common cases:
+                if ("file".equals (result.getProtocol ())) {
                     try {
-                        String form = url.toExternalForm();
-
-                        if (form.endsWith (".jar") || form.endsWith (".zip"))
-                            url = new URL ("jar:" + form + "!/" + resource);
-                        else if (new File (url.getFile ()).isDirectory ())
-                            url = new URL (url, resource);
-
-                    } catch (MalformedURLException ignore) {
-                        // ignore
-                    }
+                        if (result.toExternalForm ().endsWith (".jar") ||
+                            result.toExternalForm ().endsWith (".zip"))
+                            result = new URL ("jar:".concat (result.toExternalForm ())
+                                              .concat ("!/").concat (clsAsResource));
+                        else if (new File (result.getFile ()).isDirectory ())
+                            result = new URL (result, clsAsResource);
+                    } catch (MalformedURLException ignore) {}
                 }
             }
         }
 
-        if (url == null) {
-            // Try to find 'clazz' definition as a resource; this is not
+        if (result == null) {
+            // Try to find 'cls' definition as a resource; this is not
             // documented to be legal, but Sun's implementations seem to allow this:
-            ClassLoader clsLoader = clazz.getClassLoader ();
-            url = clsLoader != null ? clsLoader.getResource (resource) : ClassLoader.getSystemResource (resource);
+            final ClassLoader clsLoader = cls.getClassLoader ();
+
+            result = clsLoader != null ?
+                clsLoader.getResource (clsAsResource) :
+                ClassLoader.getSystemResource (clsAsResource);
         }
 
-        return url;
+        return result;
     }
 
     /**
@@ -1028,7 +1122,7 @@ public class Util {
             sb.append(" on ").append(info.getLockName());
 
         if (info.getLockOwnerName() != null)
-            sb.append(" owned by \"" + info.getLockOwnerName() + "\" id=" + info.getLockOwnerId());
+            sb.append(" owned by \"").append(info.getLockOwnerName()).append("\" id=").append(info.getLockOwnerId());
 
 //        if (isSuspended()) {
 //            sb.append(" (suspended)");
@@ -1068,7 +1162,7 @@ public class Util {
 
             for (MonitorInfo mi : info.getLockedMonitors()) {
                 if (mi.getLockedStackDepth() == i) {
-                    sb.append("\t-  locked " + mi);
+                    sb.append("\t-  locked ").append(mi);
                     sb.append('\n');
                 }
             }
@@ -1113,6 +1207,7 @@ public class Util {
     }
 
     /** @return Array of all interfaces implemented by given class (calls cls.getInterfaces() recursively), never null */
+    @SuppressWarnings("rawtypes")
     public static Class [] getClassInterfaces (Class cls) {
         List <Class> result = new ArrayList<Class> ();
 
@@ -1134,6 +1229,7 @@ public class Util {
     }
 
     /** @return true if given cls is instanceof interface specified by className */
+    @SuppressWarnings("rawtypes")
     public static boolean isntanceOf (Class cls, String className) {
 
         Class c = cls;
@@ -1267,7 +1363,7 @@ public class Util {
      *  @exception ArrayIndexOutOfBoundsException
      *                          If <code>atIdx</code> is out of bounds.
      */
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> T []    arraydel (T [] array, int atIdx) {
         int                 oldDim = array.length;
 
