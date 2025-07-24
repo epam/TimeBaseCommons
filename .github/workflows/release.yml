@@ -103,7 +103,7 @@ jobs:
         with:
           java-version: 11
       - name: Publish jars
-        run: ./gradlew :timebase-collections:publish :timebase-lang:publish :timebase-messages:publish :timebase-util:publish
+        run: ./gradlew publishAll uploadArtifactsToCentralPortal
         env:
           SONATYPE_REPOSITORY:      ${{ secrets.SONATYPE_REPOSITORY }}
           SONATYPE_NEXUS_USERNAME:  ${{ secrets.SONATYPE_NEXUS_USERNAME }}
