@@ -41,8 +41,8 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
     /**
      * working arrays initialized on demand by readUTF
      */
-    private byte bytearr[] = new byte[80];
-    private char chararr[] = new char[80];
+    private byte[] bytearr = new byte[80];
+    private char[] chararr = new char[80];
 
 
     /**
@@ -77,7 +77,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      * @throws IOException if read fails.
      */
     @Override
-    public final int read(byte ba[], int off, int len) throws IOException {
+    public final int read(byte[] ba, int off, int len) throws IOException {
         // For efficiency, we avoid one layer of wrapper
         return is.read(ba, off, len);
     }
@@ -140,7 +140,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      *
      * @see java.io.DataInput#readFully(byte[])
      */
-    public final void readFully(byte ba[]) throws IOException {
+    public final void readFully(byte[] ba) throws IOException {
         dis.readFully(ba, 0, ba.length);
     }
 
@@ -150,7 +150,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      * @throws IOException if read fails.
      * @see java.io.DataInput#readFully(byte[],int,int)
      */
-    public final void readFully(byte ba[],
+    public final void readFully(byte[] ba,
                                 int off,
                                 int len) throws IOException {
         dis.readFully(ba, off, len);

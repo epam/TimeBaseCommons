@@ -38,15 +38,17 @@ public class BasicTimeSource implements TimeSource {
     private BasicTimeSource() {
     }
 
+    public static BasicTimeSource getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public long currentTimeMillis() {
         long currentTime = System.currentTimeMillis();
         while (true) {
             long prevVal = lastTime.get();
-            if (prevVal == currentTime) {
-                return currentTime;
-            }
-            if (prevVal > currentTime) {
+            if (prevVal >= currentTime) {
+                // Shared value is already ahead (or same). So we can use it and do not need to update shared value.
                 return prevVal;
             }
             // currentTime > prevVal

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class Test_TokenReplacingReader {
 
-    private final static TokenReplacingReader.TokenResolver NULL_RESOLVER = token -> null;
+    private final static TokenReplacingReader.ITokenResolver NULL_RESOLVER = token -> null;
 
     @Test
     public void testPartialRead () throws Exception {
@@ -74,14 +74,14 @@ public class Test_TokenReplacingReader {
         assertEquals(expectedResult, actualResult);
     }
 
-    private static String replace (String text, TokenReplacingReader.TokenResolver resolver) throws IOException, InterruptedException {
+    private static String replace (String text, TokenReplacingReader.ITokenResolver resolver) throws IOException, InterruptedException {
         Reader reader = new TokenReplacingReader(new StringReader(text), resolver);
         return IOUtil.readFromReader(reader);
     }
 
     //${deltix_home}\\..\\QuantOffice\\Bin
 
-    static class MapBasedTokenReplacer implements TokenReplacingReader.TokenResolver {
+    static class MapBasedTokenReplacer implements TokenReplacingReader.ITokenResolver {
 
         private final Map<String,String> map = new HashMap<>();
 

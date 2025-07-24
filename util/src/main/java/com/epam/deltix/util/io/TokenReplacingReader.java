@@ -23,89 +23,92 @@ import java.nio.CharBuffer;
 
 public class TokenReplacingReader extends Reader {
 
-    private final StringBuilder     nameBuffer = new StringBuilder();
+    private PushbackReader pushbackReader = null;
+    private ITokenResolver tokenResolver = null;
+    private StringBuilder tokenNameBuffer = new StringBuilder();
+    private String tokenValue = null;
+    private int tokenValueIndex = 0;
 
-    private final PushbackReader    reader;
-    private final TokenResolver     resolver;
+    public static interface ITokenResolver {
 
-    private String          tokenValue = null;
-    private int             tokenValueIndex = 0;
-
-    public TokenReplacingReader(Reader in, TokenResolver resolver) {
-        this.reader = new PushbackReader(in, 2);
-        this.resolver = resolver;
+        String resolveToken(String token);
     }
 
-    @Override
-    public int read() throws IOException {
-        if (tokenValue != null) {
-            int length = tokenValue.length();
-
-            if (tokenValueIndex < length)
-                return tokenValue.charAt(tokenValueIndex++);
-            
-            if (tokenValueIndex == length) {
-                tokenValue = null;
-                tokenValueIndex = 0;
-            }
-        }
-
-        int data = reader.read();
-        if (data != '$')
-            return data;
-
-        data = reader.read();
-        if (data != '{') {
-            reader.unread(data);
-            return '$';
-        }
-        nameBuffer.delete(0, nameBuffer.length());
-
-        data = reader.read();
-        while (data != '}') {
-            nameBuffer.append((char) data);
-            data = reader.read();
-        }
-
-        tokenValue = resolver.resolveToken(nameBuffer.toString());
-
-        if (tokenValue == null || tokenValue.length() == 0)
-            tokenValue = "${" + nameBuffer.toString() + "}";
-
-        return tokenValue.charAt(tokenValueIndex++);
+    public TokenReplacingReader(Reader source, ITokenResolver resolver) {
+        this.pushbackReader = new PushbackReader(source, 2);
+        this.tokenResolver = resolver;
     }
 
     @Override
     public int read(CharBuffer target) throws IOException {
+
         return read(target.array(), 0, target.limit());
     }
 
     @Override
-    public int read(char[] input) throws IOException {
-        return read(input, 0, input.length);
+    public int read() throws IOException {
+            if (this.tokenValue != null) {
+                    if (this.tokenValueIndex < this.tokenValue.length()) {
+                            return this.tokenValue.charAt(this.tokenValueIndex++);
+                    }
+                    if (this.tokenValueIndex == this.tokenValue.length()) {
+                            this.tokenValue = null;
+                            this.tokenValueIndex = 0;
+                    }
+            }
+
+            int data = this.pushbackReader.read();
+            if (data != '$')
+                    return data;
+
+            data = this.pushbackReader.read();
+            if (data != '{') {
+                    this.pushbackReader.unread(data);
+                    return '$';
+            }
+            this.tokenNameBuffer.delete(0, this.tokenNameBuffer.length());
+
+            data = this.pushbackReader.read();
+            while (data != '}') {
+                    this.tokenNameBuffer.append((char) data);
+                    data = this.pushbackReader.read();
+            }
+
+            this.tokenValue = this.tokenResolver.resolveToken(this.tokenNameBuffer
+                            .toString());
+
+            if (this.tokenValue == null || this.tokenValue.length() == 0) {
+                    this.tokenValue = "${" + this.tokenNameBuffer.toString() + "}";
+            }
+            return this.tokenValue.charAt(this.tokenValueIndex++);
+
     }
 
     @Override
-    public int read(char[] input, int off, int len) throws IOException {
-        int count = 0;
+    public int read(char cbuf[]) throws IOException {
+        return read(cbuf, 0, cbuf.length);
+    }
 
-        while (count < len) {
-            int next = read();
 
-            if (next == -1) { // EOF?
-                if (count == 0)
+    @Override
+    public int read(char cbuf[], int off, int len) throws IOException {
+        int charsRead = 0;
+        while (charsRead < len) {
+            int nextChar = read();
+            if (nextChar == -1) { // EOF?
+                if (charsRead == 0) {
                     return -1; // none read
+                }
                 break;
             }
-
-            input[off + (count++)] = (char) next;
+            cbuf[off + (charsRead++)] = (char) nextChar;
         }
-        return count;
+        return charsRead;
     }
 
     @Override
     public void close() throws IOException {
-        reader.close();
+        this.pushbackReader.close();
     }
 
     @Override
@@ -115,7 +118,7 @@ public class TokenReplacingReader extends Reader {
 
     @Override
     public boolean ready() throws IOException {
-        return reader.ready();
+        return this.pushbackReader.ready();
     }
 
     @Override

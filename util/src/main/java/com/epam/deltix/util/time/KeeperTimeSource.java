@@ -33,6 +33,10 @@ public class KeeperTimeSource implements TimeSource {
     private KeeperTimeSource() {
     }
 
+    public static KeeperTimeSource getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public long currentTimeMillis() {
         return TimeKeeper.currentTime;

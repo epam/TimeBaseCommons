@@ -400,9 +400,20 @@ public class TimeKeeper extends Thread {
 
     static {
         if (Util.IS_WINDOWS_OS) {
+            // Force the Windows system clock into high resolution mode.
             //
-            // Force the Windows system clock into fast mode
-            // Workaround per   http://bugs.sun.com/view_bug.do?bug_id=6435126
+            // In Windows, the default clock resolution is 15.625ms (1s divided by 64).
+            // For many of TimeBase use cases is a way too low resolution.
+            // The simplest way to get a higher timer resolution from Java is to have a thread that "sleeps" forever.
+            // Under the hood Java will use timeBeginPeriod(1)/timeEndPeriod(1) WinAPI calls to increase timer resolution.
+            //
+            // Workaround from  https://bugs.openjdk.org/browse/JDK-6435126
+            //
+            // Related articles:
+            // https://randomascii.wordpress.com/2013/07/08/windows-timer-resolution-megawatts-wasted/
+            // https://hazelcast.com/blog/locksupport-parknanos-under-the-hood-and-the-curious-case-of-parking-part-ii-windows/
+            //
+            // See also class TimerFreqTest
             //
             Thread  magic =
                 new Thread ("Windows System Clock Speeder-Upper") {

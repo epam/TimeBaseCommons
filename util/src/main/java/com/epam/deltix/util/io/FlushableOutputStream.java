@@ -85,10 +85,11 @@ public class FlushableOutputStream extends FilterOutputStream {
      * @exception  IOException  if an I/O error occurs.
      */
     public synchronized void write(int b) throws IOException {
-        if (cache.size() > limit && canFlush)
+        if (cache.size() > limit && canFlush) {
             flushInternal();
-        else
-            cache.write(b);
+        }
+
+        cache.write(b);
     }
 
     /**

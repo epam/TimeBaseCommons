@@ -314,11 +314,4 @@ public class IOUtil extends BasicIOUtil {
         
         return true;
     }
-    
-    public static void main(String[] args) throws Exception {
-        File file = new File("C:\\Quartus-web-14.1.0.186.iso");
-        System.out.println(copiedCompletely(file));
-        System.out.println(waitForCopiedCompletely(file));
-        System.out.println("DONE");
-    }
 }
