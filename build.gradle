@@ -319,11 +319,3 @@ allprojects {
         }
     }
 }
-
-//def testTasks = ext.leafProjects*.test
-//
-//task generateTestReport(type: TestReport) {
-//    group 'verification'
-//    reportOn testTasks
-//    destinationDir = file("$rootDir/build/reports/junit/html/all_reports_merged") // TODO: Pick better name for merged report
-//}
