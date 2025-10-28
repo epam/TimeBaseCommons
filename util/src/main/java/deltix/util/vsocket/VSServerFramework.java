@@ -8,6 +8,8 @@ import deltix.util.lang.DisposableListener;
 import deltix.util.tomcat.ConnectionHandshakeHandler;
 import deltix.util.vsocket.transport.Connection;
 import deltix.util.vsocket.transport.SocketConnectionFactory;
+import net.jcip.annotations.GuardedBy;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
@@ -16,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -323,6 +326,8 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         Connector connector;
 
         synchronized (dispatchers) {
+            cleanupBrokenDispatchers();
+
             connector = dispatchers.get(clientId);
 
             if (connector == null && dispatchers.size() >= connectionsLimit) {
@@ -342,6 +347,30 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         }
 
         return connector;
+    }
+
+    // Part of temporary fix for https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1447
+    @GuardedBy("dispatchers")
+    private void cleanupBrokenDispatchers() {
+        long now = System.currentTimeMillis();
+        ArrayList<VSDispatcher> removalCandidates = null;
+
+        // Important!
+        // We should not remove dispatchers while iterating over the map because it will cause ConcurrentModificationException
+        // as dispatcher.close() calls back VSServerFramework.disposed() method that modifies the map.
+        for (Connector value : dispatchers.values()) {
+            if (value.dispatcher.getRecoveryDeadline() < now) {
+                if (removalCandidates == null) {
+                    removalCandidates = new ArrayList<>();
+                }
+                removalCandidates.add(value.dispatcher);
+            }
+        }
+        if (removalCandidates != null) {
+            for (VSDispatcher dispatcher : removalCandidates) {
+                dispatcher.closeIfBroken(now);
+            }
+        }
     }
 
     private void                    processSSLHandshake(Connection c) throws IOException {

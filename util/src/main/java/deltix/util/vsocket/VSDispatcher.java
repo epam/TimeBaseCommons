@@ -1,10 +1,10 @@
 package deltix.util.vsocket;
 
 import deltix.thread.affinity.AffinityThreadFactoryBuilder;
+import deltix.util.annotations.TimestampMs;
 import deltix.util.collections.generated.ObjectHashSet;
 import deltix.util.concurrent.ContextContainer;
 import deltix.util.concurrent.QuickExecutor;
-import deltix.util.concurrent.UncheckedInterruptedException;
 import deltix.util.lang.Disposable;
 import deltix.util.lang.DisposableListener;
 import deltix.util.lang.Util;
@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -157,6 +156,10 @@ public final class VSDispatcher implements Disposable {
     private final HashSet<DisposableListener> listeners =
         new HashSet<DisposableListener> ();
 
+    // Timestamp after witch this dispatched can be considered unrecoverable and should be closed
+    @TimestampMs
+    private volatile long recoveryDeadline = Long.MAX_VALUE;
+
     /**
      *  Constructs a dispatcher instance for the specified client.
      */
@@ -265,6 +268,7 @@ public final class VSDispatcher implements Disposable {
 
             transportChannels.add (tc);
             transportChannels.notify();
+            recoveryDeadline = Long.MAX_VALUE;
         }
 
         checkIn(tc);
@@ -300,6 +304,10 @@ public final class VSDispatcher implements Disposable {
 
             if (!transportChannels.remove(channel)) // check that channel already removed
                 return;
+
+            if (transportChannels.isEmpty()) {
+                this.recoveryDeadline = endTime + 1_000; // allow some extra time for "normal" recovery/shutdown
+            }
 
             synchronized (freeChannels) {
                 wasCheckedIn = freeChannels.remove(channel);
@@ -413,6 +421,16 @@ public final class VSDispatcher implements Disposable {
             close();
         } else {
            state = VSDispatcherState.CONNECTED;
+        }
+    }
+
+    // Part of temporary fix for https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1447
+    void closeIfBroken(long now) {
+        synchronized (transportChannels) {
+            if (now > recoveryDeadline && transportChannels.isEmpty()) {
+                VSProtocol.LOGGER.log(Level.WARNING, "Closing dispatcher due to recovery deadline exceeded. Remote address: " + getRemoteAddress());
+                close();
+            }
         }
     }
 
@@ -757,6 +775,10 @@ public final class VSDispatcher implements Disposable {
 
         for (DisposableListener aList : list)
             aList.disposed(this);
+    }
+
+    long getRecoveryDeadline() {
+        return recoveryDeadline;
     }
 
     public QuickExecutor            getQuickExecutor() {
