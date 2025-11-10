@@ -196,9 +196,12 @@ configure(leafProjects) {
         includeEmptyDirs = false
     }
 
-    afterEvaluate {
-        // populate project classpath after evaluating
-        jar.manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
+    tasks.named('jar') {
+        manifest.attributes(
+                'Class-Path': provider {
+                    configurations.runtimeClasspath.collect { it.name }.join(' ')
+                }
+        )
     }
 
     // Contains current project jar and all required dependencies for that project
