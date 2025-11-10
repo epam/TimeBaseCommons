@@ -162,9 +162,11 @@ configure(leafProjects) {
         reportLevel = "medium"
         excludeFilter = rootProject.file('spotbugs-excludes.xml')
     }
-    spotbugsTest.enabled = false // disable SpotBugs for tests
+    tasks.named('spotbugsTest') {
+        enabled = false // disable SpotBugs for tests
+    }
 
-    tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
         enabled = enableSpotbugs
 
         reports {
@@ -173,7 +175,7 @@ configure(leafProjects) {
         }
     }
 
-    jar {
+    tasks.named('jar') {
         manifest {
             archiveBaseName.set(base.archivesName)
             attributes 'Manifest-Version': "1.0",
@@ -184,13 +186,13 @@ configure(leafProjects) {
         }
     }
 
-    processResources {
+    tasks.named('processResources') {
         from sourceSets.main.java.srcDirs
         exclude '**/*.java'
         includeEmptyDirs = false
     }
 
-    processTestResources {
+    tasks.named('processTestResources') {
         from sourceSets.test.java.srcDirs
         exclude '**/*.java'
         includeEmptyDirs = false
@@ -207,16 +209,17 @@ configure(leafProjects) {
     // Contains current project jar and all required dependencies for that project
     def allJarsPath = 'build/alljars'
 
-    task gatherProjectDependencies(type: Sync) {
+    tasks.register('gatherProjectDependencies', Sync) {
         description = 'Copies all project runtime dependencies to ' + allJarsPath
         from project.configurations.runtimeClasspath
         into allJarsPath
     }
 
-    task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
+    tasks.register('gatherAllJarsWithDependencies', Copy) {
+        dependsOn 'jar', 'gatherProjectDependencies'
         group = "build"
         description = 'Copies all project JAR and all its runtime dependencies to ' + allJarsPath
-        from jar // Main produced JAR of the subproject
+        from tasks.named('jar') // Main produced JAR of the subproject
         into allJarsPath
     }
 
@@ -248,20 +251,22 @@ configure(leafProjects) {
 
     /// Support for publishing -sources.jar and -javadoc.jar artifacts:
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
+    var sourcesJar = tasks.register('sourcesJar', Jar) {
+        dependsOn 'classes'
         archiveClassifier.set('sources')
         archiveBaseName.set(base.archivesName)
         from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
+    var javadocJar = tasks.register('javadocJar', Jar) {
+        dependsOn 'javadoc'
         enabled = includeJavaDocs
         archiveClassifier.set('javadoc')
         archiveBaseName.set(base.archivesName)
         from javadoc.destinationDir
     }
 
-    tasks.withType(Javadoc) {
+    tasks.withType(Javadoc).configureEach {
         options.addStringOption('Xdoclint:all,-reference', '-quiet') //  disables fail on missing JavaDoc reference
         //options.addStringOption('Xdoclint:none', '-quiet') // suppress all warnings
     }
@@ -309,7 +314,7 @@ configure(leafProjects) {
     }
 
     if (!includeJavaDocs) {
-        tasks.withType(Javadoc).all { enabled = false }
+        tasks.withType(Javadoc).configureEach { enabled = false }
     }
 
 }
@@ -336,7 +341,7 @@ allprojects {
 
 def testTasks = ext.leafProjects*.test
 
-task generateTestReport(type: TestReport) {
+tasks.register('generateTestReport', TestReport) {
     group = 'verification'
     reportOn testTasks
     destinationDirectory.set(file("$rootDir/build/reports/junit/html/all_reports_merged")) // TODO: Pick better name for merged report

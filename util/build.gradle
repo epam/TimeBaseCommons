@@ -33,14 +33,18 @@ dependencies {
     testImplementation 'org.mockito:mockito-core'
 }
 
-task downloadCodes(type: Download) {
+tasks.register('downloadCodes', Download) {
     src 'https://smi.deltixhub.com/api/v2/currencyinfo/xml'
     dest new File(projectDir, 'src/main/resources/deltix/util/currency/CurrencyCodes.xml')
 }
 
-processResources.mustRunAfter downloadCodes
-sourcesJar.mustRunAfter downloadCodes
+tasks.named('processResources').configure {
+    mustRunAfter 'downloadCodes'
+}
 
+tasks.named('sourcesJar').configure {
+    mustRunAfter 'downloadCodes'
+}
 
 tasks.register('buildFatTestJar', Jar) {
     group = 'build'

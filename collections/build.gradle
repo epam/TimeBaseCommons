@@ -117,7 +117,7 @@ static Map<String, Object> mapMerge(Map first, Map second) {
     return newMap
 }
 
-task vppHashMap(type: deltix.gradle.plugins.velocity.VelocityTask) {
+tasks.register('vppHashMap', deltix.gradle.plugins.velocity.VelocityTask) {
     from = "$srcDir/PrimitiveToPrimitiveHashMap.vpp"
     to = "$dstDir/@{first_name}To@{second_name}HashMap.java"
 
@@ -133,15 +133,19 @@ task vppHashMap(type: deltix.gradle.plugins.velocity.VelocityTask) {
 
     setContexts newMaps
 }
-project.tasks.getByName('compileJava').dependsOn(vppHashMap)
+tasks.named('compileJava').configure {
+    dependsOn 'vppHashMap'
+}
 
-def cleanupDstDir = tasks.register('cleanupDstDir', Delete) {
+tasks.register('cleanupDstDir', Delete) {
     delete fileTree(dir: "$dstDir")
 }
-clean.dependsOn cleanupDstDir
+tasks.named('clean').configure {
+    dependsOn 'cleanupDstDir'
+}
 
 project.tasks.withType(deltix.gradle.plugins.velocity.VelocityTask).configureEach {
-    mustRunAfter clean
+    mustRunAfter 'clean'
 }
 
 sourceSets.main.java.srcDirs += ext.generatedSourcesDir
