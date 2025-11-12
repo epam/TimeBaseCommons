@@ -1,7 +1,6 @@
 package deltix.util.vsocket;
 
 import deltix.util.io.BasicIOUtil;
-import deltix.util.lang.Util;
 import deltix.util.vsocket.util.SocketTestUtilities;
 import deltix.util.vsocket.util.TestVServerSocketFactory;
 import org.junit.Test;
@@ -41,45 +40,43 @@ public class Test_VSocket_Correctness {
         }
     }
 
-    private static void client(String host, int port) throws IOException {
-        VSClient client = new VSClient(host, port);
-        VSChannel channel = null;
+    private static void client(String host, int port) {
+        try (VSClient client = new VSClient(host, port)) {
+            client.connect();
+
+            assertEchoClientCorrectness(client, WRITE_COUNT);
+        } catch (IOException x) {
+            throw new UncheckedIOException(x);
+        }
+    }
+
+    static void assertEchoClientCorrectness(VSClient client, int writeCount) {
+        Random rngSrc = new Random(0);
+        Random rngDst = new Random(0);
 
         // Fills data with values 1..127
         byte[] data = makeTestData();
 
-        Random rngSrc = new Random(0);
-        Random rngDst = new Random(0);
-
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            client.connect();
-
-            channel = client.openChannel();
-
+        try (VSChannel channel = client.openChannel()) {
             DataOutputStream os = channel.getDataOutputStream();
 
             // Data writer thread
             new Thread(() -> {
                 Thread.currentThread().setName("PRODUCER");
-                sendData(rngSrc, os, data);
+                sendData(rngSrc, os, data, writeCount);
             }).start();
 
             // Reader
-            readData(channel, data, rngDst);
-        } catch (IOException x) {
-            throw new UncheckedIOException(x);
-        } finally {
-            Util.close(channel);
-
-            client.close();
+            readData(channel, data, rngDst, writeCount);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
-    private static void sendData(Random rngSrc, DataOutputStream os, byte[] data) {
+    private static void sendData(Random rngSrc, DataOutputStream os, byte[] data, int writeCount) {
         long totalSent = 0;
         try {
-            for (int i = 0; i < WRITE_COUNT; i++) {
+            for (int i = 0; i < writeCount; i++) {
                 int size = generateNextSize(rngSrc);
                 //rngSrc.nextBytes(data);
                 os.write(data, 0, size);
@@ -94,11 +91,11 @@ public class Test_VSocket_Correctness {
         }
     }
 
-    private static void readData(VSChannel channel, byte[] expected, Random rngDst) throws IOException {
+    private static void readData(VSChannel channel, byte[] expected, Random rngDst, int readCount) throws IOException {
         long totalRead = 0;
         DataInputStream is = channel.getDataInputStream();
         byte[] actual = new byte[8 * 1024];
-        for (int i = 0; i < WRITE_COUNT; i++) {
+        for (int i = 0; i < readCount; i++) {
             int size = generateNextSize(rngDst);
             //rngDst.nextBytes(expected);
             BasicIOUtil.readFully(is, actual, 0, size);

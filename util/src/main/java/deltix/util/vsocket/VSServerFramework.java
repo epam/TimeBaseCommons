@@ -8,8 +8,6 @@ import deltix.util.lang.DisposableListener;
 import deltix.util.tomcat.ConnectionHandshakeHandler;
 import deltix.util.vsocket.transport.Connection;
 import deltix.util.vsocket.transport.SocketConnectionFactory;
-import net.jcip.annotations.GuardedBy;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
@@ -18,7 +16,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,9 +42,9 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
     private volatile VSConnectionListener       connectionListener;
     private final int                           connectionsLimit;
-    private final short                         transportsLimit;
+    private short                         transportsLimit;
     private final long                          time;
-    private final int                           reconnectInterval;
+    private final int lingerInterval;
     private final VSCompression                 compression;
 
     private TLSContext                          tlsContext;
@@ -64,11 +61,11 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         }
     };
 
-    public VSServerFramework(QuickExecutor executor, int reconnectInterval,
+    public VSServerFramework(QuickExecutor executor, int lingerInterval,
                              VSCompression compression, int connectionsLimit, short socketsPerConnection, ContextContainer contextContainer, DBConnectionAcceptor connectionAcceptor) {
         this.connectionAcceptor = connectionAcceptor;
         this.executor = executor;
-        this.reconnectInterval = reconnectInterval;
+        this.lingerInterval = lingerInterval;
         this.time = System.currentTimeMillis();
         this.compression = compression;
         this.connectionsLimit = connectionsLimit;
@@ -77,8 +74,8 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         INSTANCE = this;
     }
 
-    public VSServerFramework(QuickExecutor executor, int reconnectInterval, VSCompression compression, ContextContainer contextContainer) {
-        this(executor, reconnectInterval, compression, MAX_CONNECTIONS, MAX_SOCKETS_PER_CONNECTION, contextContainer, DefaultConnectionAcceptor.INSTANCE);
+    public VSServerFramework(QuickExecutor executor, int lingerInterval, VSCompression compression, ContextContainer contextContainer) {
+        this(executor, lingerInterval, compression, MAX_CONNECTIONS, MAX_SOCKETS_PER_CONNECTION, contextContainer, DefaultConnectionAcceptor.INSTANCE);
     }
 
     public QuickExecutor getExecutor () {
@@ -289,7 +286,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
             dout.writeByte(VSProtocol.CONN_RESP_OK);
             dout.writeLong(time);
-            dout.writeInt(reconnectInterval);
+            dout.writeInt(lingerInterval);
             dout.writeUTF(compression.toString());
 
             // writing -1 means socket wasn't found
@@ -314,9 +311,10 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
                 synchronized (brokenSocketRecoveryInfo) {
                     brokenSocketRecoveryInfo.stopRecoveryAttempt();
                     if (success) {
-                        brokenSocketRecoveryInfo.markRecoverySucceeded();
+                        if (brokenSocketRecoveryInfo.tryMarkRecoverySucceeded()) {
+                            brokenSocketRecoveryInfo.notifyAll();
+                        }
                     }
-                    brokenSocketRecoveryInfo.notifyAll();
                 }
             }
         }
@@ -326,8 +324,6 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         Connector connector;
 
         synchronized (dispatchers) {
-            cleanupBrokenDispatchers();
-
             connector = dispatchers.get(clientId);
 
             if (connector == null && dispatchers.size() >= connectionsLimit) {
@@ -340,37 +336,13 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
             if (connector == null) {
                 VSDispatcher dispatcher = new VSDispatcher (clientId, false, contextContainer);
                 dispatcher.setConnectionListener(connectionListener);
-                dispatcher.setLingerInterval(reconnectInterval);
+                dispatcher.setLingerInterval(lingerInterval);
                 dispatcher.addDisposableListener(this);
                 dispatchers.put (clientId, (connector = new Connector(dispatcher, transportsLimit)));
             }
         }
 
         return connector;
-    }
-
-    // Part of temporary fix for https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1447
-    @GuardedBy("dispatchers")
-    private void cleanupBrokenDispatchers() {
-        long now = System.currentTimeMillis();
-        ArrayList<VSDispatcher> removalCandidates = null;
-
-        // Important!
-        // We should not remove dispatchers while iterating over the map because it will cause ConcurrentModificationException
-        // as dispatcher.close() calls back VSServerFramework.disposed() method that modifies the map.
-        for (Connector value : dispatchers.values()) {
-            if (value.dispatcher.getRecoveryDeadline() < now) {
-                if (removalCandidates == null) {
-                    removalCandidates = new ArrayList<>();
-                }
-                removalCandidates.add(value.dispatcher);
-            }
-        }
-        if (removalCandidates != null) {
-            for (VSDispatcher dispatcher : removalCandidates) {
-                dispatcher.closeIfBroken(now);
-            }
-        }
     }
 
     private void                    processSSLHandshake(Connection c) throws IOException {
@@ -443,6 +415,10 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
             throw new RuntimeException("Legacy version of Aeron IPC is not supported");
     }
 
+    void setTransportsLimit(short transportsLimit) {
+        this.transportsLimit = transportsLimit;
+    }
+
     static class Connector extends ConnectionStateListener implements Closeable {
         // May contain null values. Null value indicates that transport is still considered active (not stopped).
         private final IntegerToObjectHashMap<VSocketRecoveryInfo>   stopped =
@@ -475,7 +451,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         }
 
         @Override
-        boolean onTransportStopped(VSocketRecoveryInfo recoveryInfo) {
+        boolean onTransportRecoveryStart(VSocketRecoveryInfo recoveryInfo) {
             VSocket socket = recoveryInfo.getSocket();
 
             int code = socket.getCode();
@@ -497,7 +473,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         }
 
         @Override
-        boolean onTransportBroken(VSocketRecoveryInfo recoveryInfo) {
+        boolean onTransportRecoveryStop(VSocketRecoveryInfo recoveryInfo) {
             try {
                 synchronized (recoveryInfo) {
                     while (recoveryInfo.isRecoveryAttemptInProgress()) {
@@ -578,7 +554,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         }
 
         @Override
-        void onReconnected() {
+        void onConnected() {
         }
     }
 
@@ -594,7 +570,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
         private final String label;
 
         FakeRecoveryInfo(String label) {
-            super(null, Long.MIN_VALUE);
+            super(null, Long.MAX_VALUE);
             this.label = label;
         }
 

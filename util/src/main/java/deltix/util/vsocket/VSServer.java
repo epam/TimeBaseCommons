@@ -3,6 +3,7 @@ package deltix.util.vsocket;
 import deltix.util.concurrent.ContextContainer;
 import deltix.util.concurrent.QuickExecutor;
 import deltix.util.io.IOUtil;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -79,6 +80,11 @@ public class VSServer extends Thread {
         serverSocket.setSoTimeout(readTimeout);
     }
 
+    @VisibleForTesting
+    public void setTransportsLimit(short transportsLimit) {
+        this.framework.setTransportsLimit(transportsLimit);
+    }
+
     @Override
     public void                 run () {
         Socket          s = null;
@@ -119,5 +125,10 @@ public class VSServer extends Thread {
         contextContainer.getQuickExecutor().shutdownInstance();
         if (framework != null)
             framework.close();
+    }
+
+    @VisibleForTesting
+    VSDispatcher[] getDispatchers() {
+        return framework.getDispatchers();
     }
 }
