@@ -12,6 +12,7 @@ import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimeKeeper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.net.ssl.SSLContext;
@@ -22,8 +23,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Date;
 import java.util.TimerTask;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Level;
 
@@ -75,7 +74,8 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     private volatile boolean closed = false;
 
     // Elements should be sorted (when possible) by time of last reconnection attempt however there is no strict enforcement for this.
-    // New broken sockets should be added to the head of the queue
+    // New broken sockets should be added to the head of the queue.
+    // Broken sockets that failed to reconnect should be added to the tail of the queue.
     private final ConcurrentLinkedDeque<VSocketRecoveryInfo> broken = new ConcurrentLinkedDeque<>();
 
     private final QuickExecutor.QuickTask reconnector;
@@ -119,19 +119,22 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
                         VSocket socket = socketRecovery.getSocket();
 
                         // Start reconnect attempt
-                        int attemptNumber = socketRecovery.addReconnectAttempt(currentTime);
+                        int attemptNumber;
+                        synchronized (socketRecovery) {
+                            attemptNumber = socketRecovery.addReconnectAttempt(currentTime);
+                        }
 
 
                         boolean success = false;
                         boolean transportLost = false;
                         try {
+                            // Try to reconnect - long operation
                             VSocket vSocket = openTransport(socket);
                             if (vSocket != null) {
                                 success = true;
                                 dispatcher.addTransportChannel(vSocket);
                                 synchronized (socketRecovery) {
-                                    if (!socketRecovery.isRecoveryEnded()) {
-                                        socketRecovery.markRecoverySucceeded();
+                                    if (socketRecovery.tryMarkRecoverySucceeded()) {
                                         socketRecovery.notifyAll();
                                     } else {
                                         VSProtocol.LOGGER.log(Level.WARNING, "Reconnect succeeded but recovery process is already cancelled");
@@ -152,7 +155,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
                         }
 
                         if (!success) {
-                            if (currentTime > socketRecovery.getDisconnectTs() + reconnectInterval) {
+                            if (currentTime >= socketRecovery.getRecoveryDeadlineTs()) {
                                 // At this time socket is discarded on the server side so we should give up now
                                 VSProtocol.LOGGER.log(Level.WARNING, "Transport " + socket.getSocketIdStr() + " was not recovered after " + attemptNumber + " attempts (timeout reached)");
                                 transportLost = true;
@@ -161,6 +164,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
                                 // We failed to recover the connection so we have to disconnect entire transport because we might loss some data
                                 synchronized (socketRecovery) {
                                     socketRecovery.stopRecoveryAttempt();
+                                    assert !socketRecovery.isRecoverySucceeded();
                                     socketRecovery.markRecoveryFailed();
                                     socketRecovery.notifyAll();
                                 }
@@ -213,11 +217,11 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         this(host, port, null, false, ContextContainer.getContextContainerForClientTests());
     }
 
-    public VSClient(String host, int port, String ownerID, boolean enableSSL, ContextContainer contextContainer) throws IOException {
+    public VSClient(String host, int port, @Nullable String ownerID, boolean enableSSL, ContextContainer contextContainer) throws IOException {
         this(host, port, ownerID, enableSSL, SSL_TERMINATION, contextContainer);
     }
 
-    public VSClient(String host, int port, String ownerID, boolean enableSSL, boolean sslTermination,
+    public VSClient(String host, int port, @Nullable String ownerID, boolean enableSSL, boolean sslTermination,
                     ContextContainer contextContainer) throws IOException {
         this.host = host;
         this.port = port;
@@ -288,14 +292,35 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         return reconnectInterval;
     }
 
+    /**
+     * Checks if client is connected.
+     * Will not wait but will return true even if reconnecting and there is no immediately available transports.
+     *
+     * <p>It returns true during reconnecting phase because it would be inconsistent to return false,
+     * considering that reconnecting state does not trigger "disconnected" event.
+     *
+     * <p>In most cases you should use {@link #tryGetConnectionStatus()} instead.
+     *
+     * @return true if connected or reconnecting, false otherwise
+     */
     public boolean                  isConnected() {
-        return dispatcher != null && dispatcher.hasAvailableTransport();
+        return dispatcher != null && dispatcher.isConnectedOrReconnecting();
+    }
+
+    /**
+     * Checks if client is fully connected right now.
+     * Will not wait and will return false if reconnecting.
+     *
+     * @return true if connected and NOT reconnecting, false otherwise
+     */
+    public boolean isConnectedAndNotReconnecting() {
+        return dispatcher != null && dispatcher.isConnectedAndNotReconnecting();
     }
 
     /**
      * Return true, if it has CONNECTED state.
-     * Return false, if it has DISCONNECTED state.
-     * Otherwise, waits at least {@link #reconnectInterval} until status gets CONNECTED or DISCONNECTED.
+     * Return false, if it has DISCONNECTED/DISCONNECTING state.
+     * Otherwise, waits until status gets CONNECTED or DISCONNECTED.
      *
      * @return true if connected, false if disconnected
      */
@@ -600,6 +625,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
         try {
             vsc.sendConnect ();
         } catch (InterruptedException x) {
+            Thread.currentThread().interrupt();
             throw new InterruptedIOException ();
         }
 
@@ -647,7 +673,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     @Override
-    boolean onTransportStopped(VSocketRecoveryInfo recoveryInfo) {
+    boolean onTransportRecoveryStart(VSocketRecoveryInfo recoveryInfo) {
         if (dispatcher != null) {
             // TODO: Ensure that we can't get duplicate instance of socket in the broken list
             broken.addFirst(recoveryInfo);
@@ -660,7 +686,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     @Override
-    boolean onTransportBroken(VSocketRecoveryInfo recoveryInfo) {
+    boolean onTransportRecoveryStop(VSocketRecoveryInfo recoveryInfo) {
         try {
             synchronized (recoveryInfo) {
                 while (recoveryInfo.isRecoveryAttemptInProgress()) {
@@ -683,12 +709,13 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
                 return recoveryFailed || (!removed && !recoveryInfo.isRecoverySucceeded());
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return true;
         }
     }
 
     @Override
-    void                            onReconnected() {
+    void onConnected() {
         if (listener != null)
             listener.onReconnected();
     }

@@ -194,6 +194,7 @@ final class VSChannelImpl implements VSChannel {
                         LOGGER.log (Level.WARNING, "Error sending bytes read.", e);
                     return false;
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     return false;
                 }
             }
@@ -313,6 +314,7 @@ final class VSChannelImpl implements VSChannel {
             } catch (ConnectionAbortedException x) {
                 LOGGER.log (Level.FINE, "Error sending disconnect.", x);
             } catch (InterruptedException x) {
+                Thread.currentThread().interrupt();
                 LOGGER.log (Level.FINE, "Sending disconnect interrupted.", x);
             } catch (Exception x) {
                 LOGGER.log (Level.WARNING, "Error sending disconnect", x);
@@ -395,6 +397,9 @@ final class VSChannelImpl implements VSChannel {
                     try {
                         sendClosed();
                     } catch (Throwable x) {
+                        if (x instanceof InterruptedException) {
+                            Thread.currentThread().interrupt();
+                        }
                         LOGGER.log (Level.WARNING, "Error sending disconnect", x);
                     }
                     break;
