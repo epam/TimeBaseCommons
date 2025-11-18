@@ -33,6 +33,9 @@ public class CharSequenceParserTest {
         assertEquals(1234, CharSequenceParser.parseDouble("1,,234"));
         assertEquals(1234, CharSequenceParser.parseDouble("1,,234"));
         assertEquals(1234, CharSequenceParser.parseDouble("1,,234"));
+
+        assertEquals(0.0, CharSequenceParser.parseDouble("E10"));
+        assertEquals(0.0, CharSequenceParser.parseDouble("e-10"));
         //??
         assertThrows(NumberFormatException.class, () -> CharSequenceParser.parseDouble("1e-2147483648"));
 //        "0.0000000000000000000000000000000001234567"
@@ -85,7 +88,11 @@ public class CharSequenceParserTest {
 
     static Stream<Arguments> source() {
         return Stream.of(
-                Arguments.of("0"),
+                Arguments.of("0.0e10"),
+                Arguments.of("0e-10"),
+                Arguments.of("0.0"),
+                Arguments.of("0.0000"),
+                Arguments.of("-0.0"),
                 Arguments.of("-0"),
                 Arguments.of("1"),
                 Arguments.of("-1"),
@@ -157,8 +164,6 @@ public class CharSequenceParserTest {
                 Arguments.of("NaN123"),
                 Arguments.of(""),
                 Arguments.of(" "),
-                Arguments.of("e10"),
-                Arguments.of("E10"),
                 Arguments.of("1e"),
                 Arguments.of("1E"),
                 Arguments.of("1e+"),

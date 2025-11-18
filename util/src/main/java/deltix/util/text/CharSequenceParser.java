@@ -279,9 +279,6 @@ public abstract class CharSequenceParser {
         }   
         
         if (numerator == 0){
-            if (denominator != 1) {
-                throw new NumberFormatException("Illegal number format: " + sc.subSequence (startIncl, endExcl));
-            }
             return 0.0;
         }
         // Build the double first, ignoring the denominator
@@ -437,9 +434,6 @@ public abstract class CharSequenceParser {
         }   
         
         if (numerator == 0) {
-            if (denominator != 1) {
-                throw new NumberFormatException("Illegal number format: " + sc.subSequence (startIncl, endExcl));
-            }
             return (0.0F);
         }
 
