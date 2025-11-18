@@ -161,7 +161,10 @@ dependency-check:
     # Run automatically for scheduled OR manually for other pipelines
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never # Do not run for MR events
     - when: manual
+      allow_failure: true # This way manual job will not block the pipeline if it fails and will not affect pipeline status
   script:
     - ./gradlew :dependencyCheckAggregate --no-daemon --no-watch-fs --parallel
   artifacts:
