@@ -10,6 +10,7 @@ import deltix.util.lang.Util;
 import deltix.util.memory.DataExchangeUtils;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.EOFException;
@@ -23,8 +24,10 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -91,6 +94,9 @@ public final class VSDispatcher implements Disposable {
      * </ul>
      */
     private final AtomicReference<VSDispatcherState> state = new AtomicReference<>(VSDispatcherState.INITIAL);
+
+    // Latch that gets counted down when dispatcher is fully closed
+    private final CountDownLatch closeLatch = new CountDownLatch(1);
 
     // Works both as a counter of recovering transport channels
     // and as a barrier to wait until all recovering transports finish recovering.
@@ -429,9 +435,15 @@ public final class VSDispatcher implements Disposable {
                     // This means it is not possible to recover from this state, and we have to properly close the dispatcher.
                     // We need to close all remaining connections and explicitly notify user about that.
 
+                    // Record a copy of state listener reference before updating state because it may be changed concurrently.
+                    // If save "stateListener" before state update, then we can be sure that
+                    // if we had non-null listener before state update, then we will have non-null listener for thread that gets "triggerDisconnectedEvent".
+                    var savedStateListener = this.stateListener;
+
                     // Try to set state to DISCONNECTING, before decrementing recoveringTransports counter,
                     // so other thread will not switch into CONNECTED state if this was the last recovering transport.
-                    state.getAndUpdate(prevState -> {
+
+                    VSDispatcherState stateBeforeUpdate = state.getAndUpdate(prevState -> {
                         switch (prevState) {
                             case CONNECTED:
                                 // Should not happen
@@ -446,10 +458,15 @@ public final class VSDispatcher implements Disposable {
                                 throw new IllegalStateException("Unexpected dispatcher state: " + prevState);
                         }
                     });
+                    // Disconnected event should be triggered only if we changed the state.
+                    // So that event should be triggered only once per dispatcher lifetime.
+                    // Also, it disables trigger of onDisconnected event if dispatcher is closed normally via direct call to close().
+                    boolean triggerDisconnectedEvent = stateBeforeUpdate == VSDispatcherState.CONNECTED || stateBeforeUpdate == VSDispatcherState.RECONNECTING;
+
                     registered = false;
                     recoveringTransports.arriveAndDeregister();
 
-                    processChannelRecoveryFailure(ex);
+                    processChannelRecoveryFailure(ex, triggerDisconnectedEvent, savedStateListener);
                 } else {
                     // Successfully recovered this transport channel
                     registered = false;
@@ -476,8 +493,11 @@ public final class VSDispatcher implements Disposable {
         }
     }
 
-    /** Triggered when transport channel recovery has failed and dispatcher must be disconnected. */
-    private void processChannelRecoveryFailure(Throwable ex) {
+    /**
+     * Triggered when transport channel recovery has failed and dispatcher must be disconnected.
+     * @param triggerClose if true, then current thread is the one that first detected unrecoverable transport failure and responsible for shutdown
+     */
+    private void processChannelRecoveryFailure(Throwable ex, boolean triggerClose, @Nullable ConnectionStateListener stateListenerCopy) {
         boolean wasConnected = remoteConnected;
 
         // notify all waiting for transport that connection is lost
@@ -507,15 +527,35 @@ public final class VSDispatcher implements Disposable {
             }
         }
 
-        // TODO: Review. This may be triggered multiple times per dispatcher lifetime if multiple transport channels fail.
-        // notify state listener that connections lost
-        if (stateListener != null)
-            stateListener.onDisconnected();
+        if (triggerClose) {
+            // notify state listener that connections lost
+            if (stateListenerCopy != null) {
+                if (VSProtocol.LOGGER.isLoggable(Level.FINER)) {
+                    VSProtocol.LOGGER.log(Level.FINER, "Notifying state listener about disconnection. Remote address: " + getRemoteAddress());
+                }
+                stateListenerCopy.onDisconnected();
+            }
 
-        close();
+            close();
+        } else {
+            // If this thread is not responsible for closing dispatcher,
+            // just wait until dispatcher gets closed by other thread.
+            boolean success;
+            try {
+                success = closeLatch.await(lingerInterval + 1_000, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Failed waiting for dispatcher to close after transport recovery failure.", e);
+            }
+            if (!success) {
+                VSProtocol.LOGGER.log(Level.WARNING, "Timeout waiting for dispatcher to close after transport recovery failure. Remote address: " + getRemoteAddress());
+                // No other thread closed the dispatcher in a timely manner, close it ourselves. Even if it may break order between .onDisconnected() and .disposed() events.
+                close();
+            }
+        }
     }
 
-    private boolean isShutdownState() {
+    boolean isShutdownState() {
         VSDispatcherState value = state.get();
         return value == VSDispatcherState.DISCONNECTING || value == VSDispatcherState.DISCONNECTED;
     }
@@ -714,7 +754,9 @@ public final class VSDispatcher implements Disposable {
 
         sendClosing();
 
-        // Change state to DISCONNECTING if it was not DISCONNECTED already
+        // Change state to DISCONNECTING if it was not DISCONNECTED already.
+        // This state change disables triggering of stateListener.onDisconnected() on transport channel error.
+        // So normal dispatcher.close() will not trigger onDisconnected() event.
         state.getAndUpdate(prevState -> {
             if (prevState == VSDispatcherState.DISCONNECTED) {
                 return VSDispatcherState.DISCONNECTED;
@@ -766,6 +808,8 @@ public final class VSDispatcher implements Disposable {
         }
 
         recoveringTransports.forceTermination();
+
+        closeLatch.countDown();
     }
 
     VSChannelImpl               newChannel (int inCapacity, int outCapacity, boolean compressed) {

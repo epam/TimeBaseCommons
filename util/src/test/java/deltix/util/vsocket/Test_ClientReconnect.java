@@ -4,6 +4,7 @@ import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.jul.JulBridge;
 import deltix.qsrv.hf.spi.conn.DisconnectEventListener;
+import deltix.util.annotations.Duration;
 import deltix.util.lang.Util;
 import deltix.util.vsocket.util.TestVServerSocketFactory;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.netcrusher.NetFreezer;
 import org.netcrusher.core.reactor.NioReactor;
@@ -35,9 +35,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class Test_ClientReconnect {
 
+
     // Warning: having more than 120 transports may lead to Gradle test instability because
     //  of insufficient off-heap buffer capacity for all connections.
     private static final int RECOVERY_TEST_TRANSPORTS = Integer.parseInt(System.getProperty("Test_ClientReconnect.transports", "100"));
+
+    // Linger interval is 10 seconds + 5 seconds for notification delays (especially on CI)
+    @Duration(timeUnit = TimeUnit.SECONDS)
+    private static final int DISCONNECT_WAIT_TIMEOUT = 15;
 
     static {
         JulBridge.install();
@@ -120,26 +125,52 @@ public class Test_ClientReconnect {
     /**
      * Client should not get blocked on connection loss.
      */
-    @Test
+    @RepeatedTest(20)
     @Timeout(20)
     public void testConnectionLoss() throws Exception {
         VSClient client = connectClient();
         try {
             assertEquals(0, getConnectedClientCount());
             client.connect();
+            LOG.info("Client connected");
             assertTrue(client.isConnected());
             assertEquals(3, getConnectedClientCount());
             Test_VSocket_Correctness.assertEchoClientCorrectness(client, 1_000);
 
-            var eventListener = installListener(client);
+            CountDownLatch disconnectedLatch = new CountDownLatch(1);
+            AtomicInteger disconnectCount = new AtomicInteger(0);
+            long listenerInstallTime = System.currentTimeMillis();
+            client.setDisconnectedListener(new DisconnectEventListener() {
+                @Override
+                public void onDisconnected() {
+                    LOG.info("Client onDisconnected listener triggered after %s ms")
+                            .with(System.currentTimeMillis() - listenerInstallTime);
+                    disconnectCount.incrementAndGet();
+                    disconnectedLatch.countDown();
+                }
+
+                @Override
+                public void onReconnected() {
+                }
+            });
+
+            long disconnectStart = System.currentTimeMillis();
 
             // Close all connections and disable proxy
             tcpCrusher.close();
 
-            boolean success = eventListener.disconnectedLatch.await(15, TimeUnit.SECONDS);
+            boolean success = disconnectedLatch.await(DISCONNECT_WAIT_TIMEOUT, TimeUnit.SECONDS);
+            long disconnectEnd = System.currentTimeMillis();
+            LOG.info("Stopped to wait for disconnected after %s ms").with(disconnectEnd - disconnectStart);
+            LOG.info("Disconnect event count: %s").with(disconnectCount.get());
+
             assertTrue(success, "Client did not receive disconnect event in time");
             // Client is still disconnected
             assertFalse(client.isConnected());
+
+            // Wait for any redundant events
+            Thread.sleep(10);
+            assertEquals(1, disconnectCount.get(), "Disconnect event should be fired exactly once");
         } finally {
             // TODO: Probably we may want to reconsider this in future and allow graceful client close
             // For this test we do not care if client throws exception
@@ -150,7 +181,7 @@ public class Test_ClientReconnect {
     /**
      * Client should be able to reconnect after single recoverable connection loss.
      */
-    @Test
+    @RepeatedTest(5)
     @Timeout(200)
     public void testReconnectAfterSingleDisconnected() throws Exception {
         try (VSClient client = connectClient()) {
@@ -172,7 +203,7 @@ public class Test_ClientReconnect {
 
                 Thread.sleep(1000); // Wait for the connection to be closed
 
-                boolean gotDisconnectEvent = eventListener.disconnectedLatch.await(10, TimeUnit.SECONDS);
+                boolean gotDisconnectEvent = eventListener.disconnectedLatch.await(DISCONNECT_WAIT_TIMEOUT, TimeUnit.SECONDS);
                 assertFalse(gotDisconnectEvent, "Client is not supposed to generate disconnect if it was able to reconnect");
                 assertEquals(0, eventListener.disconnectCount.get());
                 //Assert.assertEquals(0, eventListener.reconnectCount.get());
@@ -187,7 +218,7 @@ public class Test_ClientReconnect {
     /**
      * Client should be able to reconnect after connection loss if network is restored.
      */
-    @Test
+    @RepeatedTest(5)
     @Timeout(200)
     public void testReconnectAfterAllDisconnected() throws Exception {
         try (VSClient client = connectClient()) {
@@ -207,7 +238,7 @@ public class Test_ClientReconnect {
                 Thread.sleep(1000); // Wait for the connection to be closed
 
 
-                boolean gotDisconnectEvent = eventListener.disconnectedLatch.await(10, TimeUnit.SECONDS);
+                boolean gotDisconnectEvent = eventListener.disconnectedLatch.await(DISCONNECT_WAIT_TIMEOUT, TimeUnit.SECONDS);
                 assertFalse(gotDisconnectEvent, "Client is not supposed to generate disconnect if it was able to reconnect");
                 assertEquals(0, eventListener.disconnectCount.get());
                 // TODO: Uncomment - currently client fires redundant reconnect event
@@ -224,7 +255,7 @@ public class Test_ClientReconnect {
     /**
      * Ensure that if client is closed during disconnect event, it does not get stuck.
      */
-    @Test
+    @RepeatedTest(5)
     @Timeout(20)
     public void testCloseOnDisconnect() throws Exception {
         try (VSClient client = connectClient()) {
@@ -235,10 +266,12 @@ public class Test_ClientReconnect {
             Test_VSocket_Correctness.assertEchoClientCorrectness(client, 1_000);
 
             CountDownLatch disconnectedLatch = new CountDownLatch(1);
+            AtomicInteger disconnectCount = new AtomicInteger(0);
             client.setDisconnectedListener(new DisconnectEventListener() {
                 @Override
                 public void onDisconnected() {
                     LOG.info("Client disconnected");
+                    disconnectCount.incrementAndGet();
                     client.close();
                     disconnectedLatch.countDown();
                 }
@@ -252,6 +285,10 @@ public class Test_ClientReconnect {
             tcpCrusher.close();
 
             disconnectedLatch.await();
+
+            // Wait for any redundant events
+            Thread.sleep(10);
+            assertEquals(1, disconnectCount.get(), "Disconnect event should be fired exactly once");
         }
     }
 

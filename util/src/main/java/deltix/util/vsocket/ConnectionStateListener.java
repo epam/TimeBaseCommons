@@ -2,7 +2,11 @@ package deltix.util.vsocket;
 
 abstract class ConnectionStateListener {
     /**
-     *
+     * Triggered when connection loss causes dispatcher to give up on recovery.
+     * <p>
+     * Triggered only once per dispatcher lifecycle.
+     * <p>
+     * Not triggered if dispatcher is stopped normally with {@link VSDispatcher#close()}.
      */
     abstract void onDisconnected();
 

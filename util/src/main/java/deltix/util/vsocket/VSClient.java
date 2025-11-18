@@ -645,7 +645,11 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
             VSDispatcher d = dispatcher;
 
             // If dispatcher is null, then we already disconnected or even never were connected.
-            triggerDisconnectEvent = d != null;
+            // If dispatcher is in shutdown state, then disconnect event already was triggered.
+            // Note that this check does not give 100% guarantee that disconnect event will be triggered no more than once
+            // because of race between checking isShutdownState() and calling d.setStateListener(null).
+            // However, in practice this should be sufficient.
+            triggerDisconnectEvent = d != null && !d.isShutdownState();
 
             if (d != null) {
                 d.setStateListener(null);
@@ -657,9 +661,14 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
 
             dispatcher = null;
         }
-
-        // https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1269
         // Trigger a disconnect event, so any disconnect listeners can be notified.
+        // https://gitlab.deltixhub.com/Deltix/QuantServer/QuantServer/-/issues/1269
+        // However, this also results that onDisconnect event will be triggered even if no "unexpected disconnect" actually happened.
+        // So while VSDispatcher does not trigger disconnect event if it shut down gracefully, VSClient.close() will still trigger it.
+        // TODO: Decide if we want to call .onDisconnected() in case of normal shutdown.
+        // TODO: This should be reviewed after TickDBClient refactor. We may want to completely remove this call
+        //  as updated VSDispatcher already triggers disconnect event on unexpected disconnects
+        //  and state change that is caused by TickDBClient closing the connection may be handled in TickDBClient itself.
         if (triggerDisconnectEvent) {
             DisconnectEventListener listenerRef = listener;
             if (listenerRef != null) {
