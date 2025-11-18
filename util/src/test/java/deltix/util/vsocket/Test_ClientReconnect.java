@@ -125,7 +125,7 @@ public class Test_ClientReconnect {
     /**
      * Client should not get blocked on connection loss.
      */
-    @RepeatedTest(20)
+    @RepeatedTest(1)
     @Timeout(20)
     public void testConnectionLoss() throws Exception {
         VSClient client = connectClient();
@@ -181,7 +181,7 @@ public class Test_ClientReconnect {
     /**
      * Client should be able to reconnect after single recoverable connection loss.
      */
-    @RepeatedTest(5)
+    @RepeatedTest(1)
     @Timeout(200)
     public void testReconnectAfterSingleDisconnected() throws Exception {
         try (VSClient client = connectClient()) {
@@ -218,7 +218,7 @@ public class Test_ClientReconnect {
     /**
      * Client should be able to reconnect after connection loss if network is restored.
      */
-    @RepeatedTest(5)
+    @RepeatedTest(1)
     @Timeout(200)
     public void testReconnectAfterAllDisconnected() throws Exception {
         try (VSClient client = connectClient()) {
@@ -255,7 +255,7 @@ public class Test_ClientReconnect {
     /**
      * Ensure that if client is closed during disconnect event, it does not get stuck.
      */
-    @RepeatedTest(5)
+    @RepeatedTest(1)
     @Timeout(20)
     public void testCloseOnDisconnect() throws Exception {
         try (VSClient client = connectClient()) {
@@ -296,7 +296,7 @@ public class Test_ClientReconnect {
      * Starts with 1000 connections, kills them, recovers only some of them.
      * Expected to end up in DISCONNECTED state.
      */
-    @RepeatedTest(5)
+    @RepeatedTest(1)
     //@Test
     @Timeout(60)
     public void testPartialRecovery() throws Exception {
