@@ -1,6 +1,7 @@
 package deltix.util.vsocket;
 
 import deltix.util.collections.ByteQueue;
+import net.jcip.annotations.GuardedBy;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
@@ -20,7 +21,9 @@ public class VSocketOutputStream extends OutputStream {
     @ApiStatus.Experimental
     public static int           REPORT_THRESHOLD = Integer.getInteger("TimeBase.network.socketOutputStream.reportThreshold", CAPACITY / 4);
 
+    @GuardedBy("buffer")
     private final ByteQueue     buffer;
+    @GuardedBy("out")
     private final OutputStream  out;
     long                        confirmed;
 
@@ -103,6 +106,7 @@ public class VSocketOutputStream extends OutputStream {
         }
     }
 
+    @GuardedBy("buffer")
     private void dumpInternal(byte[] b, int off, int len) {
         // assert Thread.holdsLock(buffer);
         int overflow = buffer.size() + len - buffer.capacity();

@@ -10,8 +10,8 @@ public final class ByteQueue implements ByteContainer {
     private int                 capacity;
     private byte []             buffer;
     private int                 size = 0;
-    private int                 head = 0;
-    private int                 tail = 0;
+    private int                 head = 0; // Where data gets consumed
+    private int                 tail = 0; // Where data gets added
     
     public ByteQueue (int capacity) {
         this.capacity = capacity;
@@ -39,36 +39,6 @@ public final class ByteQueue implements ByteContainer {
             tail = 0;                
     }
 
-//    public void                 insert (byte [] src, int offset, int length) {
-//        if (capacity - size < length) {
-//            // increase buffer
-//            if (tail > head) {
-//                byte[] temp = new byte[capacity + length];
-//                System.arraycopy (buffer, head, temp, length + head, size);
-//                buffer = temp;
-//            } else {
-//                byte[] temp = new byte[capacity + length];
-//                System.arraycopy (buffer, 0, temp, 0, tail);
-//                System.arraycopy (buffer, head, temp, capacity - head + length, capacity - head);
-//                buffer = temp;
-//            }
-//            capacity += length;
-//        }
-//
-//        if (head > length) {
-//            System.arraycopy (src, offset, buffer, head - length, length);
-//            head -= length;
-//        } else {
-//            int remains = length - head;
-//            System.arraycopy (src, offset, buffer, capacity - remains, remains);
-//            System.arraycopy (src, offset + remains, buffer, 0, head);
-//
-//            head = capacity - remains;
-//        }
-//        size += length;
-//
-//    }
-    
     public void                 offer (byte [] src, int offset, int length) {
         assert size + length <= capacity :
             "size: " + size + "; length: " + length + "; capacity: " + capacity;
@@ -77,15 +47,18 @@ public final class ByteQueue implements ByteContainer {
         int                 excess = end - capacity;
         
         if (excess > 0) {
+            // Wrap over array end.
+            // Length of the first part.
             int             n = capacity - tail;
-            
             System.arraycopy (src, offset, buffer, tail, n);
-            
+
+            // Length of the second part.
             tail = length - n;
             
             System.arraycopy (src, offset + n, buffer, 0, tail);
         }
         else {
+            // Single chunk copy
             System.arraycopy (src, offset, buffer, tail, length);        
             tail = excess == 0 ? 0 : end;
         }  
@@ -240,7 +213,7 @@ public final class ByteQueue implements ByteContainer {
         assert length < size;
         int newTail = tail - length;
         if (newTail < 0)
-            newTail =+ capacity;
+            newTail += capacity;
         
         size -= length;
         tail = newTail;
@@ -251,13 +224,17 @@ public final class ByteQueue implements ByteContainer {
             return false; 
 
         assert(value > capacity);
-        capacity = value;
         
         byte[] previous = buffer;
-        buffer = new byte[capacity];
+        // Allocate new buffer before changing any other fields to avoid state corruption if allocation fails with OOM.
+        buffer = new byte[value];
+        capacity = value;
+
         if (tail > head) {
+            // No wrap
             System.arraycopy (previous, head, buffer, 0, size);
         } else {
+            // Wrapped
             System.arraycopy (previous, head, buffer, 0, previous.length - head);
             System.arraycopy (previous, 0, buffer, previous.length - head, tail);
         }
