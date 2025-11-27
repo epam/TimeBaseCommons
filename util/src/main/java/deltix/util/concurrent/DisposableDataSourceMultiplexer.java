@@ -18,7 +18,7 @@ public class DisposableDataSourceMultiplexer <T extends AsynchronousDisposableDa
         for (T ds : dataSources ())
             try {
                 ds.close ();
-            } catch (Throwable x) {
+            } catch (Exception x) {
                 Util.logException ("close () threw exception", x);
             }
     }

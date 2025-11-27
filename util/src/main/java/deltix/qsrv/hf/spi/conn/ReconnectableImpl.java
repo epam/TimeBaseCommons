@@ -1,5 +1,6 @@
 package deltix.qsrv.hf.spi.conn;
 
+import deltix.util.LangUtil;
 import deltix.util.time.GlobalTimer;
 import deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
@@ -271,7 +272,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                                     System.currentTimeMillis() - timeDisconnected,
                                     this
                             );
-                } catch (Throwable x) {
+                } catch (Exception x) {
                     String check = x.toString();
                     if (check.equals(lastExceptionAsString)) {
                         //logger.log (logLevel, "[%s] Reconnect failed due to: %s").with(logprefix).with(lastExceptionAsString);
@@ -317,6 +318,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                     } catch (Throwable x) {
                         //logger.error("[%s] Unexpected: %s").with(logprefix ).with(x);
                         logger.log (Level.SEVERE, "[" + logprefix + "] Unexpected", x);
+                        LangUtil.propagateError(x);
                     }
                 }
             };

@@ -1,5 +1,6 @@
 package deltix.util.net.timer;
 
+import deltix.util.LangUtil;
 import deltix.util.lang.*;
 import java.io.*;
 import java.net.*;
@@ -30,6 +31,7 @@ public class TimerServerThread extends Thread {
             }
         } catch (Throwable x) {
             Util.handleException (x);
+            LangUtil.propagateError(x);
         } finally {
             Util.close (ss);
         }        

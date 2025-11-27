@@ -97,7 +97,7 @@ class AuthCodeClient {
                 token.getRefreshToken(),
                 token.getExpiresIn()
             );
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException(t);
         }
     }

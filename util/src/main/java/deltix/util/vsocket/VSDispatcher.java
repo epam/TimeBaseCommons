@@ -326,6 +326,14 @@ public final class VSDispatcher implements Disposable {
      * In that case, threads may compete for changing dispatcher state.
      */
     void                        transportStopped (VSTransportChannel channel, Throwable ex) {
+        if (!(ex instanceof Exception)) {
+            // This means major failure, possibly OOM or other serious error.
+            VSProtocol.LOGGER.log(Level.SEVERE, "Critical error on transport channel. Remote address: " + channel.socket.getRemoteAddress() + ". Dispatcher: " + this, ex);
+            // Just close dispatcher right away
+            close();
+            return;
+        }
+
         Level disconnectLogLevel = ex instanceof EOFException ? Level.FINE : Level.INFO;
         if (VSProtocol.LOGGER.isLoggable(disconnectLogLevel)) {
             VSProtocol.LOGGER.log(disconnectLogLevel, "Transport channel has stopped. Remote address: " + channel.socket.getRemoteAddress() + ". Error: " + ex.getClass().getSimpleName() + ". Message: " + ex.getMessage());

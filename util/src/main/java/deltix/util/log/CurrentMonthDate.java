@@ -1,5 +1,6 @@
 package deltix.util.log;
 
+import deltix.util.LangUtil;
 import deltix.util.time.GlobalTimer;
 
 import java.text.SimpleDateFormat;
@@ -89,6 +90,7 @@ public class CurrentMonthDate extends TimerTask {
             // this should not happened in the current roll() stack
             // !!! DO NOT USE Logger here !!! TerseFormatter creates CurrentMonthDate statically and hangs during initialization (#13116)
             System.out.println("Error while rolling CurrentMonthDate: " + e.getMessage());
+            LangUtil.propagateError(e);
         }
     }
 }

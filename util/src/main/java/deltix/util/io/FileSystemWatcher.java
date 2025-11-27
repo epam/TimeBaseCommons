@@ -306,7 +306,7 @@ public class FileSystemWatcher {
                         for (EventHandler handler : pathMap.get(path.toAbsolutePath())) {
                             try {
                                 handler.onEvent(path.resolve(file).toFile(), eventType);
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 LOGGER.warn().append("An error while event processing.").append(t).commit();
                             }
                         }

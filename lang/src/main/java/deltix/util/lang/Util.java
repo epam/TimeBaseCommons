@@ -536,9 +536,7 @@ public class Util {
             return (newInstance (clazz, args));
         } catch (RuntimeException x) {
             throw x;
-        } catch (Error x) {
-            throw x;
-        } catch (Throwable other) {
+        } catch (Exception other) {
             throw new RuntimeException (clazz.getName () + " instantiation failed", other);
         }
     }
@@ -552,9 +550,7 @@ public class Util {
             return (newInstance (className, args));
         } catch (RuntimeException x) {
             throw x;
-        } catch (Error x) {
-            throw x;
-        } catch (Throwable other) {
+        } catch (Exception other) {
             throw new RuntimeException (className + " instantiation failed", other);
         }
     }

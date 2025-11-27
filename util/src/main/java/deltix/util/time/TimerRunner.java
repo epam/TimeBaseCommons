@@ -1,5 +1,6 @@
 package deltix.util.time;
 
+import deltix.util.LangUtil;
 import deltix.util.lang.Util;
 
 /**
@@ -15,10 +16,12 @@ public abstract class TimerRunner extends java.util.TimerTask {
             runInternal();
         }
         catch (Throwable e) {
+            // We catch Throwable to keep existing API behavior for possible onError() overrides.
             try {
                 onError(e);
             } catch (Throwable ex) {
                 Util.handleException(ex);
+                LangUtil.propagateError(ex);
             }
         }
     }
@@ -30,6 +33,7 @@ public abstract class TimerRunner extends java.util.TimerTask {
      */
     protected void          onError (Throwable e) {
         Util.handleException (e);
+        LangUtil.propagateError(e);
     }
 
     /**

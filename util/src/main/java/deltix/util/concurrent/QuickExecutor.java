@@ -5,6 +5,7 @@ import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
 import deltix.thread.affinity.AffinityConfig;
 import deltix.thread.affinity.AffinityThreadFactoryBuilder;
+import deltix.util.LangUtil;
 import deltix.util.collections.QuickList;
 import deltix.util.collections.generated.ObjectHashSet;
 import deltix.util.time.GlobalTimer;
@@ -251,6 +252,7 @@ public class QuickExecutor {
                             LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
                         LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
+                        LangUtil.propagateError(x);
                     } finally {
                         if (!task.setDone ()) {
                             task = null;

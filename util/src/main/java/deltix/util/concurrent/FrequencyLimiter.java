@@ -1,5 +1,6 @@
 package deltix.util.concurrent;
 
+import deltix.util.LangUtil;
 import deltix.util.lang.Util;
 
 import java.util.Timer;
@@ -24,6 +25,7 @@ public abstract class FrequencyLimiter {
      */
     protected void                      onError (Throwable x) {
         Util.logException(this + " failed", x);
+        LangUtil.propagateError(x);
     }
 
     /**

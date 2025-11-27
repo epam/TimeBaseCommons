@@ -2,6 +2,7 @@ package deltix.util.concurrent;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
+import deltix.util.LangUtil;
 import deltix.util.collections.QuickList;
 import deltix.util.lang.ExceptionHandler;
 import deltix.util.time.TimeKeeper;
@@ -155,6 +156,8 @@ public class ThrottlingExecutor extends Thread {
                     LOG.error("Exception in %s: %s").with(next).with(x);
                 else
                     handler.handle (x);
+
+                LangUtil.propagateError(x);
             }
 
             t1 = TimeKeeper.currentTime;

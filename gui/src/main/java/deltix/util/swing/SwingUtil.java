@@ -121,7 +121,7 @@ public abstract class SwingUtil {
 
 		try {
 			return (loadImageAndCloseStream (is, file.getPath ()));
-		} catch (Throwable x) {
+		} catch (Exception x) {
 			LOGGER.warn().append("Failed to read image file ").append(file).append(x).commit();
 			return (null);
 		} finally {
@@ -267,14 +267,14 @@ public abstract class SwingUtil {
             UIManager.setLookAndFeel ("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         } catch (ClassNotFoundException exc) {
             setSystemLookAndFeel();
-        } catch (Throwable e) {
+        } catch (Exception e) {
         }
     }
 
     public static void          setSystemLookAndFeel () {
         try {
             UIManager.setLookAndFeel (UIManager.getSystemLookAndFeelClassName());
-        } catch (Throwable ignored) {
+        } catch (Exception ignored) {
         }
     }
             
@@ -514,7 +514,7 @@ public abstract class SwingUtil {
                 Calendar calendar = new GregorianCalendar();
                 calendar.setTime(dateComboBox.getFormat().parse(text));
                 dateComboBox.setSelectedItem(calendar);
-            }catch (Throwable t) {
+            }catch (Exception t) {
                 throw new IllegalArgumentException (comp.toString ());
             }
         }
