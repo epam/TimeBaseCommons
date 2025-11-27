@@ -207,7 +207,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                             for (RepositoryEventHandler<T> handler : getHandlers(e)) {
                                 handler.onEvent(fItem.item, e);
                             }
-                        } catch (Throwable t) {
+                        } catch (Exception t) {
                             logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                         }
                     }
@@ -231,7 +231,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                     for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.CREATED)) {
                                         handler.onEvent(fItem.item, SCMDRepositoryEvent.CREATED);
                                     }
-                                } catch (Throwable t) {
+                                } catch (Exception t) {
                                     logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                                 }
                             }
@@ -245,7 +245,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                 for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.DELETED)) {
                                     handler.onEvent(fItem.item, SCMDRepositoryEvent.DELETED);
                                 }
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                             }
                         } else if (lastModified != fItem.lastModified) {
@@ -259,7 +259,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                                     for (RepositoryEventHandler<T> handler : getHandlers(SCMDRepositoryEvent.MODIFIED)) {
                                         handler.onEvent(fItem.item, SCMDRepositoryEvent.MODIFIED);
                                     }
-                                } catch (Throwable t) {
+                                } catch (Exception t) {
                                     logger.warn().append("An error while preparing item for ").append(path).append(t).commit();
                                 }
                             }

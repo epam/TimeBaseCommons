@@ -37,7 +37,7 @@ public class ImageLoader {
 
 		try {
 			return (loadImage (is));
-		} catch (Throwable x) {
+		} catch (Exception x) {
 			LOG.warn ("Failed to read image from path %s: %s").with(relPath).with(x);
 			return (null);
 		} finally {
@@ -50,7 +50,7 @@ public class ImageLoader {
 
 		try {
 			return (loadImage (is));
-		} catch (Throwable x) {
+		} catch (Exception x) {
 			LOG.warn ("Failed to read image %s: %s").with(file).with(x);
 			return (null);
 		} finally {

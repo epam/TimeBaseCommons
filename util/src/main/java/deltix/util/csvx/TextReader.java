@@ -3,6 +3,7 @@ package deltix.util.csvx;
 import java.io.*;
 import java.util.regex.*;
 
+import deltix.util.LangUtil;
 import deltix.util.collections.*;
 import deltix.util.collections.generated.*;
 import deltix.util.io.*;
@@ -176,7 +177,7 @@ public abstract class TextReader implements Disposable {
 		return (getCell ( idx,
 		                  trim ).toString ( ));
 		}
-		catch(Throwable x){
+		catch(Exception x){
 			return "";
 		}
 	}

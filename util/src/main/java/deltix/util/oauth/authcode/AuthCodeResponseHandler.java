@@ -43,7 +43,7 @@ class AuthCodeResponseHandler implements HttpHandler {
             );
             sendResponse(httpExchange, result);
             authCodeResultQueue.put(result);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException(t);
         } finally {
             httpExchange.close();
@@ -139,7 +139,7 @@ class AuthCodeResponseHandler implements HttpHandler {
             return message
                 .replace("{{result-error}}", result.error())
                 .replace("{{result-error-description}}", result.errorDescription());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             return browserOptions.getErrorMessage();
         }
     }

@@ -3,6 +3,7 @@ package deltix.util.concurrent;
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
+import deltix.util.LangUtil;
 import deltix.util.collections.QuickList;
 import net.jcip.annotations.GuardedBy;
 
@@ -182,6 +183,7 @@ public class QuickExecutorWithQueue {
                             LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
                         LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
+                        LangUtil.propagateError(x);
                     } finally {
                         if (task.finished ())
                             task = null;
@@ -189,6 +191,7 @@ public class QuickExecutorWithQueue {
                 }
             } catch (Throwable x) {
                 x.printStackTrace ();
+                LangUtil.propagateError(x);
             }
         }
     }

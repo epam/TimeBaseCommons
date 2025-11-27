@@ -55,7 +55,7 @@ public class FileEditor extends CompositeEditor {
                             }
                         }
 
-                    } catch (Throwable x) {
+                    } catch (Exception x) {
                         //nothing to do
                     }
                 }

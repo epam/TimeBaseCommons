@@ -1,5 +1,6 @@
 package deltix.util.vsocket;
 
+import deltix.util.LangUtil;
 import deltix.util.concurrent.QuickExecutor;
 import deltix.util.lang.Disposable;
 import deltix.util.lang.Util;
@@ -192,6 +193,7 @@ class VSTransportChannel implements Runnable, Disposable {
                         // No reason to shutdown this transport channel
                         LOGGER.log (Level.SEVERE, "Exception sending ACK", x);
                         local.close ();
+                        LangUtil.propagateError(x);
                     }
                 }
                 else if (destId == BYTES_RECIEVED) {
@@ -314,11 +316,14 @@ class VSTransportChannel implements Runnable, Disposable {
         } catch (InterruptedException e) {
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.log (Level.FINE, "Interrupted" , e);
+            Thread.currentThread().interrupt();
         } catch (Throwable x) {
             if (currentThread.isInterrupted())
                 LOGGER.log (Level.FINE, this + ": Interrupted.");
             else
                 onException (x);
+
+            LangUtil.propagateError(x);
         } finally {
             closed = true;
         }
@@ -330,6 +335,8 @@ class VSTransportChannel implements Runnable, Disposable {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return Long.MAX_VALUE;
             }
 
         if (closed)

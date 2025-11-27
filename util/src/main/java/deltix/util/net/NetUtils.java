@@ -24,7 +24,7 @@ public class NetUtils {
         try {
             checkUrl (s, connectTimeout, readTimeout);
             return (true);
-        } catch (Throwable x) {
+        } catch (Exception x) {
             return (false);
         }
     }

@@ -55,7 +55,7 @@ class CertificateTokenQuery implements TokenQuery {
         try {
             certJwk = JWK.parse(keyProvider.certificate());
             jwsSigner = createSigner(keyProvider.privateKey());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Failed to initialize key store.", t);
         }
     }
@@ -90,7 +90,7 @@ class CertificateTokenQuery implements TokenQuery {
         try {
             signedJWT.sign(jwsSigner);
             return signedJWT.serialize();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Failed to create assertion.", t);
         }
     }
@@ -123,7 +123,7 @@ class CertificateTokenQuery implements TokenQuery {
             } else if (privateKey instanceof ECPrivateKey) {
                 return new ECDSASigner((ECPrivateKey) privateKey);
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Failed to create JWTSigner.", t);
         }
 
@@ -153,7 +153,7 @@ class CertificateTokenQuery implements TokenQuery {
                 try (InputStream is = Files.newInputStream(Paths.get(keystorePath))) {
                     keyStore.load(is, keystorePassword);
                 }
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 throw new RuntimeException("Failed to load KeyStore: " + keystorePath, t);
             }
         }

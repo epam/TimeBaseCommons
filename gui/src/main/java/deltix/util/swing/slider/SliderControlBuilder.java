@@ -32,7 +32,7 @@ public class SliderControlBuilder {
 
                 try {
                     paintSliderLabelsAndThumbs(slider, g);
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     super.paint(g);
                 }
             }

@@ -69,7 +69,7 @@ public class Oauth2ClientImpl implements Oauth2Client {
         // initial token request
         try {
             requestToken();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.error().append("Failed to request token").append(t).commit();
         }
     }
@@ -197,7 +197,7 @@ public class Oauth2ClientImpl implements Oauth2Client {
             return restClient.postForm(tokenQuery);
         } catch (IOException e) {
             throw new RuntimeException("Failed to perform REST query", e);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.warn().append("Failed to request token").append(t).commit();
             throw t;
         }
@@ -225,7 +225,7 @@ public class Oauth2ClientImpl implements Oauth2Client {
             } finally {
                 lock.unlock();
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.warn().append("Failed to execute task").append(t).commit();
             scheduleRefresh(retryStrategy.nextRetryDelay());
         }

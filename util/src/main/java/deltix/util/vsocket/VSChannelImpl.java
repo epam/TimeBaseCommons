@@ -396,7 +396,7 @@ final class VSChannelImpl implements VSChannel {
                 case Closed:
                     try {
                         sendClosed();
-                    } catch (Throwable x) {
+                    } catch (Exception x) {
                         if (x instanceof InterruptedException) {
                             Thread.currentThread().interrupt();
                         }

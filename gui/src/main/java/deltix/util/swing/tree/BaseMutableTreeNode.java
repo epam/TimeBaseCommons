@@ -438,7 +438,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
             try {
                 if (!isCancelled())
                     get();
-            }  catch (Throwable ignore) {
+            }  catch (Exception ignore) {
           }
         }
     }
@@ -464,7 +464,7 @@ public abstract class BaseMutableTreeNode extends LazyMutableTreeNode {
             try {
                 if (!isCancelled())
                     get();
-            } catch (Throwable ignore) {
+            } catch (Exception ignore) {
             }
         }
     }
