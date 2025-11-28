@@ -128,10 +128,17 @@ public final class MemoryDataInput {
      */
     @Deprecated
     public boolean    checkAvailable (int n) {
-        if (getAvail () < n)
-            throw new AssertionError ("Cannot read " + n + " bytes; available: " + getAvail ());
+        return assertAvailable(n);
+    }
 
-        return (true);
+    /**
+     * Should be used only for assertions.
+     */
+    private boolean assertAvailable(int n) {
+        if (getAvail() < n) {
+            throw new AssertionError("Cannot read " + n + " bytes; available: " + getAvail());
+        }
+        return true;
     }
 
     /**
@@ -155,7 +162,7 @@ public final class MemoryDataInput {
     }
 
     public void       readFully (byte[] b, int off, int len) {
-        assert hasAvailable (len);
+        assert assertAvailable (len);
         
         System.arraycopy (mBuffer, mPos, b, off, len);
         mPos += len;
@@ -166,7 +173,7 @@ public final class MemoryDataInput {
     }
 
     public void       skipBytes (int n) {
-        assert hasAvailable (n);
+        assert assertAvailable (n);
         mPos += n;
     }
 
@@ -195,7 +202,7 @@ public final class MemoryDataInput {
     }
 
     public int        readUnsignedShort () {
-        assert hasAvailable (2);
+        assert assertAvailable (2);
 
         int     ret = DataExchangeUtils.readUnsignedShort (mBuffer, mPos);
         mPos += 2;
@@ -203,7 +210,7 @@ public final class MemoryDataInput {
     }
 
     public long       readUnsignedInt () {
-        assert hasAvailable (4);
+        assert assertAvailable (4);
 
         long    ret = DataExchangeUtils.readUnsignedInt (mBuffer, mPos);
         mPos += 4;
@@ -211,25 +218,25 @@ public final class MemoryDataInput {
     }
 
     public int        readUnsignedByte () {
-        assert hasAvailable (1);
+        assert assertAvailable (1);
 
         return (mBuffer [mPos++] & 0xFF);
     }
 
     public boolean    readBoolean () {
-        assert hasAvailable (1);
+        assert assertAvailable (1);
 
         return (mBuffer [mPos++] == 1);
     }
 
     public byte       readByte () {
-        assert hasAvailable (1);
+        assert assertAvailable (1);
 
         return (mBuffer [mPos++]);
     }
 
     public char       readChar () {
-        assert hasAvailable (2);
+        assert assertAvailable (2);
 
         char    ret = DataExchangeUtils.readChar (mBuffer, mPos);
         mPos += 2;
@@ -237,7 +244,7 @@ public final class MemoryDataInput {
     }
 
     public double     readDouble () {
-        assert hasAvailable (8);
+        assert assertAvailable (8);
 
         double    ret = DataExchangeUtils.readDouble (mBuffer, mPos);
         mPos += 8;
@@ -245,7 +252,7 @@ public final class MemoryDataInput {
     }
 
     public float      readFloat () {
-        assert hasAvailable (4);
+        assert assertAvailable (4);
 
         float    ret = DataExchangeUtils.readFloat (mBuffer, mPos);
         mPos += 4;
@@ -253,7 +260,7 @@ public final class MemoryDataInput {
     }
 
     public int        readInt () {
-        assert hasAvailable (4);
+        assert assertAvailable (4);
 
         int    ret = DataExchangeUtils.readInt (mBuffer, mPos);
         mPos += 4;
@@ -261,7 +268,7 @@ public final class MemoryDataInput {
     }
 
     public long       readLong () {
-        assert hasAvailable (8);
+        assert assertAvailable (8);
 
         long    ret = DataExchangeUtils.readLong (mBuffer, mPos);
         mPos += 8;
@@ -269,7 +276,7 @@ public final class MemoryDataInput {
     }
 
     public long       readLong48 () {
-        assert hasAvailable (6);
+        assert assertAvailable (6);
 
         long    ret = DataExchangeUtils.readLong48 (mBuffer, mPos);
         mPos += 6;
@@ -277,7 +284,7 @@ public final class MemoryDataInput {
     }
 
     public long       readLongUnsignedByte () {
-        assert hasAvailable (1);
+        assert assertAvailable (1);
 
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
@@ -373,7 +380,7 @@ public final class MemoryDataInput {
     }
 
     public short      readShort () {
-        assert hasAvailable (2);
+        assert assertAvailable (2);
 
         short    ret = DataExchangeUtils.readShort (mBuffer, mPos);
         mPos += 2;
