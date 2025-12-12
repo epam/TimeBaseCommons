@@ -70,7 +70,7 @@ public class FileModificationTracker {
     public final void               checkModifiedLogExceptions () {
         try {
             checkModified ();
-        } catch (Throwable x) {
+        } catch (Exception x) {
             Util.logException ("Uncaught exception", x);
         }
     }

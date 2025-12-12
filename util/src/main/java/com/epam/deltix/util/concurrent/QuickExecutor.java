@@ -14,13 +14,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.concurrent;
+
+package com.epam.deltix.util.concurrent;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
 import deltix.thread.affinity.AffinityConfig;
 import deltix.thread.affinity.AffinityThreadFactoryBuilder;
+import com.epam.deltix.util.LangUtil;
 import com.epam.deltix.util.collections.QuickList;
 import deltix.util.collections.generated.ObjectHashSet;
 import com.epam.deltix.util.time.GlobalTimer;
@@ -267,6 +269,7 @@ public class QuickExecutor {
                             LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
                         LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
+                        LangUtil.propagateError(x);
                     } finally {
                         if (!task.setDone ()) {
                             task = null;

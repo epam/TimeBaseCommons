@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.currency;
+
+package com.epam.deltix.util.currency;
 
 import com.epam.deltix.util.io.BasicIOUtil;
 import com.epam.deltix.util.lang.Depends;
@@ -58,7 +59,7 @@ public class CurrencyCodeList {
             else
                 is = new FileInputStream(alternativeLocation);
             read(is);
-        } catch (final Throwable x) {
+        } catch (Exception x) {
             Util.logException("Can not create currency code list", x);
         } finally {
             Util.close (is);
@@ -119,7 +120,7 @@ public class CurrencyCodeList {
             fstNm = fstNmElmnt.getChildNodes ();
 
             return (fstNm.item(0)).getNodeValue();
-        } catch (final Throwable x) {
+        } catch (Exception x) {
             return null;
         }
 

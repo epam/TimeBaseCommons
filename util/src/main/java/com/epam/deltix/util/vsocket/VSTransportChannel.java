@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.QuickExecutor;
 import com.epam.deltix.util.lang.Disposable;
@@ -197,6 +198,7 @@ class VSTransportChannel implements Runnable, Disposable {
                         // No reason to shutdown this transport channel
                         VSProtocol.LOGGER.log (Level.SEVERE, "Exception sending ACK", x);
                         local.close ();
+                        LangUtil.propagateError(x);
                     }
                 }
                 else if (destId == VSProtocol.BYTES_RECIEVED) {
@@ -319,11 +321,14 @@ class VSTransportChannel implements Runnable, Disposable {
         } catch (InterruptedException e) {
             if (VSProtocol.LOGGER.isLoggable(Level.FINE))
                 VSProtocol.LOGGER.log (Level.FINE, "Interrupted" , e);
+            Thread.currentThread().interrupt();
         } catch (Throwable x) {
             if (currentThread.isInterrupted())
                 VSProtocol.LOGGER.log (Level.FINE, this + ": Interrupted.");
             else
                 onException (x);
+
+            LangUtil.propagateError(x);
         } finally {
             closed = true;
         }
@@ -335,6 +340,8 @@ class VSTransportChannel implements Runnable, Disposable {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return Long.MAX_VALUE;
             }
 
         if (closed)

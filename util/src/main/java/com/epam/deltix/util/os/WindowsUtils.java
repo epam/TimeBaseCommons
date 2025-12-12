@@ -88,7 +88,7 @@ public class WindowsUtils {
             return WindowsRegistry.readString (hive,
                                                keyName,
                                                valueName);
-        } catch (final Throwable e) {
+        } catch (final Exception e) {
             return null;
         }
     }
