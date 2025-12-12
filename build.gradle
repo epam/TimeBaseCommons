@@ -97,6 +97,10 @@ configure(leafProjects) {
                 entry 'jmh-core'
                 entry 'jmh-generator-annprocess'
             }
+
+            dependency 'org.jetbrains:annotations:24.1.0'
+
+            dependency "org.mockito:mockito-core:5.15.2"
         }
     }
 

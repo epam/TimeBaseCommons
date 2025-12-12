@@ -1,0 +1,114 @@
+/*
+ * Copyright 2021 EPAM Systems, Inc
+ *
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership. Licensed under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.epam.deltix.util.io;
+
+import com.epam.deltix.util.csvx.CSVXReader;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import static org.junit.Assert.assertEquals;
+
+
+public class CSVWriterTest {
+
+    @Test
+    public void printCellWithComaDefaultSeparator() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out);
+        writer.writeCells("line, with escape", "line without escape", "line with, multiple escape, characters");
+        String actual = extractBuffer(out);
+        String expected = "\"line, with escape\",line without escape,\"line with, multiple escape, characters\"";
+        assertEquals(expected, actual);
+        writer.writeCells("line\" with other escape", "line without escape", "\"line with, multiple different\" escape, characters");
+        actual = extractBuffer(out);
+        expected = "\"line\"\" with other escape\",line without escape,\"\"\"line with, multiple different\"\" escape, characters\"";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void printCellWithPipeSeparator() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out, '|');
+        writer.writeCells("line| with escape", "line without escape", "line with| multiple escape| characters");
+        String actual = extractBuffer(out);
+        String expected = "\"line| with escape\"|line without escape|\"line with| multiple escape| characters\"";
+        assertEquals(expected, actual);
+        writer.writeCells("line\" with other escape", "line with, escape coma", "\"line with, multiple |different\" escape, characters");
+        actual = extractBuffer(out);
+        expected = "\"line\"\" with other escape\"|line with, escape coma|\"\"\"line with, multiple |different\"\" escape, characters\"";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void printCellWithPipeSeparatorWithRider() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out, '|');
+        writer.writeCells("line| with escape", "line without escape", "line with| multiple escape| characters");
+        CSVXReader reader = new CSVXReader(new StringReader(extractBuffer(out)), '|', false, "out");
+        reader.nextLine();
+        assertEquals(3, reader.getCells().length);
+    }
+
+    @Test
+    public void printCellWithAdditionalEscapeCharacters() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out, '|', '"', '\t');
+        writer.writeCells("line| with escape", "line with additional\t\t escape", "line with no\n escape new line",
+                "line with escape\" quote char");
+        String actual = extractBuffer(out);
+        String expected = "\"line| with escape\"|\"line with additional\t\t escape\"|line with no\n escape new line|\"line with escape\"\" quote char\"";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void printCellWithAnotherQuoteCharacter() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out, '\t', '\'');
+        writer.writeCells("line| with ,default\" \r\nnot used escapes", "line with \t\t separator", "line wit' quote char");
+        String actual = extractBuffer(out);
+        String expected = "line| with ,default\" \r\nnot used escapes\t'line with \t\t separator'\t'line wit'' quote char'";
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void printCellWithEscapeEOL() throws IOException {
+
+        StringWriter out = new StringWriter();
+        CSVWriter writer = new CSVWriter(out, '\t');
+        writer.writeCells("line\t with separator", "line with \n new line", "line without escape", "line with \r carriage return");
+        String actual = extractBuffer(out);
+        String expected = "\"line\t with separator\"\t\"line with \n new line\"\tline without escape\t\"line with \r carriage return\"";
+        assertEquals(expected, actual);
+        CSVXReader reader = new CSVXReader(new StringReader(actual), '\t', false, "out");
+        reader.nextLine();
+        assertEquals(4, reader.getCells().length);
+    }
+
+    private String extractBuffer(StringWriter out) {
+        String result = out.getBuffer().toString();
+        out.getBuffer().setLength(0);
+        return result;
+    }
+}
