@@ -14,7 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+
+package com.epam.deltix.util.io;
+
+import deltix.util.LangUtil;
 
 import java.io.*;
 
@@ -44,17 +47,18 @@ public final class SelfFlushingBufferedOutputStream extends BufferedOutputStream
                             flush ();                            
                         } catch (Throwable x) {
                             exception = x;
-                        }      
+                            LangUtil.propagateError(x); // Will break loop on Error
+                        }
                 }
                 
                 try {
                     Thread.sleep (interval);
                 } catch (InterruptedException x) {
-                    break;
+                    return;
                 }
             }
         }
-    };
+    }
         
     private Flusher                 flusher = new Flusher ();
     

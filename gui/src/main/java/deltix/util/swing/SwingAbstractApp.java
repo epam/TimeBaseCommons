@@ -162,7 +162,7 @@ public class SwingAbstractApp
                     return true;
                 }
             }
-        } catch (Throwable x) {
+        } catch (Exception x) {
             return false;
         }
 

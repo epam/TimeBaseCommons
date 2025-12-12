@@ -58,7 +58,7 @@ public class StandardDialog extends JDialog {
                                 mStatus = status;
                                 dispose ();
                             }
-                        } catch (Throwable x) {
+                        } catch (Exception x) {
                             handle (x);
                         }
                     }

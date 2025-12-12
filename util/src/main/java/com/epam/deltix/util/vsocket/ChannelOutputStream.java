@@ -94,6 +94,7 @@ public class ChannelOutputStream extends VSOutputStream {
             try {
                 flushInternal(partialOk, false);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new UncheckedInterruptedException(e);
             }
         }
@@ -270,6 +271,7 @@ public class ChannelOutputStream extends VSOutputStream {
                     send (b, off, len);
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new UncheckedInterruptedException (e);
             }
         }
@@ -291,6 +293,7 @@ public class ChannelOutputStream extends VSOutputStream {
 
             buffer [size++] = (byte) b;
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new UncheckedInterruptedException (e);
         }
     }

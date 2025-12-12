@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.csvx;
+
+package com.epam.deltix.util.csvx;
 
 import java.io.*;
 import java.util.regex.*;
@@ -195,7 +196,7 @@ public abstract class TextReader implements Disposable {
 		return (getCell ( idx,
 		                  trim ).toString ( ));
 		}
-		catch(Throwable x){
+		catch(Exception x){
 			return "";
 		}
 	}

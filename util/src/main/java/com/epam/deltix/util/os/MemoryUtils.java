@@ -142,7 +142,7 @@ public class MemoryUtils {
             Util.close(process.getInputStream());
             Util.close(process.getOutputStream());
             Util.close(process.getErrorStream());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOG.error("Close process exception: %s").with(e.getMessage());
        }
     }

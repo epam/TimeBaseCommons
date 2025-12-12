@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+
+package com.epam.deltix.util.io;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -322,7 +323,7 @@ public class FileSystemWatcher {
                         for (EventHandler handler : pathMap.get(path.toAbsolutePath())) {
                             try {
                                 handler.onEvent(path.resolve(file).toFile(), eventType);
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 LOGGER.warn().append("An error while event processing.").append(t).commit();
                             }
                         }

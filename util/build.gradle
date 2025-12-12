@@ -1,5 +1,9 @@
 description = 'QuantServer general purpose utilities'
 
+configurations {
+    antlrGenerator
+}
+
 dependencies {
     api project(':lang'),
         project(':collections')
@@ -24,23 +28,38 @@ dependencies {
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
     implementation 'com.github.scribejava:scribejava-apis:8.3.3'
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
     testImplementation 'com.google.guava:guava' // Removable
 
     // https://gitlab.deltixhub.com/Deltix/Common/nativeclock
     implementation('deltix:deltix-clock')
 
+    implementation group: 'org.antlr', name: 'antlr4-runtime', version: '4.6'
+    antlrGenerator group: 'org.antlr', name: 'antlr4', version: '4.6'
+
+    testImplementation 'com.epam.deltix:gflog-core'
+    testImplementation 'com.epam.deltix:gflog-jul'
+    testRuntimeOnly 'com.epam.deltix:gflog-slf4j'
+
     testImplementation 'org.hdrhistogram:HdrHistogram'
     testImplementation 'org.mockito:mockito-core'
+
+    // For simulation of connection loss scenarios
+    testImplementation 'com.github.netcrusherorg:netcrusher-core:0.10'
 }
 
-task downloadCodes(type: Download) {
+tasks.register('downloadCodes', Download) {
     src 'https://smi.deltixhub.com/api/v2/currencyinfo/xml'
     dest new File(projectDir, 'src/main/resources/deltix/util/currency/CurrencyCodes.xml')
 }
 
-processResources.mustRunAfter downloadCodes
-sourcesJar.mustRunAfter downloadCodes
+tasks.named('processResources').configure {
+    mustRunAfter 'downloadCodes'
+}
 
+tasks.named('sourcesJar').configure {
+    mustRunAfter 'downloadCodes'
+}
 
 tasks.register('buildFatTestJar', Jar) {
     group = 'build'
@@ -60,3 +79,41 @@ tasks.register('buildFatTestJar', Jar) {
     archiveClassifier = 'testFat'
 }
 
+
+// Synthetic Rule parser generator
+def generatedAntlrDir = file('build/generated-src/antlr')
+def grammarPath = "src/main/resources/antlr/SyntheticRule.g4"
+def packageName = "deltix.qsrv.hf.framework.mdp.impl.parser.generated"
+def generatedPath = "$generatedAntlrDir/deltix/qsrv/hf/framework/mdp/impl/parser/generated/"
+
+tasks.register('generateSyntheticRuleGrammar', JavaExec) {
+    group = "antlr"
+    description = "Generates ANTLR files (Lexer, Parser, Visitor, etc.)"
+
+    classpath = configurations.antlrGenerator
+    mainClass = "org.antlr.v4.Tool"
+
+    args = [
+            grammarPath,
+            "-package", packageName,
+            "-o", generatedPath,
+            "-no-listener",
+            "-visitor"
+    ]
+
+    inputs.file(file(grammarPath))
+            .withPropertyName("grammarFile")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
+    outputs.dir(file(generatedPath))
+            .withPropertyName("outputDir")
+}
+
+sourceSets.main.java.srcDirs generatedAntlrDir
+
+tasks.compileJava {
+    dependsOn generateSyntheticRuleGrammar
+}
+tasks.processResources {
+    dependsOn generateSyntheticRuleGrammar
+}

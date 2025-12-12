@@ -14,9 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.log;
+
+package com.epam.deltix.util.log;
 
 import com.epam.deltix.util.time.GlobalTimer;
+import com.epam.deltix.util.LangUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -105,6 +107,7 @@ public class CurrentMonthDate extends TimerTask {
             // this should not happened in the current roll() stack
             // !!! DO NOT USE Logger here !!! TerseFormatter creates CurrentMonthDate statically and hangs during initialization (#13116)
             System.out.println("Error while rolling CurrentMonthDate: " + e.getMessage());
+            LangUtil.propagateError(e);
         }
     }
 }

@@ -41,7 +41,7 @@ public abstract class Images {
             if (!tmpDir.exists()) {
                 tmpDir.mkdirs(); //successfully create temp folder and continue to use cache
             }
-        }catch (Throwable t) {
+        }catch (Exception t) {
             ImageIO.setUseCache(false);//switch off
         }
 

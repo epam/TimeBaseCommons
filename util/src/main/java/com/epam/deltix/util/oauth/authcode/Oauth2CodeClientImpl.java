@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth.authcode;
+
+package com.epam.deltix.util.oauth.authcode;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -121,7 +122,7 @@ public class Oauth2CodeClientImpl implements Oauth2CodeClient {
             retryStrategy.refreshRetryDelay();
 
             scheduleRefresh(delayMs);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.warn().append("Failed to refresh token.").append(t).commit();
 
             if (retryStrategy.retriesMade() > config.getRefreshRetriesCount()) {
@@ -148,7 +149,7 @@ public class Oauth2CodeClientImpl implements Oauth2CodeClient {
         }
     }
 
-    private void notifyRefreshFailed(Throwable t) {
+    private void notifyRefreshFailed(Exception t) {
         if (listener != null) {
             listener.refreshFailed(t);
         }
