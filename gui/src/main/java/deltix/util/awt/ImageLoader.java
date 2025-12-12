@@ -2,9 +2,9 @@ package deltix.util.awt;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
-import deltix.util.io.IOUtil;
-import deltix.util.io.StreamPump;
-import deltix.util.lang.Util;
+import com.epam.deltix.util.io.IOUtil;
+import com.epam.deltix.util.io.StreamPump;
+import com.epam.deltix.util.lang.Util;
 
 import java.awt.*;
 import java.awt.image.ImageObserver;

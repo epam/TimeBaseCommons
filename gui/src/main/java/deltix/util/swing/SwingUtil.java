@@ -5,10 +5,10 @@ import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
 import com.jidesoft.combobox.AbstractComboBox;
 import com.jidesoft.combobox.DateComboBox;
-import deltix.util.concurrent.UncheckedInterruptedException;
-import deltix.util.io.StreamPump;
-import deltix.util.io.UncheckedIOException;
-import deltix.util.lang.Util;
+import com.epam.deltix.util.concurrent.UncheckedInterruptedException;
+import com.epam.deltix.util.io.StreamPump;
+import com.epam.deltix.util.io.UncheckedIOException;
+import com.epam.deltix.util.lang.Util;
 
 import javax.swing.*;
 import javax.swing.border.Border;

@@ -7,9 +7,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import com.epam.deltix.util.collections.ArrayEnumeration;
 import com.jidesoft.tree.*;
-
-import deltix.util.collections.*;
 
 public abstract class BaseTreeNode<T> implements TreeNode {
     

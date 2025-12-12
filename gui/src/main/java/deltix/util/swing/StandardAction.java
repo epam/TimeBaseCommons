@@ -2,7 +2,8 @@ package deltix.util.swing;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
-import deltix.util.lang.SafeResourceBundle;
+import com.epam.deltix.util.io.UncheckedIOException;
+import com.epam.deltix.util.lang.SafeResourceBundle;
 
 import javax.swing.*;
 import java.util.MissingResourceException;
@@ -91,7 +92,7 @@ public abstract class StandardAction extends AbstractAction {
             //MissingResourceException for missing keys
             String      imageResourcePath = rb.getString (nameKey + ".img");
             icon = SwingUtil.loadIcon (imageResourcePath);
-        } catch (deltix.util.io.UncheckedIOException iox) {
+        } catch (UncheckedIOException iox) {
                     // Ignore
         } catch (MissingResourceException x) {
             boolean     ok = false;
@@ -103,7 +104,7 @@ public abstract class StandardAction extends AbstractAction {
                 try {
                     icon = SwingUtil.loadIcon (imageResourcePath, imageAlternateResourcePath);
                     break;
-                } catch (deltix.util.io.UncheckedIOException iox) {
+                } catch (UncheckedIOException iox) {
                     // Ignore
                 }
             }

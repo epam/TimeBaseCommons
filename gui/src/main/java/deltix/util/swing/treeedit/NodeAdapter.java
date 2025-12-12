@@ -9,7 +9,7 @@ package deltix.util.swing.treeedit;
 import java.util.*;
 import javax.swing.tree.*;
 
-import deltix.util.collections.*;
+import com.epam.deltix.util.collections.ArrayEnumeration;
 
 /**
  *  Internal class that adapts the {@link TreeEditorNode} class to JTree.
@@ -57,7 +57,7 @@ final class NodeAdapter implements TreeNode {
     
     public Enumeration      children () {
         updateChildren ();
-        return (new ArrayEnumeration <NodeAdapter> (mChildNodeAdapters));
+        return (new ArrayEnumeration<NodeAdapter>(mChildNodeAdapters));
     }
      
     public boolean          getAllowsChildren () {

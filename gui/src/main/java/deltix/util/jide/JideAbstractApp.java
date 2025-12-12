@@ -9,7 +9,7 @@ import com.jidesoft.plaf.LookAndFeelFactory;
 import com.jidesoft.plaf.UIDefaultsLookup;
 import com.jidesoft.plaf.basic.ThemePainter;
 import com.jidesoft.swing.JideScrollPane;
-import deltix.util.io.IOUtil;
+import com.epam.deltix.util.io.IOUtil;
 import deltix.util.swing.AppExceptionHandler;
 
 import javax.swing.*;

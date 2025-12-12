@@ -6,7 +6,7 @@ import com.epam.deltix.gflog.api.LogLevel;
 import com.jidesoft.dialog.JideOptionPane;
 import com.jidesoft.swing.JideButton;
 import com.jidesoft.swing.PartialLineBorder;
-import deltix.util.lang.Util;
+import com.epam.deltix.util.lang.Util;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;

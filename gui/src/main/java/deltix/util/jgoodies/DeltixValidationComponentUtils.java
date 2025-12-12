@@ -4,7 +4,7 @@ import com.jgoodies.validation.ValidationMessage;
 import com.jgoodies.validation.ValidationResult;
 import com.jgoodies.validation.view.ValidationComponentUtils;
 import com.jgoodies.validation.view.ValidationComponentUtils.Visitor;
-import deltix.util.lang.Util;
+import com.epam.deltix.util.lang.Util;
 
 import javax.swing.*;
 import javax.swing.plaf.UIResource;
@@ -47,7 +47,7 @@ public class DeltixValidationComponentUtils {
     // Visiting Text Components in a Component Tree ***************************
 
     public static boolean visitComponentTree (final Container container,
-                                              final deltix.util.collections.Visitor<JComponent> visitor) {
+                                              final com.epam.deltix.util.collections.Visitor<JComponent> visitor) {
         final int componentCount = container.getComponentCount ();
         for (int i = 0; i < componentCount; i++) {
             final Component child = container.getComponent (i);
@@ -191,7 +191,7 @@ public class DeltixValidationComponentUtils {
         }
     }
 
-    public static class FinderVisitor implements deltix.util.collections.Visitor<JComponent> {
+    public static class FinderVisitor implements com.epam.deltix.util.collections.Visitor<JComponent> {
         private final ValidationMessage _error;
         public JComponent               _component = null;
 

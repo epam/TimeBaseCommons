@@ -1,6 +1,6 @@
 package deltix.util.swing;
 
-import deltix.util.lang.*;
+import com.epam.deltix.util.lang.LocalizableException;
 
 public class ParsingException extends LocalizableException {
     public ParsingException (String key, String badText) {

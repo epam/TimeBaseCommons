@@ -15,7 +15,7 @@ import com.jidesoft.swing.*;
 import com.jidesoft.utils.*;
 
 import deltix.qsrv.ui.util.*;
-import deltix.util.lang.StringUtils;
+import com.epam.deltix.util.lang.StringUtils;
 
 public class QuickNodeFilterField extends QuickFilterField {
 
