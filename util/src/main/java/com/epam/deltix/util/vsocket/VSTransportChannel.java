@@ -17,6 +17,7 @@
 
 package com.epam.deltix.util.vsocket;
 
+import com.epam.deltix.util.LangUtil;
 import com.epam.deltix.util.concurrent.QuickExecutor;
 import com.epam.deltix.util.lang.Disposable;
 import com.epam.deltix.util.lang.Util;
