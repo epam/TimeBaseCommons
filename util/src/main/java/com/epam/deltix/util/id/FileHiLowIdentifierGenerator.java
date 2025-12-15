@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.id;
 
 import java.io.Closeable;
@@ -106,7 +107,7 @@ public final class FileHiLowIdentifierGenerator extends FileBasedHiLowIdentifier
                 raf.write(block.getBytes());
                 raf.setLength(block.length());
 
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
     }

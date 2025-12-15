@@ -29,6 +29,7 @@ import com.epam.deltix.util.oauth.utils.RefreshTokenScheduler;
 import com.epam.deltix.util.oauth.utils.RetryStrategy;
 import com.epam.deltix.util.oauth.utils.TimerTokenScheduler;
 import com.epam.deltix.util.time.TimeKeeper;
+import deltix.util.oauth.utils.*;
 
 import java.time.Instant;
 
@@ -121,7 +122,7 @@ public class Oauth2CodeClientImpl implements Oauth2CodeClient {
             retryStrategy.refreshRetryDelay();
 
             scheduleRefresh(delayMs);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.warn().append("Failed to refresh token.").append(t).commit();
 
             if (retryStrategy.retriesMade() > config.getRefreshRetriesCount()) {
@@ -148,7 +149,7 @@ public class Oauth2CodeClientImpl implements Oauth2CodeClient {
         }
     }
 
-    private void notifyRefreshFailed(Throwable t) {
+    private void notifyRefreshFailed(Exception t) {
         if (listener != null) {
             listener.refreshFailed(t);
         }

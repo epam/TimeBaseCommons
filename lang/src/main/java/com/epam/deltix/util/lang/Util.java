@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.lang;
 
 import com.epam.deltix.gflog.api.Log;
@@ -30,6 +31,7 @@ import java.util.*;
 import java.util.prefs.Preferences;
 
 /** Set of useful methods */
+@SuppressWarnings("unused")
 public class Util {
     public static final boolean  IS64BIT            = "64".equals(System.getProperty("sun.arch.data.model"));
     public static final boolean  IS32BIT            = "32".equals(System.getProperty("sun.arch.data.model"));
@@ -94,7 +96,7 @@ public class Util {
             // Double value
             a = a << 1;
         }
-
+        
         return (a);
     }
 
@@ -552,9 +554,7 @@ public class Util {
             return (newInstance (clazz, args));
         } catch (RuntimeException x) {
             throw x;
-        } catch (Error x) {
-            throw x;
-        } catch (Throwable other) {
+        } catch (Exception other) {
             throw new RuntimeException (clazz.getName () + " instantiation failed", other);
         }
     }
@@ -568,9 +568,7 @@ public class Util {
             return (newInstance (className, args));
         } catch (RuntimeException x) {
             throw x;
-        } catch (Error x) {
-            throw x;
-        } catch (Throwable other) {
+        } catch (Exception other) {
             throw new RuntimeException (className + " instantiation failed", other);
         }
     }
@@ -1225,7 +1223,7 @@ public class Util {
             }
             c = c.getSuperclass();
         }
-        return result.toArray(new Class [result.size()]);
+        return result.toArray(new Class[0]);
     }
 
     /** @return true if given cls is instanceof interface specified by className */

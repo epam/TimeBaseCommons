@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.cmdline;
 
 import com.epam.deltix.util.io.IOUtil;
@@ -154,7 +155,7 @@ public abstract class AbstractShell extends DefaultApplication {
                 m.invoke (this, arg);
             else if (!doSet (option, value)) 
                 System.err.println ("set " + option + ": unrecognized option. (Type ? for usage)");            
-        } catch (Throwable x) {
+        } catch (Exception x) {
             printException (x, true);
         }
     }
@@ -235,7 +236,7 @@ public abstract class AbstractShell extends DefaultApplication {
                 default:
                     throw new RuntimeException ();
             }            
-        } catch (Throwable x) {
+        } catch (Exception x) {
             printException (x, true);            
             error (2);
         }

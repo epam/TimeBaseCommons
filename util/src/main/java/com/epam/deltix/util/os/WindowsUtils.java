@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.os;
 
 import com.github.sarxos.winreg.HKey;
@@ -90,7 +91,7 @@ public class WindowsUtils {
 
         try {
             return registry.readString (hive, keyName, valueName);
-        } catch (final Throwable e) {
+        } catch (final Exception e) {
             return null;
         }
     }

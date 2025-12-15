@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth.service;
+
+package com.epam.deltix.util.oauth.service;
 
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -71,7 +72,7 @@ class CertificateTokenQuery implements TokenQuery {
         try {
             certJwk = JWK.parse(keyProvider.certificate());
             jwsSigner = createSigner(keyProvider.privateKey());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Failed to initialize key store.", t);
         }
     }
@@ -106,7 +107,7 @@ class CertificateTokenQuery implements TokenQuery {
         try {
             signedJWT.sign(jwsSigner);
             return signedJWT.serialize();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Failed to create assertion.", t);
         }
     }
@@ -139,7 +140,7 @@ class CertificateTokenQuery implements TokenQuery {
             } else if (privateKey instanceof ECPrivateKey) {
                 return new ECDSASigner((ECPrivateKey) privateKey);
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Failed to create JWTSigner.", t);
         }
 
@@ -169,7 +170,7 @@ class CertificateTokenQuery implements TokenQuery {
                 try (InputStream is = Files.newInputStream(Paths.get(keystorePath))) {
                     keyStore.load(is, keystorePassword);
                 }
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 throw new RuntimeException("Failed to load KeyStore: " + keystorePath, t);
             }
         }

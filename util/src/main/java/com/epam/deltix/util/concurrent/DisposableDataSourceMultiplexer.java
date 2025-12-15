@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.concurrent;
 
 import com.epam.deltix.util.lang.Util;
@@ -34,7 +35,7 @@ public class DisposableDataSourceMultiplexer <T extends AsynchronousDisposableDa
         for (T ds : dataSources ())
             try {
                 ds.close ();
-            } catch (Throwable x) {
+            } catch (Exception x) {
                 Util.logException ("close () threw exception", x);
             }
     }

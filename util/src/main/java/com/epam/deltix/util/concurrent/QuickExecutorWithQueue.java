@@ -14,15 +14,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.concurrent;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
 import com.epam.deltix.util.collections.QuickList;
-import java.util.*;
-import java.util.concurrent.locks.LockSupport;
+import com.epam.deltix.util.LangUtil;
 import net.jcip.annotations.GuardedBy;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  *  Similar to standard Java executors, but does not allocate memory on task
@@ -195,6 +200,7 @@ public class QuickExecutorWithQueue {
                             LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
                         LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
+                        LangUtil.propagateError(x);
                     } finally {
                         if (task.finished ())
                             task = null;
@@ -202,6 +208,7 @@ public class QuickExecutorWithQueue {
                 }
             } catch (Throwable x) {
                 x.printStackTrace ();
+                LangUtil.propagateError(x);
             }
         }
     }

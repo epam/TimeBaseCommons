@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.text;
 
 import com.epam.deltix.util.lang.Util;
@@ -38,7 +39,17 @@ public abstract class CharSequenceParser {
     private static final int    FLOAT_MANTISSA_BITMASK =    FLOAT_ASSUMED_BIT - 1;
     private static final int    FLOAT_NORM_EXP =            FLOAT_BIAS_EXP + FLOAT_MANTISSA_WIDTH;
     private static final int    FLOAT_OVERFLOW_BITMASK =    ~FLOAT_MANTISSA_BITMASK - FLOAT_ASSUMED_BIT;
-    
+
+    private static final double[] SMALL_POWERS_OF_10 = {
+            1e0,  1e1,  1e2,  1e3,  1e4,  1e5,  1e6,  1e7,  1e8,  1e9,
+            1e10, 1e11, 1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19,
+            1e20, 1e21, 1e22
+    };
+
+    private static final double[] BIG_POWERS_OF_10 = {
+            1e16, 1e32, 1e64, 1e128, 1e256
+    };
+
     public static boolean parseBoolean ( CharSequence sc ) {
 		if ("true".contentEquals ( sc )) {
 			return true;
@@ -223,40 +234,43 @@ public abstract class CharSequenceParser {
                     dotSeen = true;
                 else if (ch == 'e' || ch == 'E') {
                     pos++;
-                    
                     checkNotAtEnd (pos, endExcl, sc, startIncl);
-                    
                     ch = sc.charAt (pos);
-                    
                     boolean     negativeExp = false;
-                        
                     if (ch == '-') {
                         pos++;
-                                                
                         negativeExp = true;
-                    }
-                    else if (ch == '+')
+                    } else if (ch == '+') {
                         pos++;
-                    
+                    }
+
                     checkNotAtEnd (pos, endExcl, sc, startIncl);
-                        
                     int     exp = parseInt (sc, pos, endExcl);
-                    
-                    for (int ii = 0; ii < exp; ii++)
-                        if (negativeExp)
-                            denominator *= 10;
-                        else
-                            denominator /= 10;
+
+                    double powerOf10 = pow10(exp);
+                    if (negativeExp) {
+                        denominator *= powerOf10;
+                    } else {
+                        denominator /= powerOf10;
+                    }
+                    break;
                 }
                 else {
                     final int       digit = ch - '0';
-
                     if (digit < 0 || digit > 9) {
-                        if (Util.equals (sc, "NaN"))
-                            return (Double.NaN);
-
+                        if (pos == startIncl || (pos == startIncl + 1 && (sc.charAt(startIncl) == '+' || sc.charAt(startIncl) == '-'))) {
+                            if (matchesAt(sc, pos, endExcl, "Infinity")) {
+                                return sign == 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+                            }
+                            else if (matchesAt(sc, pos, endExcl, "Inf")) {
+                                return sign == 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+                            }
+                            else if (matchesAt(sc, pos, endExcl, "NaN")) {
+                                return Double.NaN;
+                            }
+                        }
                         throw new NumberFormatException (
-                            "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl).toString ());
+                                "Illegal digit at position " + (pos + 1) + " in: " + sc.subSequence (startIncl, endExcl));
                     }
 
                     if (overflow) {
@@ -283,9 +297,9 @@ public abstract class CharSequenceParser {
             ch = sc.charAt (pos);
         }   
         
-        if (numerator == 0)
-            return (0.0);                
-        
+        if (numerator == 0){
+            return 0.0;
+        }
         // Build the double first, ignoring the denominator
         long    exp = DOUBLE_NORM_EXP;        
         
@@ -304,11 +318,22 @@ public abstract class CharSequenceParser {
         
         final long      bits = sign | (exp << DOUBLE_MANTISSA_WIDTH) | numerator;
         double          result = Double.longBitsToDouble (bits);
-            
+
         if (denominator != 1)
             result /= denominator;
-        
+
         return (result);
+    }
+
+    private static boolean matchesAt(CharSequence sc, int start, int end, String target) {
+        if (end - start != target.length())
+            return false;
+
+        for (int i = 0; i < target.length(); i++) {
+            if (sc.charAt(start + i) != target.charAt(i))
+                return false;
+        }
+        return true;
     }
 
     private static void checkNotAtEnd (int pos, final int endExcl, final CharSequence sc, final int startIncl)
@@ -334,7 +359,7 @@ public abstract class CharSequenceParser {
         
         int                 pos = startIncl;
         int                 numerator = 0;        
-        float               denominator = 1;
+        double              denominator = 1;
         int                 sign = 0;
         boolean             dotSeen = false;
         boolean             overflow = false;
@@ -355,12 +380,46 @@ public abstract class CharSequenceParser {
             if (ch != ',') {
                 if (!dotSeen && ch == '.')
                     dotSeen = true;
+                else if (ch == 'e' || ch == 'E') {
+                    pos++;
+                    checkNotAtEnd (pos, endExcl, sc, startIncl);
+                    ch = sc.charAt (pos);
+                    boolean     negativeExp = false;
+
+                    if (ch == '-') {
+                        pos++;
+                        negativeExp = true;
+                    }
+                    else if (ch == '+')
+                        pos++;
+
+                    checkNotAtEnd (pos, endExcl, sc, startIncl);
+
+                    int     exp = parseInt (sc, pos, endExcl);
+
+                    double powerOf10 = pow10(exp);
+                    if (negativeExp) {
+                        denominator *= powerOf10;
+                    } else {
+                        denominator /= powerOf10;
+                    }
+                    break;
+                }
                 else {
                     final int       digit = ch - '0';
 
                     if (digit < 0 || digit > 9) {
-                        if (Util.equals (sc, "NaN"))
-                            return (Float.NaN);
+                        if (pos == startIncl || (pos == startIncl + 1 && (sc.charAt(startIncl) == '+' || sc.charAt(startIncl) == '-'))) {
+                            if (matchesAt(sc, pos, endExcl, "Infinity")) {
+                                return sign == 0 ? Float.POSITIVE_INFINITY : Float.NEGATIVE_INFINITY;
+                            }
+                            else if (matchesAt(sc, pos, endExcl, "Inf")) {
+                                return sign == 0 ? Float.POSITIVE_INFINITY : Float.NEGATIVE_INFINITY;
+                            }
+                            else if (matchesAt(sc, pos, endExcl, "NaN")) {
+                                return Float.NaN;
+                            }
+                        }
 
                         throw new NumberFormatException (
                             "Illegal digit at position " + (pos + 1) + " in: " + 
@@ -393,9 +452,10 @@ public abstract class CharSequenceParser {
             ch = sc.charAt (pos);
         }   
         
-        if (numerator == 0)
-            return (0.0F);                
-        
+        if (numerator == 0) {
+            return (0.0F);
+        }
+
         // Build the double first, ignoring the denominator
         int    exp = FLOAT_NORM_EXP;        
         
@@ -421,6 +481,24 @@ public abstract class CharSequenceParser {
         return (result);
     }
 
+    private static double pow10(int exp) {
+        if (exp < 0) {
+            return 1.0 / pow10(-exp);
+        }
+        if (exp < SMALL_POWERS_OF_10.length) {
+            return SMALL_POWERS_OF_10[exp];
+        }
+
+        double result = 1.0;
+        int bitMask = 1;
+        for (int i = 0; i < BIG_POWERS_OF_10.length; i++) {
+            if ((exp & (bitMask << (i + 4))) != 0) {
+                result *= BIG_POWERS_OF_10[i];
+            }
+        }
+        result *= SMALL_POWERS_OF_10[exp & 0xF];
+        return result;
+    }
     public static void main (String [] args) {
         System.out.println (parseDouble (args [0]));
     }

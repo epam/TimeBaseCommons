@@ -14,9 +14,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.net.timer;
 
-import com.epam.deltix.util.lang.*;
+import com.epam.deltix.util.LangUtil;
+import com.epam.deltix.util.lang.Util;
+
 import java.io.*;
 import java.net.*;
 
@@ -46,6 +49,7 @@ public class TimerServerThread extends Thread {
             }
         } catch (Throwable x) {
             Util.handleException (x);
+            LangUtil.propagateError(x);
         } finally {
             Util.close (ss);
         }        
