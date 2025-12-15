@@ -17,7 +17,7 @@
 
 package com.epam.deltix.util.io;
 
-import deltix.util.LangUtil;
+import com.epam.deltix.util.LangUtil;
 
 import java.io.*;
 

@@ -83,8 +83,8 @@ tasks.register('buildFatTestJar', Jar) {
 // Synthetic Rule parser generator
 def generatedAntlrDir = file('build/generated-src/antlr')
 def grammarPath = "src/main/resources/antlr/SyntheticRule.g4"
-def packageName = "deltix.qsrv.hf.framework.mdp.impl.parser.generated"
-def generatedPath = "$generatedAntlrDir/deltix/qsrv/hf/framework/mdp/impl/parser/generated/"
+def packageName = "com.epam.deltix.qsrv.hf.framework.mdp.impl.parser.generated"
+def generatedPath = "$generatedAntlrDir/com/epam/deltix/qsrv/hf/framework/mdp/impl/parser/generated/"
 
 tasks.register('generateSyntheticRuleGrammar', JavaExec) {
     group = "antlr"
