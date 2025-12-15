@@ -1,5 +1,9 @@
 description = 'Timebase general purpose utilities'
 
+configurations {
+    antlrGenerator
+}
+
 dependencies {
     api project(':timebase-lang')
     api project(':timebase-collections')
@@ -37,5 +41,47 @@ dependencies {
     implementation('net.java.dev.jna:jna-platform:4.2.1')
     implementation('org.apache.bcel:bcel:6.6.0')
 
+
+    implementation group: 'org.antlr', name: 'antlr4-runtime', version: '4.6'
+    antlrGenerator group: 'org.antlr', name: 'antlr4', version: '4.6'
+
     testImplementation "org.mockito:mockito-core"
+}
+
+// Synthetic Rule parser generator
+def generatedAntlrDir = file('build/generated-src/antlr')
+def grammarPath = "src/main/resources/antlr/SyntheticRule.g4"
+def packageName = "com.epam.deltix.qsrv.hf.framework.mdp.impl.parser.generated"
+def generatedPath = "$generatedAntlrDir/com/epam/deltix/qsrv/hf/framework/mdp/impl/parser/generated/"
+
+tasks.register('generateSyntheticRuleGrammar', JavaExec) {
+    group = "antlr"
+    description = "Generates ANTLR files (Lexer, Parser, Visitor, etc.)"
+
+    classpath = configurations.antlrGenerator
+    mainClass = "org.antlr.v4.Tool"
+
+    args = [
+            grammarPath,
+            "-package", packageName,
+            "-o", generatedPath,
+            "-no-listener",
+            "-visitor"
+    ]
+
+    inputs.file(file(grammarPath))
+            .withPropertyName("grammarFile")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
+    outputs.dir(file(generatedPath))
+            .withPropertyName("outputDir")
+}
+
+sourceSets.main.java.srcDirs generatedAntlrDir
+
+tasks.compileJava {
+    dependsOn generateSyntheticRuleGrammar
+}
+tasks.processResources {
+    dependsOn generateSyntheticRuleGrammar
 }
