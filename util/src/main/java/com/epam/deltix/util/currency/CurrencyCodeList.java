@@ -38,7 +38,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Depends("deltix/util/currency/CurrencyCodes.xml")
+@Depends("com/epam/deltix/util/currency/CurrencyCodes.xml")
 @ThreadSafe
 public class CurrencyCodeList {
     private static final int                             amount        =   10000;
@@ -55,7 +55,7 @@ public class CurrencyCodeList {
         try {
             String alternativeLocation = System.getProperty("deltix.qsrv.currency.codes");
             if (StringUtils.isEmpty(alternativeLocation))
-                is = BasicIOUtil.openResourceAsStream ("deltix/util/currency/CurrencyCodes.xml");
+                is = BasicIOUtil.openResourceAsStream ("com/epam/deltix/util/currency/CurrencyCodes.xml");
             else
                 is = new FileInputStream(alternativeLocation);
             read(is);
