@@ -17,7 +17,6 @@
 
 package com.epam.deltix.util.text;
 
-import com.epam.deltix.util.lang.Assertions;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -37,7 +36,7 @@ public class DateFormatDetectorTest {
 
     @Test
     public void getDateTimeFormatStringFor() throws IOException, URISyntaxException {
-        BufferedReader formatReader = getSourceReader("deltix/util/text/dateTimeFormat.txt");
+        BufferedReader formatReader = getSourceReader("com/epam/deltix/util/text/dateTimeFormat.txt");
         String line = formatReader.readLine();
         while (line != null) {
             String[] split = line.split(",");

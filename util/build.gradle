@@ -41,11 +41,17 @@ dependencies {
     implementation('net.java.dev.jna:jna-platform:4.2.1')
     implementation('org.apache.bcel:bcel:6.6.0')
 
+    testImplementation 'com.epam.deltix:gflog-jul'
+    testRuntimeOnly 'com.epam.deltix:gflog-slf4j'
 
     implementation group: 'org.antlr', name: 'antlr4-runtime', version: '4.6'
     antlrGenerator group: 'org.antlr', name: 'antlr4', version: '4.6'
 
     testImplementation "org.mockito:mockito-core"
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+
+    // For simulation of connection loss scenarios
+    testImplementation 'com.github.netcrusherorg:netcrusher-core:0.10'
 }
 
 // Synthetic Rule parser generator
