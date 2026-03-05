@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup.runtime;
+package java_cup.runtime;
 
 /**
  * Defines the Symbol class, which is used to represent all terminals
@@ -113,3 +113,9 @@ public class Symbol {
     ****************************/
   public String toString() { return "#"+sym; }
 }
+
+
+
+
+
+

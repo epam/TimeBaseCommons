@@ -1,8 +1,17 @@
-//rootProject.name = 'commons'
+pluginManagement {
+    repositories {
+        maven {
+            credentials {
+                username = System.getenv('NEXUS_USER') ?: getProperty('NEXUS_USER') ?: "FakeProGetUser"
+                password = System.getenv('NEXUS_PASS') ?: getProperty('NEXUS_PASS') ?: "FakeProGetPass"
+            }
+            authentication {
+                digest(BasicAuthentication)
+            }
+            url = 'https://nexus.deltixhub.com/repository/DevMain'
+        }
+        gradlePluginPortal()
+    }
+}
 
-include ':lang', ':collections', ':util', ':messages'
-
-project(':lang').name = 'timebase-lang'
-project(':util').name = 'timebase-util'
-project(':messages').name = 'timebase-messages'
-project(':collections').name = 'timebase-collections'
+include ':lang', ':collections', ':util', ':gui'

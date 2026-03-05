@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -23,9 +23,6 @@ import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * Verify that runtime included java compiler.
- */
 public class JavaVerifier {
 
     private static final Log LOG = LogFactory.getLog(JavaVerifier.class);

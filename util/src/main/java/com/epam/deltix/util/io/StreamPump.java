@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import com.epam.deltix.util.progress.ProgressIndicator;
 import com.epam.deltix.util.lang.Util;
@@ -78,7 +78,7 @@ public class StreamPump extends Thread {
         OutputStream        os, 
         long                maxBytes,
         int                 bufSize,
-        ProgressIndicator   listener,
+        ProgressIndicator listener,
         double              workDonePrior,
         double              workPerByte
     ) 

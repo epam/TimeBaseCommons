@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.net.*;
 
@@ -68,7 +68,7 @@ public class GUID {
         try {
             addr = InetAddress.getLocalHost ();
         } catch (UnknownHostException x) {
-            throw new com.epam.deltix.util.io.UncheckedIOException(x);
+            throw new UncheckedIOException(x);
         }
 
         byte []             addressBytes = addr.getAddress ();

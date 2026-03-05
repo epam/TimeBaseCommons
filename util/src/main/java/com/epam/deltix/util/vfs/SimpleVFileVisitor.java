@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vfs;
+package com.epam.deltix.util.vfs;
 
 import java.io.IOException;
 

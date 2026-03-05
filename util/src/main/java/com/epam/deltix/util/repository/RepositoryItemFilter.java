@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.repository;
+package com.epam.deltix.util.repository;
 
 public interface RepositoryItemFilter<T> {
     boolean accepted(T item);

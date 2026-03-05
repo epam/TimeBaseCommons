@@ -19,7 +19,7 @@ package com.epam.deltix.util.concurrent;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
-import com.epam.deltix.util.LangUtil;
+import deltix.util.LangUtil;
 import com.epam.deltix.util.collections.QuickList;
 import com.epam.deltix.util.lang.ExceptionHandler;
 import com.epam.deltix.util.time.TimeKeeper;

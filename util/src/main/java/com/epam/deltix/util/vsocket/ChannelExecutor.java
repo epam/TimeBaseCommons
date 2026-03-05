@@ -14,11 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.epam.deltix.util.vsocket;
 
-package com.epam.deltix.util.vsocket;
-
-import com.epam.deltix.thread.affinity.AffinityConfig;
-import com.epam.deltix.thread.affinity.AffinityThreadFactoryBuilder;
+import deltix.thread.affinity.AffinityConfig;
+import deltix.thread.affinity.AffinityThreadFactoryBuilder;
 import com.epam.deltix.util.collections.QuickList;
 import com.epam.deltix.util.lang.Util;
 import com.epam.deltix.util.memory.MemoryDataOutput;

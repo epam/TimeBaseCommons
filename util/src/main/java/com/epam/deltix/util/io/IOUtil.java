@@ -14,20 +14,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.util.codec.HexBinCharEncoder;
 import com.epam.deltix.util.codec.HexCharBinDecoder;
-import java.io.*;
-
 import com.epam.deltix.util.lang.Util;
-import com.epam.deltix.util.memory.*;
+import com.epam.deltix.util.memory.MemoryDataInput;
+import com.epam.deltix.util.memory.MemoryDataOutput;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import javax.crypto.*;
-import javax.crypto.spec.*;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import java.io.*;
 
 
 /**
@@ -35,8 +38,8 @@ import javax.crypto.spec.*;
  */
 public class IOUtil extends BasicIOUtil {
     private static final Log LOG = LogFactory.getLog(IOUtil.class);
+
     public static final String NOT_DECRYPTED      = "???????";
-    public static final String TB_SECURE_CONN_KEY = "SECURE_CONN_KEY";
 
     /**
      *  Writes any CharSequence to DataOutput as a 2-byte length (in characters), followed by
@@ -116,7 +119,7 @@ public class IOUtil extends BasicIOUtil {
      *  without clearing it first.
      */
     @Deprecated // buggy
-    public final static void readUTF(MemoryDataInput in, Appendable sb) throws IOException {
+    public static void readUTF(MemoryDataInput in, Appendable sb) throws IOException {
         int utflen = in.readUnsignedShort();
 
         if (utflen == 0)
@@ -200,6 +203,7 @@ public class IOUtil extends BasicIOUtil {
     
     private static final PBEParameterSpec pars = 
         new PBEParameterSpec (header, header.length);
+
     private static final String           csname = "UTF-8";
     // TODO: Switch to a better cipher (with HMAC)
     private static final String           algon = "PBEWithMD5AndDES";
@@ -207,7 +211,7 @@ public class IOUtil extends BasicIOUtil {
     
     static {
         try {
-            skf = SecretKeyFactory.getInstance (algon);            
+            skf = SecretKeyFactory.getInstance (algon);
         } catch (Exception x) {
             throw new RuntimeException (x);
         }
@@ -217,9 +221,9 @@ public class IOUtil extends BasicIOUtil {
     public static String       concat (String a, String b) {
         if (a == null)
             a = "";
-        
+
         if (b == null)
-            b = "} catch (UnsupportedEncodingException x) {";
+            throw new IllegalArgumentException("key cannot be null");
         
         byte []             cleartext;                
         
@@ -252,7 +256,7 @@ public class IOUtil extends BasicIOUtil {
             return (null);
         
         if (b == null)
-            b = "} catch (UnsupportedEncodingException x) {";
+            throw new IllegalArgumentException(" key cannot be null");
         
         byte []             ciphertext = HexCharBinDecoder.decode (c);
         

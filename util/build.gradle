@@ -1,41 +1,119 @@
-description = 'Timebase general purpose utilities'
+description = 'QuantServer general purpose utilities'
+
+configurations {
+    antlrGenerator
+}
 
 dependencies {
-    api project(':timebase-lang')
-    api project(':timebase-collections')
+    api project(':lang'),
+        project(':collections')
 
     compileOnly 'org.jetbrains:annotations'
 
-    implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
-    implementation group: 'com.epam.deltix', name: 'gflog-core', version: gflogVersion
+    implementation 'deltix:deltix-thread-affinity'
+    implementation 'javax.mail:mail'
 
-    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
-    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-compress'
 
-    implementation 'com.epam.deltix:thread-affinity'
+    api 'javax.xml.bind:jaxb-api:2.3.1'
+    api 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    api 'com.sun.xml.bind:jaxb-core:2.3.0'
 
-    implementation 'org.apache.commons:commons-lang3:3.7'
-    implementation 'org.apache.commons:commons-compress:1.26.0'
+    implementation 'org.green:green-jelly:0.1.0'
 
-    implementation 'javax.xml.bind:jaxb-api:2.2.8'
-    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
-
-    implementation 'com.github.sarxos:windows-registry-util:0.3'
-
-    implementation ("io.github.green4j:green-jelly:0.1.6")
+    implementation('org.apache.bcel:bcel:6.6.0')
 
     implementation 'com.nimbusds:nimbus-jose-jwt:9.40'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
     implementation 'com.github.scribejava:scribejava-apis:8.3.3'
 
-//    compile('com.sun.xml.bind:jaxb-xjc:2.2.11')  // 2.2.11 has only bug fixes compared 2.2.8-b130911.1802 (which used by Java 8)
-    //compile 'org.glassfish.jaxb:jaxb-runtime:2.2.11'  // Glassfish replaces JAXB RI
-    //compile('javax.xml:jsr173:1.0'){ transitive = false }
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testImplementation 'com.google.guava:guava' // Removable
 
-    implementation('net.java.dev.jna:jna:4.2.1')
-    implementation('net.java.dev.jna:jna-platform:4.2.1')
-    implementation('org.apache.bcel:bcel:6.6.0')
+    // https://gitlab.deltixhub.com/Deltix/Common/nativeclock
+    implementation('deltix:deltix-clock')
 
-    testImplementation "org.mockito:mockito-core"
+    implementation group: 'org.antlr', name: 'antlr4-runtime', version: '4.6'
+    antlrGenerator group: 'org.antlr', name: 'antlr4', version: '4.6'
+
+    testImplementation 'com.epam.deltix:gflog-core'
+    testImplementation 'com.epam.deltix:gflog-jul'
+    testRuntimeOnly 'com.epam.deltix:gflog-slf4j'
+
+    testImplementation 'org.hdrhistogram:HdrHistogram'
+    testImplementation 'org.mockito:mockito-core'
+
+    // For simulation of connection loss scenarios
+    testImplementation 'com.github.netcrusherorg:netcrusher-core:0.10'
+}
+
+tasks.register('downloadCodes', Download) {
+    src 'https://smi.deltixhub.com/api/v2/currencyinfo/xml'
+    dest new File(projectDir, 'src/main/resources/deltix/util/currency/CurrencyCodes.xml')
+}
+
+tasks.named('processResources').configure {
+    mustRunAfter 'downloadCodes'
+}
+
+tasks.named('sourcesJar').configure {
+    mustRunAfter 'downloadCodes'
+}
+
+tasks.register('buildFatTestJar', Jar) {
+    group = 'build'
+    description = 'Assembles a jar archive containing the test classes and all dependencies'
+
+    manifest {
+        attributes "Main-Class": "deltix.util.time.FrequentTimePollingStressTest"
+    }
+
+    from {
+        configurations.testRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from sourceSets.main.output
+    from sourceSets.test.output
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    archiveClassifier = 'testFat'
+}
+
+
+// Synthetic Rule parser generator
+def generatedAntlrDir = file('build/generated-src/antlr')
+def grammarPath = "src/main/resources/antlr/SyntheticRule.g4"
+def packageName = "com.epam.deltix.qsrv.hf.framework.mdp.impl.parser.generated"
+def generatedPath = "$generatedAntlrDir/com/epam/deltix/qsrv/hf/framework/mdp/impl/parser/generated/"
+
+tasks.register('generateSyntheticRuleGrammar', JavaExec) {
+    group = "antlr"
+    description = "Generates ANTLR files (Lexer, Parser, Visitor, etc.)"
+
+    classpath = configurations.antlrGenerator
+    mainClass = "org.antlr.v4.Tool"
+
+    args = [
+            grammarPath,
+            "-package", packageName,
+            "-o", generatedPath,
+            "-no-listener",
+            "-visitor"
+    ]
+
+    inputs.file(file(grammarPath))
+            .withPropertyName("grammarFile")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
+    outputs.dir(file(generatedPath))
+            .withPropertyName("outputDir")
+}
+
+sourceSets.main.java.srcDirs generatedAntlrDir
+
+tasks.compileJava {
+    dependsOn generateSyntheticRuleGrammar
+}
+tasks.processResources {
+    dependsOn generateSyntheticRuleGrammar
 }

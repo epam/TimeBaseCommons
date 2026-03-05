@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.buffer;
+package com.epam.deltix.util.buffer;
 
 
 public interface AtomicBuffer extends MutableBuffer {

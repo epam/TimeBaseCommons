@@ -14,17 +14,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
-import com.epam.deltix.util.lang.Util;
+
 import java.io.IOException;
 
 
-/**
- *
- */
 public class PrintVisitor implements Visitor <Object> {
     private static final Log LOG = LogFactory.getLog(PrintVisitor.class);
     private final Appendable            out;

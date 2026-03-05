@@ -18,6 +18,7 @@
 package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.collections.ByteQueue;
+import net.jcip.annotations.GuardedBy;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;

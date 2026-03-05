@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.repository;
+package com.epam.deltix.util.repository;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -103,3 +103,4 @@ public abstract class AbstractRepository<T> implements Repository<T> {
     }        
     
 }
+

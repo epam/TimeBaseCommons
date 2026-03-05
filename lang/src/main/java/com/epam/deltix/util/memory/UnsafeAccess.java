@@ -14,13 +14,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.memory;
+package com.epam.deltix.util.memory;
 
 import java.lang.reflect.Field;
 
-import sun.misc.Unsafe;
-
 import com.epam.deltix.util.lang.Bits;
+import sun.misc.Unsafe;
 
 public final class UnsafeAccess {
 
@@ -59,3 +58,4 @@ public final class UnsafeAccess {
     }
 
 }
+

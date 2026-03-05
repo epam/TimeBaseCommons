@@ -14,10 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.epam.deltix.util.concurrent;
 
-package com.epam.deltix.util.concurrent;
-
-import com.epam.deltix.thread.affinity.AffinityConfig;
+import deltix.thread.affinity.AffinityConfig;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.annotation.Nonnull;
