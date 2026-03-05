@@ -14,14 +14,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.os;
+package com.epam.deltix.util.os;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.util.io.IOUtil;
 import com.epam.deltix.util.lang.Util;
 
-import javax.management.*;
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.regex.Matcher;
@@ -140,7 +142,7 @@ public class MemoryUtils {
             Util.close(process.getInputStream());
             Util.close(process.getOutputStream());
             Util.close(process.getErrorStream());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOG.error("Close process exception: %s").with(e.getMessage());
        }
     }

@@ -14,11 +14,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.text;
+package com.epam.deltix.util.text;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import com.epam.deltix.util.CommonsJUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
+@Category(Utils.class)
 public class Test_CharSequenceParser {
     private static final String     PREFIX = " %%$";
     private static final String     POSTFIX = "&&$$#";

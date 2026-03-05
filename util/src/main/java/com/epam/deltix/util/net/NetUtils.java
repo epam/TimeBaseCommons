@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.net;
 
 import com.epam.deltix.util.io.ByteArrayOutputStreamEx;
@@ -40,7 +41,7 @@ public class NetUtils {
         try {
             checkUrl (s, connectTimeout, readTimeout);
             return (true);
-        } catch (Throwable x) {
+        } catch (Exception x) {
             return (false);
         }
     }

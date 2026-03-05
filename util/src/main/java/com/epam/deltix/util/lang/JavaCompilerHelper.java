@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -31,6 +31,7 @@ import java.util.*;
 /**
  * Provides helper methods to compile one or several classes on-the-fly.
  */
+@SuppressWarnings("SizeReplaceableByIsEmpty")
 public class JavaCompilerHelper {
     private static final Log LOG = LogFactory.getLog(JavaCompilerHelper.class);
     private static final JavaCompiler           JAVA_COMPILER_INSTANCE;

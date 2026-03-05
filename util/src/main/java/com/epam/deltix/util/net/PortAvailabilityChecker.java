@@ -14,8 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.net;
+package com.epam.deltix.util.net;
 
+import com.epam.deltix.util.io.UncheckedIOException;
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -33,7 +34,7 @@ public class PortAvailabilityChecker {
         } catch (java.net.BindException x) {
             return (false);
         } catch (IOException iox) {
-            throw new com.epam.deltix.util.io.UncheckedIOException(iox);
+            throw new UncheckedIOException(iox);
         }
     }
 

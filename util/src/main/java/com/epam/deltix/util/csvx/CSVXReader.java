@@ -14,11 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.csvx;
+package com.epam.deltix.util.csvx;
 
 import java.io.*;
 
-import com.epam.deltix.util.io.*;
+import com.epam.deltix.util.io.ByteCountingInputStream;
+import com.epam.deltix.util.io.CSVWriter;
+import deltix.util.io.*;
 
 /**
  *
@@ -67,7 +69,7 @@ public class CSVXReader extends TextReader {
         String                  diagPrefix
     )
     {
-        mInputStream = new ByteCountingInputStream (is);
+        mInputStream = new ByteCountingInputStream(is);
         mReader = new BufferedReader (new InputStreamReader (mInputStream));
         mCloseReader = closeReader;
         mDiagPrefix = diagPrefix;
@@ -104,7 +106,7 @@ public class CSVXReader extends TextReader {
         StringWriter        swr = new StringWriter ();
 
         try {
-            writeLineTo (new CSVWriter (swr));
+            writeLineTo (new CSVWriter(swr));
         } catch (IOException iox) {
             throw new RuntimeException ("unexpected", iox);
         }

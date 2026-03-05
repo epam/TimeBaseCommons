@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth;
+package com.epam.deltix.util.oauth;
 
 import com.epam.deltix.util.lang.Disposable;
 import com.epam.deltix.util.oauth.service.Oauth2ClientImpl;

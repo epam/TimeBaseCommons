@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package java_cup;
 
 /** The "core" of an LR item.  This includes a production and the position
@@ -292,3 +293,4 @@ public class lr_item_core {
   /*-----------------------------------------------------------*/
 
 }
+   

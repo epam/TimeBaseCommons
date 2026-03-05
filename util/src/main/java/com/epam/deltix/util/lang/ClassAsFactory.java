@@ -14,14 +14,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
+
+import com.epam.deltix.util.lang.Factory;
 
 import java.lang.reflect.Constructor;
 
 /**
  *  Adapts Class to Factory.
  */
-public class ClassAsFactory <C> implements Factory <C> {
+public class ClassAsFactory <C> implements Factory<C> {
     protected final Constructor <? extends C>     cons;
     protected final Object []           args;
 

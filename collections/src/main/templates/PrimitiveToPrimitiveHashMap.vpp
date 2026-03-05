@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#if( $first_name == "Object" )
+#if( $first_name == "Object" )
 #set( $key_type = "K" )
 #set( $key_param = "<K>" )
 #set( $key_cast = "(K)" )
@@ -28,23 +28,33 @@
 #else
 #set( $value_type = $second_type )
 #end
-package com.epam.deltix.util.collections.generated;
+package deltix.util.collections.generated;
 
-import com.epam.deltix.util.collections.hash.*;
-import com.epam.deltix.util.collections.*;
+import deltix.util.collections.hash.*;
+import deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
-#if( $name == "Decimal" )
+#if( $first_name == "Decimal" )
 import com.epam.deltix.dfp.Decimal64;
-#elseif( $name == "HdDateTime" )
+#elseif( $first_name == "HdDateTime" )
 import com.epam.deltix.hdtime.HdDateTime;
-#elseif( $name == "HdTimeSpan" )
+#elseif( $first_name == "HdTimeSpan" )
 import com.epam.deltix.hdtime.HdTimeSpan;
+#elseif( $first_name == "Long" )
+import java.util.function.LongFunction;
 #end
 #if( $second_name == "Object" )
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 #end
 
+//////////////////////////////////////////////////////
+/// Generated from PrimitiveToPrimitiveHashMap.vpp ///
+//////////////////////////////////////////////////////
+
+
+/** Specialized collection that avoids boxing/unboxing primitives. */
 @SuppressWarnings ("unchecked")
 public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" && $second_name == "Object" )<K, V>#else$!{key_param}$!{value_param}
 #end
@@ -143,6 +153,81 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
             }
         }
     }
+
+    /**
+     * Remove first entry that matches with given filter
+     * @return remove element or null if none found
+     */
+    public V remove(Predicate<? super V> filter) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                V value = (V) values[i];
+                if (filter.test(value)) {
+                    free (i);
+                    return value;
+                }
+            }
+        }
+        return null; // not found
+    }
+
+    /**
+     * Remove first entry that matches with given filter
+     * @return remove element or null if none found
+     */
+    public <Cookie> V remove(BiPredicate<? super V,Cookie> filter, Cookie cookie) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                V value = (V) values[i];
+                if (filter.test( value, cookie)) {
+                    free (i);
+                    return value;
+                }
+            }
+        }
+        return null; // not found
+    }
+
+    /**
+     * Remove all entries that matches with given filter
+     * @return true if at least one entry was removed
+     */
+    public boolean removeAll(Predicate<? super V> filter) {
+        boolean result = false;
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                if (filter.test((V) values[i])) {
+                    free (i);
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+  #if( $first_name == "Long" )
+    public V computeIfAbsent (${key_type} key, LongFunction<V> mappingFunction) {
+        int         hidx = hashIndex (key);
+        int         idx = find (hidx, key);
+
+        if (idx != NULL) {
+            return (V) values [idx];
+        }
+
+        V value = mappingFunction.apply(key);
+        if (value != null) {
+            if (freeHead == NULL) {
+                resizeTable(values.length * 2);
+                hidx = hashIndex(key); // recompute!
+            }
+
+            idx = allocEntry(hidx);
+            values [idx] = value;
+            putKey(idx, key);
+        }
+        return value;
+    }
+  #end
 #end
 
     protected void              resizeTable (int newSize) {
@@ -169,7 +254,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
      *
      *  @param key          The key
      *  @param notFoundValue This will be returned if the key was not associated with a value.
-     *  @return The old value associated with the key, or <tt>notFoundValue</tt>.
+     *  @return The old value associated with the key, or <code>notFoundValue</code>.
      */
     public ${value_type}               remove (${key_type} key, ${value_type} notFoundValue) {
         int         idx = find (key);
@@ -233,7 +318,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
      *  @param key          The key
      *  @param value        The new value to put in table
      *  @param notFoundValue This will be returned if the key was not associated with a value.
-     *  @return The old value associated with the key, or <tt>notFoundValue</tt>.
+     *  @return The old value associated with the key, or <code>notFoundValue</code>.
      */
     public ${value_type}               putAndGet (
         ${key_type}                       key,

@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+				    
 package java_cup.runtime;
 
 import java.util.Stack;
@@ -59,7 +60,7 @@ import java.util.Stack;
  *  invoke various pieces of user supplied code, provide access to certain
  *  special Symbols (e.g., EOF and error), etc.  Specifically, the following
  *  abstract methods are normally supplied by generated code:
- *  <dl compact>
+ *  <dl>
  *  <dt> short[][] production_table()
  *  <dd> Provides a reference to the production table (indicating the index of
  *       the left hand side non terminal and the length of the right hand side
@@ -1250,3 +1251,4 @@ public abstract class lr_parser {
       return result;
     }
 }
+

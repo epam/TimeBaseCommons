@@ -14,15 +14,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.time;
+package com.epam.deltix.util.time;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.StringTokenizer;
 
+import com.epam.deltix.util.CommonsJUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 import static org.junit.Assert.assertEquals;
 
+@Category(Utils.class)
 public class Test_TimeFormatter {
 
 	private final static long MILLIS_PER_DAY = 24*60*60*1000L;
@@ -42,7 +46,7 @@ public class Test_TimeFormatter {
 
 	@Test
 	public void specialFormat() {
-		assertEquals(28800000000000L, TimeFormatter.parseTimeOfDay("08:00:00", 1_000_000_000));
+		Assert.assertEquals(28800000000000L, TimeFormatter.parseTimeOfDay("08:00:00", 1_000_000_000));
 	}
 
 	@Test

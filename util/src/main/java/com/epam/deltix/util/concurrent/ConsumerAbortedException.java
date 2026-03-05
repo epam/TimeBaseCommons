@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.concurrent;
+package com.epam.deltix.util.concurrent;
 
 /**
  * This exception indicates that attempted operation can't be performed because consumer in the "closed" state.

@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
 import com.epam.deltix.util.collections.GapByteQueue;
 import com.epam.deltix.util.io.GapQueueInputStream;
@@ -25,9 +25,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import org.junit.experimental.categories.Category;
+
 /**
  *
  */
+@Category(Object.class)
 public class Test_GapQueue {
 
     private byte[] data = new byte[1024];

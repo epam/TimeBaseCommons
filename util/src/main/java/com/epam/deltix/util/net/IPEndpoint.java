@@ -14,9 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.net;
-
-import com.epam.deltix.util.lang.StringUtils;
+package com.epam.deltix.util.net;
 
 /**
  *

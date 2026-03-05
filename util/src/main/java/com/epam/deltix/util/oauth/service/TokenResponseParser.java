@@ -14,14 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-package com.epam.deltix.util.oauth.service;
+package com.epam.deltix.util.oauth.service;
 
 import com.epam.deltix.util.lang.StringUtils;
 import com.epam.deltix.util.oauth.AuthResult;
-import io.github.green4j.jelly.JsonNumber;
-import io.github.green4j.jelly.JsonParser;
-import io.github.green4j.jelly.JsonParserListener;
+import org.green.jelly.JsonNumber;
+import org.green.jelly.JsonParser;
+import org.green.jelly.JsonParserListener;
 
 class TokenResponseParser {
 

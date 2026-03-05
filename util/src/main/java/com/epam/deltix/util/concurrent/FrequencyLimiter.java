@@ -14,8 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.concurrent;
 
+import com.epam.deltix.util.LangUtil;
 import com.epam.deltix.util.lang.Util;
 
 import java.util.Timer;
@@ -40,6 +42,7 @@ public abstract class FrequencyLimiter {
      */
     protected void                      onError (Throwable x) {
         Util.logException(this + " failed", x);
+        LangUtil.propagateError(x);
     }
 
     /**

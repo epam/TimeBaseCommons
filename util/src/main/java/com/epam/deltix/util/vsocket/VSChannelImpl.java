@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
@@ -203,6 +204,7 @@ final class VSChannelImpl implements VSChannel {
                         VSProtocol.LOGGER.log (Level.WARNING, "Error sending bytes read.", e);
                     return false;
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     return false;
                 }
             }
@@ -322,6 +324,7 @@ final class VSChannelImpl implements VSChannel {
             } catch (ConnectionAbortedException x) {
                 VSProtocol.LOGGER.log (Level.FINE, "Error sending disconnect.", x);
             } catch (InterruptedException x) {
+                Thread.currentThread().interrupt();
                 VSProtocol.LOGGER.log (Level.FINE, "Sending disconnect interrupted.", x);
             } catch (Exception x) {
                 VSProtocol.LOGGER.log (Level.WARNING, "Error sending disconnect", x);
@@ -403,7 +406,10 @@ final class VSChannelImpl implements VSChannel {
                 case Closed:
                     try {
                         sendClosed();
-                    } catch (Throwable x) {
+                    } catch (Exception x) {
+                        if (x instanceof InterruptedException) {
+                            Thread.currentThread().interrupt();
+                        }
                         VSProtocol.LOGGER.log (Level.WARNING, "Error sending disconnect", x);
                     }
                     break;

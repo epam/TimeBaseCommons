@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.memory;
+package com.epam.deltix.util.memory;
 
 import com.epam.deltix.dfp.Decimal64Utils;
 import com.epam.deltix.util.io.UncheckedIOException;
@@ -133,15 +133,52 @@ public final class MemoryDataInput {
         return (mPos);
     }
 
+    /**
+     * This method uses AssertionError as a way to signal insufficient data.
+     * This is bad practice, as AssertionError is generally intended for detecting programming errors,
+     * not for handling runtime conditions like insufficient data.
+     * <p>
+     * Thus, this method is deprecated and should be avoided in favor of proper exception handling.
+     * Use {@link #hasAvailable(int)} to check availability before reading.
+     * If you need to enforce availability, consider using {@link #ensureAvailable(int)} which throws IllegalStateException.
+     */
+    @Deprecated
     public boolean    checkAvailable (int n) {
-        if (getAvail () < n)
-            throw new AssertionError ("Cannot read " + n + " bytes; available: " + getAvail ());
+        return assertAvailable(n);
+    }
 
-        return (true);
+    /**
+     * Should be used only for assertions.
+     */
+    private boolean assertAvailable(int n) {
+        if (getAvail() < n) {
+            throw new AssertionError("Cannot read " + n + " bytes; available: " + getAvail());
+        }
+        return true;
+    }
+
+    /**
+     * Ensures that at least n bytes are available for reading.
+     * Throws IllegalStateException if not enough bytes are available.
+     * <p>
+     * Same as {@link #checkAvailable(int)} but uses a more appropriate exception type.
+     */
+    public void ensureAvailable(int n) {
+        int avail = getAvail();
+        if (avail < n) {
+            throw new IllegalStateException("Cannot read " + n + " bytes; available: " + avail);
+        }
+    }
+
+    /**
+     * Checks if at least n bytes are available for reading.
+     */
+    public boolean hasAvailable(int n) {
+        return getAvail() >= n;
     }
 
     public void       readFully (byte[] b, int off, int len) {
-        assert checkAvailable (len);
+        assert assertAvailable (len);
         
         System.arraycopy (mBuffer, mPos, b, off, len);
         mPos += len;
@@ -152,7 +189,7 @@ public final class MemoryDataInput {
     }
 
     public void       skipBytes (int n) {
-        assert checkAvailable (n);
+        assert assertAvailable (n);
         mPos += n;
     }
 
@@ -181,7 +218,7 @@ public final class MemoryDataInput {
     }
 
     public int        readUnsignedShort () {
-        assert checkAvailable (2);
+        assert assertAvailable (2);
 
         int     ret = DataExchangeUtils.readUnsignedShort (mBuffer, mPos);
         mPos += 2;
@@ -189,7 +226,7 @@ public final class MemoryDataInput {
     }
 
     public long       readUnsignedInt () {
-        assert checkAvailable (4);
+        assert assertAvailable (4);
 
         long    ret = DataExchangeUtils.readUnsignedInt (mBuffer, mPos);
         mPos += 4;
@@ -197,25 +234,25 @@ public final class MemoryDataInput {
     }
 
     public int        readUnsignedByte () {
-        assert checkAvailable (1);
+        assert assertAvailable (1);
 
         return (mBuffer [mPos++] & 0xFF);
     }
 
     public boolean    readBoolean () {
-        assert checkAvailable (1);
+        assert assertAvailable (1);
 
         return (mBuffer [mPos++] == 1);
     }
 
     public byte       readByte () {
-        assert checkAvailable (1);
+        assert assertAvailable (1);
 
         return (mBuffer [mPos++]);
     }
 
     public char       readChar () {
-        assert checkAvailable (2);
+        assert assertAvailable (2);
 
         char    ret = DataExchangeUtils.readChar (mBuffer, mPos);
         mPos += 2;
@@ -223,7 +260,7 @@ public final class MemoryDataInput {
     }
 
     public double     readDouble () {
-        assert checkAvailable (8);
+        assert assertAvailable (8);
 
         double    ret = DataExchangeUtils.readDouble (mBuffer, mPos);
         mPos += 8;
@@ -231,7 +268,7 @@ public final class MemoryDataInput {
     }
 
     public float      readFloat () {
-        assert checkAvailable (4);
+        assert assertAvailable (4);
 
         float    ret = DataExchangeUtils.readFloat (mBuffer, mPos);
         mPos += 4;
@@ -239,7 +276,7 @@ public final class MemoryDataInput {
     }
 
     public int        readInt () {
-        assert checkAvailable (4);
+        assert assertAvailable (4);
 
         int    ret = DataExchangeUtils.readInt (mBuffer, mPos);
         mPos += 4;
@@ -247,7 +284,7 @@ public final class MemoryDataInput {
     }
 
     public long       readLong () {
-        assert checkAvailable (8);
+        assert assertAvailable (8);
 
         long    ret = DataExchangeUtils.readLong (mBuffer, mPos);
         mPos += 8;
@@ -255,7 +292,7 @@ public final class MemoryDataInput {
     }
 
     public long       readLong48 () {
-        assert checkAvailable (6);
+        assert assertAvailable (6);
 
         long    ret = DataExchangeUtils.readLong48 (mBuffer, mPos);
         mPos += 6;
@@ -263,7 +300,7 @@ public final class MemoryDataInput {
     }
 
     public long       readLongUnsignedByte () {
-        assert checkAvailable (1);
+        assert assertAvailable (1);
 
         return (((long) mBuffer [mPos++]) & 0xFFL);
     }
@@ -359,7 +396,7 @@ public final class MemoryDataInput {
     }
 
     public short      readShort () {
-        assert checkAvailable (2);
+        assert assertAvailable (2);
 
         short    ret = DataExchangeUtils.readShort (mBuffer, mPos);
         mPos += 2;

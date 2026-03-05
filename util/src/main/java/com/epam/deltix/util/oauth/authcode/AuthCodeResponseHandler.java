@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth.authcode;
+
+package com.epam.deltix.util.oauth.authcode;
 
 import com.epam.deltix.util.oauth.utils.Utils;
 import com.sun.net.httpserver.Headers;
@@ -59,7 +60,7 @@ class AuthCodeResponseHandler implements HttpHandler {
             );
             sendResponse(httpExchange, result);
             authCodeResultQueue.put(result);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException(t);
         } finally {
             httpExchange.close();
@@ -155,7 +156,7 @@ class AuthCodeResponseHandler implements HttpHandler {
             return message
                 .replace("{{result-error}}", result.error())
                 .replace("{{result-error-description}}", result.errorDescription());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             return browserOptions.getErrorMessage();
         }
     }

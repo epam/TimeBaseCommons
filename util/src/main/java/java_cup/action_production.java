@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package java_cup;
 
 /** A specialized version of a production used when we split an existing

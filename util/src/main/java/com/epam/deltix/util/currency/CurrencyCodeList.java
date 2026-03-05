@@ -14,6 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.currency;
 
 import com.epam.deltix.util.io.BasicIOUtil;
@@ -54,11 +55,11 @@ public class CurrencyCodeList {
         try {
             String alternativeLocation = System.getProperty("deltix.qsrv.currency.codes");
             if (StringUtils.isEmpty(alternativeLocation))
-                is = BasicIOUtil.openResourceAsStream ("com/epam/deltix/util/currency/CurrencyCodes.xml");
+                is = BasicIOUtil.openResourceAsStream ("deltix/util/currency/CurrencyCodes.xml");
             else
                 is = new FileInputStream(alternativeLocation);
             read(is);
-        } catch (final Throwable x) {
+        } catch (Exception x) {
             Util.logException("Can not create currency code list", x);
         } finally {
             Util.close (is);
@@ -119,7 +120,7 @@ public class CurrencyCodeList {
             fstNm = fstNmElmnt.getChildNodes ();
 
             return (fstNm.item(0)).getNodeValue();
-        } catch (final Throwable x) {
+        } catch (Exception x) {
             return null;
         }
 

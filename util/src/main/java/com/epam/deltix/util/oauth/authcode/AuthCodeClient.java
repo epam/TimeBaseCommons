@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth.authcode;
+
+package com.epam.deltix.util.oauth.authcode;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.DefaultApi20;
@@ -113,7 +114,7 @@ class AuthCodeClient {
                 token.getRefreshToken(),
                 token.getExpiresIn()
             );
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException(t);
         }
     }

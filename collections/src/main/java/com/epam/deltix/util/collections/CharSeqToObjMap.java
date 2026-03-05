@@ -14,10 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import com.epam.deltix.util.collections.generated.ObjectToObjectHashMap;
 import com.epam.deltix.util.collections.hash.ObjHashCodeComputer;
+import deltix.util.collections.generated.ObjectToObjectHashMap;
 import com.epam.deltix.util.lang.Util;
 
 import java.util.function.BiPredicate;

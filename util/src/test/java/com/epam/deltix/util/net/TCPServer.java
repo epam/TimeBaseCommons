@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.net;
+package com.epam.deltix.util.net;
 
 import java.net.ServerSocket;
 import java.net.Socket;

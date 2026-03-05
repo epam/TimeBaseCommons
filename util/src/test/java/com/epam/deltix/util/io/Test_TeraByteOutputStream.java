@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.io.*;
 
@@ -26,18 +26,19 @@ import org.junit.experimental.categories.Category;
 /**
  *
  */
+@Category(Object.class)
 public class Test_TeraByteOutputStream {
     @Test
     public void     testSingleBytes () throws IOException {
         final int                   num = 7777;
-        TeraByteOutputStream        tbos = new TeraByteOutputStream (num, 33);
+        TeraByteOutputStream tbos = new TeraByteOutputStream (num, 33);
         
         for (int ii = 0; ii < num; ii++)
             tbos.write (ii);
         
         assertEquals (num, tbos.size ());
                 
-        ByteArrayOutputStreamEx     bos = new ByteArrayOutputStreamEx ();
+        ByteArrayOutputStreamEx bos = new ByteArrayOutputStreamEx ();
         
         tbos.writeTo (bos, 0, num);
         

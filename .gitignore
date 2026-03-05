@@ -1,10 +1,12 @@
-.vs/
-*.vc.db
-*.user
 .idea/
 .gradle/
+*.iml
+*.iws
+*.ipr
+build
 
-/**/bin/
-/**/obj/
-/**/build/
-/**/out/
+# compiled output
+/dist
+/tmp
+/**/out
+/**/build

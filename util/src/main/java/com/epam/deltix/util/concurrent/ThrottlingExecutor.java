@@ -14,10 +14,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.util.concurrent;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
+import deltix.util.LangUtil;
 import com.epam.deltix.util.collections.QuickList;
 import com.epam.deltix.util.lang.ExceptionHandler;
 import com.epam.deltix.util.time.TimeKeeper;
@@ -171,6 +173,8 @@ public class ThrottlingExecutor extends Thread {
                     LOG.error("Exception in %s: %s").with(next).with(x);
                 else
                     handler.handle (x);
+
+                LangUtil.propagateError(x);
             }
 
             t1 = TimeKeeper.currentTime;

@@ -14,8 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.epam.deltix.qsrv.hf.spi.conn;
 
+import com.epam.deltix.util.LangUtil;
 import com.epam.deltix.util.time.GlobalTimer;
 import com.epam.deltix.util.time.TimerRunner;
 import net.jcip.annotations.GuardedBy;
@@ -26,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *  Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface, including reconnect
+ *  Helps implement the {@link Disconnectable} interface, including reconnect
  *  capability.
  */
 public class ReconnectableImpl extends DisconnectableEventHandler {
@@ -287,7 +289,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                                     System.currentTimeMillis() - timeDisconnected,
                                     this
                             );
-                } catch (Throwable x) {
+                } catch (Exception x) {
                     String check = x.toString();
                     if (check.equals(lastExceptionAsString)) {
                         //logger.log (logLevel, "[%s] Reconnect failed due to: %s").with(logprefix).with(lastExceptionAsString);
@@ -333,6 +335,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                     } catch (Throwable x) {
                         //logger.error("[%s] Unexpected: %s").with(logprefix ).with(x);
                         logger.log (Level.SEVERE, "[" + logprefix + "] Unexpected", x);
+                        LangUtil.propagateError(x);
                     }
                 }
             };

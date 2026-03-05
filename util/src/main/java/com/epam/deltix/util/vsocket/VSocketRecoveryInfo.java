@@ -14,7 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
+
+import deltix.util.annotations.TimestampMs;
+import net.jcip.annotations.GuardedBy;
 
 /**
  * @author Alexei Osipov
@@ -24,16 +28,18 @@ class VSocketRecoveryInfo {
 
     private int reconnectAttempts = 0;
     private long lastReconnectAttemptTs = Long.MIN_VALUE;
-    private final long disconnectTs;
+    @TimestampMs
+    private final long recoveryDeadlineTs;
 
     private boolean recoveryFailed;
     private boolean recoverySucceeded;
 
+    // If true, it means that currently a thread actively attempts to recover corresponding channel
     private boolean recoveryAttemptInProgress;
 
-    VSocketRecoveryInfo(VSocket socket, long disconnectTimestamp) {
+    VSocketRecoveryInfo(VSocket socket, long recoveryDeadlineTs) {
         this.socket = socket;
-        this.disconnectTs = disconnectTimestamp;
+        this.recoveryDeadlineTs = recoveryDeadlineTs;
     }
 
     int addReconnectAttempt(long reconnectAttemptTimestamp) {
@@ -50,8 +56,8 @@ class VSocketRecoveryInfo {
         return lastReconnectAttemptTs;
     }
 
-    long getDisconnectTs() {
-        return disconnectTs;
+    long getRecoveryDeadlineTs() {
+        return recoveryDeadlineTs;
     }
 
     VSocket getSocket() {
@@ -62,8 +68,14 @@ class VSocketRecoveryInfo {
         recoveryFailed = true;
     }
 
-    void markRecoverySucceeded() {
-        recoverySucceeded = true;
+    @GuardedBy("this")
+    boolean tryMarkRecoverySucceeded() {
+        if (!isRecoveryEnded()) {
+            recoverySucceeded = true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     boolean isRecoveryFailed() {
@@ -83,7 +95,6 @@ class VSocketRecoveryInfo {
     }
 
     boolean startRecoveryAttempt() {
-        //noinspection RedundantIfStatement
         if (recoveryAttemptInProgress || isRecoveryEnded()) {
             // Only one attempt at a time
             return false;
@@ -94,7 +105,6 @@ class VSocketRecoveryInfo {
     }
 
     void stopRecoveryAttempt() {
-        //noinspection RedundantIfStatement
         if (recoveryAttemptInProgress) {
             // Only one attempt at a time
             recoveryAttemptInProgress = false;

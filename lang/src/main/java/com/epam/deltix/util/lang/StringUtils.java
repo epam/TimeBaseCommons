@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,25 +35,24 @@ public class StringUtils {
     public static final char   MICROS_CHARACTER        = 'u';
     public static final String patternChars            = "GyMdkHmsSEDFwWahKzZ";
     public static final int[]  precisions              = new int[]{6, 9};
-
     public static       String precisionTemplate       = "(\\d{%s}\\z)|(\\d{3},\\d{3}\\z)|(\\d{3},\\d{3},\\d{3}\\z)";
 
     public static String []     JAVA_KEYWORDS = {
-        "abstract", "assert",
-        "boolean", "break", "byte",
-        "case", "catch", "char", "class", "const", "continue",
-        "default", "do", "double",
-        "else", "enum", "extends",
-        "false",  "final", "finally", "float", "for",
-        "goto",
-        "if", "implements", "import", "instanceof", "int", "interface",
-        "long", "native", "new", "null",
-        "package", "private", "protected", "public",
-        "return",
-        "short", "static", "strictfp", "super", "switch", "synchronized",
-        "this", "throw", "throws", "transient", "true", "try",
-        "void", "volatile",
-        "while"
+            "abstract", "assert",
+            "boolean", "break", "byte",
+            "case", "catch", "char", "class", "const", "continue",
+            "default", "do", "double",
+            "else", "enum", "extends",
+            "false",  "final", "finally", "float", "for",
+            "goto",
+            "if", "implements", "import", "instanceof", "int", "interface",
+            "long", "native", "new", "null",
+            "package", "private", "protected", "public",
+            "return",
+            "short", "static", "strictfp", "super", "switch", "synchronized",
+            "this", "throw", "throws", "transient", "true", "try",
+            "void", "volatile",
+            "while"
     };
 
     public static String []     CS_KEYWORDS = {
@@ -862,6 +861,7 @@ public class StringUtils {
     static {
         DECIMAL_FORMAT.setMaximumIntegerDigits(309);
         DECIMAL_FORMAT.setMaximumFractionDigits(10);
+
     }
 
     public static String toDecimalString(float value) {
@@ -1309,3 +1309,5 @@ public class StringUtils {
     }
 
 }
+
+

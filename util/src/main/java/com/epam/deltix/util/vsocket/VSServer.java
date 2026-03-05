@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
@@ -95,6 +96,11 @@ public class VSServer extends Thread {
         serverSocket.setSoTimeout(readTimeout);
     }
 
+    @VisibleForTesting
+    public void setTransportsLimit(short transportsLimit) {
+        this.framework.setTransportsLimit(transportsLimit);
+    }
+
     @Override
     public void                 run () {
         Socket          s = null;
@@ -135,5 +141,10 @@ public class VSServer extends Thread {
         contextContainer.getQuickExecutor().shutdownInstance();
         if (framework != null)
             framework.close();
+    }
+
+    @VisibleForTesting
+    VSDispatcher[] getDispatchers() {
+        return framework.getDispatchers();
     }
 }
