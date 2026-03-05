@@ -18,10 +18,6 @@
 package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
-import deltix.util.vsocket.ConnectionStateListener;
-import deltix.util.vsocket.VSChannelImpl;
-import deltix.util.vsocket.VSTransportChannel;
-import deltix.util.vsocket.VSocketRecoveryInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

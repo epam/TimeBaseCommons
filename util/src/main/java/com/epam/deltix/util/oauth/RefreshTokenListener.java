@@ -14,12 +14,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth;
+
+package com.epam.deltix.util.oauth;
+
+import com.epam.deltix.util.LangUtil;
 
 public interface RefreshTokenListener {
 
     void refreshed(AuthResult authResult);
 
-    default void refreshFailed(Throwable t) { }
+    default void refreshFailed(Throwable t) { LangUtil.propagateError(t); }
 
 }
