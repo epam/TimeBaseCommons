@@ -19,9 +19,9 @@ package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
-import com.epam.deltix.thread.affinity.AffinityThreadFactoryBuilder;
+import deltix.thread.affinity.AffinityThreadFactoryBuilder;
 import com.epam.deltix.util.annotations.TimestampMs;
-import com.epam.deltix.util.collections.generated.ObjectHashSet;
+import deltix.util.collections.generated.ObjectHashSet;
 import com.epam.deltix.util.lang.Disposable;
 import com.epam.deltix.util.lang.DisposableListener;
 import com.epam.deltix.util.lang.Util;

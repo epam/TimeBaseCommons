@@ -14,11 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
-
-import com.epam.deltix.util.collections.generated.IntegerEnumeration;
+package com.epam.deltix.util.collections;
 
 import java.util.*;
+import deltix.util.collections.generated.IntegerEnumeration;
 
 /**
  *  Adapts the BitSet class to the {@link MutableIntegerSet} interface.

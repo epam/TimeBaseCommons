@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.xml;
+package com.epam.deltix.util.xml;
 
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.model.annotation.AnnotationReader;

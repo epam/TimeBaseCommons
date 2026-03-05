@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import java.util.Collection;
 
@@ -80,14 +80,14 @@ public class SynchronizedCircularBoundedQueue<E> implements CircularQueue<E>{
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
-     * <tt>true</tt> upon success and throwing an <tt>IllegalStateException</tt>
+     * <code>true</code> upon success and throwing an <code>IllegalStateException</code>
      * if no space is currently available.
      *
-     * <p>This implementation returns <tt>true</tt> if <tt>offer</tt> succeeds,
-     * else throws an <tt>IllegalStateException</tt>.</p>
+     * <p>This implementation returns <code>true</code> if <code>offer</code> succeeds,
+     * else throws an <code>IllegalStateException</code>.</p>
      *
      * @param e the element to add
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return <code>true</code> (as specified by {@link Collection#add})
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to capacity restrictions
      * @throws ClassCastException if the class of the specified element
@@ -108,7 +108,7 @@ public class SynchronizedCircularBoundedQueue<E> implements CircularQueue<E>{
     /**
      * Inserts the specified element at the tail of this queue if it is
      * possible to do so immediately without exceeding the queue's capacity,
-     * returning <tt>true</tt> upon success and <tt>false</tt> if this queue
+     * returning <code>true</code> upon success and <code>false</code> if this queue
      * is full.  This method is generally preferable to method {@link #add},
      * which can fail to insert an element only by throwing an exception.
      *

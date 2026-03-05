@@ -14,13 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.time;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+package com.epam.deltix.util.time;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
-import com.epam.deltix.util.text.*;
+import com.epam.deltix.util.text.CharSequenceParser;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
@@ -146,7 +146,7 @@ public abstract class Interval implements Serializable {
 
     /**
      *  Returns the short representation of this interval, such as
-     *  <tt>-4Q</tt>
+     *  <code>-4Q</code>
      */
     @Override
     public String                   toString () {
@@ -172,7 +172,7 @@ public abstract class Interval implements Serializable {
     public static long toMilliseconds(Interval interval) {
         if (interval.getUnit().isVariableSize()) {
             return interval.getNumUnits() * interval.getUnit().getSizeInMonths() *
-                   com.epam.deltix.util.time.TimeUnit.DAY.getSizeInMilliseconds() * 30;
+                   TimeUnit.DAY.getSizeInMilliseconds() * 30;
         }
         return interval.getNumUnits() * interval.getUnit().getSizeInMilliseconds();
     }

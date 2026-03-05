@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.io.*;
 
@@ -223,4 +223,5 @@ public class LittleEndianDataOutputStream extends FilterOutputStream implements 
     protected DataOutputStream d; // to get at high level write methods of DataOutputStream
     byte w[]; // work array for composing output
 
-}
+} 
+

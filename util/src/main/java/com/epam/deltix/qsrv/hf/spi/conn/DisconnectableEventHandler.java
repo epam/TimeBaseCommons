@@ -14,29 +14,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.qsrv.hf.spi.conn;
-
-import com.epam.deltix.qsrv.hf.spi.conn.Disconnectable;
-import com.epam.deltix.qsrv.hf.spi.conn.DisconnectEventListener;
+package com.epam.deltix.qsrv.hf.spi.conn;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface.
+ * Helps implement the {@link Disconnectable} interface.
  * <p> Doesn't maintain a connection status, so <code>isConnected</code> must be implemented by a client.</p>
  */
 public class DisconnectableEventHandler implements Disconnectable {
     private final CopyOnWriteArrayList<DisconnectEventListener> listeners =
         new CopyOnWriteArrayList<DisconnectEventListener>();
 
+    @Override
     public void addDisconnectEventListener(DisconnectEventListener listener) {
         listeners.addIfAbsent(listener);
     }
 
+    @Override
     public void removeDisconnectEventListener(DisconnectEventListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public boolean isConnected() {
         throw new UnsupportedOperationException();
     }

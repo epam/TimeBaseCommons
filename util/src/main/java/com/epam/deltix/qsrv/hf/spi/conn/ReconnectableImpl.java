@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *  Helps implement the {@link com.epam.deltix.qsrv.hf.spi.conn.Disconnectable} interface, including reconnect
+ *  Helps implement the {@link Disconnectable} interface, including reconnect
  *  capability.
  */
 public class ReconnectableImpl extends DisconnectableEventHandler {

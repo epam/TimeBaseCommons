@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
 /* Defines integers that represent the associativity of terminals
  * @version last updated: 7/3/96

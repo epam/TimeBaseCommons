@@ -14,10 +14,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.os;
+package com.epam.deltix.util.os;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class DotNetFrameworkVersionTester {
 

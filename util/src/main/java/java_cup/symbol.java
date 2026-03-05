@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
 /** This abstract class serves as the base class for grammar symbols (i.e.,
  * both terminals and non-terminals).  Each symbol has a name string, and

@@ -14,18 +14,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.text;
+package com.epam.deltix.util.text;
 
 import org.junit.Test;
 import org.junit.Assert;
 
 import java.text.MessageFormat;
 
+import com.epam.deltix.util.CommonsJUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
 
 /**
  * @author Andy
  *         Date: Jul 22, 2009 5:19:17 PM
  */
+@Category(Utils.class)
 public class Test_SimpleMessageFormat {
 
 

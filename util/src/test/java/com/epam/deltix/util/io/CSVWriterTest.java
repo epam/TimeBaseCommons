@@ -14,23 +14,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import com.epam.deltix.util.csvx.CSVXReader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-
-public class CSVWriterTest {
+class CSVWriterTest {
 
     @Test
-    public void printCellWithComaDefaultSeparator() throws IOException {
+    void printCellWithComaDefaultSeparator() throws IOException {
 
         StringWriter out = new StringWriter();
         CSVWriter writer = new CSVWriter(out);
@@ -45,7 +43,7 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void printCellWithPipeSeparator() throws IOException {
+    void printCellWithPipeSeparator() throws IOException {
 
         StringWriter out = new StringWriter();
         CSVWriter writer = new CSVWriter(out, '|');
@@ -60,7 +58,7 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void printCellWithPipeSeparatorWithRider() throws IOException {
+    void printCellWithPipeSeparatorWithRider() throws IOException {
 
         StringWriter out = new StringWriter();
         CSVWriter writer = new CSVWriter(out, '|');
@@ -71,7 +69,7 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void printCellWithAdditionalEscapeCharacters() throws IOException {
+    void printCellWithAdditionalEscapeCharacters() throws IOException {
 
         StringWriter out = new StringWriter();
         CSVWriter writer = new CSVWriter(out, '|', '"', '\t');
@@ -83,7 +81,7 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void printCellWithAnotherQuoteCharacter() throws IOException {
+    void printCellWithAnotherQuoteCharacter() throws IOException {
 
         StringWriter out = new StringWriter();
         CSVWriter writer = new CSVWriter(out, '\t', '\'');
@@ -93,7 +91,7 @@ public class CSVWriterTest {
         assertEquals(expected, actual);
     }
     @Test
-    public void printCellWithEscapeEOL() throws IOException {
+    void printCellWithEscapeEOL() throws IOException {
 
         StringWriter out = new StringWriter();
         CSVWriter writer = new CSVWriter(out, '\t');

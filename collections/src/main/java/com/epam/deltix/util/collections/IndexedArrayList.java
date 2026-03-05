@@ -14,11 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import java.util.*;
 
-import com.epam.deltix.util.collections.generated.*;
+import deltix.util.collections.generated.*;
 import java.io.Serializable;
 
 /**

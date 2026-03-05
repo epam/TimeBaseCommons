@@ -14,18 +14,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.csvx;
+package com.epam.deltix.util.csvx;
 
 import com.epam.deltix.util.cmdline.DefaultApplication;
+import com.epam.deltix.util.io.CSVWriter;
 import com.epam.deltix.util.collections.CharSequenceSet;
-import com.epam.deltix.util.io.*;
+import com.epam.deltix.util.io.IOUtil;
+
 import java.io.*;
 
 public class CSVFilter extends DefaultApplication {
     private Writer          outWriter;        
     private StringWriter    swr = new StringWriter (1000);   
     private StringBuffer    sb = swr.getBuffer ();
-    private CSVWriter       out = new CSVWriter (swr);;
+    private CSVWriter out = new CSVWriter (swr);;
     private CharSequenceSet uniq = null;
     
     public CSVFilter (String [] args) {

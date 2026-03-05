@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.io.*;
 
@@ -56,7 +56,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
             try {
                 setMinimumSizeNOW ();
             } catch (IOException iox) {
-                throw new com.epam.deltix.util.io.UncheckedIOException(iox);
+                throw new UncheckedIOException(iox);
             }            
         }
     }
@@ -70,7 +70,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
             
             setMinimumSizeNOW ();
         } catch (IOException iox) {
-            throw new com.epam.deltix.util.io.UncheckedIOException(iox);
+            throw new UncheckedIOException(iox);
         }
     }
     
@@ -124,7 +124,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
                 releaseLock();
                 raf.close ();
             } catch (IOException iox) {
-                throw new com.epam.deltix.util.io.UncheckedIOException(iox);
+                throw new UncheckedIOException(iox);
             }
             
             raf = null;
@@ -138,7 +138,7 @@ public class RandomAccessFileStore implements AbstractDataStore {
                 lock = null;
             }
             catch (IOException iox) {
-                throw new com.epam.deltix.util.io.UncheckedIOException(iox);
+                throw new UncheckedIOException(iox);
             }
         }
     }

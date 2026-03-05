@@ -14,8 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-package com.epam.deltix.util.memory;
+package com.epam.deltix.util.memory;
 
 import com.epam.deltix.dfp.Decimal64Utils;
 import com.epam.deltix.util.io.UncheckedIOException;

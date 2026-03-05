@@ -1,0 +1,178 @@
+# See https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/-/wikis/CI-Templates
+# Includes https://gitlab.deltixhub.com/GitLab/ci/-/blob/master/jobs/release-branch.gitlab-ci.yml
+# Jobs included from the template: "Prepare", "Release", "Clean Up"
+include:
+  - project: GitLab/ci
+    ref: 0.5.1
+    file: jobs/release-branch.gitlab-ci.yml
+
+variables:
+  JAVA_IMAGE: dockerhub.deltixhub.com/gradle:8.13.0-jdk11-alpine
+
+stages:
+  - prepare
+  - build
+  - test
+  - release
+  - publish
+  - trigger
+  - clean-up
+  - promote
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+# Override "Prepare" job from template
+"Prepare":
+  stage: prepare
+  image: ${TOOLS_IMAGE}
+  script:
+    - git config user.name ${GITLAB_ROBOT_NAME}
+    - git config user.email ${GITLAB_ROBOT_EMAIL}
+    - git checkout -b pipeline-$CI_PIPELINE_ID
+    - versionSnapshot=`grep 'version=' gradle.properties | sed 's/version=\([^-]*\)/\1/'`
+    - versionRelease=`echo $versionSnapshot | sed 's/\([^-]*\)-SNAPSHOT/\1/'`
+    # Customized line to support version suffix:
+    - versionSnapshotNext=$(echo "$versionSnapshot" | sed -E 's/^([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?-SNAPSHOT$/echo "\1.\2.$((\3+1))\4-SNAPSHOT"/' | bash)
+    - echo "$versionSnapshot -> $versionRelease  -> $versionSnapshotNext"
+    - sed -i "s/version=$versionSnapshot/version=$versionRelease/" gradle.properties
+    - git commit -am "[Skip CI] Generate release version"
+    - sed -i "s/version=$versionRelease/version=$versionSnapshotNext/" gradle.properties
+    - git commit -am "[Skip CI] Generate next development version"
+    - git remote set-url --push origin https://$GITLAB_ROBOT_NAME:$CI_GIT_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+    - git push origin -u pipeline-$CI_PIPELINE_ID
+  dependencies: []
+  tags:
+    - Linux
+    - AWS
+    - DockerExecutor
+  only:
+    - /^release-.*$/
+  except:
+    - tags
+    - schedules
+
+"Build":
+  stage: build
+  image: ${JAVA_IMAGE}
+  script:
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
+    - ./gradlew build :util:downloadCodes --no-daemon --no-watch-fs --parallel
+#    - ./gradlew build :util:downloadCodes :dependencyCheckAggregate --no-daemon --no-watch-fs
+  artifacts:
+    paths:
+      - libs/
+    reports:
+      junit:
+        - util/build/test-results/test/TEST-*.xml
+        - lang/build/test-results/test/TEST-*.xml
+        - collections/build/test-results/test/TEST-*.xml
+  tags:
+    - DockerExecutor
+  except:
+    - tags
+    - schedules
+
+"Test":
+  stage: test
+  image: ${JAVA_IMAGE}
+  only:
+    - schedules
+  script:
+    - ./gradlew check --full-stacktrace --parallel --no-daemon --no-watch-fs
+  artifacts:
+    name: "${CI_JOB_ID}_${CI_JOB_NAME}"
+    when: always
+    expire_in: 30 day
+    paths:
+      - build/reports/spotbugs/main.html
+  tags:
+    - DockerExecutor
+
+# Included from template
+# Executes release (creates tag)
+# Part of release process
+"Release":
+  cache:
+    policy: pull
+  after_script:
+    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+
+"Publish":
+  stage: publish
+  image: ${JAVA_IMAGE}
+  script:
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1
+    - ./gradlew publish --no-daemon --no-watch-fs
+  dependencies:
+    - "Build"
+  only:
+    - /^release-.*$/
+  tags:
+    - DockerExecutor
+  except:
+    - tags
+    - schedules
+
+"Trigger GitLab Release":
+  stage: trigger
+  image: ${JAVA_IMAGE}
+  script:
+    - git checkout origin/pipeline-$CI_PIPELINE_ID~1 || true
+    - ./gradlew gitlabRelease --full-stacktrace --no-daemon --no-watch-fs
+  only:
+    - /^release-.*$/
+  tags:
+    - Linux
+    - DockerExecutor
+    - AWS
+
+# Clean up after release
+# Part of release process
+# Included from template
+#"Clean Up":
+# (fully included in the template)
+
+"Promote to public":
+  stage: promote
+  image: ${JAVA_IMAGE}
+  cache: {} # Disable cache for this job because this job does not uses any data from the cache
+  script:
+    - ./gradlew promoteToPublic
+  only:
+    - /^release-.*$/
+  when: manual
+  except:
+    - tags
+    - schedules
+  dependencies: [] # Dependencies for manual tasks are not supported by GitLab: https://gitlab.com/gitlab-org/gitlab/-/issues/15567
+  tags:
+    - Linux
+    - DockerExecutor
+
+# Checks dependencies (for scheduled checks)
+# This job will correctly run only on Kubernetes cluster as it has access to NVD mirror.!reference:
+# See https://gitlab.deltixhub.com/Deltix/Common/MultilingualPackage/-/wikis/DependencyChecker
+dependency-check:
+  stage: test
+  image: ${JAVA_IMAGE}
+  needs: []
+  rules:
+    # Run automatically for scheduled OR manually for other pipelines
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never # Do not run for MR events
+    - when: manual
+      allow_failure: true # This way manual job will not block the pipeline if it fails and will not affect pipeline status
+  script:
+    - ./gradlew :dependencyCheckAggregate --no-daemon --no-watch-fs --parallel
+  artifacts:
+    name: "${CI_JOB_ID}_${CI_JOB_NAME}"
+    when: always
+    expire_in: 30 day
+    paths:
+      - build/reports/dependency-check-report.*
+  tags:
+    - kubernetes
+    - staging

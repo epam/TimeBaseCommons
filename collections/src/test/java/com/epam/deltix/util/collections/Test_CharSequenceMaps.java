@@ -14,17 +14,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.junit.experimental.categories.Category;
+import com.epam.deltix.util.CommonsJUnitCategories.Utils;
 
 /**
  *
  */
+@Category(Utils.class)
 public class Test_CharSequenceMaps {
     private StringBuilder           sb = new StringBuilder ();
 
@@ -36,7 +41,7 @@ public class Test_CharSequenceMaps {
 
     @Test
     public void         testIntegerMap () {
-        CharSequenceToIntegerMap    map = new CharSequenceToIntegerMap ();
+        CharSequenceToIntegerMap map = new CharSequenceToIntegerMap ();
 
         assertTrue (map.put (wrap ("MOON"), 456));
         assertTrue (map.put (wrap ("SUN"), 235));
@@ -57,7 +62,7 @@ public class Test_CharSequenceMaps {
         Object                      b = new Object ();
         Object                      c = new Object ();
 
-        CharSequenceToObjectMap <Object>    map = new CharSequenceToObjectMap <> ();
+        CharSequenceToObjectMap<Object> map = new CharSequenceToObjectMap <> ();
 
         assertEquals (null, map.put (wrap ("MOON"), a));
         assertEquals (null, map.put (wrap ("SUN"), b));
@@ -75,7 +80,7 @@ public class Test_CharSequenceMaps {
         Object                      b = new Object ();
         Object                      c = new Object ();
 
-        CharSequenceToObjectMapQuick <Object>    map = new CharSequenceToObjectMapQuick <> ();
+        CharSequenceToObjectMapQuick<Object> map = new CharSequenceToObjectMapQuick <> ();
 
         assertEquals (null, map.putAndGet (wrap ("MOON"), a, null));
         assertEquals (null, map.putAndGet (wrap ("SUN"), b, null));

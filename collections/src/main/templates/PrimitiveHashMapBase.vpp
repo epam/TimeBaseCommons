@@ -14,17 +14,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#if( $name == "Object" )
+#if( $name == "Object" )
 #set( $key_type = "K" )
 #set( $key_param = "<K>" )
 #set( $key_cast = "(K)" )
 #else
 #set( $key_type = $type )
 #end
-package com.epam.deltix.util.collections.generated;
+package deltix.util.collections.generated;
 
-import com.epam.deltix.util.collections.*;
-import com.epam.deltix.util.collections.hash.*;
+import deltix.util.collections.*;
+import deltix.util.collections.hash.*;
 import java.util.*;
 #if( $name == "Decimal" )
 import com.epam.deltix.dfp.Decimal64;
@@ -33,6 +33,11 @@ import com.epam.deltix.hdtime.HdDateTime;
 #elseif( $name == "HdTimeSpan" )
 import com.epam.deltix.hdtime.HdTimeSpan;
 #end
+
+///////////////////////////////////////////////
+/// Generated from PrimitiveHashMapBase.vpp ///
+///////////////////////////////////////////////
+
 /**
  *  Base class for ${name} to anything hash maps.
  */
@@ -117,7 +122,6 @@ public abstract class ${name}HashMapBase$!{key_param} extends VLinkHashMapBase {
     	return (new KeyIterator ());
     }
 #end
-
     @Override
     protected void          allocTable (int cap) {
         super.allocTable (cap);

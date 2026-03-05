@@ -14,9 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import com.epam.deltix.util.collections.hash.*;
+import com.epam.deltix.util.collections.hash.HashCodeComputer;
+import com.epam.deltix.util.collections.hash.SimpleHashCodeComputer;
+import deltix.util.collections.hash.*;
 import com.epam.deltix.util.memory.MemorySizeEstimator;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,7 +33,6 @@ public abstract class VLinkHashMapBase
     public static final int     MIN_CAPACITY = 16;
     
     private double              shrinkFactor = Double.NaN;
-    private int                 bottomThreshold = -1;
     protected int               count = 0;
     protected int               freeHead;
     protected int []            hashIndex;
@@ -66,41 +67,13 @@ public abstract class VLinkHashMapBase
     }
     
     /**
-     *  Return the ratio of size to capacity, at which the table will shrink. 
-     *  For good performance, this factor should be significantly less than 0.5.
-     *  When the shrink behavior is turned off, return Double.NaN.
-     * 
-     *  @see #setShrinkFactor
-     */
-    public final double           getShrinkFactor () {
-        return shrinkFactor;
-    }
-
-    /**
      *  Configure the ratio of size to capacity, at which the table will shrink. 
      *  For good performance, this factor should be significantly less than 0.5.
      *  To turn off the shrink behavior, set to Double.NaN.
      * 
-     *  @see #getShrinkFactor
      */
+    @Deprecated
     public final void             setShrinkFactor (double shrinkFactor) {
-        boolean     off = Double.isNaN (shrinkFactor);
-        
-        if (!off && (shrinkFactor >= 0.5 || shrinkFactor < 0))
-            throw new IllegalArgumentException ("Illegal shrinkFactor (must be [0 .. 0.5): " + shrinkFactor);
-        
-        this.shrinkFactor = shrinkFactor;
-        setBottomThreshold ();          
-    }
-    
-    private final void            setBottomThreshold () {
-        int     cap = next.length;
-        
-        if (Double.isNaN (shrinkFactor) || cap < MIN_CAPACITY)
-            bottomThreshold = -1;
-        else {
-            bottomThreshold = (int) (cap * shrinkFactor);
-        }
     }
     
     public final int            size () {
@@ -137,8 +110,6 @@ public abstract class VLinkHashMapBase
         prev = new int [cap];
         
         format ();
-        
-        setBottomThreshold ();
     }
     
     protected void              free (int idx) {

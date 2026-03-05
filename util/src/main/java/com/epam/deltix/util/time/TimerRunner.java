@@ -17,7 +17,7 @@
 
 package com.epam.deltix.util.time;
 
-import com.epam.deltix.util.LangUtil;
+import deltix.util.LangUtil;
 import com.epam.deltix.util.lang.Util;
 
 /**
