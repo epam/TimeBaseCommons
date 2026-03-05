@@ -14,10 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.qsrv.hf.spi.conn;
+package com.epam.deltix.qsrv.hf.spi.conn;
 
 /**
- *  Helps implement the {@link Disconnectable} interface.
+ *  Helps implement the {@link deltix.qsrv.hf.spi.conn.Disconnectable} interface.
  */
 public class DisconnectableImpl extends DisconnectableEventHandler {
     private volatile boolean isConnected = false;

@@ -18,6 +18,10 @@
 package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
+import com.epam.deltix.util.vsocket.ConnectionStateListener;
+import com.epam.deltix.util.vsocket.VSChannelImpl;
+import com.epam.deltix.util.vsocket.VSTransportChannel;
+import com.epam.deltix.util.vsocket.VSocketRecoveryInfo;
 import org.junit.Assert;
 import org.junit.Test;
 

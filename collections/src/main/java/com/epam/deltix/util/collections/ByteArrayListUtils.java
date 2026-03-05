@@ -14,8 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
-import deltix.util.collections.generated.ByteArrayList;
+package com.epam.deltix.util.collections;
+import com.epam.deltix.util.collections.generated.ByteArrayList;
 
 import java.util.UUID;
 

@@ -14,11 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.qsrv.hf.pub;
+package com.epam.deltix.qsrv.hf.pub;
 
-
-import com.epam.deltix.util.annotations.TimestampMs;
-import com.epam.deltix.util.annotations.TimestampNs;
 
 /**
  * Service that returns current time (real or simulated).
@@ -27,13 +24,11 @@ import com.epam.deltix.util.annotations.TimestampNs;
  */
 public interface TimeSource {
     /** @return the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC. */
-    @TimestampMs
     long currentTimeMillis();
 
     /**
      * @return current time in nanoseconds
      */
-    @TimestampNs
     default long currentTimeNanos() {
         return currentTimeMillis() * 1_000_000L;
     }

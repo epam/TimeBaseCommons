@@ -14,15 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import com.epam.deltix.util.CommonsJUnitCategories;
 import com.epam.deltix.util.collections.hash.HashCodeComputer;
 import com.epam.deltix.util.collections.hash.SimpleHashCodeComputer;
 import org.apache.commons.collections.SortedBag;
 import org.apache.commons.collections.bag.TreeBag;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Iterator;
 
@@ -30,7 +28,6 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
-@Category(CommonsJUnitCategories.Utils.class)
 public class Test_FixedSizeCharSeqToOrderHashMap {
 
     private static final int MAX_SIZE = 16;

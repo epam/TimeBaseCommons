@@ -14,10 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
-import java.util.Enumeration;
+import java_cup.assoc;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 /** This class represents a terminal symbol in the grammar.  Each terminal 
  *  has a textual name, an index, and a string which indicates the type of 
@@ -60,7 +61,7 @@ public class terminal extends symbol {
       _precedence_side = precedence_side;
 
       /* add to by_index set */
-      _all_by_index.put(_index, this);
+      _all_by_index.put(new Integer(_index), this);
     }
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -120,7 +121,7 @@ public class terminal extends symbol {
   /** Lookup a terminal by index. */
   public static terminal find(int indx)
     {
-      Integer the_indx = indx;
+      Integer the_indx = new Integer(indx);
 
       return (terminal)_all_by_index.get(the_indx);
     }

@@ -14,18 +14,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import com.epam.deltix.util.CommonsJUnitCategories;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
-import deltix.util.collections.generated.ByteArrayList;
+import com.epam.deltix.util.collections.generated.ByteArrayList;
 
 import java.util.UUID;
 
 
-@Category(CommonsJUnitCategories.Utils.class)
 public class Test_ByteArrayListUtils {
 
     @Test

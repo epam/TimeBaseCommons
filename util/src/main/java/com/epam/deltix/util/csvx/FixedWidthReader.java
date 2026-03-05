@@ -14,15 +14,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.csvx;
+package com.epam.deltix.util.csvx;
 
 import java.io.*;
 import java.util.*;
 
-import com.epam.deltix.util.collections.EmptyCharSequence;
-import com.epam.deltix.util.io.ByteCountingInputStream;
-import com.epam.deltix.util.lang.Util;
-import deltix.util.io.*;
+import com.epam.deltix.util.collections.*;
+import com.epam.deltix.util.collections.generated.*;
+import com.epam.deltix.util.io.*;
+import com.epam.deltix.util.lang.*;
 
 public class FixedWidthReader extends TextReader {
 
@@ -49,7 +49,7 @@ public class FixedWidthReader extends TextReader {
 	                          int[] positions,
 	                          boolean closeReader,
 	                          String diagPrefix ) {
-		mInputStream = new ByteCountingInputStream( is );
+		mInputStream = new ByteCountingInputStream ( is );
 		mReader = new InputStreamReader ( mInputStream );
 		mCloseReader = closeReader;
 		mDiagPrefix = diagPrefix;

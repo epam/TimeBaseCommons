@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.tomcat;
+package com.epam.deltix.util.tomcat;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

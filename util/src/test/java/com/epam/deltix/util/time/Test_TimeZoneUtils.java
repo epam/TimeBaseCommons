@@ -14,18 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.time;
+package com.epam.deltix.util.time;
 
 import java.text.*;
 import java.util.*;
-
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import com.epam.deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
-
-@Category(Utils.class)
 public class Test_TimeZoneUtils {
     public static final TimeZone    NYTZ = TimeZone.getTimeZone ("America/New_York");
     public static final DateFormat  DF = new SimpleDateFormat ("yyyy-MM-dd HH:mm");

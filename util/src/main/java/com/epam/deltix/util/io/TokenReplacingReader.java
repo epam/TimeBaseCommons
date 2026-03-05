@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -40,8 +40,8 @@ public class TokenReplacingReader extends Reader {
     }
 
     @Override
-    public int read(CharBuffer target) throws IOException {                                        
-        
+    public int read(CharBuffer target) throws IOException {
+
         return read(target.array(), 0, target.limit());
     }
 
@@ -134,5 +134,9 @@ public class TokenReplacingReader extends Reader {
     @Override
     public void reset() throws IOException {
         throw new RuntimeException("Operation Not Supported");
+    }
+
+    public interface TokenResolver {
+        String resolveToken(String token);
     }
 }

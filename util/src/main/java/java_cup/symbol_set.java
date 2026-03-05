@@ -14,7 +14,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package java_cup;
 
 import java.util.Hashtable;
@@ -244,5 +243,3 @@ public class symbol_set {
   /*-----------------------------------------------------------*/
 
 }
-
-

@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util;
+package com.epam.deltix.util;
 
 import com.epam.deltix.util.buffer.Buffer;
 import com.epam.deltix.util.buffer.MutableBuffer;

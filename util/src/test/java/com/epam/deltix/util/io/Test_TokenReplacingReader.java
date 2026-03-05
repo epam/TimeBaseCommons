@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import org.junit.Test;
 
@@ -32,11 +32,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class Test_TokenReplacingReader {
 
-    private static TokenReplacingReader.ITokenResolver NULL_RESOLVER = new TokenReplacingReader.ITokenResolver() {
-        public String resolveToken(String token) {
-            return null;
-        }
-    };
+    private final static TokenReplacingReader.ITokenResolver NULL_RESOLVER = token -> null;
 
     @Test
     public void testPartialRead () throws Exception {
@@ -53,9 +49,6 @@ public class Test_TokenReplacingReader {
         String result = new String(buffer, 0, bytesRead);
         assertEquals(text, result);
     }
-
-
-
 
     @Test
     public void testSimpleReplacement() throws Exception {

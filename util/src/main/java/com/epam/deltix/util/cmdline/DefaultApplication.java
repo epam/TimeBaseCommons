@@ -14,21 +14,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.cmdline;
+package com.epam.deltix.util.cmdline;
 
-import deltix.util.collections.generated.IntegerArrayList;
-import com.epam.deltix.util.io.IOUtil;
 import com.epam.deltix.util.io.StreamPump;
-import com.epam.deltix.util.lang.Util;
-import com.epam.deltix.util.time.GMT;
-import org.xml.sax.SAXParseException;
-
+import java.util.*;
 import java.io.*;
+
+import com.epam.deltix.util.lang.Util;
+import com.epam.deltix.util.collections.generated.IntegerArrayList;
+import com.epam.deltix.util.io.IOUtil;
+import com.epam.deltix.util.time.GMT;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import org.xml.sax.SAXParseException;
 
 /**
  *  Helps parse command-line arguments and handle exceptions.
@@ -253,7 +253,7 @@ public abstract class DefaultApplication {
      *	@param key		The argument being looked for.
      *	@return			The file value of the next argument
      *						following <i>key</i>,
-     *						or <code>null</code> if the key is not found.
+     *						or <tt>null</tt> if the key is not found.
      */
     public File 			getFileArg (String key) {
     	String				str = getArgValue (key);
@@ -285,7 +285,7 @@ public abstract class DefaultApplication {
      *	@param key		The argument being looked for.
      *	@return			The file value of the next argument
      *						following <i>key</i>,
-     *						or <code>null</code> if the key is not found.
+     *						or <tt>null</tt> if the key is not found.
      */
     public File []          getFileArgs (String key) {
     	String []			str = getArgValues (key);

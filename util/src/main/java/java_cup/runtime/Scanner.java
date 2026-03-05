@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup.runtime;
+package java_cup.runtime;
 
 /**
  * Defines the Scanner interface, which CUP uses in the default

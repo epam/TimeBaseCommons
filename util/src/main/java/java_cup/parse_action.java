@@ -14,7 +14,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package java_cup;
 
 /** This class serves as the base class for entries in a parse action table.  
@@ -105,4 +104,3 @@ public class parse_action {
 
   /*-----------------------------------------------------------*/
 }
-    
