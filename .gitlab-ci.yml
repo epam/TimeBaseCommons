@@ -1,0 +1,46 @@
+stages:
+  - release
+
+variables:
+  TOOLS_IMAGE: registry.deltixhub.com/devops/kubernetes-tools-aws:1.32.0
+  TARGET_BRANCH: "${CI_COMMIT_REF_NAME}"
+  BOUNDARY_SHA: "aae6141238f0847bdfe81f7be3aa20368b93ee02"
+  GITHUB_REMOTE_URL: "git@github.com:epam/TimeBaseCommons.git"
+  GITHUB_DEPLOY_KEY: ""
+
+
+"Publish to GitHub":
+  stage: release
+  image: ${TOOLS_IMAGE}
+  allow_failure: false
+  variables:
+    BRANCH: "${TARGET_BRANCH}"
+    BOUNDARY: "${BOUNDARY_SHA}"
+    PUBLIC_REMOTE: "github"
+    PRIVATE_REMOTE: "origin"
+    PUBLIC_BASE_REF: "github/main"
+  before_script:
+    - |
+      if [ -z "$GITHUB_DEPLOY_KEY" ]; then
+        echo "ERROR: GITHUB_DEPLOY_KEY is not set. Please provide a valid deploy key to proceed.";
+        exit 1;
+      fi
+    - apk add --no-cache bash openssh
+    - git config user.name "${GITLAB_ROBOT_NAME}"
+    - git config user.email "${GITLAB_ROBOT_EMAIL}"
+    - eval "$(ssh-agent -s)"
+    - printf '%s\n' "$GITHUB_DEPLOY_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+    - git remote remove "$PUBLIC_REMOTE" 2>/dev/null || true
+    - git remote add "$PUBLIC_REMOTE" "$GITHUB_REMOTE_URL"
+  script:
+    - bash scripts/cut-and-push-github.sh
+  tags:
+    - Linux
+    - AWS
+    - DockerExecutor
+  when: manual
+  except:
+    - tags
+    - schedules
