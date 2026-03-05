@@ -14,9 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.os;
-
-import com.github.sarxos.winreg.HKey;
+package com.epam.deltix.util.os;
 
 import java.io.*;
 
@@ -82,46 +80,46 @@ public class WindowsUtils {
     // FIXME: do not delete - for a future use
     static native String getSpecialFolderPath (int csidl);
 
-    private final static com.github.sarxos.winreg.WindowsRegistry registry = com.github.sarxos.winreg.WindowsRegistry.getInstance();
-
-    public static String regQuery (final HKey hive,
+    public static String regQuery (final int hive,
                                    final String keyName,
                                    final String valueName) {
 
         try {
-            return registry.readString (hive, keyName, valueName);
+            return WindowsRegistry.readString (hive,
+                                               keyName,
+                                               valueName);
         } catch (final Throwable e) {
             return null;
         }
     }
 
     public static String regQueryCurrentUserDesktopPath () {
-        return regQuery (HKey.HKCU,
+        return regQuery (WindowsRegistry.HKEY_CURRENT_USER,
                          SHELL_FOLDERS_REG_KEY,
                          "Desktop");
     }
 
     public static String regQueryCurrentUserStartMenuPath () {
-        return regQuery (HKey.HKCU,
+        return regQuery (WindowsRegistry.HKEY_CURRENT_USER,
                          SHELL_FOLDERS_REG_KEY,
                          "Start Menu");
     }
 
     public static String regQueryCommonDesktopPath () {
-        return regQuery (HKey.HKLM,
+        return regQuery (WindowsRegistry.HKEY_LOCAL_MACHINE,
                          SHELL_FOLDERS_REG_KEY,
                          "Common Desktop");
     }
 
     public static String regQueryCommonStartMenuPath () {
-        return regQuery (HKey.HKLM,
+        return regQuery (WindowsRegistry.HKEY_LOCAL_MACHINE,
                          SHELL_FOLDERS_REG_KEY,
                          "Common Start Menu");
 
     }
 
     public static String regQueryCommonProgramsPath () {
-        return regQuery (HKey.HKLM,
+        return regQuery (WindowsRegistry.HKEY_LOCAL_MACHINE,
                          SHELL_FOLDERS_REG_KEY,
                          "Common Programs");
 

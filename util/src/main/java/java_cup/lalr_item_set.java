@@ -14,10 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package java_cup;
 
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /** This class represents a set of LALR items.  For purposes of building
  *  these sets, items are considered unique only if they have unique cores
@@ -360,10 +361,10 @@ public class lalr_item_set {
           for (e = all(), cnt=0 ; e.hasMoreElements() /*&& cnt<5*/; cnt++)
 	    result ^= ((lalr_item)e.nextElement()).hashCode();
 
-	  hashcode_cache = new Integer(result);
+	  hashcode_cache = result;
 	}
 
-      return hashcode_cache.intValue();
+      return hashcode_cache;
     }
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -371,7 +372,7 @@ public class lalr_item_set {
   /** Convert to string. */
   public String toString()
     {
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
 
       result.append("{\n");
       for (Enumeration e=all(); e.hasMoreElements(); ) 
@@ -384,3 +385,4 @@ public class lalr_item_set {
     }
     /*-----------------------------------------------------------*/
 }
+

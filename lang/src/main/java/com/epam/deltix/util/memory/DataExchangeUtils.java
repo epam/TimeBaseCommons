@@ -14,8 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.memory;
-
+package com.epam.deltix.util.memory;
 
 import com.epam.deltix.dfp.Decimal64;
 import com.epam.deltix.hdtime.*;
@@ -85,6 +84,7 @@ public class DataExchangeUtils {
     }
 
     public static short   	readShort15 (byte [] bytes, int offset) {
+        // TODO: Investigate if there is a bug. This shift looks suspicious.
         return ((short) (readShort (bytes, offset) << 17 >> 17));
     }
 
@@ -299,6 +299,7 @@ public class DataExchangeUtils {
     public static void  	writeUnsigned40 (byte [] bytes, int offset, long l) {
         assert l <= 0xFFFFFFFFFFL && l >= 0 : l;
 
+        // TODO: Consider using VarHandle
 		b (bytes, offset,     l >>> 32);
 		b (bytes, offset + 1, l >>> 24);
 		b (bytes, offset + 2, l >>> 16);

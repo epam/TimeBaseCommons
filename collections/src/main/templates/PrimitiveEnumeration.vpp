@@ -14,9 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections.generated;
+package deltix.util.collections.generated;
 
-import com.epam.deltix.util.collections.ElementsEnumeration;
+import deltix.util.collections.ElementsEnumeration;
 #if( $name == "Decimal" )
 import com.epam.deltix.dfp.Decimal64;
 #elseif( $name == "HdDateTime" )

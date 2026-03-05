@@ -14,9 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.qsrv.hf.spi.conn;
-
-import com.epam.deltix.qsrv.hf.spi.conn.DisconnectEventListener;
+package com.epam.deltix.qsrv.hf.spi.conn;
 
 
 /** 

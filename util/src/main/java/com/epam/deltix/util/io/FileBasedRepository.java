@@ -14,13 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
-import com.epam.deltix.util.io.FileSystemWatcher.EventType;
 import com.epam.deltix.util.repository.AbstractRepository;
 import com.epam.deltix.util.repository.RepositoryEventHandler;
 import com.epam.deltix.util.repository.RepositoryItemFilter;
 import com.epam.deltix.util.repository.SCMDRepositoryEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -63,7 +63,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
 
         fsEventHandler = new FileSystemWatcher.EventHandler() {
             @Override
-            public void onEvent(File file, EventType event) {
+            public void onEvent(File file, FileSystemWatcher.EventType event) {
                 synchronized (lock) {
                     update(file, event);
                 }
@@ -135,17 +135,17 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
     protected void update(File file) throws IOException {
         if (file.exists()) {
             if (file.isDirectory()) {                
-                update(file, EventType.SCANNED);
+                update(file, FileSystemWatcher.EventType.SCANNED);
             } else {
                 update(file, !items.containsKey(file.toPath())
-                        ? EventType.SCANNED : EventType.MODIFIED);
+                        ? FileSystemWatcher.EventType.SCANNED : FileSystemWatcher.EventType.MODIFIED);
             }
         } else {
-            update(file, EventType.DELETED);
+            update(file, FileSystemWatcher.EventType.DELETED);
         }
     }
 
-    protected void update(File file, EventType event) {
+    protected void update(File file, FileSystemWatcher.EventType event) {
 
         checkHoldsLock();
 
@@ -154,7 +154,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
         if (logger.isDebugEnabled())
             logger.debug("[%s] %s > %s").with(getClass().getSimpleName()).with(event).with(path);
 
-        if (event == EventType.DELETED) { // a file or folder is deleted                    
+        if (event == FileSystemWatcher.EventType.DELETED) { // a file or folder is deleted
 
             final FileItem fItem = items.remove(path);
 
@@ -191,7 +191,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                         
                         if (watchFs) {
                             try {
-                                FileSystemWatcher.getInstance().subscribe(fsEventHandler, file, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
+                                FileSystemWatcher.getInstance().subscribe(fsEventHandler, file, FileSystemWatcher.EventType.SCANNED, FileSystemWatcher.EventType.CREATED, FileSystemWatcher.EventType.MODIFIED, FileSystemWatcher.EventType.DELETED);
                             } catch (IOException e) {
                                 logger.warn().append("An error while subscription to ").append(file).append(e).commit();
                             }
@@ -210,7 +210,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
                     }
 
                     if (IOUtil.copiedCompletely(file)) {
-                        final SCMDRepositoryEvent e = event == EventType.SCANNED ? SCMDRepositoryEvent.SCANNED : SCMDRepositoryEvent.CREATED;
+                        final SCMDRepositoryEvent e = event == FileSystemWatcher.EventType.SCANNED ? SCMDRepositoryEvent.SCANNED : SCMDRepositoryEvent.CREATED;
 
                         if (items.containsKey(path)) { // already exists
                             break;
@@ -293,7 +293,7 @@ public abstract class FileBasedRepository<T> extends AbstractRepository<T> {
         
         if (watchFs) {
             try {
-                FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, EventType.SCANNED, EventType.CREATED, EventType.MODIFIED, EventType.DELETED);
+                FileSystemWatcher.getInstance().subscribe(fsEventHandler, root, FileSystemWatcher.EventType.SCANNED, FileSystemWatcher.EventType.CREATED, FileSystemWatcher.EventType.MODIFIED, FileSystemWatcher.EventType.DELETED);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,0 +1,365 @@
+/*
+ * Copyright 2021 EPAM Systems, Inc
+ *
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership. Licensed under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.epam.deltix.util.vsocket;
+
+import com.epam.deltix.util.concurrent.QuickExecutor;
+import com.epam.deltix.util.lang.Disposable;
+import com.epam.deltix.util.lang.Util;
+import com.epam.deltix.util.memory.DataExchangeUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
+
+/**
+ *  Similar to DataSocket, but stripped of much special logic.
+ */
+class VSTransportChannel implements Runnable, Disposable {
+    // Set to true whenever the channel is checked out
+    @GuardedBy("dispatcher.freeChannels")
+    boolean checkedOut = false;
+
+    private byte[]                      buffer = new byte[4096];
+    private final byte[]                header = new byte[16];
+    
+    private final VSDispatcher          dispatcher;
+    final VSocket                       socket;
+
+    private final VSocketInputStream    vin;
+    private final DataInputStream       din;
+    private final VSocketOutputStream   out;
+
+    private final byte[]                keepAlive = new byte[2];
+    private final byte[]                bytesReport = new byte[10];
+    private final byte[]                ping = new byte[2];
+
+    private volatile boolean            closed = false;
+    volatile long                       latency = Long.MAX_VALUE;
+
+    // Value at which the "completeTask" should be triggered next time.
+    // Checked and updated by transport thread.
+    private long                        nextReportValue = VSocketOutputStream.REPORT_THRESHOLD;
+
+    private final Thread                thread;
+
+    private final QuickExecutor.QuickTask completeTask;
+
+    @Nonnull
+    private QuickExecutor.QuickTask createCompleteTask(QuickExecutor quickExecutor) {
+        return new QuickExecutor.QuickTask(quickExecutor) {
+            // Bytes that already reported. Checked and updated by completeTask.
+            private long reported = 0;
+
+            @Override
+            public void run() throws InterruptedException {
+                long bytesRead;
+                synchronized (out) {
+                    bytesRead = vin.getBytesRead();
+                    if (bytesRead == reported) {
+                        // We already reported this value
+                        return;
+                    }
+                    DataExchangeUtils.writeLong(bytesReport, 2, bytesRead);
+                    out.write(bytesReport, 0, bytesReport.length);
+                    reported = bytesRead;
+                }
+                if (VSProtocol.LOGGER.isLoggable(Level.FINEST)) {
+                    VSProtocol.LOGGER.log(Level.FINEST, "Sent BYTES_RECIEVED report: " + bytesRead + " from " + socket.getSocketIdStr());
+                }
+            }
+        };
+    }
+
+    VSTransportChannel(VSDispatcher dispatcher, final VSocket socket, ThreadFactory threadFactory) throws IOException {
+        this.dispatcher = dispatcher;
+        this.socket = socket;
+        this.completeTask = createCompleteTask(dispatcher.getQuickExecutor());
+
+        DataExchangeUtils.writeUnsignedShort(keepAlive, 0, VSProtocol.KEEP_ALIVE);
+        DataExchangeUtils.writeUnsignedShort(ping, 0, VSProtocol.PING);
+        DataExchangeUtils.writeUnsignedShort(bytesReport, 0, VSProtocol.BYTES_RECIEVED);
+
+        this.vin = socket.getInputStream();
+        this.din = new DataInputStream (vin);
+        this.out = socket.getOutputStream();
+
+        this.thread = threadFactory.newThread(this);
+        this.thread.setName("VSTransportChannel for " + socket);
+    }
+
+    private synchronized void   onException (Throwable x) {
+        dispatcher.transportStopped (this, x);
+        close();
+    }
+
+    public void                 write(int id, int index, long position, byte[] data, int offset, int length, int unpackedLength) {
+        assert id >= 0 && length > 0;
+        
+        if (length == 0)
+            VSProtocol.LOGGER.log (Level.WARNING, "Writing zero length packet");
+
+        if (out.isBroken()) {
+            if (VSProtocol.LOGGER.isLoggable(Level.FINEST)) {
+                VSProtocol.LOGGER.log(Level.FINEST, "Write to a broken transport " + socket.getSocketIdStr());
+            }
+        }
+
+        if (VSProtocol.LOGGER.isLoggable(Level.FINEST)) {
+            VSProtocol.LOGGER.log(Level.FINEST, "Sending data block " + position + ":" + (position + unpackedLength) + " (" + length + "/" + unpackedLength + ") to socket: " + socket.getSocketIdStr());
+        }
+
+        synchronized (out) {
+            DataExchangeUtils.writeUnsignedShort(header, 0, id);
+            DataExchangeUtils.writeUnsignedShort(header, 2, length);
+            DataExchangeUtils.writeInt(header, 4, index);
+            DataExchangeUtils.writeLong(header, 8, position);
+
+            out.writeTwoArrays (header, 0, header.length, data, offset, length);
+        }
+    }
+
+    public void                 write (byte [] data) {
+        write (data, 0, data.length);
+    }
+
+    public void                 write (byte [] data, int offset, int length) {
+        if (length == 0)
+            VSProtocol.LOGGER.log (Level.WARNING, "Zero length packet");
+
+        synchronized (out) {
+            out.write (data, offset, length);
+        }
+    }
+
+    public void                 keepAlive () {
+        write(keepAlive);
+    }
+
+    private long                ping () {
+        long l = latency = System.nanoTime();
+        write(ping);
+        return l;
+    }
+
+    @Override
+    public void                 run () {
+        int     index;
+        long    offset;
+        Thread currentThread = Thread.currentThread();
+        assert currentThread == this.thread;
+
+        try {
+            for (;;) {
+                vin.complete();
+
+                if (currentThread.isInterrupted())
+                    throw new InterruptedException();
+
+                long bytesRead = vin.getBytesRead();
+                if (bytesRead >= nextReportValue) {
+                    nextReportValue = bytesRead + VSocketOutputStream.REPORT_THRESHOLD;
+                    completeTask.submit();
+                }
+                
+                int destId = din.readUnsignedShort ();
+                //System.out.println(this.socket + ": signal = " + destId);
+
+                if (destId == VSProtocol.LISTENER_ID) {    // Virtual connection request
+                    int             code = din.readUnsignedShort ();
+
+                    int inCapacity = din.readInt();
+                    int outCapacity = din.readInt();
+                    int rIndex = din.readInt();
+                    boolean compressed = din.readByte() == 1;
+
+                    VSChannelImpl local = dispatcher.newChannel (outCapacity, inCapacity, compressed);
+                    try {
+                        local.onConnectionRequest(code, inCapacity, rIndex);
+                        dispatcher.connectionListener.connectionAccepted (dispatcher.getQuickExecutor(), local);
+                    } catch (Throwable x) {
+                        // No reason to shutdown this transport channel
+                        VSProtocol.LOGGER.log (Level.SEVERE, "Exception sending ACK", x);
+                        local.close ();
+                    }
+                }
+                else if (destId == VSProtocol.BYTES_RECIEVED) {
+                    long size = din.readLong ();
+                    out.confirm(size);
+                    if (VSProtocol.LOGGER.isLoggable(Level.FINEST)) {
+                        VSProtocol.LOGGER.log(Level.FINEST, "Got BYTES_RECIEVED report: " + size + " in " + socket.getSocketIdStr());
+                    }
+                }
+                else if (destId == VSProtocol.KEEP_ALIVE) {
+                    // keep alive signal - do nothing
+                }
+                else if (destId == VSProtocol.PING) {
+                    if (latency != Long.MAX_VALUE)
+                        latency = System.nanoTime() - latency;
+                    else
+                        write(ping);
+                }
+                else if (destId == VSProtocol.DISPATCHER_CLOSE) {
+                    dispatcher.onRemoteClosed();
+                }
+                else {
+                    int             code = din.readUnsignedShort ();
+                    VSChannelImpl   c = dispatcher.getChannel (destId);
+
+                    if (c == null && code != VSProtocol.CLOSING) {
+                        if (code == VSProtocol.BYTES_AVAILABLE_REPORT) {
+                            if (VSProtocol.LOGGER.isLoggable(Level.FINE)) {
+                                VSProtocol.LOGGER.log(Level.FINE, "Got BYTES_AVAILABLE_REPORT for missing (recently closed?) channel " + destId);
+                            }
+                        } else {
+                            VSProtocol.LOGGER.log(Level.SEVERE, code + ": No local channel for " + destId);
+                        }
+                    }
+
+                    switch (code) {
+                        case VSProtocol.CONNECT_ACK:
+                            int     remoteId = din.readUnsignedShort ();
+                            int     remoteCapacity = din.readInt ();
+                            int     remoteIndex = din.readInt ();
+
+                            assert c != null;
+
+                            c.onRemoteConnected(remoteId, remoteCapacity, remoteIndex);
+                            break;
+
+                        case VSProtocol.CLOSING:
+                            index = din.readInt();
+                            offset = din.readLong();
+
+                            if (c != null) {
+                                boolean valid = c.assertIndexValid("CLOSING", index);
+                                if (valid) {
+                                    c.processCommand(code, offset);
+                                }
+                            }
+
+                            break;
+                        
+                        case VSProtocol.CLOSED:
+                            index = din.readInt();
+                            offset = din.readLong();
+
+                            if (c != null) {
+                                boolean valid = c.assertIndexValid("CLOSED", index);
+                                if (valid) {
+                                    c.processCommand(code, offset);
+                                }
+                            }
+
+                            break;
+
+                        case VSProtocol.BYTES_AVAILABLE_REPORT :
+                            int available = din.readInt();
+                            index = din.readInt();
+
+                            assert (available >= 0);
+
+                            if (c != null) {
+                                boolean valid = index == c.getIndex();
+                                // make sure that we mark that bytes reports as read,
+                                vin.complete();
+                                // because code below may not return
+                                if (valid) {
+                                    c.onCapacityIncreased(available);
+                                    if (VSProtocol.LOGGER.isLoggable(Level.FINEST)) {
+                                        VSProtocol.LOGGER.log(Level.FINEST, "Got BYTES_AVAILABLE_REPORT report: " + available + " in " + socket.getSocketIdStr());
+                                    }
+                                } else {
+                                    VSProtocol.LOGGER.log(Level.FINE, "Got BYTES_AVAILABLE_REPORT for wrong channel " + destId);
+                                }
+                            }
+                            break;
+
+                        default:
+                            index = din.readInt();
+                            offset = din.readLong();
+
+                            if (c == null) {
+                                VSProtocol.LOGGER.log (Level.INFO, "Skipping bytes (no channel): " + code);
+                                din.skipBytes (code);
+                            } else if (!c.assertIndexValid(code, index)) {
+                                VSProtocol.LOGGER.log (Level.WARNING, "Skipping bytes (wrong channel): " + code);
+                                din.skipBytes (code);
+                            } else  {
+                                int     capacity = buffer.length;
+
+                                if (capacity < code)
+                                    buffer = new byte [Util.doubleUntilAtLeast (capacity, code)];
+
+                                if (code == 0)
+                                    VSProtocol.LOGGER.log (Level.WARNING, "Unknown zero-length data for channel: " + destId);
+
+                                din.readFully (buffer, 0, code);
+                                c.receive(offset, buffer, 0, code, socket.getCode(), socket.getSocketNumber());
+                            }
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            if (VSProtocol.LOGGER.isLoggable(Level.FINE))
+                VSProtocol.LOGGER.log (Level.FINE, "Interrupted" , e);
+        } catch (Throwable x) {
+            if (currentThread.isInterrupted())
+                VSProtocol.LOGGER.log (Level.FINE, this + ": Interrupted.");
+            else
+                onException (x);
+        } finally {
+            closed = true;
+        }
+    }
+
+    public long                 getLatency() {
+        long l = ping();
+        while (latency == l && !closed)
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+            }
+
+        if (closed)
+            return Long.MAX_VALUE;
+
+        return latency;
+    }
+
+    @Override
+    public void                 close () {
+        //flusher.interrupt();
+        this.thread.interrupt();
+        Util.close (socket);
+    }
+
+    public void                 start() {
+        thread.start();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() +"@" + Integer.toHexString(hashCode()) + " of socket " + socket.getSocketIdStr();
+    }
+
+    public String getSocketIdStr() {
+        return socket.getSocketIdStr();
+    }
+}

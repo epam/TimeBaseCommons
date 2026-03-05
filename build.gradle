@@ -3,21 +3,19 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.owasp:dependency-check-gradle:5.2.2'
+        classpath 'org.owasp:dependency-check-gradle:9.0.9'
     }
 }
 
 plugins {
-    // Supports functionality similar to Maven BOM.
-    // Helps to avoid re-declaring dependency version in each subproject.
-    // See https://github.com/spring-gradle-plugins/dependency-management-plugin
-    id "io.spring.dependency-management" version "1.0.5.RELEASE"
-    id "de.undercouch.download" version "3.4.3"
-    id "com.github.spotbugs" version "2.0.0" apply false
+    id "io.spring.dependency-management" version '1.1.7'
+    id "de.undercouch.download" version '5.1.0'
+    id "com.github.spotbugs" version '5.0.14' apply false
+    // id 'deltix.gradle.plugins.velocity' version '1.3.0' apply false TODO: investigate
+    id 'deltix.gradle.plugin.gitlab-release' version '1.0.12'
 }
 
-// To update Gradle wrapper use:
-// gradlew wrapper --gradle-version 3.3 --distribution-type all
+group = 'deltix.qsrv'
 
 // To enable JavaDoc generation add Gradle property to command line:
 // -PincludeJavaDocs
@@ -29,122 +27,161 @@ if (enableSpotbugs) {
     println("Spotbugs is ENABLED")
 }
 
-// We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
-// So we create a list of leaf projects and apply all java-related plugins on them only.
-def leafProjects = subprojects.findAll { subproject ->
-    subproject.subprojects.empty
-}
-ext.leafProjects = leafProjects // Publish as external variable
-
 ext {
-    sonaUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"
-    sonaPass = findProperty('SONATYPE_NEXUS_PASSWORD') ?:  System.getenv('SONATYPE_NEXUS_PASSWORD') ?: "FakePass"
+    publisherUser = findProperty('ARTIFACTORY_USER') ?: System.getenv('ARTIFACTORY_USER') ?: "FakeUser"
+    publisherPassword = findProperty('ARTIFACTORY_PASS') ?: System.getenv('ARTIFACTORY_PASS') ?: "FakePassword"
+
+    vendor = 'Deltix Inc.'
+    testTags = null // Default test tags
+
+    // We don't want to apply plugins and build artifacts for non-leaf (grouping) projects.
+    // So we create a list of leaf projects and apply all java-related plugins on them only.
+    leafProjects = subprojects.findAll { subproject ->
+        subproject.subprojects.empty
+    }
 }
 
-// Default test categories
-ext.categories = 'Unit'
+// Provides rootProject.ext.getVersionFromProperties() that is used by promotion script
+apply from: "$rootDir/gradle/Release.gradle"
+apply from: 'promotion.gradle'
 
 configure(leafProjects) {
+    apply from: "$rootDir/gradle/Deltix.gradle"
+    apply plugin: 'java'
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: "com.github.spotbugs" // Static analysis
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'signing'
-
-    compileJava.options.encoding = 'UTF-8'
 
     // --- JAVA 11 version ---
-    sourceCompatibility = 11
-    targetCompatibility = 11
-
-    compileJava.options.compilerArgs += '--add-exports=java.base/sun.nio.ch=ALL-UNNAMED'
-    //compileJava.options.compilerArgs += '--add-exports java.base/jdk.internal.misc=ALL-UNNAMED'
-    compileJava.options.compilerArgs += '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
-    compileJava.options.compilerArgs += '--add-exports=java.desktop/sun.swing=ALL-UNNAMED'
-    compileJava.options.compilerArgs += '--add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED'
-    compileJava.options.compilerArgs += '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
-
     //--add-exports <module>/<module>/<package>=<target-module>(,<target-module>)*
 
+    compileJava {
+        options.warnings = true
+        options.deprecation = false
+        options.encoding = 'UTF-8'
+        options.compilerArgs += ["--add-exports=java.base/sun.nio.ch=ALL-UNNAMED", "--add-exports=java.base/sun.nio=ALL-UNNAMED"]
+    }
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     // Defines versions of dependencies to be used by subprojects
-    // https://github.com/spring-gradle-plugins/dependency-management-plugin#dependency-management-dsl
     dependencyManagement {
+        imports {
+            mavenBom 'org.junit:junit-bom:5.13.0'
+        }
         dependencies {
-            dependency ('com.epam.deltix:thread-affinity:1.0.4')
-
-            dependency group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
-            dependency group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
-
-            dependency 'org.apache.commons:commons-lang3:3.7'
+            dependency 'deltix:deltix-thread-affinity:1.0.3'
+            dependency 'org.apache.commons:commons-lang3:3.4'
+            dependency 'org.apache.commons:commons-compress:1.26.1'
+            dependency 'commons-collections:commons-collections:3.2.2'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'
 
-            dependency 'com.epam.deltix:containers:3.1.2'
+            dependency 'org.jetbrains:annotations:24.1.0'
 
-            // dependency 'org.mockito:mockito-core:1.10.19'
+            dependency "com.epam.deltix:dfp:$dfpVersion"
+            dependency "com.epam.deltix:hd-date-time:$hdTimeVersion"
+            dependency "deltix:deltix-clock:1.0.7"
 
-            dependencySet (group: 'com.epam.deltix', version: gflogVersion) {
+
+            dependencySet (group: 'com.epam.deltix', version: '3.0.2') {
                 entry 'gflog-api'
                 entry 'gflog-core'
                 entry 'gflog-jul'
                 entry 'gflog-dcl'
                 entry 'gflog-slf4j'
-            }            
+            }
+
+            dependencySet(group: 'com.jidesoft', version: '3.7.8') {
+                entry 'deltix-jide-components'
+                entry 'deltix-jide-dialogs'
+                entry 'deltix-jide-action'
+                entry 'deltix-jide-dock'
+                entry 'deltix-jide-grids'
+            }
 
             // JMH
-            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+            dependencySet(group: 'org.openjdk.jmh', version: '1.37') {
                 entry 'jmh-core'
                 entry 'jmh-generator-annprocess'
             }
+
+            dependency "junit:junit:4.13.2"
+            dependency "org.mockito:mockito-core:5.15.2"
+
+            dependency 'com.google.guava:guava:32.0.1-jre'
+
+            dependency 'org.hdrhistogram:HdrHistogram:2.1.12'
         }
     }
 
-    ext {
-        vendor = 'EPAM'
-        isReleaseVersion = !version.endsWith("SNAPSHOT")
+    group = 'deltix.qsrv'
+    base {
+        archivesName = 'deltix-commons' + project.path.replaceAll(':', '-')
     }
-
-    java {
-        withJavadocJar()
-        withSourcesJar()
-    }
-
-//    archivesBaseName = 'timebase-commons' + project.path.replaceAll(':', '-')
 
     repositories {
-        mavenCentral()
+        mavenDeltixProxy("DevMain")
     }
 
     dependencies {
         compileOnly 'com.google.code.findbugs:jsr305'
         compileOnly 'com.google.code.findbugs:annotations'
 
-        testImplementation 'junit:junit:4.12'
+        testCompileOnly 'junit:junit'
+
+        testImplementation "org.mockito:mockito-core"
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+        testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+        testRuntimeOnly 'com.epam.deltix:gflog-core'
 
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
     }
 
-    spotbugs {
-        toolVersion = "3.1.12"
-        effort = "max"
-        reportLevel = "medium"
-        sourceSets = [sourceSets.main] // exclude tests
-        excludeFilter = rootProject.file('spotbugs-excludes.xml')
+    test {
+        useJUnitPlatform {
+            if (testTags != null) {
+                setIncludeTags testTags.split(',') as Set
+            }
+        }
+
+        jvmArgs '-Dgflog.sync=true', '-Dgflog.console.appender.wrap=true' // sync logging to not mix up messages from different tests
     }
 
-    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    spotbugs {
+        toolVersion = "4.7.3"
+        effort = "max"
+        reportLevel = "medium"
+        excludeFilter = rootProject.file('spotbugs-excludes.xml')
+    }
+    spotbugsTest.enabled = false // disable SpotBugs for tests
+
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
         enabled = enableSpotbugs
 
         reports {
-            xml.enabled = false
-            html.enabled = true
+            xml.required = false
+            html.required = true
         }
     }
 
-    javadoc {
-        // Suppress javadoc warnings about unsafe code
-        options.addStringOption('XDignore.symbol.file', 'quiet')
+    jar {
+        manifest {
+            archiveBaseName.set(base.archivesName)
+            attributes 'Manifest-Version': "1.0",
+                    'Created-By': vendor,
+                    'Implementation-Title': "QuantServer Commons",
+                    'Implementation-Vendor': vendor,
+                    'Implementation-Version': project.version
+        }
     }
 
     processResources {
@@ -159,15 +196,6 @@ configure(leafProjects) {
         includeEmptyDirs = false
     }
 
-    jar {
-        manifest {
-            attributes 'Manifest-Version': "1.0",
-                    'Created-By': vendor,
-                    'Implementation-Vendor': vendor,
-                    'Implementation-Version': archiveVersion
-        }
-    }
-
     afterEvaluate {
         // populate project classpath after evaluating
         jar.manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
@@ -177,134 +205,110 @@ configure(leafProjects) {
     def allJarsPath = 'build/alljars'
 
     task gatherProjectDependencies(type: Sync) {
-        description 'Copies all project runtime dependencies to ' + allJarsPath
-        from project.configurations.runtime
+        description = 'Copies all project runtime dependencies to ' + allJarsPath
+        from project.configurations.runtimeClasspath
         into allJarsPath
     }
 
     task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
-        group "build"
-        description 'Copies all project JAR and all it\'s runtime dependencies to ' + allJarsPath
+        group = "build"
+        description = 'Copies all project JAR and all its runtime dependencies to ' + allJarsPath
         from jar // Main produced JAR of the subproject
         into allJarsPath
     }
 
     def allTestJarsPath = 'build/alltestjars'
 
-    task gatherProjectTestDependencies(type: Sync) {
-        description 'Copies all project test dependencies to ' + allTestJarsPath
-        from project.configurations.testCompile
+    tasks.register('gatherProjectTestDependencies', Sync) {
+        group = 'debug'
+        description = 'Copies all project test dependencies to ' + allTestJarsPath
+        from project.configurations.testRuntimeClasspath
         into allTestJarsPath
     }
 
-    task generateTestJar(type: Jar) {
-        description 'Generates JAR with test classes'
-        classifier 'tests'
+    tasks.register('generateTestJar', Jar) {
+        group = 'debug'
+        description = 'Generates JAR with test classes'
+        archiveClassifier = 'tests'
         from sourceSets.test.output
     }
 
-    task gatherAllTestJarsWithDependencies(type: Copy, dependsOn: ['jar', generateTestJar, gatherProjectTestDependencies]) {
-        group "build"
-        description 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
-        from jar // Main produced JAR of the subproject
-        from generateTestJar // JAR with test classes
+    tasks.register('gatherAllTestJarsWithDependencies', Copy) {
+        dependsOn 'jar', 'generateTestJar', 'gatherProjectTestDependencies'
+        group = 'debug'
+        description = 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
+        from tasks.named('jar') // Main produced JAR of the subproject
+        from tasks.named('generateTestJar') // JAR with test classes
 
         into allTestJarsPath
     }
 
+    /// Support for publishing -sources.jar and -javadoc.jar artifacts:
 
-    task luminaryJar(type: Jar) {
-        classifier = 'luminary'
-        from("$projectDir/schema") {
-            include "*.json"
-            include "**/*.lux"
-        }
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        archiveClassifier.set('sources')
+        archiveBaseName.set(base.archivesName)
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        enabled = includeJavaDocs
+        archiveClassifier.set('javadoc')
+        archiveBaseName.set(base.archivesName)
+        from javadoc.destinationDir
     }
 
     tasks.withType(Javadoc) {
-        // "Xdoclint:all,-reference" - disables fail on missing JavaDoc reference. TODO: Consider removing this.
-        // "-quiet" - skips warning messages (warnings still shown).
-        options.addStringOption('Xdoclint:all,-reference', '-quiet')
+        options.addStringOption('Xdoclint:all,-reference', '-quiet') //  disables fail on missing JavaDoc reference
+        //options.addStringOption('Xdoclint:none', '-quiet') // suppress all warnings
+    }
+
+    artifacts {
+        archives sourcesJar
+        if (includeJavaDocs) {
+            archives javadocJar
+        }
+    }
+
+    // Publishing
+    publishing {
+        repositories {
+            maven {
+                url = javaPublicationUrl
+                credentials {
+                    username = publisherUser
+                    password = publisherPassword
+                }
+            }
+        }
+
+        publications {
+            // https://github.com/gradle/gradle/issues/11862
+            // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/262
+            mavenJava(MavenPublication) {
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
+
+                from components.java
+                if (includeJavaDocs) {
+                    artifact javadocJar
+                }
+                artifact sourcesJar
+                artifactId = base.archivesName.get()
+            }
+        }
     }
 
     if (!includeJavaDocs) {
         tasks.withType(Javadoc).all { enabled = false }
     }
 
-    def rUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"
-    def rPass = findProperty('SONATYPE_NEXUS_PASSWORD') ?:  System.getenv('SONATYPE_NEXUS_PASSWORD') ?: "FakePass"
-
-    publishing {
-        repositories {
-            maven {
-                url = findProperty('SONATYPE_REPOSITORY') ?:  System.getenv('SONATYPE_REPOSITORY') ?: "FakeRepo"
-
-                credentials {
-                    username rUser
-                    password rPass
-                }
-            }
-        }
-
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-
-                pom {
-                    name = project.name
-                    packaging = 'jar'
-                    description = 'Timebase Common utilities and collections'
-                    url = 'https://github.com/epam/TimeBaseCommons.git'
-
-                    scm {
-                        connection = 'scm:git:https://github.com/epam/TimeBaseCommons.git'
-                        developerConnection = 'scm:git:https://github.com/epam/TimeBaseCommons.git'
-                        url = 'https://github.com/epam/TimeBaseCommons.git'
-                    }
-
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = 'alex-karpovich'
-                            name = 'Alexander Karpovich'
-                            email = 'aliaksandr_karpovich@epam.com'
-                            url = 'https://github.com/alex-karpovich'
-                            organization = 'EPAM Systems'
-                            organizationUrl = 'https://www.epam.com/'
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    signing {
-        def signingKey = findProperty('SIGNING_PRIVATE_KEY') ?: System.getenv('SIGNING_PRIVATE_KEY') ?: "FakeUser"
-        def signingPassword = findProperty('SIGNING_PASSWORD') ?: System.getenv('SIGNING_PASSWORD') ?: "FakePass"
-
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign publishing.publications.mavenJava
-
-        required { isReleaseVersion }
-    }
-}
-
-task publishAll(dependsOn: leafProjects.collect { it.path + ":publish" }) {
-    group 'publishing'
-    description 'Publish All Artifacts'
-}
-
-tasks.register('uploadArtifactsToCentralPortal', com.epam.deltix.buildsrc.SonatypeCentralPortalUploadRepositoryTask) {
-    portalUsername.set(sonaUser)
-    portalPassword.set(sonaPass)
-    groupId.set('com.epam.deltix')
-    snapshotRelease.set(false)
 }
 
 allprojects {
@@ -318,5 +322,30 @@ allprojects {
         analyzers {
             assemblyEnabled = false
         }
+
+        scanConfigurations = ["runtimeClasspath", "compileClasspath"]
+
+        nvd {
+            apiKey = findProperty('NVD_API_KEY') ?: System.getenv('NVD_API_KEY')
+        }
     }
 }
+
+def testTasks = ext.leafProjects*.test
+
+task generateTestReport(type: TestReport) {
+    group = 'verification'
+    reportOn testTasks
+    destinationDirectory.set(file("$rootDir/build/reports/junit/html/all_reports_merged")) // TODO: Pick better name for merged report
+}
+
+gitlabRelease {
+    distributionUrl = project.publishRepositoryUrl
+    assets.add('https://nexus.deltixhub.com/repository/DevMain')
+
+    msteams {
+        projectName = "QuantServer Commons"
+        color = "1B567B"
+    }
+}
+

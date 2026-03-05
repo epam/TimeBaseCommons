@@ -14,15 +14,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.concurrent;
+package com.epam.deltix.util.concurrent;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
 import com.epam.deltix.gflog.api.LogLevel;
 import com.epam.deltix.util.collections.QuickList;
-import java.util.*;
-import java.util.concurrent.locks.LockSupport;
 import net.jcip.annotations.GuardedBy;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  *  Similar to standard Java executors, but does not allocate memory on task

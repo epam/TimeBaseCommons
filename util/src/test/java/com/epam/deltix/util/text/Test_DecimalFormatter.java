@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.text;
+package com.epam.deltix.util.text;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,10 +25,14 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import com.epam.deltix.util.CommonsJUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
+
 /**
  * @author Andy
  *         Date: 10/24/11 2:07 PM
  */
+@Category(Utils.class)
 public class Test_DecimalFormatter {
 
     @Test

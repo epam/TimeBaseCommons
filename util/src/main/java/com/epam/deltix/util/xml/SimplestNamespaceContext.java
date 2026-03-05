@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.xml;
+package com.epam.deltix.util.xml;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -95,3 +95,4 @@ public class SimplestNamespaceContext implements NamespaceContext {
 
 
 }
+

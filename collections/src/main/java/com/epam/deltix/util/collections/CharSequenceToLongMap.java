@@ -14,16 +14,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import com.epam.deltix.util.collections.generated.ObjectToLongHashMap;
-import com.epam.deltix.util.collections.hash.*;
-import com.epam.deltix.util.lang.*;
+import com.epam.deltix.util.collections.hash.StringHashCodeComputer;
+import com.epam.deltix.util.lang.Util;
+import deltix.util.collections.generated.ObjectToLongHashMap;
+import deltix.util.collections.hash.*;
 
 /**
  *  
  */
-public class CharSequenceToLongMap extends ObjectToLongHashMap<CharSequence> {
+public class CharSequenceToLongMap extends ObjectToLongHashMap <CharSequence> {
     private final CharSubSequence     mBuffer = new CharSubSequence ();
     
     public CharSequenceToLongMap (int initialCapacity) {

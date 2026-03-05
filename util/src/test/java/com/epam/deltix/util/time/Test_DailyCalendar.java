@@ -14,10 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.time;
+package com.epam.deltix.util.time;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+
+import com.epam.deltix.util.CommonsJUnitCategories.Utils;
+import org.junit.experimental.categories.Category;
 
 /**
  *
@@ -33,8 +36,9 @@ import static org.junit.Assert.*;
  *<h3>Test Holidays (fake)</h3>
  * 1,11,12
  */
+@Category(Utils.class)
 public class Test_DailyCalendar {
-    private DailyCalendar       mCal;
+    private DailyCalendar mCal;
     
     @Before
     public void     setUp () {

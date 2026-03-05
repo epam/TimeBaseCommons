@@ -14,9 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import com.epam.deltix.util.collections.generated.ObjectArrayList;
+import deltix.util.collections.generated.IntegerArrayList;
+import deltix.util.collections.generated.ObjectArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -78,6 +79,67 @@ public class Test_ObjectArrayList {
 
         list.clear();
         assertList("[]", list);
+    }
+
+
+    @Test
+    public void testSort() {
+
+        final ObjectArrayList<String> list = new ObjectArrayList<>();
+        list.add("3");
+        list.add("2");
+        list.add("1");
+        list.add("0");
+
+        list.sort();
+
+        assertList("[0, 1, 2, 3]", list);
+
+        list.clear();
+        list.add("3");
+        list.add("2");
+        list.add("1");
+        list.add("0");
+
+        list.sort(0, 2);
+        assertList("[2, 3, 1, 0]", list);
+
+        list.sort(0, 3);
+        assertList("[1, 2, 3, 0]", list);
+
+        list.sort(0, 4);
+        assertList("[0, 1, 2, 3]", list);
+
+    }
+
+    @Test
+    public void testSortPrivitives() {
+
+        final IntegerArrayList list = new IntegerArrayList();
+        list.add(3);
+        list.add(2);
+        list.add(1);
+        list.add(0);
+
+        list.sort();
+
+        assertEquals("{0, 1, 2, 3}", list.toString());
+
+        list.clear();
+        list.add(3);
+        list.add(2);
+        list.add(1);
+        list.add(0);
+
+        list.sort(0, 2);
+        assertEquals("{2, 3, 1, 0}", list.toString());
+
+        list.sort(0, 3);
+        assertEquals("{1, 2, 3, 0}", list.toString());
+
+        list.sort(0, 4);
+        assertEquals("{0, 1, 2, 3}", list.toString());
+
     }
 
     @Test

@@ -14,11 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util;
+package com.epam.deltix.util;
 
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import com.epam.deltix.util.BitUtil;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Alexei Osipov
@@ -30,4 +32,5 @@ public class BitUtilTest {
         assertEquals(128, BitUtil.nextPowerOfTwo(100));
         assertEquals(128, BitUtil.nextPowerOfTwo(128));
     }
+
 }

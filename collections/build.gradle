@@ -1,54 +1,57 @@
-description = 'Timebase commons-collections set of utilities'
+description = 'QuantServer commons-collections set of utilities'
 
+// This repository provides velocity plugin
 buildscript {
     repositories {
-        mavenCentral()
+        maven {
+            credentials {
+                username = rootProject.ext.repoUser
+                password = rootProject.ext.repoPassword
+            }
+            authentication {
+                digest(BasicAuthentication)
+            }
+            url = rootProject.ext.proxyRepository + "DevMain/"
+        }
+//        maven {
+//            url "../../maven-repo" // Local repository for custom plugins
+//        }
     }
+
     dependencies {
-        classpath group: 'com.epam.deltix', name: 'gradle-velocity-plugin', version: '1.2.2'
+        classpath group: 'deltix.gradle.plugins', name: 'velocity', version: '1.4.1'
     }
 }
 apply plugin: 'velocity'
 
 dependencies {
-    api project(':timebase-lang')
+    api project(':lang')
+    testImplementation 'commons-collections:commons-collections'
+}
 
-    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
-    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
-    implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
-
-    testImplementation 'commons-collections:commons-collections:3.2.2'
+// No tests in this subproject
+tasks.named('test') {
+    enabled = false
 }
 
 ext {
     srcDir = "src/main/templates"
     generatedSourcesDir = "${buildDir}/generated/main/java"
-    dstDir = "${generatedSourcesDir}/com/epam/deltix/util/collections/generated"
+    dstDir = "${generatedSourcesDir}/deltix/util/collections/generated"
 
     types = [:]
 
     types.char =    [name : 'Character', 'name_abbr' : 'Char', type : 'char', 'type_Object' : 'Character', size : 'SIZE_OF_CHAR' ]
-
     types.byte =    [ name : 'Byte', 'name_abbr' : 'Byte', type : 'byte', 'type_Object' : 'Byte', size : 'SIZE_OF_BYTE' ]
-
     types.short =   [ name : 'Short', 'name_abbr' : 'Short', type : 'short', 'type_Object' : 'Short', size : 'SIZE_OF_SHORT' ]
-
     types.int =     [ name : 'Integer', 'name_abbr' : 'Int', type : 'int', 'type_Object': 'Integer', size : 'SIZE_OF_INT' ]
-
     types.long =    [ name : 'Long', 'name_abbr' : 'Long', type : 'long', 'type_Object' : 'Long', size : 'SIZE_OF_LONG' ]
-
     types.float =   [ name : 'Float', 'name_abbr' : 'Float', type : 'float', 'type_Object' : 'Float', size : 'SIZE_OF_FLOAT' ]
-
     types.double =  [ name : 'Double', 'name_abbr' : 'Double', type : 'double', 'type_Object' : 'Double', size : 'SIZE_OF_DOUBLE' ]
-
     types.boolean = [ name : 'Boolean', 'name_abbr' : 'Boolean', type : 'boolean', 'type_Object' : 'Boolean', size : 'SIZE_OF_BOOLEAN' ]
-
     types.Object =  [ name : 'Object', 'name_abbr' : 'Object', type : 'Object', 'type_Object' : 'ObjectType', size : 'SIZE_OF_POINTER' ]
-
     types.Decimal =  [ name : 'Decimal', 'name_abbr' : 'Decimal', type : 'Decimal64', 'type_Object' : 'Decimal64', size : 'SIZE_OF_POINTER' ]
-
     types.HdDateTime =  [ name : 'HdDateTime', 'name_abbr' : 'HdDateTime', type : 'HdDateTime', 'type_Object' : 'HdDateTime', size : 'SIZE_OF_POINTER' ]
-
     types.HdTimeSpan =  [ name : 'HdTimeSpan', 'name_abbr' : 'HdTimeSpan', type : 'HdTimeSpan', 'type_Object' : 'HdTimeSpan', size : 'SIZE_OF_POINTER' ]
 }
 
@@ -77,6 +80,12 @@ velocity {
         contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean, types.Object, types.Decimal, types.HdDateTime, types.HdTimeSpan]
     }
 
+    ringedList {
+        from = "$srcDir/RingedList.vpp"
+        to = "$dstDir/@{name}RingedList.java"
+        contexts = [ types.char, types.byte, types.short, types.int, types.long, types.float, types.double, types.boolean ]
+    }
+
     comparator {
         from = "$srcDir/PrimitiveComparator.vpp"
         to = "$dstDir/@{name}Comparator.java"
@@ -96,7 +105,7 @@ velocity {
     }
 }
 
-Map<String, Object> mapMerge(Map first, Map second) {
+static Map<String, Object> mapMerge(Map first, Map second) {
     def newMap = [:]
 
     for (Map.Entry<String, Object> e in first.entrySet())
@@ -108,7 +117,7 @@ Map<String, Object> mapMerge(Map first, Map second) {
     return newMap
 }
 
-task vppHashMap(type: com.epam.deltix.gradle.plugins.velocity.VelocityTask) {
+task vppHashMap(type: deltix.gradle.plugins.velocity.VelocityTask) {
     from = "$srcDir/PrimitiveToPrimitiveHashMap.vpp"
     to = "$dstDir/@{first_name}To@{second_name}HashMap.java"
 
@@ -126,8 +135,13 @@ task vppHashMap(type: com.epam.deltix.gradle.plugins.velocity.VelocityTask) {
 }
 project.tasks.getByName('compileJava').dependsOn(vppHashMap)
 
-clean.doFirst {
+def cleanupDstDir = tasks.register('cleanupDstDir', Delete) {
     delete fileTree(dir: "$dstDir")
+}
+clean.dependsOn cleanupDstDir
+
+project.tasks.withType(deltix.gradle.plugins.velocity.VelocityTask).configureEach {
+    mustRunAfter clean
 }
 
 sourceSets.main.java.srcDirs += ext.generatedSourcesDir
