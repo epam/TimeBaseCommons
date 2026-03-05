@@ -30,6 +30,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.util.logging.Level;
 
@@ -96,7 +97,12 @@ public class SocketConnection implements Connection {
 
     @Override
     public boolean                  isLoopback() {
-        return socket.getInetAddress().isLoopbackAddress();
+        try {
+            InetAddress address = socket.getInetAddress();
+            return address.isLoopbackAddress() || NetworkInterface.getByInetAddress(address) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

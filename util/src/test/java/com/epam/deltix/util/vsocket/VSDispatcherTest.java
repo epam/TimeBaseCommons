@@ -127,7 +127,15 @@ public class VSDispatcherTest {
 
         System.out.println("Emulating broken transports...");
         startBarrier.countDown();
-        Thread.sleep(100); // Let threads get into blocked state
+
+        // Let threads get into waiting for recovery state,
+        // but maximum of 1sec, which is half of the waiting time for recovery
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(100);
+            if (errorThreads.stream().allMatch(thread -> thread.getState() == Thread.State.TIMED_WAITING)) {
+                break;
+            }
+        }
 
         // Now no transports should be available
         assertFalse(dispatcher.isConnectedAndNotReconnecting());
