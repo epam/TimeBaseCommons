@@ -20,7 +20,6 @@ package com.epam.deltix.util.vsocket;
 import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
 import com.epam.deltix.util.io.IOUtil;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.InetAddress;

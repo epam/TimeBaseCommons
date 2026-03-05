@@ -14,23 +14,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.xml;
+package com.epam.deltix.util.xml;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.sun.xml.bind.v2.model.annotation.AbstractInlineAnnotationReaderImpl;
 import com.sun.xml.bind.v2.model.annotation.Locatable;
 import com.sun.xml.bind.v2.model.annotation.RuntimeAnnotationReader;
 import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
 
-import javax.xml.bind.annotation.XmlTransient;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * <p>Patched version of JAXB's RuntimeAnnotationReader that can annotate set of classes, fields, and methods as XmlTransient.
- * Note that "<code>@XmlTransient</code> is mutually exclusive with all other JAXB defined annotations.</p>
+ * Note that "<tt>@XmlTransient</tt> is mutually exclusive with all other JAXB defined annotations.</p>
  *
  * Usage:
  * <pre>

@@ -14,21 +14,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
+import com.epam.deltix.util.collections.generated.*;
 import java.util.*;
 
-import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
-import com.epam.deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
 
 /**
  *
  */
-@Category(Utils.class)
 public class Test_HashMaps {
 
     private static class HorribleLong {
@@ -165,7 +161,7 @@ public class Test_HashMaps {
         LongToLongHashMap   map = addAllRemoveAllTest (0.25);        
         int                 cap = map.getCapacity ();
         
-        Assert.assertEquals (
+        assertEquals (
             "Capacity failed to drop to minimum: " + cap,
             HashMapBase.MIN_CAPACITY,
             cap
@@ -220,7 +216,7 @@ public class Test_HashMaps {
         Random              rnd = new Random (2009);
         LongToLongHashMap   map = new LongToLongHashMap ();
         
-        //map.setShrinkFactor (shrinkFactor);
+        map.setShrinkFactor (shrinkFactor);
         
         long []             check = new long [ALL_NUM_KEYS]; 
         int                 n = 0;
@@ -254,7 +250,7 @@ public class Test_HashMaps {
         Random                  rnd = new Random (2009);
         IntegerToIntegerHashMap map = new IntegerToIntegerHashMap ();
         
-        //map.setShrinkFactor (shrinkFactor);
+        map.setShrinkFactor (shrinkFactor);
         
         HashMap <Integer, Integer> check = new HashMap <Integer, Integer> ();
                       

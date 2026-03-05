@@ -17,7 +17,7 @@
 
 package com.epam.deltix.util.vsocket;
 
-import com.epam.deltix.util.annotations.TimestampMs;
+import deltix.util.annotations.TimestampMs;
 import net.jcip.annotations.GuardedBy;
 
 /**

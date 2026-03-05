@@ -14,7 +14,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package java_cup;
 
 /** Exception subclass for reporting internal errors in JavaCup. */

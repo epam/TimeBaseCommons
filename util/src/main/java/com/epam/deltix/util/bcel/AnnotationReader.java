@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.bcel;
+package com.epam.deltix.util.bcel;
 
 import java.io.*;
 import org.apache.bcel.classfile.*;
@@ -86,7 +86,7 @@ public class AnnotationReader implements AttributeReader
                 return cp.constantToString (cp.getConstant (in.readShort ()));
                 
 			case 'c':
-            	return new ClassValue(cp.constantToString (cp.getConstant (in.readShort ())));
+            	return new ClassValue (cp.constantToString (cp.getConstant (in.readShort ())));
 
             case '[': {
                 short numElems = in.readShort ();
@@ -109,4 +109,3 @@ public class AnnotationReader implements AttributeReader
 	      }
 	}
 }
-

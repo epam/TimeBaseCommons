@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.io.*;
 
@@ -174,10 +174,10 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      * Read a line.
      *
      * @return a rough approximation of the 8-bit stream as a 16-bit unicode string
+     * @throws IOException
      * @deprecated This method does not properly convert bytes to characters. Use a Reader instead with a little-endian
      *             encoding.
      */
-    @Deprecated
     public final String readLine() throws IOException {
         return dis.readLine();
     }
@@ -186,6 +186,7 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      * read a long, 64-bits.  Like DataInputStream.readLong except little endian.
      *
      * @return little-endian binary long from the datastream.
+     * @throws IOException
      */
     public final long readLong() throws IOException {
         dis.readFully(work, 0, 8);
@@ -228,10 +229,10 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
      * @return string from stream
      * @throws IOException if read fails.
      */
-    public static String readUTF(DataInput in) throws IOException {
+    public final static String readUTF(DataInput in) throws IOException {
         int utflen = in.readUnsignedShort();
-        byte[] bytearr;
-        char[] chararr;
+        byte[] bytearr = null;
+        char[] chararr = null;
         if (in instanceof LittleEndianDataInputStream) {
             LittleEndianDataInputStream dis = (LittleEndianDataInputStream) in;
             if (dis.bytearr.length < utflen) {
@@ -348,4 +349,3 @@ public class LittleEndianDataInputStream extends FilterInputStream implements Da
         return dis.skipBytes(n);
     }
 }
-

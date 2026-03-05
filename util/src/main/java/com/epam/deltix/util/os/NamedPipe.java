@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.os;
+package com.epam.deltix.util.os;
 
 import java.io.*;
 
@@ -50,4 +50,3 @@ public class NamedPipe implements Closeable {
     }
 
 }
-

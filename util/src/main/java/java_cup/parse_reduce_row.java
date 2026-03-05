@@ -14,7 +14,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package java_cup;
 
 /** This class represents one row (corresponding to one machine state) of the 
@@ -54,4 +53,3 @@ public class parse_reduce_row {
   /** Actual entries for the row. */
   public lalr_state under_non_term[];
 }
-

@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.annotations;
+package com.epam.deltix.util.annotations;
 
 import java.lang.annotation.*;
 

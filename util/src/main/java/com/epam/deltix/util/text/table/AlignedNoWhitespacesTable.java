@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.text.table;
+package com.epam.deltix.util.text.table;
 
 import com.epam.deltix.util.collections.CharSubSequence;
 import java.util.ArrayList;

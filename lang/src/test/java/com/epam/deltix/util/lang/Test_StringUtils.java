@@ -14,45 +14,39 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
-
-import com.epam.deltix.util.lang.StringUtils;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Andy
  *         Date: 12/17/13
  */
-@Tag("utils")
 public class Test_StringUtils {
 
     @Test
     public void testCharSequenceIndexOf() {
 
-        assertEquals(-1, StringUtils.indexOf("ABCDE", "F"));
-        assertEquals(-1, StringUtils.indexOf("ABCDE", "ABCDEF"));
-        assertEquals(-1, StringUtils.indexOf("ABCDE", "ABDE"));
+        Assert.assertEquals(-1, StringUtils.indexOf("ABCDE", "F"));
+        Assert.assertEquals(-1, StringUtils.indexOf("ABCDE", "ABCDEF"));
+        Assert.assertEquals(-1, StringUtils.indexOf("ABCDE", "ABDE"));
 
-        assertEquals(0, StringUtils.indexOf("ABCDE", "A"));
-        assertEquals(0, StringUtils.indexOf("ABCDE", "AB"));
-        assertEquals(0, StringUtils.indexOf("ABCDE", "ABC"));
-        assertEquals(0, StringUtils.indexOf("ABCDE", "ABCD"));
-        assertEquals(0, StringUtils.indexOf("ABCDE", "ABCDE"));
+        Assert.assertEquals(0, StringUtils.indexOf("ABCDE", "A"));
+        Assert.assertEquals(0, StringUtils.indexOf("ABCDE", "AB"));
+        Assert.assertEquals(0, StringUtils.indexOf("ABCDE", "ABC"));
+        Assert.assertEquals(0, StringUtils.indexOf("ABCDE", "ABCD"));
+        Assert.assertEquals(0, StringUtils.indexOf("ABCDE", "ABCDE"));
 
-        assertEquals(1, StringUtils.indexOf("ABCDE", "B"));
-        assertEquals(1, StringUtils.indexOf("ABCDE", "BC"));
-        assertEquals(1, StringUtils.indexOf("ABCDE", "BCD"));
-        assertEquals(1, StringUtils.indexOf("ABCDE", "BCDE"));
-        assertEquals(-1, StringUtils.indexOf("ABCDE", "BCDEF"));
+        Assert.assertEquals(1, StringUtils.indexOf("ABCDE", "B"));
+        Assert.assertEquals(1, StringUtils.indexOf("ABCDE", "BC"));
+        Assert.assertEquals(1, StringUtils.indexOf("ABCDE", "BCD"));
+        Assert.assertEquals(1, StringUtils.indexOf("ABCDE", "BCDE"));
+        Assert.assertEquals(-1, StringUtils.indexOf("ABCDE", "BCDEF"));
 
         try {
-            assertEquals(-1, StringUtils.indexOf("ABCDE", ""));
-            fail ("Failed to detect empty string");
+            Assert.assertEquals(-1, StringUtils.indexOf("ABCDE", ""));
+            Assert.fail ("Failed to detect empty string");
         } catch (StringIndexOutOfBoundsException expected) {
             //
         }
@@ -213,12 +207,12 @@ public class Test_StringUtils {
     private void testLike(WildcardMatcher wildcardMatcher, LikeTest[] tests) {
         for (LikeTest test : tests) {
             boolean actual = wildcardMatcher.wildcardMatch(test.expression, test.pattern);
-            assertEquals(
-                    test.result,
-                    actual,
+            Assert.assertEquals(
                     test.expression + " like " + test.pattern +
-                                        ". Actual: " + actual +
-                                        ". Expected: " + test.result);
+                            ". Actual: " + actual +
+                            ". Expected: " + test.result,
+                    test.result,
+                    actual);
         }
     }
 

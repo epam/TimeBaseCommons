@@ -14,10 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.concurrent;
+package com.epam.deltix.util.concurrent;
 
-import com.epam.deltix.util.memory.DisposableResourceTracker;
-import deltix.util.memory.*;
+import com.epam.deltix.util.memory.*;
 
 /**
  *  An AsynchronousCursor that returns no frames.
@@ -25,7 +24,7 @@ import deltix.util.memory.*;
 public class EmptyAsynchronousCursor 
     implements AsynchronousCursor
 {
-    private DisposableResourceTracker mTracker;
+    private DisposableResourceTracker   mTracker;
     private boolean                     mNextWasCalled = false;
     
     public EmptyAsynchronousCursor () {

@@ -22,11 +22,12 @@ import java.util.regex.*;
 
 import com.epam.deltix.util.collections.CharSubSequence;
 import com.epam.deltix.util.collections.EmptyCharSequence;
-import com.epam.deltix.util.collections.generated.IntegerArrayList;
 import com.epam.deltix.util.io.ByteCountingInputStream;
 import com.epam.deltix.util.lang.Disposable;
 import com.epam.deltix.util.lang.Util;
 import com.epam.deltix.util.text.CharSequenceParser;
+import deltix.util.io.*;
+import deltix.util.text.*;
 
 public abstract class TextReader implements Disposable {
 

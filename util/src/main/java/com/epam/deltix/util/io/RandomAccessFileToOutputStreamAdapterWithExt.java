@@ -14,10 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import com.epam.deltix.util.lang.GrowthPolicy;
-
 import java.io.*;
 
 /**
@@ -25,7 +24,7 @@ import java.io.*;
  */
 public class RandomAccessFileToOutputStreamAdapterWithExt extends OutputStream {
     protected final RandomAccessFile            raf;
-    public GrowthPolicy policy;
+    public GrowthPolicy                         policy;
     private long                                length;
     private long                                offset;
         

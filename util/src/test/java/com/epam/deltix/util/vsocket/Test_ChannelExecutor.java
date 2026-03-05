@@ -14,10 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.lang.DisposableListener;
-import deltix.util.vsocket.ChannelExecutor;
+import com.epam.deltix.util.vsocket.ChannelExecutor;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 

@@ -14,12 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.time;
+package com.epam.deltix.util.time;
 
 import com.epam.deltix.qsrv.hf.pub.TimeSource;
-import com.epam.deltix.util.annotations.TimestampMs;
-import com.epam.deltix.util.annotations.TimestampNs;
-import net.jcip.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -31,7 +28,6 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Alexei Osipov
  */
-@ThreadSafe
 public class BasicTimeSource implements TimeSource {
     private static final long NANOS_IN_MS = 1_000_000;
 
@@ -47,7 +43,6 @@ public class BasicTimeSource implements TimeSource {
     }
 
     @Override
-    @TimestampMs
     public long currentTimeMillis() {
         long currentTime = System.currentTimeMillis();
         while (true) {
@@ -64,7 +59,6 @@ public class BasicTimeSource implements TimeSource {
     }
 
     @Override
-    @TimestampNs
     public long currentTimeNanos() {
         return currentTimeMillis() * NANOS_IN_MS;
     }

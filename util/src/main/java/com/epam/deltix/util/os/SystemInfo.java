@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.os;
+package com.epam.deltix.util.os;
 
 import com.sun.jna.platform.win32.Shell32Util;
 

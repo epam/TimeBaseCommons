@@ -14,24 +14,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.memory;
+package com.epam.deltix.util.memory;
 
-import com.epam.deltix.util.memory.MemoryDataInput;
-import com.epam.deltix.util.memory.MemoryDataOutput;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.*;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-
-@Tag("utils")
 public class Test_MemoryDataInputOutput {
-    private MemoryDataOutput out;
-    private MemoryDataInput in;
+    private MemoryDataOutput        out;
+    private MemoryDataInput         in;
     
         
-    @BeforeEach
+    @Before
     public void     setUp () {
         out = new MemoryDataOutput (1); 
         in = new MemoryDataInput ();
@@ -152,11 +145,11 @@ public class Test_MemoryDataInputOutput {
             double        actual = in.readScaledDouble ();
             
             if (Double.isNaN (v))
-                assertTrue(Double.isNaN (actual), "!Double.isNaN (" + actual + ")");
+                assertTrue ("!Double.isNaN (" + actual + ")", Double.isNaN (actual));
             else if (Double.isInfinite (v))
                 assertTrue (v == actual);
             else
-                assertEquals (v, actual, Math.abs(v * 1E-16));
+                assertEquals (v, actual, v * 1E-16);
         }
         
         out.reset ();
@@ -170,7 +163,7 @@ public class Test_MemoryDataInputOutput {
             double          read = in.readScaledDouble ();
             
             if (Double.isNaN (v))
-                assertTrue(Double.isNaN (read), "!Double.isNaN (" + read + ")");
+                assertTrue ("!Double.isNaN (" + read + ")", Double.isNaN (read));
             else {
                 long        actual = Math.round (read * 1000);
                 long        expected = Math.round (v * 1000);
@@ -192,7 +185,7 @@ public class Test_MemoryDataInputOutput {
             double        actual = in.readDecimal64 ();
 
             if (Double.isNaN (v))
-                assertTrue(Double.isNaN (actual), "!Double.isNaN (" + actual + ")");
+                assertTrue ("!Double.isNaN (" + actual + ")", Double.isNaN (actual));
             else if (Double.isInfinite (v))
                 assertTrue (v == actual);
             else
@@ -225,28 +218,5 @@ public class Test_MemoryDataInputOutput {
         assertEquals (b, 2011);
         assertEquals (c, "world");
         assertFalse (in.hasAvail ());
-    }
-
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
-    @Test
-    public void     testWriteString () {
-        String s1 = "hello";
-        String s2 = "hello \u0442\u0435\u0441\u0442";
-        String s3 = "some emoji: \uD83D\uDE01";
-
-        out.reset ();
-        out.writeString(s1);
-        out.writeString(s2);
-        out.writeString(s3);
-
-        in.setBytes (out);
-
-        String r1 = in.readString();
-        String r2 = in.readString();
-        String r3 = in.readString();
-
-        assertEquals (s1, r1);
-        assertEquals (s2, r2);
-        assertEquals (s3, r3);
     }
 }

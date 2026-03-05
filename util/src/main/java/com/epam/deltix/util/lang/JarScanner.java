@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -58,7 +58,7 @@ class JarScanner {
     }
 
     private static List<JavaFileObject> processJar(String packageName, URL packageFolderURL) {
-        List<JavaFileObject> result = new ArrayList<JavaFileObject>();
+        List<JavaFileObject> result = new ArrayList<>();
         try {
             String[] uris = packageFolderURL.toExternalForm().split("!");
             String jarUri = uris[0];

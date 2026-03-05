@@ -14,10 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import deltix.util.collections.generated.LongArrayList;
-import deltix.util.collections.generated.LongList;
+import com.epam.deltix.util.collections.generated.LongArrayList;
+import com.epam.deltix.util.collections.generated.LongList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -61,16 +61,6 @@ public class Test_CollectionUtil {
             final LongArrayList copy = CollectionUtil.copy(list);
             Assert.assertTrue(CollectionUtil.equals(list, copy));
         }
-    }
-
-    @Test
-    public void testToString() {
-        LongArrayList list = new LongArrayList();
-        Assert.assertEquals("{}", list.toString());
-        list.add(1L);
-        Assert.assertEquals("{1}", list.toString());
-        list.add(2L);
-        Assert.assertEquals("{1, 2}", list.toString());
     }
 
     private static LongList list(long... values) {

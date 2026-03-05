@@ -14,9 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
 
-import deltix.util.vsocket.VSChannelImpl;
+package com.epam.deltix.util.vsocket;
+
+import com.epam.deltix.util.vsocket.VSChannelImpl;
 import org.junit.Test;
 import org.mockito.Mockito;
 

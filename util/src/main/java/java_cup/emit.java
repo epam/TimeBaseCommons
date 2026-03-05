@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
 import java.io.PrintWriter;
 import java.util.Stack;

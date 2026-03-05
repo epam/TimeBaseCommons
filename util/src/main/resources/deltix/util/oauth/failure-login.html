@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Failed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eaeaea;
+            color: #555;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #d33d3d;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        .error-details {
+            font-size: 0.9em;
+            color: #555;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e53935;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: white;
+            background-color: #d33d3d;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #c62828;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Authentication Failed</h1>
+    <p>Authentication failed. You can return to the application. Feel free to close this browser tab.</p>
+    <div class="error-details">
+        <p><strong>Error:</strong> {{result-error}}</p>
+        <p><strong>Description:</strong> {{result-error-description}}</p>
+    </div>
+    <p><button onclick="window.close()">Close Window</button></p>
+</div>
+</body>
+</html>
