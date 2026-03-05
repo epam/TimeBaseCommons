@@ -11,6 +11,8 @@ dependencies {
     implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
     implementation group: 'com.epam.deltix', name: 'gflog-core', version: gflogVersion
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+
     // For JMH-based tests
     testImplementation 'org.openjdk.jmh:jmh-core'
     testImplementation 'org.openjdk.jmh:jmh-generator-annprocess'
