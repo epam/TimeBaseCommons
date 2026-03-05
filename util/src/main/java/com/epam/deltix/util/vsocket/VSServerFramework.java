@@ -21,7 +21,7 @@ import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
 import com.epam.deltix.util.vsocket.transport.Connection;
 import com.epam.deltix.util.vsocket.transport.SocketConnectionFactory;
-import deltix.util.collections.generated.IntegerToObjectHashMap;
+import com.epam.deltix.util.collections.generated.IntegerToObjectHashMap;
 import com.epam.deltix.util.io.offheap.OffHeap;
 import com.epam.deltix.util.lang.DisposableListener;
 import com.epam.deltix.util.tomcat.ConnectionHandshakeHandler;

@@ -14,14 +14,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Lists classes within the specified package.
  * <p>
- * Used by <code>ClassLoaderJavaFileManager</code>. Any class loader, which keeps
+ * Used by <tt>ClassLoaderJavaFileManager</tt>. Any class loader, which keeps
  * classes outside the CLASSPATH, must implement this interface to make them visible
  * to the on-the-fly Java compiler.   
  * </p>

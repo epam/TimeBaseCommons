@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.net;
+package com.epam.deltix.util.net;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -34,7 +34,7 @@ public abstract class Resource {
         return (new NetResource (url));
     }
 
-    /** Used by plugins */
+    // Used by connector plugins
     public static Resource          create2 (String url)
             throws IOException
     {

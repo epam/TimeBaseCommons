@@ -14,11 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.currency;
+package com.epam.deltix.util.currency;
 
 import com.epam.deltix.util.collections.ElementsEnumeration;
-import deltix.util.currency.ThreeLetterToObjectMapQuick;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +26,7 @@ public class Test_TheeLetterSequenceToObjectMapQuick {
 
     @Test
     public void simple () {
-        Assert.assertEquals("USD", CurrencyCodeList.numericToSymbolic(840));
+        assertEquals("USD", CurrencyCodeList.numericToSymbolic(840));
         assertNull(CurrencyCodeList.numericToSymbolic(0));
 
 
@@ -41,11 +39,12 @@ public class Test_TheeLetterSequenceToObjectMapQuick {
         assertEquals(840, CurrencyCodeList.symbolicToNumeric("USD]", 0,3, (short)999));
         assertEquals(840, CurrencyCodeList.symbolicToNumeric("[USD", 1,4, (short)999));
         assertEquals(999, CurrencyCodeList.symbolicToNumeric("[USD]", 0,5, (short)999));
+
+
     }
 
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testResetBefore() {
         ThreeLetterToObjectMapQuick<String> map = new ThreeLetterToObjectMapQuick<> ();
         map.put("KEY1", "VALUE1");
@@ -57,7 +56,6 @@ public class Test_TheeLetterSequenceToObjectMapQuick {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testResetAfter() {
         ThreeLetterToObjectMapQuick<String> map = new ThreeLetterToObjectMapQuick<> ();
 

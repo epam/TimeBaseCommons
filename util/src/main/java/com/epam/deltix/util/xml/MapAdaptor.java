@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.xml;
+package com.epam.deltix.util.xml;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.XmlElement;
@@ -76,5 +76,3 @@ public class MapAdaptor<K, V> extends
         public V value;
     }
 }
-
-

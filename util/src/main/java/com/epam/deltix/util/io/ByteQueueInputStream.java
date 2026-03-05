@@ -14,9 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
-import com.epam.deltix.util.collections.ByteQueue;
+import com.epam.deltix.util.collections.*;
 
 import java.io.*;
 
@@ -25,7 +25,7 @@ import java.io.*;
  *  for more data, or until the {@link #finish} method is called.
  */
 public class ByteQueueInputStream extends InputStream {
-    private ByteQueue q;
+    private ByteQueue               q;
     private boolean                 endOfQueue = false;
     private IOException             exception;
     

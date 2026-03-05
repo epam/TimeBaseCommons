@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.progress;
+package com.epam.deltix.util.progress;
 
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;

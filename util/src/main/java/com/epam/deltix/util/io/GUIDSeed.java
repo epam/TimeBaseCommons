@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import com.epam.deltix.util.concurrent.UncheckedInterruptedException;
 
@@ -48,7 +48,7 @@ public class GUIDSeed {
         } catch (InterruptedException x) {
             throw new UncheckedInterruptedException(x);
         } catch (IOException x) {
-            throw new UncheckedIOException(x);
+            throw new com.epam.deltix.util.io.UncheckedIOException(x);
         } finally {
             IOUtil.close (socket);
         }

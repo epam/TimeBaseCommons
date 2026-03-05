@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
 /** This class represents a part of a production which is a symbol (terminal
  *  or non terminal).  This simply maintains a reference to the symbol in 

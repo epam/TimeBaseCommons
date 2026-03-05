@@ -14,20 +14,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import java.util.Random;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.epam.deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
-
 /**
  *
  */
-@Category(Utils.class)
 public class Test_SlidingExtremeAlgo {
     public static final int     WIDTH = 47; // prime!
     public static final int     RESET_PERIOD = 30691;
@@ -44,7 +40,7 @@ public class Test_SlidingExtremeAlgo {
         
     @Test
     public void     unitTestSlidingIntMinimum () {        
-        SlidingIntMinimum sim = new SlidingIntMinimum (3);
+        SlidingIntMinimum   sim = new SlidingIntMinimum (3);
         
         for (int ii = 0; ii < UNIT_TEST_SEQ.length; ii++) {
             int     actualMinimum = sim.offer (UNIT_TEST_SEQ [ii]);

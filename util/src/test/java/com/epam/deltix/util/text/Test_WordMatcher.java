@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.text;
+package com.epam.deltix.util.text;
 
 import com.epam.deltix.util.io.IOUtil;
 
@@ -23,19 +23,15 @@ import java.util.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import com.epam.deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
-
-@Category(Utils.class)
 public class Test_WordMatcher {
-    private WordMatcherBuilder wm;
+    private WordMatcherBuilder                  wm;
     private String []                           words;
     
     @Before
     public void     setUp () throws Exception {
         wm = new WordMatcherBuilder ();
         
-        words = IOUtil.readLinesFromClassPath ("deltix/util/text/tickers.txt");
+        words = IOUtil.readLinesFromClassPath ("com/epam/deltix/util/text/tickers.txt");
         
         for (String s : words) 
             wm.add (s);        

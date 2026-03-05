@@ -14,10 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.text;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+package com.epam.deltix.util.text;
+
+import com.epam.deltix.util.lang.Assertions;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,13 +28,15 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-class DateFormatDetectorTest {
+
+public class DateFormatDetectorTest {
 
 
     @Test
-    void getDateTimeFormatStringFor() throws IOException, URISyntaxException {
+    public void getDateTimeFormatStringFor() throws IOException, URISyntaxException {
         BufferedReader formatReader = getSourceReader("deltix/util/text/dateTimeFormat.txt");
         String line = formatReader.readLine();
         while (line != null) {
@@ -46,7 +49,7 @@ class DateFormatDetectorTest {
             String timePattern = split[3];
             String datetimePattern = datePattern + timePattern;
 
-            Assertions.assertEquals(datePattern, DateFormatDetector.getDateFormatStringFor(date));
+            assertEquals(datePattern, DateFormatDetector.getDateFormatStringFor(date));
             assertEquals(timePattern, DateFormatDetector.getTimeFormatStringFor(time));
             assertEquals(datetimePattern, DateFormatDetector.getDateTimeFormatStringFor(datetime));
             line = formatReader.readLine();
@@ -54,7 +57,7 @@ class DateFormatDetectorTest {
     }
 
     @Test
-    void getDateTimeFormatStringForNegativeCases() {
+    public void getDateTimeFormatStringForNegativeCases() {
         String[] invalidInputs = {
                 "",
                 "random text",

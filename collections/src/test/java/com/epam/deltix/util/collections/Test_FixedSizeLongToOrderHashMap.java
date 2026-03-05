@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import com.epam.deltix.util.collections.hash.HashCodeComputer;
 import com.epam.deltix.util.collections.hash.SimpleHashCodeComputer;
@@ -26,10 +26,6 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
-import com.epam.deltix.util.CommonsJUnitCategories.Utils;
-import org.junit.experimental.categories.Category;
-
-@Category(Utils.class)
 public class Test_FixedSizeLongToOrderHashMap {
     private static final int MAX_SIZE = 16;
 

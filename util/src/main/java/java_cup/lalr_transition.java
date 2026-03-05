@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
 /** This class represents a transition in an LALR viable prefix recognition 
  *  machine.  Transitions can be under terminals for non-terminals.  They are

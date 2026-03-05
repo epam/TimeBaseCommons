@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.concurrent;
+package com.epam.deltix.util.concurrent;
 
 /**
  * A resource that changes its state between available and unavailable.
@@ -39,7 +39,7 @@
  *}
  *</pre>
  * 
- * Note that it is absolutely critical to synchronize the <code>maybeAvailable</code> runnable
+ * Note that it is absolutely critical to synchronize the <tt>maybeAvailable</tt> runnable
  * callback on the same monitor as the critical operation call. This ensures
  * that, while UnavailableResourceException is being handled and the resource is
  * removed from the available pool, an opposite call to maybeAvailable cannot be

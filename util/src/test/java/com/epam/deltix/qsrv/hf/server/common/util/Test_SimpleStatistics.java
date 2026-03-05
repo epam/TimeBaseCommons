@@ -14,17 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.qsrv.hf.server.common.util;
+package com.epam.deltix.qsrv.hf.server.common.util;
 
 import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.junit.experimental.categories.Category;
-import com.epam.deltix.util.CommonsJUnitCategories.Utils;
-
-@Category(Utils.class)
 public class Test_SimpleStatistics {
 
     @Test

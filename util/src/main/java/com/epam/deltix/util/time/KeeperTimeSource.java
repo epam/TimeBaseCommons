@@ -14,12 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.time;
+package com.epam.deltix.util.time;
 
 import com.epam.deltix.qsrv.hf.pub.TimeSource;
-import com.epam.deltix.util.annotations.TimestampMs;
-import com.epam.deltix.util.annotations.TimestampNs;
-import net.jcip.annotations.ThreadSafe;
 
 /**
  * {@link TimeSource} implementation that uses {@link TimeKeeper} as time source.
@@ -30,7 +27,6 @@ import net.jcip.annotations.ThreadSafe;
  *
  * @author Alexei Osipov
  */
-@ThreadSafe
 public class KeeperTimeSource implements TimeSource {
     public static final KeeperTimeSource INSTANCE = new KeeperTimeSource();
 
@@ -42,13 +38,11 @@ public class KeeperTimeSource implements TimeSource {
     }
 
     @Override
-    @TimestampMs
     public long currentTimeMillis() {
         return TimeKeeper.currentTime;
     }
 
     @Override
-    @TimestampNs
     public long currentTimeNanos() {
         return TimeKeeper.currentTimeNanos;
     }

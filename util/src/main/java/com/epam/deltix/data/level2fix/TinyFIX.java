@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.data.level2fix;
+package com.epam.deltix.data.level2fix;
 
 import com.epam.deltix.util.text.CharSequenceParser;
 

@@ -14,15 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
 import java.io.IOException;
 
 /**
  *  Unchecked exception, used to wrap the checked java.io.IOException 
  *  occurring because of system problems.
- *
- *  TODO: Deprecate in favor of similar class in Java 8+
  */
 public class UncheckedIOException extends RuntimeException {
     public UncheckedIOException (String msg, Throwable iox) {

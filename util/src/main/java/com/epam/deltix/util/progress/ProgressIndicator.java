@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.progress;
+package com.epam.deltix.util.progress;
 
 /**
  *  An abstract entity capable of indicating the progress of a process.

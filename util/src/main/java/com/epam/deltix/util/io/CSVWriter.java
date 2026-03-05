@@ -14,10 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
-
-
-import deltix.util.collections.generated.CharacterHashSet;
+package com.epam.deltix.util.io;
+import com.epam.deltix.util.collections.generated.CharacterHashSet;
 
 import java.io.*;
 
@@ -144,7 +142,7 @@ public class CSVWriter extends FilterWriter {
     public void             setFlushEveryLine (boolean flushEveryLine) {
         this.flushEveryLine = flushEveryLine;
     }
-
+    
     /**
      *  Writes out the specified CharSequence as a separate cell.
      * 
@@ -262,4 +260,5 @@ public class CSVWriter extends FilterWriter {
         if (needEscape)
             out.append(quoteCharacter);
     }
+ 
 }

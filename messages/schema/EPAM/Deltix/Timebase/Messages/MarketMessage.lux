@@ -1,0 +1,45 @@
+/*
+  Copyright 2021 EPAM Systems, Inc
+
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+  License for the specific language governing permissions and limitations under
+  the License.
+ */
+namespace EPAM.Deltix.Timebase.Messages;
+option JavaPackage = "com.epam.deltix.timebase.messages";
+
+/// Most financial market-related messages subclass this abstract class.
+[SchemaElement(Name = "com.epam.deltix.timebase.messages.MarketMessage", Title = "Market Message")]
+[GenerateReadOnlyInterface][GenerateReadWriteInterface]
+class MarketMessage : InstrumentMessage {
+
+    /// Exchange Time is measured in milliseconds that passed since January 1, 1970 UTC
+    [SchemaType(DataType = SchemaDataType.TIMESTAMP)]
+    [SchemaElement(Description = "Original Timestamp")]
+    Timestamp? OriginalTimestamp;
+
+    /// Identifies currency in which quantity is denominated (for currencies this must be base or term currency)
+    /// using 'alphanumeric' encoding
+    [SchemaElement]
+    [SchemaType(DataType = SchemaDataType.VARCHAR, Encoding = "ALPHANUMERIC(10)")]
+    Int64? Currency;
+
+    /// Market specific identifier of the given event in a sequence of market events.
+    [SchemaElement]
+    Int64? SequenceNumber;
+
+    /// Identifies market data source. Different sessions of same connector
+    /// to a same data provider should have different id.
+    [SchemaType(DataType = SchemaDataType.VARCHAR, Encoding = "ALPHANUMERIC(10)")]
+    [SchemaElement]
+    Int64? SourceId;
+}

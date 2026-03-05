@@ -14,9 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
-
-import com.epam.deltix.util.io.UncheckedIOException;
+package com.epam.deltix.util.io;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -38,7 +36,7 @@ public abstract class CachedLocalIP {
                 }
                 localIP = s.toString();
             } catch (UnknownHostException x) {
-                throw new UncheckedIOException(x);
+                throw new com.epam.deltix.util.io.UncheckedIOException(x);
             }
         }
         return localIP;

@@ -14,19 +14,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-import com.epam.deltix.util.CommonsJUnitCategories;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(CommonsJUnitCategories.Utils.class)
 public class Test_AtomicArrayList {
 
     private AtomicArrayList<Integer> list;

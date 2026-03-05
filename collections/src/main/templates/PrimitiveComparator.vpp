@@ -14,10 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package deltix.util.collections.generated;
+package com.epam.deltix.util.collections.generated;
 
-import deltix.util.memory.*;
-import deltix.util.collections.*;
+import com.epam.deltix.util.memory.*;
+import com.epam.deltix.util.collections.*;
 
 #if( $name == "Decimal" )
 import com.epam.deltix.dfp.Decimal64;

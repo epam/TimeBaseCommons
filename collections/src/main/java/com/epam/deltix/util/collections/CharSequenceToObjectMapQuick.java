@@ -14,14 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
 import java.io.IOException;
 
-import com.epam.deltix.util.collections.hash.StringHashCodeComputer;
-import com.epam.deltix.util.lang.Util;
-import deltix.util.collections.generated.*;
-import deltix.util.collections.hash.*;
+import com.epam.deltix.util.collections.generated.*;
+import com.epam.deltix.util.collections.hash.*;
+import com.epam.deltix.util.lang.*;
 
 public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <CharSequence, T> {
     private transient CharSubSequence     mBuffer = new CharSubSequence ();

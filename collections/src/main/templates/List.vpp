@@ -14,12 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#if( $name == "Object" )
+#if( $name == "Object" )
 #set( $type = "ObjectType" )
 #end
-package deltix.util.collections.generated;
+package com.epam.deltix.util.collections.generated;
 
-import java.util.List;
 
 #if( $name == "Object" )
 #set($actualType = "Object")
@@ -40,9 +39,9 @@ import com.epam.deltix.hdtime.HdTimeSpan;
  *	keeping a <code>java.util.ArrayList</code> of <code>${type_Object}</code>.
  */
 #if($name == "Object")
-public interface ${name}List<${type}> extends List<${type_Object}>, Cloneable {
+public interface ${name}List<${type}> extends Cloneable {
 #else
-public interface ${name}List extends List<${type_Object}>, Cloneable {
+public interface ${name}List extends Cloneable {
 #end
     /**
      * Returns the number of elements in this list.
@@ -54,8 +53,8 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
     /**
      * Tests if this list has no elements.
      *
-     * @return  <code>true</code> if this list has no elements;
-     *          <code>false</code> otherwise.
+     * @return  <tt>true</tt> if this list has no elements;
+     *          <tt>false</tt> otherwise.
      */
     boolean isEmpty();
 
@@ -64,8 +63,8 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
      *
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
-     * @throws    IndexOutOfBoundsException if index is out of range <code>(index
-     * 		  &lt; 0 || index &gt;= size())</code>.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
      */
      @SuppressWarnings("unchecked")
     ${type} get${name} (int index);
@@ -90,7 +89,7 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
      * <p>If the list fits in the specified array with room to spare (i.e., the
      * array has more elements than the list), the element in the array
      * immediately following the end of the collection is set to
-     * <code>null</code>.</p>
+     * <tt>null</tt>.</p>
      *
      * @param a the array into which the elements of the list are to
      *		be stored, if it is big enough; otherwise, a new array of the
@@ -107,8 +106,8 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
      *
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
-     * @throws    IndexOutOfBoundsException if index is out of range <code>(index
-     * 		  &lt; 0 || index &gt;= size())</code>.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
      */
     ${type} get (int index);
 
@@ -118,8 +117,8 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
      *
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
-     * @throws    IndexOutOfBoundsException if index is out of range <code>(index
-     * 		  &lt; 0 || index &gt;= size())</code>.
+     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
+     * 		  &lt; 0 || index &gt;= size())</tt>.
      */
     ${type_Object} get (int index);
 
@@ -133,7 +132,7 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
      * <p>If the list fits in the specified array with room to spare (i.e., the
      * array has more elements than the list), the element in the array
      * immediately following the end of the collection is set to
-     * <code>null</code>.</p>
+     * <tt>null</tt>.</p>
      *
      * @param a the array into which the elements of the list are to
      *		be stored, if it is big enough; otherwise, a new array of the
@@ -146,7 +145,7 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
     <T> T [] toArray(T a[]);
 
     /**
-     * Returns <code>true</code> if this list contains the specified element.
+     * Returns <tt>true</tt> if this list contains the specified element.
      *
      * @param elem element whose presence in this List is to be tested.
      */
@@ -160,7 +159,7 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
      *
      * @param   elem   an object.
      * @return  the index of the first occurrence of the argument in this
-     *          list; returns <code>-1</code> if the object is not found.
+     *          list; returns <tt>-1</tt> if the object is not found.
      */
 #if ($name == "Object")
     int indexOf (Object elem);
@@ -193,28 +192,6 @@ public interface ${name}List extends List<${type_Object}>, Cloneable {
     Object [] to${name_abbr}Array ();
 #else
     ${type} [] to${name_abbr}Array ();
-#end
-
-    /**
-     * Appends the specified element to the end of this list.
-     *
-     * @param d element to be appended to this list.
-     * @return <tt>true</tt> (as per the general contract of Collection.add).
-     */
-    boolean add (${type} d);
-
-    /**
-     *	Sets the size of this array to the supplied value.
-     *	If the array is extended by this call, the content of new elements
-     *	is undefined.
-     */
-    void setSize (int newSize);
-
-#if ($type != "boolean")
-    /**
-     * Sorts the array into ascending numerical order.
-     */
-    void sort ();
 #end
 
 }
