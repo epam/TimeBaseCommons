@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,10 +104,10 @@ public class Test_CharSequenceToObjectMapQuick {
         // Put using substring
         assertNull(map.putAndGet(source, 2, 7, "world", null));
         assertEquals(1, map.size());
-
+        
         // Get using substring
         assertEquals("world", map.get(source, 2, 7, null));
-
+        
         // Overwrite using substring
         assertEquals("world", map.putAndGet(source, 2, 7, "newValue", null));
         assertEquals("newValue", map.get(source, 2, 7, null));
@@ -125,7 +126,7 @@ public class Test_CharSequenceToObjectMapQuick {
     public void testRemoveWithSubstring() {
         map.put("remove", "me");
         String source = "XXremoveYY";
-
+        
         assertEquals("me", map.remove(source, 2, 8, null));
         assertEquals(0, map.size());
         assertNull(map.get("remove", null));
@@ -135,7 +136,7 @@ public class Test_CharSequenceToObjectMapQuick {
     public void testRemoveWithSubstringNotFound() {
         map.put("keep", "value");
         String source = "XXremoveYY";
-
+        
         assertNull(map.remove(source, 2, 8, null));
         assertEquals("default", map.remove(source, 2, 8, "default"));
         assertEquals(1, map.size());
@@ -157,7 +158,7 @@ public class Test_CharSequenceToObjectMapQuick {
     public void testRemove() {
         map.put("key1", "value1");
         map.put("key2", "value2");
-
+        
         assertEquals("value1", map.remove(wrap("key1"), null));
         assertEquals(1, map.size());
         assertFalse(map.containsKey("key1"));
@@ -178,17 +179,17 @@ public class Test_CharSequenceToObjectMapQuick {
     public void testSizeAndEmpty() {
         assertTrue(map.isEmpty());
         assertEquals(0, map.size());
-
+        
         map.put("key1", "value1");
         assertFalse(map.isEmpty());
         assertEquals(1, map.size());
-
+        
         map.put("key2", "value2");
         assertEquals(2, map.size());
-
+        
         map.remove(wrap("key1"), null);
         assertEquals(1, map.size());
-
+        
         map.remove(wrap("key2"), null);
         assertTrue(map.isEmpty());
         assertEquals(0, map.size());
@@ -206,10 +207,10 @@ public class Test_CharSequenceToObjectMapQuick {
     @Test
     public void testForEachSingleEntry() {
         map.put("key1", "value1");
-
+        
         List<String> visited = new ArrayList<>();
         map.forEach((k, v) -> visited.add(k.toString() + "=" + v));
-
+        
         assertEquals(1, visited.size());
         assertEquals("key1=value1", visited.get(0));
     }
@@ -219,10 +220,10 @@ public class Test_CharSequenceToObjectMapQuick {
         map.put("key1", "value1");
         map.put("key2", "value2");
         map.put("key3", "value3");
-
+        
         Set<String> visited = new HashSet<>();
         map.forEach((k, v) -> visited.add(k.toString() + "=" + v));
-
+        
         assertEquals(3, visited.size());
         assertTrue(visited.contains("key1=value1"));
         assertTrue(visited.contains("key2=value2"));
@@ -252,6 +253,51 @@ public class Test_CharSequenceToObjectMapQuick {
         assertEquals("KEY1", dump(e));
     }
 
+    // Iteration
+
+    @Test
+    public void testElementEnumerationOld() {
+        map.put("KEY1", "VALUE1");
+        map.put("KEY2", "VALUE2");
+        map.put("KEY3", "VALUE3");
+
+        ElementsEnumeration<String> enumeration = map.elements();
+        // Warn: this case is actually wrong, as original definition of elements()
+        //  has type KeyEntry<CharSequence>
+        KeyEntry<String> keyEnum = (KeyEntry<String>) enumeration;
+
+        HashMap<String, String> visited = new HashMap<>();
+        while (enumeration.hasMoreElements()) {
+            String key = keyEnum.key();
+            String value = enumeration.nextElement();
+            visited.put(key, value);
+        }
+        assertEquals(3, visited.size());
+        assertEquals("VALUE1", visited.get("KEY1"));
+        assertEquals("VALUE2", visited.get("KEY2"));
+        assertEquals("VALUE3", visited.get("KEY3"));
+    }
+
+    @Test
+    public void testElementEnumerationNew() {
+        map.put("KEY1", "VALUE1");
+        map.put("KEY2", "VALUE2");
+        map.put("KEY3", "VALUE3");
+
+        KVEnumeration<String, String> enumeration = map.elements();
+
+        HashMap<String, String> visited = new HashMap<>();
+        while (enumeration.hasMoreElements()) {
+            String key = enumeration.key();
+            String value = enumeration.nextElement();
+            visited.put(key, value);
+        }
+        assertEquals(3, visited.size());
+        assertEquals("VALUE1", visited.get("KEY1"));
+        assertEquals("VALUE2", visited.get("KEY2"));
+        assertEquals("VALUE3", visited.get("KEY3"));
+    }
+
     // ==================== Clear Tests ====================
 
     @Test
@@ -259,9 +305,9 @@ public class Test_CharSequenceToObjectMapQuick {
         map.put("key1", "value1");
         map.put("key2", "value2");
         assertEquals(2, map.size());
-
+        
         map.clear();
-
+        
         assertEquals(0, map.size());
         assertTrue(map.isEmpty());
         assertFalse(map.containsKey("key1"));
@@ -274,21 +320,21 @@ public class Test_CharSequenceToObjectMapQuick {
     public void testSerialization() throws IOException, ClassNotFoundException {
         map.put("key1", "value1");
         map.put("key2", "value2");
-
+        
         // Serialize
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(map);
         oos.close();
-
+        
         // Deserialize
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         ObjectInputStream ois = new ObjectInputStream(bais);
         @SuppressWarnings("unchecked")
-        CharSequenceToObjectMapQuick<String> deserialized =
+        CharSequenceToObjectMapQuick<String> deserialized = 
             (CharSequenceToObjectMapQuick<String>) ois.readObject();
         ois.close();
-
+        
         // Verify
         assertEquals(2, deserialized.size());
         assertEquals("value1", deserialized.get("key1", null));
@@ -298,20 +344,20 @@ public class Test_CharSequenceToObjectMapQuick {
     @Test
     public void testSerializationPreservesSubstringFunctionality() throws IOException, ClassNotFoundException {
         map.put("hello", "world");
-
+        
         // Serialize and deserialize
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(map);
         oos.close();
-
+        
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         ObjectInputStream ois = new ObjectInputStream(bais);
         @SuppressWarnings("unchecked")
-        CharSequenceToObjectMapQuick<String> deserialized =
+        CharSequenceToObjectMapQuick<String> deserialized = 
             (CharSequenceToObjectMapQuick<String>) ois.readObject();
         ois.close();
-
+        
         // Verify substring access works after deserialization
         String source = "XXhelloYY";
         assertEquals("world", deserialized.get(source, 2, 7, null));
@@ -339,9 +385,9 @@ public class Test_CharSequenceToObjectMapQuick {
         for (int i = 0; i < count; i++) {
             map.put("key" + i, "value" + i);
         }
-
+        
         assertEquals(count, map.size());
-
+        
         for (int i = 0; i < count; i++) {
             assertEquals("value" + i, map.get("key" + i, null));
         }
@@ -350,14 +396,14 @@ public class Test_CharSequenceToObjectMapQuick {
     @Test
     public void testSubstringAtBoundaries() {
         map.put("test", "value");
-
+        
         // Full string as substring
         assertEquals("value", map.get("test", 0, 4, null));
-
+        
         // Beginning of string
         String beginning = "testXXX";
         assertEquals("value", map.get(beginning, 0, 4, null));
-
+        
         // End of string
         String end = "XXXtest";
         assertEquals("value", map.get(end, 3, 7, null));
@@ -368,11 +414,11 @@ public class Test_CharSequenceToObjectMapQuick {
         // When putting with CharSequence, key should be stored as String (converted via toString())
         StringBuilder key = new StringBuilder("mutableKey");
         map.put(key, "value");
-
+        
         // Modify the original StringBuilder
         key.setLength(0);
         key.append("differentKey");
-
+        
         // Original key should still be accessible
         assertEquals("value", map.get("mutableKey", null));
         assertFalse(map.containsKey("differentKey"));
@@ -382,11 +428,11 @@ public class Test_CharSequenceToObjectMapQuick {
     public void testSameKeyDifferentCharSequenceTypes() {
         // Put with String
         map.put("key", "value1");
-
+        
         // Get with StringBuilder
         StringBuilder sbKey = new StringBuilder("key");
         assertEquals("value1", map.get(sbKey, null));
-
+        
         // Overwrite with StringBuilder
         map.put(sbKey, "value2");
         assertEquals("value2", map.get("key", null));

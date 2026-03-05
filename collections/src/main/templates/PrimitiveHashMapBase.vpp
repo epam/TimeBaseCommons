@@ -172,9 +172,9 @@ public abstract class ${name}HashMapBase$!{key_param} extends VLinkHashMapBase {
     }
 
 #if($name == "Object")
-protected final class KeyEnumeration implements ElementsEnumeration {
+    protected final class KeyEnumeration implements ElementsEnumeration {
 #else
-protected final class KeyEnumeration implements ${name}Enumeration {
+    protected final class KeyEnumeration implements ${name}Enumeration {
 #end
     	private int             pos = -1;
 

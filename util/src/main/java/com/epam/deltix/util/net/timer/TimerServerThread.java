@@ -49,7 +49,7 @@ public class TimerServerThread extends Thread {
             }
         } catch (Throwable x) {
             Util.handleException (x);
-            LangUtil.propagateError(x);
+            LangUtil.propagateIfError(x);
         } finally {
             Util.close (ss);
         }        

@@ -66,6 +66,13 @@ public final class VSDispatcher implements Disposable {
     private final ObjectHashSet<VSTransportChannel> transportChannels =
         new ObjectHashSet<> ();
 
+    /*
+        Limit for the number of open channels to prevent potential DDoS attacks or user errors.
+        By default, there is no limit (-1 value)
+     */
+
+    private int                                     channelsLimit = -1;
+
     /**
      * Set to non-null value during transport channel recovery.
      * If multiple transport channels are being recovered, this future will be completed with value "true" if all of
@@ -208,6 +215,26 @@ public final class VSDispatcher implements Disposable {
                 .setPriority(Thread.MAX_PRIORITY)
                 .setDaemon(true)
                 .build();
+    }
+
+    /*
+        Gets limit for the active channels. Default is -1, meaning no limits.
+     */
+
+    public int          getChannelsLimit() {
+        return channelsLimit;
+    }
+
+
+     /*
+        Sets limit for the active channels. -1 means no limits.
+     */
+
+    public void         setChannelsLimit(int limit) {
+        if (limit == 0 || limit < -1)
+            throw new IllegalArgumentException("Wrong channels limit: " + limit);
+
+        this.channelsLimit = limit;
     }
 
     /**
@@ -842,6 +869,9 @@ public final class VSDispatcher implements Disposable {
         }
 
         synchronized (channels) {
+            if (activeChannels >= channelsLimit && channelsLimit > 0)
+                throw new IllegalStateException("Attempt to create new channel above channels limit = " + channelsLimit);
+
             int                     localId = channels.indexOf (null);
             boolean                 extend = localId < 0;
 

@@ -174,7 +174,7 @@ public class ThrottlingExecutor extends Thread {
                 else
                     handler.handle (x);
 
-                LangUtil.propagateError(x);
+                LangUtil.propagateIfError(x);
             }
 
             t1 = TimeKeeper.currentTime;

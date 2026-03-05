@@ -17,8 +17,11 @@
 package com.epam.deltix.qsrv.hf.pub;
 
 import com.epam.deltix.util.time.GMT;
+import com.epam.deltix.util.annotations.TimestampMs;
 
 /**
+ * Time interval in milliseconds.
+ *
  * @author Andy
  *         Date: Jan 14, 2010 4:20:52 PM
  */
@@ -26,7 +29,9 @@ public final class TimeRange implements TimeInterval {
 
     public static final long UNDEFINED = Long.MIN_VALUE;
 
+    @TimestampMs
     public final long from;
+    @TimestampMs
     public final long to;
 
     public TimeRange() {
@@ -34,17 +39,17 @@ public final class TimeRange implements TimeInterval {
        this.to = UNDEFINED;
    }
 
-    public TimeRange(long from, long to) {
+    public TimeRange(@TimestampMs long from, @TimestampMs long to) {
         this.from = from;
         this.to = to;
     }
 
-    public TimeRange(long [] range) {
+    public TimeRange(@TimestampMs long [] range) {
         this.from = range[0];
         this.to = range [1];
     }
 
-    public TimeRange(long from) {
+    public TimeRange(@TimestampMs long from) {
         this.from = from;
         this.to = UNDEFINED;
     }
@@ -92,11 +97,13 @@ public final class TimeRange implements TimeInterval {
     }
 
     @Override
+    @TimestampMs
     public long getFromTime() {
         return from;
     }
 
     @Override
+    @TimestampMs
     public long getToTime() {
         return to;
     }

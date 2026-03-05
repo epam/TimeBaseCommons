@@ -95,6 +95,12 @@ public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <Cha
         mBuffer = new CharSubSequence();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public KVEnumeration<String, T> elements () {
+        return (KVEnumeration<String, T>) super.elements();
+    }
+
     /** Iterate over key-value pairs */
     @SuppressWarnings("unchecked")
     public void forEach(BiConsumer<String, ? super T> consumer) {

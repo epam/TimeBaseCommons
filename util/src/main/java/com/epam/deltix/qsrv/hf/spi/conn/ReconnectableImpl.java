@@ -335,7 +335,7 @@ public class ReconnectableImpl extends DisconnectableEventHandler {
                     } catch (Throwable x) {
                         //logger.error("[%s] Unexpected: %s").with(logprefix ).with(x);
                         logger.log (Level.SEVERE, "[" + logprefix + "] Unexpected", x);
-                        LangUtil.propagateError(x);
+                        //LangUtil.propagateError(x);
                     }
                 }
             };

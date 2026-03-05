@@ -199,7 +199,7 @@ class VSTransportChannel implements Runnable, Disposable {
                         // No reason to shutdown this transport channel
                         VSProtocol.LOGGER.log (Level.SEVERE, "Exception sending ACK", x);
                         local.close ();
-                        LangUtil.propagateError(x);
+                        LangUtil.propagateIfError(x);
                     }
                 }
                 else if (destId == VSProtocol.BYTES_RECIEVED) {
@@ -329,7 +329,7 @@ class VSTransportChannel implements Runnable, Disposable {
             else
                 onException (x);
 
-            LangUtil.propagateError(x);
+            LangUtil.propagateIfError(x);
         } finally {
             closed = true;
         }

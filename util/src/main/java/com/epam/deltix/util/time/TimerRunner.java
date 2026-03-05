@@ -38,7 +38,7 @@ public abstract class TimerRunner extends java.util.TimerTask {
                 onError(e);
             } catch (Throwable ex) {
                 Util.handleException(ex);
-                LangUtil.propagateError(ex);
+                LangUtil.propagateIfError(ex);
             }
         }
     }
@@ -50,7 +50,7 @@ public abstract class TimerRunner extends java.util.TimerTask {
      */
     protected void          onError (Throwable e) {
         Util.handleException (e);
-        LangUtil.propagateError(e);
+        LangUtil.propagateIfError(e);
     }
 
     /**

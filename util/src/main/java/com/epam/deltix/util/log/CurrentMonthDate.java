@@ -104,10 +104,10 @@ public class CurrentMonthDate extends TimerTask {
             // runs at midnight - optional taks that rolls currentMonthDay forward to avoid doing it during logging (if possible)
             roll (System.currentTimeMillis());
         } catch (Throwable e) {
-            // this should not happened in the current roll() stack
+            // this should not happen in the current roll() stack
             // !!! DO NOT USE Logger here !!! TerseFormatter creates CurrentMonthDate statically and hangs during initialization (#13116)
             System.out.println("Error while rolling CurrentMonthDate: " + e.getMessage());
-            LangUtil.propagateError(e);
+            LangUtil.propagateIfError(e);
         }
     }
 }

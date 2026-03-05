@@ -371,7 +371,7 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
 
     protected final class ElementEnumeration
 #if( $first_name == "Object" && $second_name == "Object" )
-        implements ElementsEnumeration <V>, KeyEntry <K>
+        implements KVEnumeration <K, V>
 #elseif( $second_name == "Object" )
         implements ElementsEnumeration <V>, ${first_name}Entry
 #elseif( $first_name == "Object" )
@@ -444,7 +444,11 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
 #end
     }
 
-#if( $second_name == "Object" )
+#if( $first_name == "Object" && $second_name == "Object" )
+    public KVEnumeration <? extends K, V>      elements () {
+    	return (new ElementEnumeration ());
+    }
+#elseif( $second_name == "Object" )
     public ElementsEnumeration <V>      elements () {
     	return (new ElementEnumeration ());
     }

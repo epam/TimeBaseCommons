@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.log;
+
+package com.epam.deltix.util.log;
 
 import com.epam.deltix.util.lang.StringUtils;
 import com.epam.deltix.util.lang.Util;
@@ -102,7 +103,7 @@ public class SafeHandler extends Handler {
 
         timerTask = new TimerRunner() {
             @Override
-            protected void runInternal() throws Exception {
+            protected void runInternal() {
                 onTimer();
             }
         };

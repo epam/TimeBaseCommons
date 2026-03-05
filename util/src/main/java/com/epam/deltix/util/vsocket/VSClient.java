@@ -20,6 +20,7 @@ package com.epam.deltix.util.vsocket;
 import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
 import com.epam.deltix.util.time.TimeKeeper;
+import com.epam.deltix.util.time.TimerRunner;
 import com.epam.deltix.qsrv.hf.spi.conn.DisconnectEventListener;
 import com.epam.deltix.util.io.GUID;
 import com.epam.deltix.util.io.IOUtil;
@@ -84,7 +85,7 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     private SSLContext                  sslContext;
 
 
-    private final ContextContainer contextContainer;
+    private final ContextContainer      contextContainer;
 
     private int                         protocolVersion = VSProtocol.VERSION;
 
@@ -216,9 +217,9 @@ public class VSClient extends ConnectionStateListener implements Disposable, Dis
     }
 
     private void scheduleReconnectAttempt(long nextAttemptTimestamp) {
-        GlobalTimer.INSTANCE.schedule(new TimerTask() {
+        GlobalTimer.INSTANCE.schedule(new TimerRunner() {
             @Override
-            public void run() {
+            public void runInternal() {
                 reconnector.submit();
             }
         }, new Date(nextAttemptTimestamp));

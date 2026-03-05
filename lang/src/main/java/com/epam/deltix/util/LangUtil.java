@@ -45,7 +45,7 @@ public final class LangUtil {
      * Additionally, this method is useful when we use global default exception handler ({@link Thread#setDefaultUncaughtExceptionHandler})
      * to detect OOM events. So OOM would be propagated to such handler even if caught by existing "catch Throwable" blocks.
      */
-    public static void propagateError(Throwable e) {
+    public static void propagateIfError(Throwable e) {
         if (!(e instanceof Exception)) {
             throwUnchecked(e);
         }

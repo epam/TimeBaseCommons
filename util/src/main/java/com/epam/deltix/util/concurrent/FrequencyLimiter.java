@@ -42,7 +42,7 @@ public abstract class FrequencyLimiter {
      */
     protected void                      onError (Throwable x) {
         Util.logException(this + " failed", x);
-        LangUtil.propagateError(x);
+        LangUtil.propagateIfError(x);
     }
 
     /**

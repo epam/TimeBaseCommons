@@ -200,7 +200,7 @@ public class QuickExecutorWithQueue {
                             LOGGER.log(LogLevel.DEBUG).append(task).append(" interrupted.").append(x).commit();
                     } catch (Throwable x) {
                         LOGGER.log(LogLevel.ERROR).append(task).append(" failed.").append(x).commit();
-                        LangUtil.propagateError(x);
+                        LangUtil.propagateIfError(x);
                     } finally {
                         if (task.finished ())
                             task = null;
@@ -208,7 +208,7 @@ public class QuickExecutorWithQueue {
                 }
             } catch (Throwable x) {
                 x.printStackTrace ();
-                LangUtil.propagateError(x);
+                LangUtil.propagateIfError(x);
             }
         }
     }

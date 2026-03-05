@@ -47,8 +47,8 @@ public final class SelfFlushingBufferedOutputStream extends BufferedOutputStream
                             flush ();                            
                         } catch (Throwable x) {
                             exception = x;
-                            LangUtil.propagateError(x); // Will break loop on Error
-                        }
+                            LangUtil.propagateIfError(x); // Will break loop on Error
+                        }      
                 }
                 
                 try {
