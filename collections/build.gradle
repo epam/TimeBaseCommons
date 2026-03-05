@@ -1,11 +1,13 @@
+import com.epam.deltix.gradle.plugins.velocity.VelocityTask
+
 description = 'Timebase commons-collections set of utilities'
-//todo resolve
+
 buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'com.epam.deltix', name: 'gradle-velocity-plugin', version: '1.2.2'
+        classpath group: 'com.epam.deltix', name: 'gradle-velocity-plugin', version: '1.2.3'
     }
 }
 apply plugin: 'velocity'
@@ -14,11 +16,6 @@ dependencies {
     api project(':timebase-lang')
 
     testImplementation 'commons-collections:commons-collections'
-//    testImplementation 'commons-collections:commons-collections:3.2.2'
-
-    implementation group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
-    implementation group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
-    implementation group: 'com.epam.deltix', name: 'gflog-api', version: gflogVersion
 
     // For JMH-based benchmarks
 //    testImplementation 'org.openjdk.jmh:jmh-core'
@@ -34,7 +31,6 @@ ext {
     srcDir = "src/main/templates"
     generatedSourcesDir = "${buildDir}/generated/main/java"
     dstDir = "${generatedSourcesDir}/com/epam/deltix/util/collections/generated"
-
     types = [:]
 
     types.char =    [name : 'Character', 'name_abbr' : 'Char', type : 'char', 'type_Object' : 'Character', size : 'SIZE_OF_CHAR' ]
@@ -50,6 +46,7 @@ ext {
     types.HdDateTime =  [ name : 'HdDateTime', 'name_abbr' : 'HdDateTime', type : 'HdDateTime', 'type_Object' : 'HdDateTime', size : 'SIZE_OF_POINTER' ]
     types.HdTimeSpan =  [ name : 'HdTimeSpan', 'name_abbr' : 'HdTimeSpan', type : 'HdTimeSpan', 'type_Object' : 'HdTimeSpan', size : 'SIZE_OF_POINTER' ]
 }
+def generatedDir = file(dstDir)
 
 velocity {
     entry {
@@ -113,7 +110,7 @@ static Map<String, Object> mapMerge(Map first, Map second) {
     return newMap
 }
 
-task vppHashMap(type: com.epam.deltix.gradle.plugins.velocity.VelocityTask) {
+tasks.register('vppHashMap', VelocityTask) {
     from = "$srcDir/PrimitiveToPrimitiveHashMap.vpp"
     to = "$dstDir/@{first_name}To@{second_name}HashMap.java"
 
@@ -130,6 +127,11 @@ task vppHashMap(type: com.epam.deltix.gradle.plugins.velocity.VelocityTask) {
     setContexts newMaps
 }
 
+tasks.withType(VelocityTask).configureEach { t ->
+    t.outputs.dir(generatedDir)
+}
+
+
 tasks.named('compileJava').configure {
     dependsOn 'vppHashMap'
 }
@@ -141,8 +143,14 @@ tasks.named('clean').configure {
     dependsOn 'cleanupDstDir'
 }
 
-project.tasks.withType(com.epam.deltix.gradle.plugins.velocity.VelocityTask).configureEach {
+project.tasks.withType(VelocityTask).configureEach {
     mustRunAfter 'clean'
 }
+
+def velocityTasks = tasks.withType(VelocityTask)
+
+tasks.named('processResources') {
+    dependsOn velocityTasks
+ }
 
 sourceSets.main.java.srcDirs += ext.generatedSourcesDir

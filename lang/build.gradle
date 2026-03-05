@@ -5,20 +5,15 @@ plugins {
 description = 'Timebase commons-lang set of utilities'
 
 dependencies {
-
-    api "com.epam.deltix:'dfp"
-    api "com.epam.deltix:'gflog-api"
-    api "com.epam.deltix:'hd-date-time"
-    api "com.epam.deltix:'gflog-core"
+    api "com.epam.deltix:dfp"
+    api "com.epam.deltix:gflog-api"
+    api "com.epam.deltix:hd-date-time"
 
     compileOnly 'org.jetbrains:annotations'
 
-    testImplementation project(':collections')
+    testImplementation project(':timebase-collections')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-params'
-
-//    testImplementation 'deltix:deltix-anvil-lang:1.14.170'
-//    testImplementation 'deltix:deltix-containers:4.0.7'
 
     // For JMH-based tests
     testImplementation 'org.openjdk.jmh:jmh-core'

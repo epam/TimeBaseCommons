@@ -1,4 +1,4 @@
-package deltix.util.memory;
+package com.epam.deltix.util.memory;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
