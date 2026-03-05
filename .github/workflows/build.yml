@@ -45,5 +45,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          path: build/reports/tests/test
-          name: Test Report
+          name: test-report-${{ matrix.os }}-${{ matrix.java }}
+          path: |
+            **/build/reports/tests/test/**
+            **/build/test-results/test/*.xml
