@@ -17,11 +17,33 @@
 package com.epam.deltix.util.collections;
 
 import java.io.IOException;
+import java.util.function.BiConsumer;
 
-import com.epam.deltix.util.collections.generated.*;
-import com.epam.deltix.util.collections.hash.*;
-import com.epam.deltix.util.lang.*;
+import com.epam.deltix.util.collections.generated.ObjectToObjectHashMap;
+import com.epam.deltix.util.collections.hash.StringHashCodeComputer;
 
+/**
+ * Similar to {@link CharSeqToObjMap} but takes care about immutability of stored keys
+ * by always storing them as {@link String} (with allocation).
+ * <p>
+ * This map is good for cases when you never or very rarely delete keys from the map or do not care about allocations.
+ * <p>
+ * It's recommended to use {@link CharSeqToObjMap} if you often remove and add keys and want to avoid
+ * allocation overhead.
+ * <p>
+ * Pros:
+ * <ul>
+ *     <li>No need to care about immutability of inserted keys</li>
+ *     <li>Performs fast key comparison for lookup keys of {@link String} and {@link StringBuilder} type
+ *     (using {@link String#contentEquals(CharSequence)}).</li>
+ * </ul>
+ * <p>
+ * Cons:
+ * <ul>
+ *     <li>Each insertion of non-String key allocates a new {@link String} object.
+ *     So if you expect to remove and insert same key later, consider using {@link CharSeqToObjMap} instead.</li>
+ * </ul>
+ */
 public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <CharSequence, T> {
     private transient CharSubSequence     mBuffer = new CharSubSequence ();
     
@@ -33,23 +55,19 @@ public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <Cha
         super (StringHashCodeComputer.INSTANCE);
     }
     
-    //  The following 3 overrides make all other methods work:
+    //  The following 2 overrides make all other methods work:
     @Override
     protected void          putKey (int pos, CharSequence key) {
+        // Key is always stored as String
         super.putKey (pos, key.toString ());
     }
 
     @Override
-    protected int           find (CharSequence key) {
-        if (mBuffer != key)     // This check is critical for preserving range!
-            mBuffer.set (key);
-        
-        return (super.find (mBuffer));
-    }
-
-    @Override
-    protected boolean       keyEquals (CharSequence a, CharSequence b) {
-        return (Util.equals (a, b));
+    protected boolean       keyEquals (CharSequence searchValue, CharSequence storedKey) {
+        // Second argument is always String.
+        // This call utilizes String's optimized content comparison method that takes
+        //  advantage of access to internal coder and value byte array.
+        return ((String) storedKey).contentEquals(searchValue);
     }
     
     public final T              get (CharSequence key, int start, int end, T notFoundValue) {
@@ -75,5 +93,16 @@ public class CharSequenceToObjectMapQuick <T> extends ObjectToObjectHashMap <Cha
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         mBuffer = new CharSubSequence();
+    }
+
+    /** Iterate over key-value pairs */
+    @SuppressWarnings("unchecked")
+    public void forEach(BiConsumer<String, ? super T> consumer) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                // Stored keys are always String
+                consumer.accept((String) keys[i], (T) values[i]);
+            }
+        }
     }
 }

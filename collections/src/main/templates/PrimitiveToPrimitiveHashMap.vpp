@@ -207,17 +207,16 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
      *  @return  true if the element is new, false if the key was found.
      */
     public boolean              put (${key_type} key, ${value_type} value) {
+        if (freeHead == NULL) {
+            resizeTable(values.length * 2);
+        }
+
         int         hidx = hashIndex (key);
         int         idx = find (hidx, key);
 
         if (idx != NULL) {
             values [idx] = value;
             return (false);
-        }
-
-        if (freeHead == NULL) {
-            resizeTable (values.length * 2);
-            hidx = hashIndex (key); // recompute!
         }
 
         idx = allocEntry (hidx);
@@ -241,6 +240,10 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
         ${value_type}                     notFoundValue
     )
     {
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+        }
+
         int         hidx = hashIndex (key);
         int         idx = find (hidx, key);
 
@@ -250,11 +253,6 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
             values [idx] = value;
 
             return (old);
-        }
-
-        if (freeHead == NULL) {
-            resizeTable (values.length * 2);
-            hidx = hashIndex (key); // recompute!
         }
 
         idx = allocEntry (hidx);
@@ -277,16 +275,15 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
         ${value_type}                 value
     )
     {
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+        }
+
         int         hidx = hashIndex (key);
         int         idx = find (hidx, key);
 
         if (idx != NULL) {
             return $!{value_cast} values [idx];
-        }
-
-        if (freeHead == NULL) {
-            resizeTable (values.length * 2);
-            hidx = hashIndex (key); // recompute!
         }
 
         idx = allocEntry (hidx);
@@ -309,16 +306,15 @@ public class ${first_name}To${second_name}HashMap #if( $first_name == "Object" &
         ${value_type}                 value
     )
     {
+        if (freeHead == NULL) {
+            resizeTable (values.length * 2);
+        }
+
         int         hidx = hashIndex (key);
         int         idx = find (hidx, key);
 
         if (idx != NULL) {
             return false;
-        }
-
-        if (freeHead == NULL) {
-            resizeTable (values.length * 2);
-            hidx = hashIndex (key); // recompute!
         }
 
         idx = allocEntry (hidx);

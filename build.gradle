@@ -79,13 +79,14 @@ configure(leafProjects) {
 
             dependency group: 'com.epam.deltix', name: 'dfp', version: dfpVersion
             dependency group: 'com.epam.deltix', name: 'hd-date-time', version: hdTimeVersion
+            dependency 'com.epam.deltix:containers:3.1.2'
 
             dependency 'org.apache.commons:commons-lang3:3.7'
             dependency 'javax.mail:mail:1.4.7'
             dependency 'com.google.code.findbugs:jsr305:3.0.2'
             dependency 'com.google.code.findbugs:annotations:3.0.1'
 
-            dependency 'com.epam.deltix:containers:3.1.2'
+            dependency 'org.jetbrains:annotations:26.0.2'
 
             // dependency 'org.mockito:mockito-core:1.10.19'
 
@@ -95,18 +96,20 @@ configure(leafProjects) {
                 entry 'gflog-jul'
                 entry 'gflog-dcl'
                 entry 'gflog-slf4j'
-            }            
+            }
 
             // JMH
-            dependencySet(group: 'org.openjdk.jmh', version: '1.19') {
+            dependencySet(group: 'org.openjdk.jmh', version: '1.37') {
                 entry 'jmh-core'
                 entry 'jmh-generator-annprocess'
             }
 
-            dependency 'org.jetbrains:annotations:24.1.0'
-
             dependency "junit:junit:4.13.2"
             dependency "org.mockito:mockito-core:5.15.2"
+
+//            dependency 'com.google.guava:guava:32.0.1-jre'
+
+//            dependency 'org.hdrhistogram:HdrHistogram:2.1.12'
         }
     }
 
@@ -115,11 +118,10 @@ configure(leafProjects) {
         isReleaseVersion = !version.endsWith("SNAPSHOT")
     }
 
-    java {
-        withJavadocJar()
-        withSourcesJar()
-    }
-
+//    java {
+//        withJavadocJar()
+//        withSourcesJar()
+//    }
 //    archivesBaseName = 'timebase-commons' + project.path.replaceAll(':', '-')
 
     repositories {
@@ -139,6 +141,8 @@ configure(leafProjects) {
         testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+//        testRuntimeOnly 'com.epam.deltix:gflog-core'
+
         spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
     }
 
@@ -153,42 +157,45 @@ configure(leafProjects) {
         jvmArgs '-Dgflog.sync=true', '-Dgflog.console.appender.wrap=true'/*, '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED'*/
     }
 
-    spotbugs {
-        toolVersion = "3.1.12"
-        effort = "max"
-        reportLevel = "medium"
-        sourceSets = [sourceSets.main] // exclude tests
-        excludeFilter = rootProject.file('spotbugs-excludes.xml')
-    }
+    tasks.withType(Test).configureEach {
+        testLogging {
+            // Log events to the console
+            events "standardOut", "started", "passed", "skipped", "failed"
 
-    tasks.withType(com.github.spotbugs.SpotBugsTask) {
-        enabled = enableSpotbugs
+            // Show standard streams (System.out and System.err)
+            showStandardStreams = true
 
-        reports {
-            xml.enabled = false
-            html.enabled = true
+            // Set the exception format (e.g., 'full', 'short', 'none')
+            exceptionFormat = 'full'
+
+            // Show stack traces
+            showStackTraces = true
         }
     }
 
-    javadoc {
-        // Suppress javadoc warnings about unsafe code
-        options.addStringOption('XDignore.symbol.file', 'quiet')
+    spotbugs {
+        toolVersion = "4.7.3"
+        effort = "max"
+        reportLevel = "medium"
+        excludeFilter = rootProject.file('spotbugs-excludes.xml')
     }
 
-    processResources {
-        from sourceSets.main.java.srcDirs
-        exclude '**/*.java'
-        includeEmptyDirs = false
+    tasks.named('spotbugsTest') {
+        enabled = false // disable SpotBugs for tests
     }
 
-    processTestResources {
-        from sourceSets.test.java.srcDirs
-        exclude '**/*.java'
-        includeEmptyDirs = false
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+        enabled = enableSpotbugs
+
+        reports {
+            xml.required = false
+            html.required = true
+        }
     }
 
-    jar {
+    tasks.named('jar') {
         manifest {
+            archiveBaseName.set(base.archivesName)
             attributes 'Manifest-Version': "1.0",
                     'Created-By': vendor,
                     'Implementation-Vendor': vendor,
@@ -196,50 +203,84 @@ configure(leafProjects) {
         }
     }
 
-    afterEvaluate {
-        // populate project classpath after evaluating
-        jar.manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
+    tasks.named('processResources') {
+        from sourceSets.main.java.srcDirs
+        exclude '**/*.java'
+        includeEmptyDirs = false
+    }
+
+    tasks.named('processTestResources') {
+        from sourceSets.test.java.srcDirs
+        exclude '**/*.java'
+        includeEmptyDirs = false
+    }
+
+    tasks.named('jar') {
+        manifest.attributes(
+                'Class-Path': provider {
+                    configurations.runtimeClasspath.collect { it.name }.join(' ')
+                }
+        )
     }
 
     // Contains current project jar and all required dependencies for that project
     def allJarsPath = 'build/alljars'
 
-    task gatherProjectDependencies(type: Sync) {
-        description 'Copies all project runtime dependencies to ' + allJarsPath
-        from project.configurations.runtime
+    tasks.register('gatherProjectDependencies', Sync) {
+        description = 'Copies all project runtime dependencies to ' + allJarsPath
+        from project.configurations.runtimeClasspath
         into allJarsPath
     }
 
-    task gatherAllJarsWithDependencies(type: Copy, dependsOn: ['jar', gatherProjectDependencies]) {
-        group "build"
-        description 'Copies all project JAR and all it\'s runtime dependencies to ' + allJarsPath
-        from jar // Main produced JAR of the subproject
+    tasks.register('gatherAllJarsWithDependencies', Copy) {
+        dependsOn 'jar', 'gatherProjectDependencies'
+        group = "build"
+        description = 'Copies all project JAR and all its runtime dependencies to ' + allJarsPath
+        from tasks.named('jar') // Main produced JAR of the subproject
         into allJarsPath
     }
 
     def allTestJarsPath = 'build/alltestjars'
 
-    task gatherProjectTestDependencies(type: Sync) {
-        description 'Copies all project test dependencies to ' + allTestJarsPath
-        from project.configurations.testCompile
+    tasks.register('gatherProjectTestDependencies', Sync) {
+        group = 'debug'
+        description = 'Copies all project test dependencies to ' + allTestJarsPath
+        from project.configurations.testRuntimeClasspath
         into allTestJarsPath
     }
 
-    task generateTestJar(type: Jar) {
-        description 'Generates JAR with test classes'
-        classifier 'tests'
+    tasks.register('generateTestJar', Jar) {
+        group = 'debug'
+        description = 'Generates JAR with test classes'
+        archiveClassifier = 'tests'
         from sourceSets.test.output
     }
 
-    task gatherAllTestJarsWithDependencies(type: Copy, dependsOn: ['jar', generateTestJar, gatherProjectTestDependencies]) {
-        group "build"
-        description 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
-        from jar // Main produced JAR of the subproject
-        from generateTestJar // JAR with test classes
+    tasks.register('gatherAllTestJarsWithDependencies', Copy) {
+        dependsOn 'jar', 'generateTestJar', 'gatherProjectTestDependencies'
+        group = 'debug'
+        description = 'Copies all project JAR and all it\'s test dependencies to ' + allTestJarsPath
+        from tasks.named('jar') // Main produced JAR of the subproject
+        from tasks.named('generateTestJar') // JAR with test classes
 
         into allTestJarsPath
     }
 
+
+    var sourcesJar = tasks.register('sourcesJar', Jar) {
+        dependsOn 'classes'
+        archiveClassifier.set('sources')
+        archiveBaseName.set(base.archivesName)
+        from sourceSets.main.allSource
+    }
+
+    var javadocJar = tasks.register('javadocJar', Jar) {
+        dependsOn 'javadoc'
+        enabled = includeJavaDocs
+        archiveClassifier.set('javadoc')
+        archiveBaseName.set(base.archivesName)
+        from javadoc.destinationDir
+    }
 
     task luminaryJar(type: Jar) {
         classifier = 'luminary'
@@ -249,19 +290,26 @@ configure(leafProjects) {
         }
     }
 
-    tasks.withType(Javadoc) {
-        // "Xdoclint:all,-reference" - disables fail on missing JavaDoc reference. TODO: Consider removing this.
-        // "-quiet" - skips warning messages (warnings still shown).
-        options.addStringOption('Xdoclint:all,-reference', '-quiet')
+    tasks.withType(Javadoc).configureEach {
+        options.addStringOption('Xdoclint:all,-reference', '-quiet') //  disables fail on missing JavaDoc reference
+        //options.addStringOption('Xdoclint:none', '-quiet') // suppress all warnings
+    }
+
+    artifacts {
+        archives sourcesJar
+        if (includeJavaDocs) {
+            archives javadocJar
+        }
     }
 
     if (!includeJavaDocs) {
-        tasks.withType(Javadoc).all { enabled = false }
+        tasks.withType(Javadoc).configureEach { enabled = false }
     }
 
     def rUser = findProperty('SONATYPE_NEXUS_USERNAME') ?:  System.getenv('SONATYPE_NEXUS_USERNAME') ?: "FakeUser"
     def rPass = findProperty('SONATYPE_NEXUS_PASSWORD') ?:  System.getenv('SONATYPE_NEXUS_PASSWORD') ?: "FakePass"
 
+    // Publishing
     publishing {
         repositories {
             maven {
@@ -347,4 +395,12 @@ allprojects {
             assemblyEnabled = false
         }
     }
+}
+
+def testTasks = ext.leafProjects*.test
+
+tasks.register('generateTestReport', TestReport) {
+    group = 'verification'
+    reportOn testTasks
+    destinationDirectory.set(file("$rootDir/build/reports/junit/html/all_reports_merged")) // TODO: Pick better name for merged report
 }

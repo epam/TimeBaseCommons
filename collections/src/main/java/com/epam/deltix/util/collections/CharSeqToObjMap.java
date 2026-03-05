@@ -20,11 +20,30 @@ import com.epam.deltix.util.collections.generated.ObjectToObjectHashMap;
 import com.epam.deltix.util.collections.hash.ObjHashCodeComputer;
 import com.epam.deltix.util.lang.Util;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 
 /**
  * Reference based map. Caller should care about immutability of keys.
+ * <p>
+ * This map is recommended for cases when you set of stored keys changes over time (keys get removed and added over time).
+ * Needs extra care when keys are mutable (common case).
+ * <p>
+ * Pros:
+ * <ul>
+ *     <li>No implicit allocation on key insertion (except map resize) or key lookup</li>
+ * </ul>
+ * <p>
+ * Cons:
+ * <ul>
+ *     <li>User have to care about immutability of keys. Either by converting them to immutable or by pooling them</li>
+ *     <li>Default {@link #equalityFunction} may be suboptimal with keys different from {@link String} and {@link StringBuilder}</li>
+ * </ul>
+ * <p>
+ * If you use classes different from {@link String} and {@link StringBuilder} as keys,
+ * it is strongly recommended to provide custom {@link #equalityFunction} and {@link ObjHashCodeComputer}
+ * with dedicated logic for actually used key type(s) to get better performance.
  */
 public class CharSeqToObjMap<K extends CharSequence, V> extends ObjectToObjectHashMap<K, V> {
 
@@ -41,8 +60,13 @@ public class CharSeqToObjMap<K extends CharSequence, V> extends ObjectToObjectHa
     public CharSeqToObjMap(final int initialCapacity,
                            final ToIntFunction<? super K> hashFunction,
                            final BiPredicate<? super K, ? super K> equalityFunction) {
+        this(initialCapacity, new ObjHashCodeComputer<>(hashFunction), equalityFunction);
+    }
 
-        super(initialCapacity, new ObjHashCodeComputer<>(hashFunction));
+    public CharSeqToObjMap(final int initialCapacity,
+                           final ObjHashCodeComputer<? super K> hashCodeComputer,
+                           final BiPredicate<? super K, ? super K> equalityFunction) {
+        super(initialCapacity, hashCodeComputer);
 
         this.equalityFunction = equalityFunction;
     }
@@ -52,4 +76,14 @@ public class CharSeqToObjMap<K extends CharSequence, V> extends ObjectToObjectHa
         return equalityFunction.test(a, b);
     }
 
+    /** Iterate over key-value pairs */
+    @SuppressWarnings("unchecked")
+    public void forEach(BiConsumer<K, ? super V> consumer) {
+        for (int i = 0; i < values.length; i++) {
+            if (isFilled (i)) {
+                // Stored keys are always String
+                consumer.accept((K) keys[i], (V) values[i]);
+            }
+        }
+    }
 }

@@ -254,6 +254,10 @@ public class QuickExecutor {
             try {
                 while (!stop) {
                     if (task == null) {
+                        if (instanceUsages.get() == 0) {
+                            // QE instance is shutting down or was shutdown already. Terminate this worker.
+                            break;
+                        }
 
                         LockSupport.park ();
 
@@ -356,6 +360,11 @@ public class QuickExecutor {
 
         if (shutdownInProgress)
             throw new IllegalStateException ("Shutdown in progress");
+
+        // In theory, we could expect that instanceUsages should be positive here.
+        // However, a lot of existing code does not really guarantee that there are no task submissions after QE shutdown.
+        // We deal with that by allowing submissions during shutdown, but stopping workers from lingering after task completion.
+        //assert instanceUsages.get() > 0;
 
         Worker      w = pollWorker(true);
 

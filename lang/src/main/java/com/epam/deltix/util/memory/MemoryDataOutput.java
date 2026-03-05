@@ -19,6 +19,7 @@ package com.epam.deltix.util.memory;
 import com.epam.deltix.dfp.Decimal64;
 import com.epam.deltix.dfp.Decimal64Utils;
 import com.epam.deltix.util.BitUtil;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -310,6 +311,66 @@ public final class MemoryDataOutput {
         writeByte (v);
     }
 
+    /**
+     * Same as {@link #writeUnsignedByte(int)}, but writes two bytes at a time.
+     * Offers a bit better performance by doing size checks once.
+     */
+    @ApiStatus.Experimental
+    public void           writeUnsignedByteX2(int v1, int v2) {
+        writeByteX2((byte) v1, (byte) v2);
+    }
+
+    @ApiStatus.Experimental
+    public void           writeByteX2(byte v1, byte v2) {
+        int newPos = mPos + 2;
+        ensureSize(newPos);
+        mBuffer[mPos] = v1;
+        mBuffer[mPos + 1] = v2;
+        mPos = newPos;
+    }
+
+    /**
+     * Same as {@link #writeUnsignedByte(int)}, but writes three bytes at a time.
+     * Offers a bit better performance by doing size checks once.
+     */
+    @ApiStatus.Experimental
+    public void           writeUnsignedByteX3(int v1, int v2, int v3) {
+        writeByteX3((byte) v1, (byte) v2, (byte) v3);
+    }
+
+    @ApiStatus.Experimental
+    public void           writeByteX3(byte v1, byte v2, byte v3) {
+        int newPos = mPos + 3;
+        ensureSize(newPos);
+        mBuffer[mPos] = v1;
+        mBuffer[mPos + 1] = v2;
+        mBuffer[mPos + 2] = v3;
+        mPos = newPos;
+    }
+
+    /**
+     * Same as {@link #writeUnsignedByte(int)}, but writes four bytes at a time.
+     * Offers a bit better performance by doing size checks once.
+     */
+    @ApiStatus.Experimental
+    public void           writeUnsignedByteX4(int v1, int v2, int v3, int v4) {
+        writeByteX4((byte) v1, (byte) v2, (byte) v3, (byte) v4);
+    }
+
+    /**
+     * Warning: For writing 4 bytes at a time it's better to use existing {@link #writeInt(int)} method.
+     */
+    @ApiStatus.Experimental
+    public void           writeByteX4(byte v1, byte v2, byte v3, byte v4) {
+        int newPos = mPos + 4;
+        ensureSize(newPos);
+        mBuffer[mPos] = v1;
+        mBuffer[mPos + 1] = v2;
+        mBuffer[mPos + 2] = v3;
+        mBuffer[mPos + 3] = v4;
+        mPos = newPos;
+    }
+
     public void           writeChar (char v) {
         makeRoom (2);
         DataExchangeUtils.writeChar (mBuffer, mPos, v);
@@ -322,24 +383,28 @@ public final class MemoryDataOutput {
         mPos += 2;
     }
 
+    // BE
     public void           writeInt (int v) {
         makeRoom (4);
         DataExchangeUtils.writeInt (mBuffer, mPos, v);
         mPos += 4;
     }
 
+    // LE
     public void           writeIntInverted (int v) {
         makeRoom (4);
         DataExchangeUtils.writeIntInvertBytes (mBuffer, mPos, v);
         mPos += 4;
     }
 
+    // BE
     public void           writeShort (short v) {
         makeRoom (2);
         DataExchangeUtils.writeShort (mBuffer, mPos, v);
         mPos += 2;
     }
 
+    // LE
     public void           writeShortInverted (short v) {
         makeRoom (2);
         DataExchangeUtils.writeShortInvertBytes (mBuffer, mPos, v);

@@ -19,6 +19,9 @@ package com.epam.deltix.util.lang;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.management.*;
@@ -30,8 +33,7 @@ import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-/** Set of useful methods */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "DuplicatedCode"})
 public class Util {
     public static final boolean  IS64BIT            = "64".equals(System.getProperty("sun.arch.data.model"));
     public static final boolean  IS32BIT            = "32".equals(System.getProperty("sun.arch.data.model"));
@@ -130,6 +132,7 @@ public class Util {
     /**
      *  Returns the sign of a - b
      */
+    @SuppressWarnings("UseCompareMethod")
     public static int           compare (long a, long b) {
         return a > b ? 1 : (a == b ? 0 : -1);
     }
@@ -149,12 +152,157 @@ public class Util {
         return (0);
     }
 
+    // region CharSequence comparison
+
     /**
      *  Compare two CharSequences for equality. A null equals null.
+     *  <p>
+     *  This implementation has special handling for common case when
+     *  at least one of the CharSequences is a {@link String},
+     *  which allows to use {@link String#contentEquals} method, which uses optimized JVM intirnsics.
+     *  <p>
+     *  Additionally, if both CharSequences are {@link StringBuilder}, it uses {@link StringBuilder#compareTo(StringBuilder)}
+     *  method, which also uses optimized implementation.
+     *  <p>
+     *  Finally, separate branches for {@link String} and {@link StringBuilder} cases
+     *  allows to have fewer types in the fallback code with char-by-char comparison,
+     *  that may help to avoid polymorphic call in the fallback code.
      */
-    public static boolean       equals (CharSequence s1, CharSequence s2) {
-        return (compare (s1, s2, true) == 0);
+    public static boolean equals(@Nullable CharSequence s1, @Nullable CharSequence s2) {
+        if (s1 == s2) {
+            return true;
+        }
+
+        if (s1 == null | s2 == null) {
+            return false;
+        }
+
+        // This length check becomes a polymorphic call site but moving it after instanceof checks
+        //  did not demonstrate any significant performance improvement, so we keep it here.
+        final int length = s1.length();
+        if (length != s2.length()) {
+            return false;
+        }
+
+        // These type checks are not free:
+        //  they add up to 2-3ns per call (up to 5% of total call time),
+        //  so if caller knows that none of the arguments is a String,
+        //  it can use equalsSimple() method that does not have these checks.
+        if (s1 instanceof String) {
+            return ((String) s1).contentEquals(s2);
+        }
+        if (s2 instanceof String) {
+            return ((String) s2).contentEquals(s1);
+        }
+        if (s1 instanceof StringBuilder && s2 instanceof StringBuilder) {
+            return ((StringBuilder) s1).compareTo((StringBuilder) s2) == 0;
+        }
+
+        // Code extracted into separate method to make main method body smaller
+        //  and allow more possibilities for JIT inlining.
+        return compareSimple1(s1, s2, length);
     }
+
+    // Do not deduplicate following code even if it's same as other methods.
+    // It's necessary to have it as a separate method to avoid polymorphic call in the main equals method,
+    //  so method call profile will not be polluted by different types of CharSequence.
+    private static boolean compareSimple1(@NotNull CharSequence s1, @NotNull CharSequence s2, int length) {
+        assert s1.length() == length && s2.length() == length;
+        assert !(s1 instanceof String) && !(s2 instanceof String) && !(s1 instanceof StringBuilder && s2 instanceof StringBuilder);
+
+        // We iterate in reverse order because of the heuristic that the end of the string is more likely
+        // to differ than the beginning, so we can return false faster in case of different strings.
+        for (int i = length - 1; i >= 0; i--) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Same as {@link #equals(CharSequence, CharSequence)} but for special case when
+     * it's known ahead of time that none of arguments is a String,
+     * so we can skip checks for String and use simple char-by-char comparison.
+     * <p>
+     * If there is a possibility that one of the arguments can be a String, use {@link #equals(CharSequence, CharSequence)} instead.
+     */
+    @ApiStatus.Experimental
+    public static boolean equalsSimple(@Nullable CharSequence s1, @Nullable CharSequence s2) {
+        if (s1 == s2) {
+            return true;
+        }
+
+        if (s1 == null | s2 == null) {
+            return false;
+        }
+
+        final int length = s1.length();
+        if (length != s2.length()) {
+            return false;
+        }
+
+        // We iterate in reverse order because of the heuristic that the end of the string is more likely
+        // to differ than the beginning, so we can return false faster in case of different strings.
+        for (int i = length - 1; i >= 0; i--) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Same as {@link #equals(CharSequence, CharSequence)} but optimized for the case when the first argument is known to be a String,
+     * so type checks for String can be avoided.
+     */
+    public static boolean equals(@Nullable String s1, @Nullable CharSequence s2) {
+        if (s1 == null) {
+            return s2 == null;
+        } else if (s2 == null) {
+            return false;
+        } else if (s1 == s2) {
+            return true;
+        }
+        // assert s1 != null && s2 != null;
+        return s1.contentEquals(s2);
+    }
+
+    public static boolean equals(@Nullable CharSequence s1, @Nullable String s2) {
+        return equals(s2, s1);
+    }
+
+    /** Dedicated overloaded version for known {@link String} comparison. */
+    public static boolean equals(@Nullable String s1, @Nullable String s2) {
+        if (s1 == null) {
+            return s2 == null;
+        } else if (s2 == null) {
+            return false;
+        } else {
+            return s1.equals(s2);
+        }
+    }
+
+    /** Dedicated overloaded version for known {@link StringBuilder} comparison. */
+    public static boolean equals(@Nullable StringBuilder s1, @Nullable StringBuilder s2) {
+        if (s1 == s2) {
+            return true;
+        }
+
+        if (s1 == null | s2 == null) {
+            return false;
+        }
+
+        if (s1.length() != s2.length()) {
+            return false;
+        }
+
+        return s1.compareTo(s2) == 0;
+    }
+
+    // endregion
 
     /**
      *  Compare two CharSequences for equality. A null equals null.
@@ -574,7 +722,7 @@ public class Util {
     }
 
     public static Runnable  methodRunnable (final Object obj, String methodName) {                
-        Method      m = null;
+        Method      m;
 
         Class <?> cls = obj.getClass ();
         while (true)  {

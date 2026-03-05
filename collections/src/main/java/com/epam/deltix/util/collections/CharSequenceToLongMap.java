@@ -37,20 +37,16 @@ public class CharSequenceToLongMap extends ObjectToLongHashMap<CharSequence> {
     //  The following 3 overrides make all other methods work:
     @Override
     protected void          putKey (int pos, CharSequence key) {
+        // Key is always stored as String
         super.putKey (pos, key.toString ());
     }
 
     @Override
-    protected int           find (CharSequence key) {
-        if (mBuffer != key)     // This check is critical for preserving range!
-            mBuffer.set (key);
-        
-        return (super.find (mBuffer));
-    }
-
-    @Override
-    protected boolean       keyEquals (CharSequence a, CharSequence b) {
-        return (Util.equals (a, b));
+    protected boolean       keyEquals (CharSequence searchValue, CharSequence storedKey) {
+        // Second argument is always String.
+        // This call utilizes String's optimized content comparison method that takes
+        //  advantage of access to internal coder and value byte array.
+        return ((String) storedKey).contentEquals(searchValue);
     }
     
     public final long       get (CharSequence key, int start, int end, long notFoundValue) {

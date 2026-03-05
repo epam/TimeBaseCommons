@@ -19,10 +19,41 @@ package com.epam.deltix.util.collections;
 import java.util.*;
 
 /**
- *  
+ * Warning: It's recommenced to use {@link CharSeqToObjMap} or {@link CharSequenceToObjectMapQuick}
+ * if you do "get()" operations using {@link StringBuilder} or {@link String}.
+ * <p>
+ * If you always use this map with {@link String} keys only, use {@link HashMap} directly to avoid performance penalty on {@link #get} calls.
+ * <p>
+ * Uses {@link HashMap} as backend.
+ * All keys are converted to {@link String} on insertion.
+ * <p>
+ * Works correctly because on each lookup key is wrapped intp {@link CharSubSequence}
+ * which computes hash code and equality based on content of the provided {@link CharSequence}
+ * and not on implementation of {@link String#equals(Object)}.
+ * <p>
+ * Pros:
+ * <ul>
+ *     <li>No need to care about immutability of keys</li>
+ *     <li>Has most of the methods of {@link HashMap} (however it's not guarantied for all of them to work,
+ *     as only few methods are overridden)</li>
+ * </ul>
+ * <p>
+ * Cons:
+ * <ul>
+ *     <li>Each insertion of non-String key allocates a new {@link String} object.
+ *     So if you expect to remove and insert same key later, consider using {@link CharSeqToObjMap} instead.</li>
+ *
+ *     <li>Implementation have to use {@link CharSubSequence#equals(Object)} for comparison of keys
+ *     with {@link CharSubSequence} as one argument and {@link String} as another.
+ *     This way it's impossible to use fast comparison between stored {@link String} and lookup key of {@link String}
+ *     or {@link StringBuilder} type.</li>
+ *
+ *     <li>Some base methods of {@link HashMap} are not overridden,
+ *     so if you use them with non-String keys, they will not work correctly.</li>
+ * </ul>
  */
 public class CharSequenceToObjectMap <T> extends HashMap <String, T> {
-    private CharSubSequence     mBuffer = new CharSubSequence ();
+    protected final CharSubSequence mBuffer = new CharSubSequence();
     
     public CharSequenceToObjectMap (int initialCapacity, float loadFactor) {
         super (initialCapacity, loadFactor);

@@ -1,0 +1,3 @@
+# By default, Cursor ignores all files covered by .gitignore.
+# This will allow Cursor to index the generated collections. So it can correctly understand the code that uses them.
+!collections/build/generated/main/
