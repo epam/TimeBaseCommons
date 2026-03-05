@@ -51,6 +51,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
     public final static int        MAX_CONNECTIONS                = 100;
     public final static short      MAX_SOCKETS_PER_CONNECTION      = 8;
+    public final static short      MAX_CHANNELS_PER_CONNECTION     = 1000;
 
     private final Map <String, Connector>        dispatchers =
         new HashMap <> ();
@@ -59,8 +60,13 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
     private final ContextContainer contextContainer;
 
     private volatile VSConnectionListener       connectionListener;
+
+    // max number of connections (VSDispatchers)
     private final int                           connectionsLimit;
-    private short                         transportsLimit;
+    // max number of sockets per connection (VSTransportChannels)
+    private short                               transportsLimit;
+    // max number channels per connection (VSChannels)
+    private final int                           channelsLimit;
     private final long                          time;
     private final int lingerInterval;
     private final VSCompression                 compression;
@@ -69,7 +75,9 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
     private TransportType                       transportType = TransportType.SOCKET_TCP;
 
-    private final DBConnectionAcceptor connectionAcceptor;
+
+
+    private final DBConnectionAcceptor          connectionAcceptor;
 
     public static final Comparator <VSDispatcher> comparator = new Comparator <VSDispatcher>() {
 
@@ -80,7 +88,11 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
     };
 
     public VSServerFramework(QuickExecutor executor, int lingerInterval,
-                             VSCompression compression, int connectionsLimit, short socketsPerConnection, ContextContainer contextContainer, DBConnectionAcceptor connectionAcceptor) {
+                             VSCompression compression, int connectionsLimit,
+                             short socketsPerConnection, int channelsPerConnection,
+                             ContextContainer contextContainer,
+                             DBConnectionAcceptor connectionAcceptor) {
+        this.channelsLimit = channelsPerConnection;
         this.connectionAcceptor = connectionAcceptor;
         this.executor = executor;
         this.lingerInterval = lingerInterval;
@@ -93,7 +105,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
     }
 
     public VSServerFramework(QuickExecutor executor, int lingerInterval, VSCompression compression, ContextContainer contextContainer) {
-        this(executor, lingerInterval, compression, MAX_CONNECTIONS, MAX_SOCKETS_PER_CONNECTION, contextContainer, DefaultConnectionAcceptor.INSTANCE);
+        this(executor, lingerInterval, compression, MAX_CONNECTIONS, MAX_SOCKETS_PER_CONNECTION, -1, contextContainer, DefaultConnectionAcceptor.INSTANCE);
     }
 
     public QuickExecutor getExecutor () {
@@ -353,6 +365,7 @@ public class VSServerFramework implements ConnectionHandshakeHandler, Disposable
 
             if (connector == null) {
                 VSDispatcher dispatcher = new VSDispatcher (clientId, false, contextContainer);
+                dispatcher.setChannelsLimit(channelsLimit);
                 dispatcher.setConnectionListener(connectionListener);
                 dispatcher.setLingerInterval(lingerInterval);
                 dispatcher.addDisposableListener(this);
