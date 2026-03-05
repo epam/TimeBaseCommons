@@ -50,6 +50,10 @@ import com.epam.deltix.hdtime.HdTimeSpan;
 #set($actualType = $type)
 #end
 
+////////////////////////////////////
+/// Generated from ArrayList.vpp ///
+////////////////////////////////////
+
 
 /**
  * Resizable array of primitive ${type}s. Much more efficient than
@@ -57,9 +61,9 @@ import com.epam.deltix.hdtime.HdTimeSpan;
  */
 
 #if($name == "Object")
-public final class ${name}ArrayList<${type}> extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List<${type}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
+public final class ${name}ArrayList<${type}> extends AbstractList<${type_Object}> implements ${name}List<${type}>, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
 #else
-public final class ${name}ArrayList extends AbstractList<${type_Object}> implements List<${type_Object}>, ${name}List, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
+public final class ${name}ArrayList extends AbstractList<${type_Object}> implements ${name}List, Cloneable, java.io.Serializable, MemorySizeEstimator, ICapacity {
 #end
 
     static final long  serialVersionUID = 1L;
@@ -115,7 +119,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     /**
      * Constructs a list containing the elements of the specified
      * list, in the order they are returned by the collection's
-     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * iterator.  The <code>ArrayList</code> instance has an initial capacity of
      * the same size of the specified collection.
      *
      * @param list the list whose elements are to be placed into this list.
@@ -128,7 +132,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      /**
      * Constructs a list containing the elements of the specified
      * list, in the order they are returned by the collection's
-     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * iterator.  The <code>ArrayList</code> instance has an initial capacity of
      * the same size of the specified collection.
      *
      * @param list the list whose elements are to be placed into this list.
@@ -142,7 +146,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     /**
      * Constructs a list containing the elements of the specified
      * collection, in the order they are returned by the collection's
-     * iterator.  The <tt>ArrayList</tt> instance has an initial capacity of
+     * iterator.  The <code>ArrayList</code> instance has an initial capacity of
      * the same size of the specified collection.
      *
      * @param c the collection whose elements are to be placed into this list.
@@ -177,9 +181,9 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
+     * Trims the capacity of this <code>ArrayList</code> instance to be the
      * list's current size.  An application can use this operation to minimize
-     * the storage of an <tt>ArrayList</tt> instance.
+     * the storage of an <code>ArrayList</code> instance.
      */
     public void trimToSize() {
 		if (size < elementData.length) {
@@ -189,7 +193,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Increases the capacity of this <tt>ArrayList</tt> instance, if
+     * Increases the capacity of this <code>ArrayList</code> instance, if
      * necessary, to ensure  that it can hold at least the number of elements
      * specified by the minimum capacity argument.
      *
@@ -244,15 +248,15 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     /**
      * Tests if this list has no elements.
      *
-     * @return  <tt>true</tt> if this list has no elements;
-     *          <tt>false</tt> otherwise.
+     * @return  <code>true</code> if this list has no elements;
+     *          <code>false</code> otherwise.
      */
     public boolean isEmpty() {
 		return size == 0;
     }
 
     /**
-     * Returns <tt>true</tt> if this list contains the specified element.
+     * Returns <code>true</code> if this list contains the specified element.
      *
      * @param elem element whose presence in this List is to be tested.
      */
@@ -271,7 +275,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * <p>If the list fits in the specified array with room to spare (i.e., the
      * array has more elements than the list), the element in the array
      * immediately following the end of the collection is set to
-     * <tt>null</tt>.</p>
+     * <code>null</code>.</p>
      *
      * @param a the array into which the elements of the list are to
      *		be stored, if it is big enough; otherwise, a new array of the
@@ -304,8 +308,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
-     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
-     * 		  &lt; 0 || index &gt;= size())</tt>.
+     * @throws    IndexOutOfBoundsException if index is out of range <code>(index
+     * 		  &lt; 0 || index &gt;= size())</code>.
      */
     public ${type} get (int index) {
 		return (get${name} (index));
@@ -317,8 +321,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
-     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
-     * 		  &lt; 0 || index &gt;= size())</tt>.
+     * @throws    IndexOutOfBoundsException if index is out of range <code>(index
+     * 		  &lt; 0 || index &gt;= size())</code>.
      */
     public ${type_Object} get (int index) {
 		return get${name} (index);
@@ -334,7 +338,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * <p>If the list fits in the specified array with room to spare (i.e., the
      * array has more elements than the list), the element in the array
      * immediately following the end of the collection is set to
-     * <tt>null</tt>.</p>
+     * <code>null</code>.</p>
      *
      * @param a the array into which the elements of the list are to
      *		be stored, if it is big enough; otherwise, a new array of the
@@ -354,7 +358,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #if($name == "Boolean")
             a[i] = (T) Boolean.valueOf(elementData[i]);
 #else
-            a[i] = (T) new ${type_Object}(elementData[i]);
+            a[i] = (T) ${type_Object}.valueOf(elementData[i]);
 #end
         }
 
@@ -366,7 +370,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Returns <tt>true</tt> if this list contains the specified element.
+     * Returns <code>true</code> if this list contains the specified element.
      *
      * @param elem element whose presence in this List is to be tested.
      */
@@ -380,7 +384,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param   elem   an object.
      * @return  the index of the first occurrence of the argument in this
-     *          list; returns <tt>-1</tt> if the object is not found.
+     *          list; returns <code>-1</code> if the object is not found.
      */
     public int indexOf(Object elem) {
     	return (indexOf (((${type_Object}) elem).${type}Value ()));
@@ -406,7 +410,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param element element to be stored at the specified position.
      * @return the element previously at the specified position.
      * @throws    IndexOutOfBoundsException if index out of range
-     *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
+     *		  <code>(index &lt; 0 || index &gt;= size())</code>.
      */
     public ${type_Object} set (int index, ${type_Object} element) {
 		return set(index, element.${type}Value());
@@ -416,7 +420,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * Appends the specified element to the end of this list.
      *
      * @param o element to be appended to this list.
-     * @return <tt>true</tt> (as per the general contract of Collection.add).
+     * @return <code>true</code> (as per the general contract of Collection.add).
      */
     public boolean add (${type_Object} o) {
     	return (add (o.${type}Value ()));
@@ -430,7 +434,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param index index at which the specified element is to be inserted.
      * @param element element to be inserted.
      * @throws    IndexOutOfBoundsException if index is out of range
-     *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
+     *		  <code>(index &lt; 0 || index &gt; size())</code>.
      */
     public void add (int index, ${type_Object} element) {
     	add (index, element.${type}Value ());
@@ -439,7 +443,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 
 #if ($name == "Decimal" || $name == "HdDateTime" || $name == "HdTimeSpan")
     /**
-     * Returns <tt>true</tt> if this list contains the specified element.
+     * Returns <code>true</code> if this list contains the specified element.
      *
      * @param elem element whose presence in this List is to be tested.
      */
@@ -454,7 +458,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param   elem   an object.
      * @return  the index of the first occurrence of the argument in this
-     *          list; returns <tt>-1</tt> if the object is not found.
+     *          list; returns <code>-1</code> if the object is not found.
      */
 #if ($name == "Object")
     public int indexOf (Object elem) {
@@ -523,9 +527,9 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Returns a copy of this <tt>${name}ArrayList</tt> instance.
+     * Returns a copy of this <code>${name}ArrayList</code> instance.
      *
-     * @return  a clone of this <tt>${name}ArrayList</tt> instance.
+     * @return  a clone of this <code>${name}ArrayList</code> instance.
      */
     public Object clone () {
 #if($name == "Object")
@@ -570,8 +574,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param  index index of element to return.
      * @return the element at the specified position in this list.
-     * @throws    IndexOutOfBoundsException if index is out of range <tt>(index
-     * 		  &lt; 0 || index &gt;= size())</tt>.
+     * @throws    IndexOutOfBoundsException if index is out of range <code>(index
+     * 		  &lt; 0 || index &gt;= size())</code>.
      */
      @SuppressWarnings("unchecked")
     public ${type} get${name} (int index) {
@@ -598,7 +602,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param element element to be stored at the specified position.
      * @return the element previously at the specified position.
      * @throws    IndexOutOfBoundsException if index out of range
-     *		  <tt>(index &lt; 0 || index &gt;= size())</tt>.
+     *		  <code>(index &lt; 0 || index &gt;= size())</code>.
      */
      @SuppressWarnings("unchecked")
     public ${type} set (int index, ${type} element) {
@@ -612,7 +616,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * Appends the specified element to the end of this list.
      *
      * @param d element to be appended to this list.
-     * @return <tt>true</tt> (as per the general contract of Collection.add).
+     * @return <code>true</code> (as per the general contract of Collection.add).
      */
     public boolean add (${type} d) {
 		ensureFreeSpace(1);
@@ -629,7 +633,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param index index at which the specified element is to be inserted.
      * @param element element to be inserted.
      * @throws    IndexOutOfBoundsException if index is out of range
-     *		  <tt>(index &lt; 0 || index &gt; size())</tt>.
+     *		  <code>(index &lt; 0 || index &gt; size())</code>.
      */
     public void add (int index, ${type} element) {
         rangeCheck(index, 0);
@@ -647,8 +651,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param index the index of the element to removed.
      * @return the element that was removed from the list.
-     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
-     * 		  &lt; 0 || index &gt;= size())</tt>.
+     * @throws    IndexOutOfBoundsException if index out of range <code>(index
+     * 		  &lt; 0 || index &gt;= size())</code>.
      */
     public ${type_Object} remove (int index) {
         return (remove${name} (index));
@@ -661,8 +665,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      *
      * @param index the index of the element to removed.
      * @return the element that was removed from the list.
-     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
-     * 		  &lt; 0 || index &gt;= size())</tt>.
+     * @throws    IndexOutOfBoundsException if index out of range <code>(index
+     * 		  &lt; 0 || index &gt;= size())</code>.
      */
      @SuppressWarnings("unchecked")
     public ${type} remove${name} (int index) {
@@ -700,8 +704,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * list is nonempty.)
      *
      * @param c the elements to be inserted into this list.
-     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
-     *		  &lt; 0 || index &gt; size())</tt>.
+     * @throws    IndexOutOfBoundsException if index out of range <code>(index
+     *		  &lt; 0 || index &gt; size())</code>.
      */
     public boolean addAll (Collection<? extends ${type_Object}> c) {
 		int numNew = c.size();
@@ -729,8 +733,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param c         the array to be inserted into this list.
      * @param offset    starting position in the array.
      * @param length    the number of array elements to be inserted.
-     * @throws    IndexOutOfBoundsException if offset out of range <tt>(index
-     *		  &lt; 0 || index &gt; size())</tt>.
+     * @throws    IndexOutOfBoundsException if offset out of range <code>(index
+     *		  &lt; 0 || index &gt; size())</code>.
      */
     public boolean addAll (${type} c[], int offset, int length) {
         ensureFreeSpace(length);
@@ -761,8 +765,8 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
      * @param index index at which to insert first element
      *		    from the specified collection.
      * @param c elements to be inserted into this list.
-     * @throws    IndexOutOfBoundsException if index out of range <tt>(index
-     *		  &lt; 0 || index &gt; size())</tt>.
+     * @throws    IndexOutOfBoundsException if index out of range <code>(index
+     *		  &lt; 0 || index &gt; size())</code>.
      */
     public boolean addAll (Collection<? extends ${type_Object}> c, int index) {
 		rangeCheck(index, 0);
@@ -785,12 +789,26 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 		return numNew != 0;
     }
 
+    #if( $name == "Object")
+    /** Special version of add all for lists (avoid allocation of iterator) */
+    public void addAll (List<${type}> items) {
+        final int size = items.size();
+        ensureFreeSpace(size);
+
+    	for (int i=0; i < size; i++) {
+    	   add (items.get(i));
+    	}
+    	modCount++;
+    }
+    #end
+
+
     /**
      * Removes from this List all of the elements whose index is between
      * fromIndex, inclusive and toIndex, exclusive.  Shifts any succeeding
      * elements to the left (reduces their index).
-     * This call shortens the list by <tt>(toIndex - fromIndex)</tt> elements.
-     * (If <tt>toIndex==fromIndex</tt>, this operation has no effect.)
+     * This call shortens the list by <code>(toIndex - fromIndex)</code> elements.
+     * (If <code>toIndex==fromIndex</code>, this operation has no effect.)
      *
      * @param fromIndex index of first element to be removed.
      * @param toIndex index after last element to be removed.
@@ -804,10 +822,10 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Inserts an uninitialized area at <tt>atIndex</tt>. Shifts any succeeding
-     * elements to the right by <tt>offset</tt> (increases their index).
-     * This call lengthens the list by <tt>offset</tt> elements.
-     * (If <tt>offset==0</tt>, this operation has no effect.)
+     * Inserts an uninitialized area at <code>atIndex</code>. Shifts any succeeding
+     * elements to the right by <code>offset</code> (increases their index).
+     * This call lengthens the list by <code>offset</code> elements.
+     * (If <code>offset==0</code>, this operation has no effect.)
      *
      * @param atIndex   index of first element to be shifted.
      * @param offset    offset to shift by.
@@ -822,10 +840,10 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Inserts and fills an area at <tt>atIndex</tt>. Shifts any succeeding
-     * elements to the right by <tt>offset</tt> (increases their index).
-     * This call lengthens the list by <tt>offset</tt> elements.
-     * (If <tt>offset==0</tt>, this operation has no effect.)
+     * Inserts and fills an area at <code>atIndex</code>. Shifts any succeeding
+     * elements to the right by <code>offset</code> (increases their index).
+     * This call lengthens the list by <code>offset</code> elements.
+     * (If <code>offset==0</code>, this operation has no effect.)
      *
      * @param atIndex   index of first element to be shifted.
      * @param offset    offset to shift by.
@@ -868,12 +886,12 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Save the state of the <tt>ArrayList</tt> instance to a stream (that
+     * Save the state of the <code>ArrayList</code> instance to a stream (that
      * is, serialize it).
      *
-     * @serialData The length of the array backing the <tt>ArrayList</tt>
+     * @serialData The length of the array backing the <code>ArrayList</code>
      *             instance is emitted (int), followed by all of its elements
-     *             (each an <tt>Object</tt>) in the proper order.
+     *             (each an <code>Object</code>) in the proper order.
      */
     private synchronized void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException
@@ -895,7 +913,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     /**
-     * Reconstitute the <tt>ArrayList</tt> instance from a stream (that is,
+     * Reconstitute the <code>ArrayList</code> instance from a stream (that is,
      * deserialize it).
      */
     @SuppressWarnings("unchecked")
@@ -955,14 +973,14 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
         }
     }
 
-#if( $type != "boolean" )
+#if($type != "boolean" )
     public void		sort () {
     	Arrays.sort(elementData, 0, size);
     }
 
     public void		sort (int offset, int length) {
         rangeCheck(offset, length);
-    	Arrays.sort(elementData, offset, length);
+    	Arrays.sort(elementData, offset, offset + length);
     }
 #end
 
@@ -976,7 +994,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     @SuppressWarnings("unchecked")
     public void sort(Comparator<? super ObjectType> comparator, int offset, int length) {
         rangeCheck(offset, length);
-        Arrays.sort((ObjectType[]) elementData, offset, length, comparator); // allocation free sort
+        Arrays.sort((ObjectType[]) elementData, offset, offset + length, comparator); // allocation free sort
     }
 #end
 
@@ -1006,14 +1024,13 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
     }
 
     public String	toString () {
-		StringBuffer	buf = new StringBuffer ("{");
+		StringBuilder	buf = new StringBuilder ("{");
 		for (int idx = 0; idx < size; idx ++) {
-			buf.append ("" + elementData[idx]);
+			buf.append(elementData[idx]);
 			if (idx < size - 1)
 				buf.append (", ");
-			else
-				buf.append ("}");
 		}
+		buf.append ("}");
 
 		return (buf.toString ());
     }
@@ -1053,7 +1070,7 @@ public final class ${name}ArrayList extends AbstractList<${type_Object}> impleme
 #if($name == "Boolean")
     		return Boolean.valueOf(nextBooleanElement());
 #else
-    		return (new ${type_Object} (next${name_abbr}Element ()));
+    		return next${name_abbr}Element ();
 #end
 
     	}

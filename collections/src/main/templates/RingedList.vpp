@@ -14,10 +14,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#if( $name == "Object" )
+
+#if( $name == "Object" )
 #set( $type = "ObjectType" )
 #end
-package deltix.util.collections.generated;
+package com.epam.deltix.util.collections.generated;
 
 import java.util.AbstractList;
 import java.util.Arrays;

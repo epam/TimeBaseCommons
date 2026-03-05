@@ -23,6 +23,6 @@ public interface RefreshTokenListener {
 
     void refreshed(AuthResult authResult);
 
-    default void refreshFailed(Throwable t) { LangUtil.propagateError(t); }
+    default void refreshFailed(Throwable t) { LangUtil.propagateIfError(t); }
 
 }
