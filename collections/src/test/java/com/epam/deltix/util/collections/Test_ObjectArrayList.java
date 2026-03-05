@@ -16,6 +16,7 @@
  */
 package com.epam.deltix.util.collections;
 
+import com.epam.deltix.util.collections.generated.IntegerArrayList;
 import com.epam.deltix.util.collections.generated.ObjectArrayList;
 import org.junit.Assert;
 import org.junit.Test;
