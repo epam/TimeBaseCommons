@@ -14,12 +14,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vfs;
+package com.epam.deltix.util.vfs;
 
-import com.epam.deltix.util.progress.ProgressIndicator;
 import com.epam.deltix.util.io.ByteCountingInputStream;
 import com.epam.deltix.util.lang.Util;
-
+import com.epam.deltix.util.progress.ProgressIndicator;
+import com.epam.deltix.util.vfs.VFileVisitor.VFileVisitResult;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,7 +36,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
     public static final String          ZFS_WRITE_MODE = "ZFS_WRITE_MODE";
     
-    private final boolean               writeMode;
+    private boolean                     writeMode;
     private final ZipInputStream        zin;
     private final ZipOutputStream       zout;
     
@@ -193,31 +193,31 @@ public class ZipFileSystem implements VFileSystem<ZipFileSystem.ZipFile> {
             doWalkTree(visitor);
         }
 
-        private VFileVisitor.VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {
+        private VFileVisitResult doWalkTree(VFileVisitor<VFile> visitor) throws IOException, InterruptedException {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
 
             if (isDirectory()) {
-                if (visitor.preVisitDirectory(this) == VFileVisitor.VFileVisitResult.TERMINATE) {
-                    return VFileVisitor.VFileVisitResult.TERMINATE;
+                if (visitor.preVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
                 }
                 ZipEntry nextEntry;
                 while ((nextEntry = zin.getNextEntry()) != null) {
-                    if (new ZipFile(nextEntry).doWalkTree(visitor) == VFileVisitor.VFileVisitResult.TERMINATE) {
-                        return VFileVisitor.VFileVisitResult.TERMINATE;
+                    if (new ZipFile(nextEntry).doWalkTree(visitor) == VFileVisitResult.TERMINATE) {
+                        return VFileVisitResult.TERMINATE;
                     }
                 }
-                if (visitor.postVisitDirectory(this) == VFileVisitor.VFileVisitResult.TERMINATE) {
-                    return VFileVisitor.VFileVisitResult.TERMINATE;
+                if (visitor.postVisitDirectory(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
                 }
             } else {
-                if (visitor.visitFile(this) == VFileVisitor.VFileVisitResult.TERMINATE) {
-                    return VFileVisitor.VFileVisitResult.TERMINATE;
+                if (visitor.visitFile(this) == VFileVisitResult.TERMINATE) {
+                    return VFileVisitResult.TERMINATE;
                 }
             }
             
-            return VFileVisitor.VFileVisitResult.CONTINUE;
+            return VFileVisitResult.CONTINUE;
         }
         
         @Override

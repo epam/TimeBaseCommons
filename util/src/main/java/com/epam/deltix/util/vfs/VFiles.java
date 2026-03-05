@@ -14,8 +14,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vfs;
+package com.epam.deltix.util.vfs;
 
+import com.epam.deltix.util.io.StreamPump;
+import com.epam.deltix.util.lang.Util;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 

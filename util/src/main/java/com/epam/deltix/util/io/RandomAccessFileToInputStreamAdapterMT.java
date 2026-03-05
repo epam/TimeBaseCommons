@@ -14,11 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  *  Adapts java.io.RandomAccessFile to java.io.InputStream interface,
@@ -72,7 +70,7 @@ public class RandomAccessFileToInputStreamAdapterMT
     
     /**
      *  Override to impose additional limit on file length.
-     *  Default implementation returns <code>Long.MAX_VALUE</code>.
+     *  Default implementation returns <tt>Long.MAX_VALUE</tt>.
      */
     protected long              additionalLimit () throws IOException {
         return (Long.MAX_VALUE);

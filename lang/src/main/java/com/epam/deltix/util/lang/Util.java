@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -29,13 +29,13 @@ import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-@SuppressWarnings("unused")
+/** Set of useful methods */
 public class Util {
     public static final boolean  IS64BIT            = "64".equals(System.getProperty("sun.arch.data.model"));
     public static final boolean  IS32BIT            = "32".equals(System.getProperty("sun.arch.data.model"));
 
     public static final String   LOGGER_NAME        = "deltix.util";
-    private static final Log LOG                = LogFactory.getLog(Util.class);
+    private static final Log     LOG                = LogFactory.getLog(Util.class);
     public static final boolean  IS_WINDOWS_OS      = System.getProperty ("path.separator").equals(";");
     public static final String   NATIVE_LINE_BREAK  = System.getProperty("line.separator");
     public static final String[] EMPTY_STRING_ARRAY = {};
@@ -94,7 +94,7 @@ public class Util {
             // Double value
             a = a << 1;
         }
-        
+
         return (a);
     }
 
@@ -576,7 +576,7 @@ public class Util {
     }
 
     public static Runnable  methodRunnable (final Object obj, String methodName) {                
-        Method      m;
+        Method      m = null;
 
         Class <?> cls = obj.getClass ();
         while (true)  {
@@ -1225,7 +1225,7 @@ public class Util {
             }
             c = c.getSuperclass();
         }
-        return result.toArray(new Class[0]);
+        return result.toArray(new Class [result.size()]);
     }
 
     /** @return true if given cls is instanceof interface specified by className */

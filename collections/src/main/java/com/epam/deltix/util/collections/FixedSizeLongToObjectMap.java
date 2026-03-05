@@ -14,9 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections;
+package com.epam.deltix.util.collections;
 
-import deltix.util.collections.generated.LongHashMapBase;
+import com.epam.deltix.util.collections.generated.LongHashMapBase;
 
 import java.util.Arrays;
 import java.util.Iterator;

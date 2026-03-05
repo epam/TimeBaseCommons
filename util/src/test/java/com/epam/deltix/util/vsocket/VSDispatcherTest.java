@@ -14,13 +14,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
-import deltix.util.vsocket.ConnectionStateListener;
-import deltix.util.vsocket.VSChannelImpl;
-import deltix.util.vsocket.VSTransportChannel;
-import deltix.util.vsocket.VSocketRecoveryInfo;
+import com.epam.deltix.util.vsocket.ConnectionStateListener;
+import com.epam.deltix.util.vsocket.VSChannelImpl;
+import com.epam.deltix.util.vsocket.VSTransportChannel;
+import com.epam.deltix.util.vsocket.VSocketRecoveryInfo;
 import org.junit.Assert;
 import org.junit.Test;
 

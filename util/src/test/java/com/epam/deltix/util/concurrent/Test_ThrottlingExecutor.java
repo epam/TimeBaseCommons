@@ -14,26 +14,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.concurrent;
+package com.epam.deltix.util.concurrent;
 
 
 import java.util.Random;
-
 import org.junit.*;
-
-import static com.epam.deltix.util.log.LogUtil.LOGGER;
 import static org.junit.Assert.*;
 
 /**
  *
  */
 public class Test_ThrottlingExecutor {
+    private final Random                    random = new Random (2009);
+    private long                            usedTime;
     
-    static class TestTask extends ThrottlingExecutor.Task {
-
-        private final Random                    random = new Random (2009);
-        private long                            usedTime;
-
+    class TestTask extends ThrottlingExecutor.Task {
         public boolean         run () {
             long                t1 = System.currentTimeMillis ();
             int                 t = random.nextInt (30) + 15;
@@ -52,22 +47,23 @@ public class Test_ThrottlingExecutor {
 
             usedTime += dt;
 
-            //if (!Boolean.getBoolean ("quiet"))
-            LOGGER.info(String.format("%,16d %16d %16d\n", t1, t, dt));
+            if (!Boolean.getBoolean ("quiet"))
+                System.out.printf ("%,16d %16d %16d\n", t1, t, dt);
             
             return (true);
         }
     }
 
-    @Test(timeout = 90000)
+
+    //@Test(timeout = 300000)
     @Ignore
     public void             go () throws InterruptedException {
 
-        boolean cruiseControlMode = true; //Boolean.getBoolean("deltix.test.mode");
+        boolean cruiseControlMode = Boolean.getBoolean("deltix.test.mode");
         double                  desiredRatio = cruiseControlMode ? 0.25 : 0.07;   // when executed together with other tests CPU usage much higher
 
-        //if (!Boolean.getBoolean ("quiet"))
-        LOGGER.info("Target: " + desiredRatio);
+        if (!Boolean.getBoolean ("quiet"))
+            System.out.println ("Target: " + desiredRatio);
 
         Thread.sleep (100);
 
@@ -79,8 +75,7 @@ public class Test_ThrottlingExecutor {
 
         long            startTime = System.currentTimeMillis ();
 
-        TestTask testTask = new TestTask();
-        testTask.submit(exe);
+        new TestTask().submit(exe);
 
         Thread.sleep (10000);
 
@@ -88,11 +83,11 @@ public class Test_ThrottlingExecutor {
         exe.join ();
 
         double          totalTime = System.currentTimeMillis () - startTime;
-        double          actualRatio = testTask.usedTime / totalTime;
+        double          actualRatio = usedTime / totalTime;
         double          dev = Math.abs (actualRatio - desiredRatio);
         
-        //if (!Boolean.getBoolean ("quiet"))
-        LOGGER.info("Actual: " + actualRatio + "; d=" + (dev * 100) + "%");
+        if (!Boolean.getBoolean ("quiet"))
+            System.out.println ("Actual: " + actualRatio + "; d=" + (dev * 100) + "%");
 
         assertTrue (
             "Target ratio: " + desiredRatio +

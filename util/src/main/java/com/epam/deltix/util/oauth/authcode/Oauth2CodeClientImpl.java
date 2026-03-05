@@ -14,7 +14,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.oauth.authcode;
+
+package com.epam.deltix.util.oauth.authcode;
 
 import com.epam.deltix.gflog.api.Log;
 import com.epam.deltix.gflog.api.LogFactory;
@@ -28,7 +29,6 @@ import com.epam.deltix.util.oauth.utils.RefreshTokenScheduler;
 import com.epam.deltix.util.oauth.utils.RetryStrategy;
 import com.epam.deltix.util.oauth.utils.TimerTokenScheduler;
 import com.epam.deltix.util.time.TimeKeeper;
-import deltix.util.oauth.utils.*;
 
 import java.time.Instant;
 

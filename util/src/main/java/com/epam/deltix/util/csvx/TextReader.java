@@ -14,19 +14,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.csvx;
+package com.epam.deltix.util.csvx;
 
 import java.io.*;
 import java.util.regex.*;
 
-import com.epam.deltix.util.collections.CharSubSequence;
-import com.epam.deltix.util.collections.EmptyCharSequence;
-import com.epam.deltix.util.io.ByteCountingInputStream;
-import com.epam.deltix.util.lang.Disposable;
-import com.epam.deltix.util.lang.Util;
-import com.epam.deltix.util.text.CharSequenceParser;
-import deltix.util.io.*;
-import deltix.util.text.*;
+import com.epam.deltix.util.collections.*;
+import com.epam.deltix.util.collections.generated.*;
+import com.epam.deltix.util.io.*;
+import com.epam.deltix.util.lang.*;
+import com.epam.deltix.util.text.*;
 
 public abstract class TextReader implements Disposable {
 
@@ -42,7 +39,7 @@ public abstract class TextReader implements Disposable {
 	protected IntegerArrayList        mInclStartIndexes  = new IntegerArrayList ( );
 	protected IntegerArrayList        mExclEndIndexes    = new IntegerArrayList ( );
 	protected boolean                 mLastCharWasCR     = false;
-	protected CharSubSequence mStockCharSequence = new CharSubSequence ( mBuffer );
+	protected CharSubSequence         mStockCharSequence = new CharSubSequence ( mBuffer );
 
 	public void readHeaders ( )
 	                           throws IOException {

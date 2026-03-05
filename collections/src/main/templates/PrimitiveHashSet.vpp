@@ -14,17 +14,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-#if( $name == "Object" )
+#if( $name == "Object" )
 #set( $key_type = "K" )
 #set( $key_param = "<K>" )
 #set( $key_cast = "(K)" )
 #else
 #set( $key_type = $type )
 #end
-package deltix.util.collections.generated;
+package com.epam.deltix.util.collections.generated;
 
-import deltix.util.collections.hash.*;
-import deltix.util.collections.*;
+import com.epam.deltix.util.collections.hash.*;
+import com.epam.deltix.util.collections.*;
 import java.io.*;
 import java.util.*;
 #if( $name == "Decimal" )

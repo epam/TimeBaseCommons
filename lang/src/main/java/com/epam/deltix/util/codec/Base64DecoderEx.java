@@ -14,7 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.codec;
+package com.epam.deltix.util.codec;
+
+import com.epam.deltix.util.codec.Base64Decoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

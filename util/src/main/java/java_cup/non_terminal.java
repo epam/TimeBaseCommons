@@ -14,10 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package java_cup;
+package java_cup;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 /** This class represents a non-terminal symbol in the grammar.  Each
  *  non terminal has a textual name, an index, and a string which indicates
@@ -56,7 +56,7 @@ public class non_terminal extends symbol {
       _index = next_index++;
 
       /* add to by_index set */
-      _all_by_index.put(_index, this);
+      _all_by_index.put(new Integer(_index), this);
     }
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -98,7 +98,7 @@ public class non_terminal extends symbol {
   /** Lookup a non terminal by index. */
   public static non_terminal find(int indx)
     {
-      Integer the_indx = indx;
+      Integer the_indx = new Integer(indx);
 
       return (non_terminal)_all_by_index.get(the_indx);
     }

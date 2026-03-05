@@ -14,9 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.collections.hash;
+package com.epam.deltix.util.collections.hash;
 
-import com.epam.deltix.util.lang.Util;
+import com.epam.deltix.util.lang.*;
 
 public class StringHashCodeComputer extends HashCodeComputer {
     public static final StringHashCodeComputer     INSTANCE = new StringHashCodeComputer ();

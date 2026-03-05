@@ -14,11 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.lang;
+package com.epam.deltix.util.lang;
 
-import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.text.*;
 
 /**
  *	Framework class for exceptions that automatically format their
@@ -26,18 +25,18 @@ import java.util.ResourceBundle;
  *
  *	<ol>
  *		<li>Derive your child exception class from this class. Suppose that your
- *			exception class is <code>deltix.gobbler.FooException</code>.</li>
+ *			exception class is <tt>deltix.gobbler.FooException</tt>.</li>
  *		<li>Define a resource bundle called
- *			<code>deltixlab/gobbler/exceptions</code>. The best way of doing this is
+ *			<tt>deltixlab/gobbler/exceptions</tt>. The best way of doing this is
  *			to create a properties resource bundle
- *			<code>deltixlab/gobbler/exception.properties</code>. This bundle will
+ *			<tt>deltixlab/gobbler/exception.properties</tt>. This bundle will
  *			contain the translations of this exception.</li>
  *		<li>Now there are two ways of referencing the individual messages.
- *			If a <code>LocalizableException</code> instance is constructed with no
- *			<code>addlKey</code> argument, then the message in the resource bundle
+ *			If a <tt>LocalizableException</tt> instance is constructed with no
+ *			<tt>addlKey</tt> argument, then the message in the resource bundle
  *			will be keyed by the short class name fo the exception.
- *			If a <code>LocalizableException</code> instance is constructed with a
- *			<code>addlKey</code> argument, then the message in the resource bundle
+ *			If a <tt>LocalizableException</tt> instance is constructed with a
+ *			<tt>addlKey</tt> argument, then the message in the resource bundle
  *			will be keyed by the a string starting with the short class name,
  *			followed by a ".", and then by the supplied addlKey. In all cases the
  *			addlKey starts with the exception's short class name. For instance,

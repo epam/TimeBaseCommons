@@ -14,13 +14,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.vsocket;
+
+package com.epam.deltix.util.vsocket;
 
 import com.epam.deltix.util.concurrent.ContextContainer;
 import com.epam.deltix.util.concurrent.QuickExecutor;
 import com.epam.deltix.util.vsocket.transport.Connection;
 import com.epam.deltix.util.vsocket.transport.SocketConnectionFactory;
-import deltix.util.collections.generated.IntegerToObjectHashMap;
+import com.epam.deltix.util.collections.generated.IntegerToObjectHashMap;
 import com.epam.deltix.util.io.offheap.OffHeap;
 import com.epam.deltix.util.lang.DisposableListener;
 import com.epam.deltix.util.tomcat.ConnectionHandshakeHandler;

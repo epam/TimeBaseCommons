@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.id;
+package com.epam.deltix.util.id;
 
 import org.junit.After;
 import org.junit.Test;
@@ -33,7 +33,6 @@ import org.junit.experimental.categories.Category;
  * @author Andy
  *         Date: 5/3/11 12:48 PM
  */
-@Category(Long.class)
 public class Test_FileBasedHiLowIdentifierGenerator {
 
     private FileHiLowIdentifierGenerator idgen;

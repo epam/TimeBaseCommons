@@ -14,9 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.currency;
+package com.epam.deltix.util.currency;
 
-import deltix.util.collections.generated.ObjectToObjectHashMap;
+import com.epam.deltix.util.collections.generated.ObjectToObjectHashMap;
 import com.epam.deltix.util.collections.hash.HashCodeComputer;
 import com.epam.deltix.util.collections.hash.StringHashCodeComputer;
 import com.epam.deltix.util.lang.Util;

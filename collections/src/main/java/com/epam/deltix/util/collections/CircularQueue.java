@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-/*
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -30,14 +30,14 @@ public interface CircularQueue<E> {
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
-     * <code>true</code> upon success and throwing an <code>IllegalStateException</code>
+     * <tt>true</tt> upon success and throwing an <tt>IllegalStateException</tt>
      * if no space is currently available.
      *
-     * <p>This implementation returns <code>true</code> if <code>offer</code> succeeds,
-     * else throws an <code>IllegalStateException</code>.</p>
+     * <p>This implementation returns <tt>true</tt> if <tt>offer</tt> succeeds,
+     * else throws an <tt>IllegalStateException</tt>.</p>
      *
      * @param e the element to add
-     * @return <code>true</code> (as specified by {@link java.util.Collection#add})
+     * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to capacity restrictions
      * @throws ClassCastException if the class of the specified element

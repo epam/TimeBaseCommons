@@ -14,19 +14,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.bcel;
+package com.epam.deltix.util.bcel;
 
+import java.io.*;
 import java.util.*;
-
+import java.lang.annotation.*;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.*;
 
 public class AnnotationsAttribute extends Attribute
 {
 	private static final String TYPE = "_type";
 
-	private com.epam.deltix.util.bcel.Annotation[] annotations;
+	private Annotation [] annotations;
 
-	public AnnotationsAttribute (byte tag, int name_index, int length, ConstantPool constant_pool, com.epam.deltix.util.bcel.Annotation[] annotations)
+	public AnnotationsAttribute (byte tag, int name_index, int length, ConstantPool constant_pool, Annotation[] annotations)
 	{
 		super(tag, name_index, length, constant_pool);
 		this.annotations = annotations;

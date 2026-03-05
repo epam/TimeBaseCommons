@@ -14,12 +14,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.util.io;
+package com.epam.deltix.util.io;
 
-import com.epam.deltix.util.lang.ComparableComparator;
+import com.epam.deltix.util.lang.*;
 import com.epam.deltix.util.lang.SortedProperties;
-import com.epam.deltix.util.text.ShellPatternCSMatcher;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -27,6 +25,7 @@ import java.util.zip.*;
 
 import com.epam.deltix.util.lang.Util;
 
+import com.epam.deltix.util.text.ShellPatternCSMatcher;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.xml.bind.JAXBException;
@@ -95,7 +94,7 @@ public abstract class BasicIOUtil {
             else
                 return (new URL ("file://" + path));
         } catch (IOException iox) {
-            throw new UncheckedIOException(iox);
+            throw new com.epam.deltix.util.io.UncheckedIOException(iox);
         }
     }
 
@@ -170,7 +169,7 @@ public abstract class BasicIOUtil {
 
     public static void      deleteUnchecked (File f) {
         if (! deleteFileOrDir(f))
-            throw new UncheckedIOException("Failed to delete " + f);
+            throw new com.epam.deltix.util.io.UncheckedIOException("Failed to delete " + f);
     }
 
     /**
@@ -512,7 +511,7 @@ public abstract class BasicIOUtil {
         try {
             return (readTextFromClassPath (relPath));
         } catch (InterruptedException | IOException x) {
-            throw new UncheckedIOException(x);
+            throw new com.epam.deltix.util.io.UncheckedIOException(x);
         }
     }
     
@@ -686,13 +685,7 @@ public abstract class BasicIOUtil {
             r = new BufferedReader (r);
 
         if (props != null) {
-            r = new TokenReplacingReader(r, new TokenReplacingReader.ITokenResolver() {
-
-                @Override
-                public String resolveToken(String token) {
-                    return props.getProperty(token);
-                }
-            });
+            r = new TokenReplacingReader(r, props::getProperty);
         }
         
         CharBuffer			tmpContent = CharBuffer.allocate(4096);
@@ -864,7 +857,7 @@ public abstract class BasicIOUtil {
     public static Properties	readPropsFromFile (File file)
         throws IOException
     {
-        Properties		props = new SortedProperties();
+        Properties		props = new SortedProperties ();
         FileInputStream	fis = new FileInputStream (file);
 
         try {
@@ -1893,7 +1886,7 @@ public abstract class BasicIOUtil {
     ) 
         throws FileNotFoundException 
     {
-        return (expandPath (path, new ComparableComparator<File>(), assertRootExists));
+        return (expandPath (path, new ComparableComparator<File> (), assertRootExists));
     }
     
     public static ArrayList <File>  expandPath (

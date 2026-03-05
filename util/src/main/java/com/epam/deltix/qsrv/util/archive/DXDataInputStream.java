@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.epam.deltix.qsrv.util.archive;
+package com.epam.deltix.qsrv.util.archive;
 
 import com.epam.deltix.util.io.RandomAccessFileToInputStreamAdapter;
 import com.epam.deltix.util.lang.Util;
@@ -56,7 +56,7 @@ public class DXDataInputStream extends ArchiveInputStream {
      }
 
     private final RandomAccessFile                  raf;
-    private RandomAccessFileToInputStreamAdapter in;
+    private RandomAccessFileToInputStreamAdapter    in;
     private final List<DataEntry>                   entries = new LinkedList<DataEntry>();
     private DataEntry                               current;
     private boolean                                 eof = false;
